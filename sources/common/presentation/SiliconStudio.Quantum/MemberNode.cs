@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Reflection;
@@ -53,10 +53,10 @@ namespace SiliconStudio.Quantum
         public event EventHandler<INodeChangeEventArgs> FinalizeChange;
 
         /// <inheritdoc/>
-        public event EventHandler<MemberNodeChangeEventArgs> Changing;
+        public event EventHandler<MemberNodeChangeEventArgs> ValueChanging;
 
         /// <inheritdoc/>
-        public event EventHandler<MemberNodeChangeEventArgs> Changed;
+        public event EventHandler<MemberNodeChangeEventArgs> ValueChanged;
 
         /// <inheritdoc/>
         protected sealed override object Value { get { if (Parent.Retrieve() == null) throw new InvalidOperationException("Container's value is null"); return MemberDescriptor.Get(Parent.Retrieve()); } }
@@ -68,22 +68,22 @@ namespace SiliconStudio.Quantum
         }
 
         /// <summary>
-        /// Raises the <see cref="Changing"/> event with the given parameters.
+        /// Raises the <see cref="ValueChanging"/> event with the given parameters.
         /// </summary>
         /// <param name="args">The arguments of the event.</param>
         protected void NotifyContentChanging(MemberNodeChangeEventArgs args)
         {
             PrepareChange?.Invoke(this, args);
-            Changing?.Invoke(this, args);
+            ValueChanging?.Invoke(this, args);
         }
 
         /// <summary>
-        /// Raises the <see cref="Changed"/> event with the given arguments.
+        /// Raises the <see cref="ValueChanged"/> event with the given arguments.
         /// </summary>
         /// <param name="args">The arguments of the event.</param>
         protected void NotifyContentChanged(MemberNodeChangeEventArgs args)
         {
-            Changed?.Invoke(this, args);
+            ValueChanged?.Invoke(this, args);
             FinalizeChange?.Invoke(this, args);
         }
 

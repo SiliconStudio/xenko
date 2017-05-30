@@ -1,10 +1,12 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
 {
-    public interface IObjectNode : IGraphNode, INotifyItemChange
+    public interface IObjectNode : IGraphNode, INotifyNodeItemChange
     {
         /// <summary>
         /// Gets the member corresponding to the given name.

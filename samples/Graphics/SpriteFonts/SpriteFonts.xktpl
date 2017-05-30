@@ -1,9 +1,9 @@
 !TemplateSample
 Id: 1EEB50EC-1AA7-4D1F-9DDD-E5E12404B001
-Name: Sprite Fonts Sample
+Name: "Sample: sprite fonts"
 Scope: Session
-Description: Creates a sample project which shows how to use the SpriteFonts in a game
-FullDescription: This sample shows you respective properties of dynamic and static SpriteFonts, how to draw, rotate, scale and align text using the SpriteBatch class.
+Description: Demonstrates how to use sprite fonts
+FullDescription: This sample demonstrates properties of dynamic and static sprite fonts, and how to draw, rotate, scale, and align text using the SpriteBatch class.
 Group: Samples/Graphics
 Icon: .xktpl/Icon.png
 DefaultOutputName: SpriteFonts

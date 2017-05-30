@@ -1,16 +1,11 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
-using System.Collections.Generic;
 using System.ComponentModel;
 
 using SiliconStudio.Assets;
-using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Graphics;
@@ -23,22 +18,25 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [DataContract("Texture")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Texture))]
-    [AssetCompiler(typeof(TextureAssetCompiler))]
     [Display(1055, "Texture")]
     [CategoryOrder(10, "Size")]
     [CategoryOrder(20, "Format")]
-    [AssetFormatVersion(XenkoConfig.PackageName, TextureAssetVersion)]
-    [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(TransformSRgbToColorSpace))]
-    [AssetUpgrader(XenkoConfig.PackageName, "0.0.1", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.4.0-beta")]
     [AssetUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.10.0-alpha01", typeof(DescriptionUpgrader))]
-    public sealed class TextureAsset : AssetWithSource, IAssetCompileTimeDependencies
+    [AssetUpgrader(XenkoConfig.PackageName, "1.10.0-alpha01", "1.11.1.2", typeof(CompressionUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.11.1.2", "2.0.0.0", typeof(EmptyAssetUpgrader))]
+#else
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
+#endif
+    public sealed class TextureAsset : AssetWithSource
     {
-        private const string TextureAssetVersion = "1.10.0-alpha01";
+        private const string CurrentVersion = "2.0.0.0";
 
         /// <summary>
         /// The default file extension used by the <see cref="TextureAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xktex;.pdxtex";
+        public const string FileExtension = ".xktex";
 
         /// <summary>
         /// Gets or sets the width.
@@ -49,7 +47,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </userdoc>
         [DataMember(20)]
         [DefaultValue(100.0f)]
-        [DataMemberRange(0, 10000, 1, 10)]
+        [DataMemberRange(0, 100, 1, 10, 1)]
         [Display(null, "Size")]
         public float Width { get; set; } = 100.0f;
 
@@ -62,7 +60,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </userdoc>
         [DataMember(30)]
         [DefaultValue(100.0f)]
-        [DataMemberRange(0, 10000, 1, 10)]
+        [DataMemberRange(0, 100, 1, 10, 1)]
         [Display(null, "Size")]
         public float Height { get; set; } = 100.0f;
 
@@ -84,16 +82,15 @@ namespace SiliconStudio.Xenko.Assets.Textures
         public bool IsSizeInPercentage { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets the texture format.
+        /// If Compressed, the final texture will be compressed to an appropriate format based on the target platform. The final texture size must be a multiple of 4.
         /// </summary>
-        /// <value>The texture format.</value>
         /// <userdoc>
-        /// The format to use for the texture. If Compressed, the final texture size must be a multiple of 4.
+        /// If Compressed, the final texture will be compressed to an appropriate format based on the target platform. The final texture size must be a multiple of 4.
         /// </userdoc>
         [DataMember(50)]
-        [DefaultValue(TextureFormat.Compressed)]
-        [Display(null, "Format")]
-        public TextureFormat Format { get; set; } = TextureFormat.Compressed;
+        [DefaultValue(true)]
+        [Display("Compress")]
+        public bool IsCompressed { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether to generate mipmaps.
@@ -119,20 +116,28 @@ namespace SiliconStudio.Xenko.Assets.Textures
         [Display(null, "Format", Expand = ExpandRule.Always)]
         public ITextureType Type { get; set; } = new ColorTextureType();
 
-        public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)
+        private class CompressionUpgrader : AssetUpgraderBase
         {
-            var gameSettings = session.CurrentPackage?.Assets.Find(GameSettingsAsset.GameSettingsLocation);
-            if (gameSettings != null)
-            {
-                yield return new AssetReference(gameSettings.Id, gameSettings.Location);
-            }
-        }
-
-        private class TransformSRgbToColorSpace : AssetUpgraderBase
-        {
+            // public TextureFormat Format { get; set; } = TextureFormat.Compressed;
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
-                // Code was removed intentionally. Backward compatibility before 1.4.0-beta is no longer supported
+                if (asset.ContainsChild("Format"))
+                {
+                    if (asset.Format == "Compressed")
+                    {
+                        asset.IsCompressed = true;
+                    }
+                    else
+                    {
+                        asset.IsCompressed = false;
+                    }
+
+                    asset.RemoveChild("Format");
+                }
+                else
+                {
+                    asset.IsCompressed = true;
+                }
             }
         }
 

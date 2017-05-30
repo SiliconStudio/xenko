@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -40,11 +40,6 @@ namespace SiliconStudio.Assets
                 SerializedVersion = new Dictionary<string, PackageVersion>(defaultPackageVersion);
             }
         }
-
-        /// <summary>
-        /// Gets the build order, currently per type (replaces BuildOrder). Later, we want per asset dependencies to improve parallelism
-        /// </summary>
-        protected internal virtual int InternalBuildOrder => 0;
 
         /// <summary>
         /// Gets or sets the unique identifier of this asset.
@@ -138,7 +133,6 @@ namespace SiliconStudio.Assets
 
             // Clone this asset without overrides (as we want all parameters to inherit from base)
             var newAsset = AssetCloner.Clone(this, AssetClonerFlags.GenerateNewIdsForIdentifiableObjects, out idRemapping);
-            newAsset.RemapIdentifiableIds(idRemapping);
 
             // Create a new identifier for this asset
             var newId = AssetId.New();
@@ -152,16 +146,6 @@ namespace SiliconStudio.Assets
             // Create the base of this asset
             newAsset.Archetype = new AssetReference(Id, baseLocation);
             return newAsset;
-        }
-
-        /// <summary>
-        /// Updates <see cref="Guid"/> properties of this asset representing references to <see cref="IIdentifiable"/> objects.
-        /// </summary>
-        /// <param name="remapping">The remapping to apply.</param>
-        [Obsolete("References by Guid will be forbidden and this method will be removed.")]
-        public virtual void RemapIdentifiableIds(Dictionary<Guid, Guid> remapping)
-        {
-            // Do nothing by default.
         }
 
         public override string ToString()

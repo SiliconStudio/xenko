@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 /// <summary>
 /// Defines the 3 transformations steps used in the pipeline.
 /// The first is performed at the end of the VS.
@@ -16,6 +16,10 @@ shader TransformationBase : ShaderBase
 
     // At the end of the geometry pipeline (to generate ShadingPosition)
     stage void PostTransformPosition() {}
+    
+    // Used in cases where a shading position needs to be calculated from a given world position
+    //  for example: in tesselation, which needs to determine the triangle size on the screen
+    stage float4 ComputeShadingPosition(float4 world) { return 0; }
 
     stage void BaseTransformVS()
     {

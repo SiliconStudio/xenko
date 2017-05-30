@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Globalization;
 using System.Collections.Generic;
@@ -134,13 +134,14 @@ namespace SiliconStudio.Shaders.Convertor
                             case "SampleGrad":
                             case "SampleLevel":
                             case "SampleCmp":
+                            case "SampleCmpLevelZero":
                                 {
                                     var sampler = this.FindGlobalVariable(methodInvocationExpression.Arguments[0]);
                                     if (sampler == null)
                                         throw new InvalidOperationException(string.Format("Unable to find sampler [{0}] as a global variable",
                                                                                           methodInvocationExpression.Arguments[0]));
 
-                                    bool needsComparison = memberRef.Member == "SampleCmp";
+                                    bool needsComparison = memberRef.Member == "SampleCmp" || memberRef.Member == "SampleCmpLevelZero";
                                     GenerateGLSampler(sampler, textureVariable, needsComparison);
                                 }
                                 break;

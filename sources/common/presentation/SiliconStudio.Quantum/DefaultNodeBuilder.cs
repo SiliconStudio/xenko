@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -109,8 +109,6 @@ namespace SiliconStudio.Quantum
                 if (content.IsReference)
                     referenceContents.Add(content);
 
-                AvailableCommands.Where(x => x.CanAttach(currentDescriptor, null)).ForEach(rootNode.AddCommand);
-
                 PushContextNode(rootNode);
             }
 
@@ -171,8 +169,6 @@ namespace SiliconStudio.Quantum
                 Visit(content.Retrieve());
             }
             PopContextNode();
-
-            AvailableCommands.Where(x => x.CanAttach(content.Descriptor, (MemberDescriptorBase)member)).ForEach(content.AddCommand);
 
             content.Seal();
         }

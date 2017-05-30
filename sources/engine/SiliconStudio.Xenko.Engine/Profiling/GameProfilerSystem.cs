@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -67,8 +69,6 @@ namespace SiliconStudio.Xenko.Profiling
 
         public GameProfilingSystem(IServiceRegistry registry) : base(registry)
         {
-            registry.AddService(typeof(GameProfilingSystem), this);
-
             DrawOrder = 0xffffff;
 
             gcProfiler = new GcProfiling();        

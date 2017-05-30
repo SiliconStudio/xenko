@@ -1,6 +1,6 @@
 !MaterialAsset
 Id: 30f8ca08-885b-417c-9d49-c0d315b2b3ec
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Attributes:
     Surface: !MaterialNormalMapFeature
@@ -11,7 +11,6 @@ Attributes:
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
             Swizzle: null
-        InvertY: false
     MicroSurface: !MaterialGlossinessMapFeature
         GlossinessMap: !ComputeTextureScalar
             Texture: 4eb3a576-7008-4698-ac61-993272362567:stone4_gls

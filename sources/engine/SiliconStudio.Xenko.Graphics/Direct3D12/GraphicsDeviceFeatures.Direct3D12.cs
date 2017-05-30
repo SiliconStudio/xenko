@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
 // Copyright (c) 2010-2012 SharpDX - Alexandre Mutel
 // 
@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using SharpDX.DXGI;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
+using SharpDX.Direct3D12;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -57,35 +58,62 @@ namespace SiliconStudio.Xenko.Graphics
             HasDoublePrecision = nativeDevice.D3D12Options.DoublePrecisionFloatShaderOps;
 
             // TODO D3D12 Confirm these are correct
+            // Some docs: https://msdn.microsoft.com/en-us/library/windows/desktop/ff476876(v=vs.85).aspx
             HasDepthAsSRV = true;
             HasDepthAsReadOnlyRT = true;
+            HasMultisampleDepthAsSRV = true;
 
             HasResourceRenaming = false;
 
             HasMultiThreadingConcurrentResources = true;
             HasDriverCommandLists = true;
 
-            // TODO D3D12
-            //// Check features for each DXGI.Format
-            //foreach (var format in Enum.GetValues(typeof(SharpDX.DXGI.Format)))
-            //{
-            //    var dxgiFormat = (SharpDX.DXGI.Format)format;
-            //    var maximumMSAA = MSAALevel.None;
-            //    var computeShaderFormatSupport = ComputeShaderFormatSupport.None;
-            //    var formatSupport = FormatSupport.None;
+            // Check features for each DXGI.Format
+            foreach (var format in Enum.GetValues(typeof(SharpDX.DXGI.Format)))
+            {
+                var dxgiFormat = (SharpDX.DXGI.Format)format;
+                var maximumMultisampleCount = MultisampleCount.None;
+                var formatSupport = FormatSupport.None;
 
-            //    if (!ObsoleteFormatToExcludes.Contains(dxgiFormat))
-            //    {
-            //        maximumMSAA = GetMaximumMSAASampleCount(nativeDevice, dxgiFormat);
-            //        if (HasComputeShaders)
-            //            computeShaderFormatSupport = nativeDevice.CheckComputeShaderFormatSupport(dxgiFormat);
+                if (!ObsoleteFormatToExcludes.Contains(dxgiFormat))
+                {
+                    SharpDX.Direct3D12.FeatureDataFormatSupport formatSupportData;
+                    formatSupportData.Format = dxgiFormat;
+                    formatSupportData.Support1 = FormatSupport1.None;
+                    formatSupportData.Support2 = FormatSupport2.None;
+                    if(nativeDevice.CheckFeatureSupport(Feature.FormatSupport, ref formatSupportData))
+                        formatSupport = (FormatSupport)formatSupportData.Support1;
+                    maximumMultisampleCount = GetMaximumMultisampleCount(nativeDevice, dxgiFormat);
+                }
 
-            //        formatSupport = (FormatSupport)nativeDevice.CheckFormatSupport(dxgiFormat);
-            //    }
+                mapFeaturesPerFormat[(int)dxgiFormat] = new FeaturesPerFormat((PixelFormat)dxgiFormat, maximumMultisampleCount, formatSupport);
+            }
+        }
 
-            //    //mapFeaturesPerFormat[(int)dxgiFormat] = new FeaturesPerFormat((PixelFormat)dxgiFormat, maximumMSAA, computeShaderFormatSupport, formatSupport);
-            //    mapFeaturesPerFormat[(int)dxgiFormat] = new FeaturesPerFormat((PixelFormat)dxgiFormat, maximumMSAA, formatSupport);
-            //}
+        /// <summary>
+        /// Gets the maximum multisample count for a particular <see cref="PixelFormat" />.
+        /// </summary>
+        /// <param name="device">The device.</param>
+        /// <param name="pixelFormat">The pixelFormat.</param>
+        /// <returns>The maximum multisample count for this pixel pixelFormat</returns>
+        private static MultisampleCount GetMaximumMultisampleCount(SharpDX.Direct3D12.Device device, SharpDX.DXGI.Format pixelFormat)
+        {
+            SharpDX.Direct3D12.FeatureDataMultisampleQualityLevels qualityLevels;
+            qualityLevels.Format = pixelFormat;
+            qualityLevels.Flags = MultisampleQualityLevelFlags.None;
+            qualityLevels.QualityLevelCount = 0;
+
+            int maxCount = 1;
+            for (int i = 8; i >= 1; i /= 2)
+            {
+                qualityLevels.SampleCount = i;
+                if (device.CheckFeatureSupport(Feature.MultisampleQualityLevels, ref qualityLevels))
+                {
+                    maxCount = i;
+                    break;
+                }
+            }
+            return (MultisampleCount)maxCount;
         }
     }
 }

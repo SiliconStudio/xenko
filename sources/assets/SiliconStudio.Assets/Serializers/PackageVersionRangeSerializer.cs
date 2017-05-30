@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Yaml;
@@ -21,12 +21,12 @@ namespace SiliconStudio.Assets.Serializers
 
         public override object ConvertFrom(ref ObjectContext context, Scalar fromScalar)
         {
-            PackageVersionRange packageVersion;
-            if (!PackageVersionRange.TryParse(fromScalar.Value, out packageVersion))
+            PackageVersionRange versionRange;
+            if (!PackageVersionRange.TryParse(fromScalar.Value, out versionRange))
             {
                 throw new YamlException(fromScalar.Start, fromScalar.End, "Invalid version dependency format. Unable to decode [{0}]".ToFormat(fromScalar.Value));
             }
-            return packageVersion;
+            return versionRange;
         }
 
         public override string ConvertTo(ref ObjectContext objectContext)

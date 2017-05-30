@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Data;
@@ -7,11 +7,15 @@ using SiliconStudio.Xenko.Data;
 namespace SiliconStudio.Xenko.Audio
 {
     [DataContract]
-    [Display("Audio Settings")]
+    [Display("Audio")]
     public class AudioEngineSettings : Configuration
     {
+        
+        /// <userdoc>
+        /// Enables HRTF audio. Note that only audio emitters with HRTF enabled produce HRTF audio
+        /// </userdoc>
         [DataMember(10)]
-        [Display("HRTF Support (If Available)")]
+        [Display("HRTF (if available)")]
         public bool HrtfSupport { get; set; }
     }
 }

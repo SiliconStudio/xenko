@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Assets
         private const string UniversalWindowsPlatformRuntimeBuild = @"MSBuild\Microsoft\WindowsXaml\v14.0\8.2\Microsoft.Windows.UI.Xaml.Common.Targets";
         private static readonly string ProgramFilesX86 = Environment.GetEnvironmentVariable(Environment.Is64BitOperatingSystem ? "ProgramFiles(x86)" : "ProgramFiles");
 
-        public static readonly PackageVersion LatestPackageVersion = new PackageVersion(XenkoVersion.CurrentAsText);
+        public static readonly PackageVersion LatestPackageVersion = new PackageVersion(XenkoVersion.NuGetVersionSimple);
 
         public static PackageDependency GetLatestPackageDependency()
         {
@@ -85,6 +85,7 @@ namespace SiliconStudio.Xenko.Assets
             {
                 Name = PlatformType.UWP.ToString(),
                 Type = PlatformType.UWP,
+                Templates = { new SolutionPlatformTemplate("ProjectExecutable.UWP/CoreWindow/ProjectExecutable.UWP.ttproj", "Core Window"), new SolutionPlatformTemplate("ProjectExecutable.UWP/Xaml/ProjectExecutable.UWP.ttproj", "Xaml") },
                 IsAvailable = IsFileInProgramFilesx86Exist(UniversalWindowsPlatformRuntimeBuild),
                 UseWithExecutables = false,
                 IncludeInSolution = false,

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
@@ -116,26 +116,9 @@ namespace SiliconStudio.Assets
         /// <exception cref="System.ArgumentNullException">assetReferenceText</exception>
         public static bool TryParse(string assetReferenceText, out AssetId id, out UFile location)
         {
-            Guid referenceId;
-            return TryParse(assetReferenceText, out id, out location, out referenceId);
-        }
-
-        /// <summary>
-        /// Tries to parse an asset reference in the format "[GUID/]GUID:Location". The first GUID is optional and is used to store the ID of the reference.
-        /// </summary>
-        /// <param name="assetReferenceText">The asset reference.</param>
-        /// <param name="id">The unique identifier of object pointed by this reference.</param>
-        /// <param name="location">The location.</param>
-        /// <param name="referenceId">The unique identifier of this reference (may be null)</param>
-        /// <returns><c>true</c> if parsing was successful, <c>false</c> otherwise.</returns>
-        /// <exception cref="System.ArgumentNullException">assetReferenceText</exception>
-        /// <remarks>The referenceId is obsolete since Xenko 1.9.</remarks>
-        public static bool TryParse(string assetReferenceText, out AssetId id, out UFile location, out Guid referenceId)
-        {
             if (assetReferenceText == null) throw new ArgumentNullException(nameof(assetReferenceText));
 
             id = AssetId.Empty;
-            referenceId = Guid.Empty;
             location = null;
             int indexFirstSlash = assetReferenceText.IndexOf('/');
             int indexBeforelocation = assetReferenceText.IndexOf(':');
@@ -146,10 +129,6 @@ namespace SiliconStudio.Assets
             int startNextGuid = 0;
             if (indexFirstSlash > 0 && indexFirstSlash < indexBeforelocation)
             {
-                if (!Guid.TryParse(assetReferenceText.Substring(0, indexFirstSlash), out referenceId))
-                {
-                    return false;
-                }
                 startNextGuid = indexFirstSlash + 1;
             }
 
@@ -169,14 +148,14 @@ namespace SiliconStudio.Assets
         /// <param name="assetReferenceText">The asset reference.</param>
         /// <param name="assetReference">The reference.</param>
         /// <returns><c>true</c> if parsing was successful, <c>false</c> otherwise.</returns>
-        public static bool TryParse(string assetReferenceText, out AssetReference assetReference, out Guid referenceId)
+        public static bool TryParse(string assetReferenceText, out AssetReference assetReference)
         {
             if (assetReferenceText == null) throw new ArgumentNullException(nameof(assetReferenceText));
 
             assetReference = null;
             AssetId assetId;
             UFile location;
-            if (!TryParse(assetReferenceText, out assetId, out location, out referenceId))
+            if (!TryParse(assetReferenceText, out assetId, out location))
             {
                 return false;
             }

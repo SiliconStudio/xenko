@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 
 using System;
@@ -702,7 +702,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        public void CopyMultiSample(Texture sourceMsaaTexture, int sourceSubResource, Texture destTexture, int destSubResource, PixelFormat format = PixelFormat.None)
+        public void CopyMultisample(Texture sourceMultisampleTexture, int sourceSubResource, Texture destTexture, int destSubResource, PixelFormat format = PixelFormat.None)
         {
             Internal.Refactor.ThrowNotImplementedException();
         }
@@ -894,7 +894,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
         }
 
-        public void BeginProfile(Color profileColor, string name)
+        public void BeginProfile(Color4 profileColor, string name)
         {
 #if !SILICONSTUDIO_PLATFORM_IOS
             if (GraphicsDevice.ProfileEnabled)
@@ -1210,7 +1210,9 @@ namespace SiliconStudio.Xenko.Graphics
                     }
 
                     var vertexAttribMask = 1U << vertexAttrib.AttributeIndex;
-                    if (vertexBuffer == null)
+
+                    // A stride of zero causes automatic stride calculation. To not use the attribute, unbind it in that case
+                    if (vertexBuffer == null || vertexBufferView.Stride == 0)
                     {
                         // No VB bound, turn off this attribute
                         if ((enabledVertexAttribArrays & vertexAttribMask) != 0)

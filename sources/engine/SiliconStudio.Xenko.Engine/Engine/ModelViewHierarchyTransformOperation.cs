@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 
 namespace SiliconStudio.Xenko.Engine
@@ -16,8 +18,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <inheritdoc/>
         public override void Process(TransformComponent transformComponent)
         {
-            // Waiting for roslyn ref locals to avoid having to pass world matrix
-            modelComponent.Update(transformComponent, ref transformComponent.WorldMatrix);
+            modelComponent.Update(transformComponent);
         }
     }
 }

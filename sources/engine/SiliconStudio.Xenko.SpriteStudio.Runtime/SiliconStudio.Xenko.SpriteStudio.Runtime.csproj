@@ -14,7 +14,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--serialization --parameter-key</SiliconStudioAssemblyProcessorOptions>
-    <XenkoBuildTags>*</XenkoBuildTags>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
   </PropertyGroup>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
@@ -25,6 +25,9 @@
     </When>
   </Choose>
   <ItemGroup>
+    <Compile Include="..\..\common\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderSpriteStudio.cs" />

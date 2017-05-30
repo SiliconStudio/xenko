@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
     <SiliconStudioProjectType>Cpp</SiliconStudioProjectType>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
     <SiliconStudioAssemblyProcessorOptions>
     </SiliconStudioAssemblyProcessorOptions>
   </PropertyGroup>
@@ -38,20 +38,19 @@
     <ProjectGuid>{43A6E62E-1B1C-4630-ABB8-C3F716004645}</ProjectGuid>
     <Keyword>ManagedCProj</Keyword>
     <RootNamespace>SiliconStudio.Xenko.Importer.Common</RootNamespace>
-    <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath11)</VCTargetsPath>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CLRSupport>true</CLRSupport>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CLRSupport>true</CLRSupport>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">

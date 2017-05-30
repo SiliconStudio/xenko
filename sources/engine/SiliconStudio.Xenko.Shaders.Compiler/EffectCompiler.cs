@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -170,7 +170,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             var shaderId = ObjectId.FromBytes(Encoding.UTF8.GetBytes(shaderSourceText));
 
-            var logDir = Path.Combine(Directory.GetCurrentDirectory(), "log");
+            var logDir = Path.Combine(PlatformFolders.ApplicationBinaryDirectory, "log");
             if (!Directory.Exists(logDir))
             {
                 Directory.CreateDirectory(logDir);

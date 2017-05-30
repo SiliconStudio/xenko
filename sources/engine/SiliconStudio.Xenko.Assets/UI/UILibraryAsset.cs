@@ -1,5 +1,5 @@
-// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -16,14 +16,18 @@ namespace SiliconStudio.Xenko.Assets.UI
     [DataContract("UILibraryAsset")]
     [AssetDescription(FileExtension, AllowArchetype = false)]
     [AssetContentType(typeof(UILibrary))]
-    [AssetCompiler(typeof(UILibraryAssetCompiler))]
-    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.9.0-beta01")]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta01", "1.10.0-beta01", typeof(FixPartReferenceUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.10.0-beta01", "2.0.0.0", typeof(EmptyAssetUpgrader))]
+#else
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
+#endif
+    [AssetUpgrader(XenkoConfig.PackageName, "2.0.0.0", "2.1.0.1", typeof(RootPartIdsToRootPartsUpgrader))]
     [Display("UI Library")]
-    [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.9.0-beta01", typeof(BasePartsRemovalComponentUpgrader))]    
-    [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta01", "1.10.0-beta01", typeof(FixPartReferenceUpgrader))]    
     public class UILibraryAsset : UIAssetBase
     {
-        private const string CurrentVersion = "1.10.0-beta01";
+        private const string CurrentVersion = "2.1.0.1";
 
         /// <summary>
         /// The default file extension used by the <see cref="UILibraryAsset"/>.
@@ -69,13 +73,13 @@ namespace SiliconStudio.Xenko.Assets.UI
             var instance = (UILibraryAsset)CreateDerivedAsset(targetLocation, out idRemapping);
 
             var rootElementId = idRemapping[elementId];
-            if (!instance.Hierarchy.RootPartIds.Contains(rootElementId))
+            if (instance.Hierarchy.RootParts.All(x => x.Id != rootElementId))
                 throw new ArgumentException(@"The given id cannot be found in the root parts of this library.", nameof(elementId));
 
-            instanceId = instance.Hierarchy.Parts.FirstOrDefault()?.Base?.InstanceId ?? Guid.NewGuid();
+            instanceId = instance.Hierarchy.Parts.Values.FirstOrDefault()?.Base?.InstanceId ?? Guid.NewGuid();
 
             var result = new AssetCompositeHierarchyData<UIElementDesign, UIElement>();
-            result.RootPartIds.Add(rootElementId);
+            result.RootParts.Add(instance.Hierarchy.Parts[rootElementId].UIElement);
             result.Parts.Add(instance.Hierarchy.Parts[rootElementId]);
             foreach (var element in this.EnumerateChildPartDesigns(instance.Hierarchy.Parts[rootElementId], instance.Hierarchy, true))
             {

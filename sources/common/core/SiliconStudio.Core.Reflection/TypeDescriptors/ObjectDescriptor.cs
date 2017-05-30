@@ -1,9 +1,12 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Core.Reflection
@@ -27,7 +30,7 @@ namespace SiliconStudio.Core.Reflection
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectDescriptor" /> class.
         /// </summary>
-        public ObjectDescriptor(ITypeDescriptorFactory factory, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
+        public ObjectDescriptor(ITypeDescriptorFactory factory, [NotNull] Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
         {
             if (factory == null) throw new ArgumentNullException(nameof(factory));
             if (type == null) throw new ArgumentNullException(nameof(type));
@@ -68,6 +71,7 @@ namespace SiliconStudio.Core.Reflection
 
         protected IAttributeRegistry AttributeRegistry => factory.AttributeRegistry;
 
+        [NotNull]
         public Type Type { get; }
 
         public IEnumerable<IMemberDescriptor> Members => members;
@@ -324,8 +328,16 @@ namespace SiliconStudio.Core.Reflection
             {
                 object defaultValue = defaultValueAttribute.Value;
                 Type defaultType = defaultValue?.GetType();
-                if (defaultType.IsNumeric() && defaultType != memberType)
-                    defaultValue = memberType.CastToNumericType(defaultValue);
+                if (defaultType != null && defaultType.IsNumeric() && defaultType != memberType)
+                {
+                    try
+                    {
+                        defaultValue = Convert.ChangeType(defaultValue, memberType);
+                    }
+                    catch (InvalidCastException)
+                    {
+                    }
+                }
                 member.ShouldSerialize = obj => !Equals(defaultValue, member.Get(obj));
             }
 

@@ -13,7 +13,8 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TargetFrameworkProfile></TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
@@ -113,8 +114,10 @@
     <Compile Include="Core\InputManagerExtensions.cs" />
     <Compile Include="Core\Utils.cs" />
     <Compile Include="Gameplay\CrateScript.cs" />
+    <Compile Include="Gameplay\EnableDynamicNavigation.cs" />
     <Compile Include="Gameplay\LootCoinScript.cs" />
     <Compile Include="Gameplay\MusicScript.cs" />
+    <Compile Include="Gameplay\SceneStreaming.cs" />
     <Compile Include="Gameplay\Trigger.cs" />
     <Compile Include="Player\AnimationController.cs" />
     <Compile Include="Player\PlayerController.cs" />

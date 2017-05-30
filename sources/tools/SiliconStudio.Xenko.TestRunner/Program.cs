@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.TestRunner
                 var parameters = new StringBuilder();
                 parameters.Append("-s "); parameters.Append(device.Serial);
                 parameters.Append(@" shell am start -a android.intent.action.MAIN -n " + packageName + "/nunitlite.tests.MainActivity");
-                AddAndroidParameter(parameters, Graphics.Regression.TestRunner.XenkoVersion, XenkoVersion.CurrentAsText);
+                AddAndroidParameter(parameters, Graphics.Regression.TestRunner.XenkoVersion, XenkoVersion.NuGetVersion);
                 AddAndroidParameter(parameters, Graphics.Regression.TestRunner.XenkoBuildNumber, buildNumber.ToString());
                 if (!IsNullOrEmpty(branchName))
                     AddAndroidParameter(parameters, Graphics.Regression.TestRunner.XenkoBranchName, branchName);

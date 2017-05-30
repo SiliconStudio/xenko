@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
 using System;
 using System.Collections.Generic;
@@ -304,8 +304,8 @@ namespace SiliconStudio.Xenko.Graphics
             nativeDescription.DepthBiasClamp = description.DepthBiasClamp;
             nativeDescription.IsDepthClipEnabled = description.DepthClipEnable;
             //nativeDescription.IsScissorEnabled = description.ScissorTestEnable;
-            nativeDescription.IsMultisampleEnabled = description.MultiSampleLevel >= MSAALevel.None;
-            nativeDescription.IsAntialiasedLineEnabled = description.MultiSampleAntiAliasLine;
+            nativeDescription.IsMultisampleEnabled = description.MultisampleCount >= MultisampleCount.None;
+            nativeDescription.IsAntialiasedLineEnabled = description.MultisampleAntiAliasLine;
 
             nativeDescription.ConservativeRaster = ConservativeRasterizationMode.Off;
             nativeDescription.ForcedSampleCount = 0;

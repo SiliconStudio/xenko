@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -26,8 +28,6 @@ namespace SiliconStudio.Xenko.Rendering
         private FastList<ParameterKeyInfo> parameterKeyInfos = new FastList<ParameterKeyInfo>(4);
 
         // Constants and resources
-        // TODO: Currently stored in unmanaged array so we can get a pointer that can be updated from outside
-        //   However, maybe ref locals would make this not needed anymore?
         [DataMemberIgnore]
         public byte[] DataValues = EmptyData;
         [DataMemberIgnore]

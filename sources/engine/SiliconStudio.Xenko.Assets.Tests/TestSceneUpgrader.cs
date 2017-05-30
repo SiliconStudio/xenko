@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.IO;
@@ -25,7 +25,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
         {
             var logger = new LoggerResult();
 
-            var files = Directory.EnumerateFiles(@"..\..\samples", "*.xkscene", SearchOption.AllDirectories);
+            var samplesPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\..\samples");
+            var files = Directory.EnumerateFiles(samplesPath, "*.xkscene", SearchOption.AllDirectories);
 
             foreach (var sceneFile in files)
             {
@@ -33,7 +34,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 logger.Clear();
                 Console.WriteLine($"Checking file {sceneFile}");
 
-                var file = new PackageLoadingAssetFile(sceneFile, null);
+                var file = new PackageLoadingAssetFile(sceneFile, Path.GetDirectoryName(sceneFile));
 
                 var context = new AssetMigrationContext(null, file.ToReference(), file.FilePath.ToWindowsPath(), logger);
                 var needMigration = AssetMigration.MigrateAssetIfNeeded(context, file, "Xenko");

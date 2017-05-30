@@ -1,4 +1,6 @@
-﻿using SiliconStudio.Core;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Assets
@@ -10,7 +12,10 @@ namespace SiliconStudio.Assets
     {
         [CanBeNull]
         BasePart Base { get; set; }
+
+        IIdentifiable Part { get; }
     }
+
     /// <summary>
     /// An interface representing a design-time part in an <see cref="AssetComposite"/>.
     /// </summary>
@@ -21,6 +26,6 @@ namespace SiliconStudio.Assets
         /// The actual part.
         /// </summary>
         [NotNull]
-        TAssetPart Part { get; set; }
+        new TAssetPart Part { get; set; }
     }
 }

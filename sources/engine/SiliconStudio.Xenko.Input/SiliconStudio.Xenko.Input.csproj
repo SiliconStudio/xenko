@@ -2,6 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+    <SiliconStudioXenkoGraphicsApiDependent>true</SiliconStudioXenkoGraphicsApiDependent>
   </PropertyGroup>
   <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
@@ -15,7 +16,7 @@
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer</SiliconStudioAssemblyProcessorOptions>
     <XenkoProjectPlatformDependentWindows>true</XenkoProjectPlatformDependentWindows>
     <FileAlignment>512</FileAlignment>
-    <XenkoBuildTags>*</XenkoBuildTags>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
   </PropertyGroup>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
@@ -31,31 +32,31 @@
       <ItemGroup>
         <Reference Include="SharpDX">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.dll</HintPath>
         </Reference>
         <Reference Include="SharpDX.RawInput">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.RawInput.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.RawInput.dll</HintPath>
         </Reference>
         <Reference Include="SharpDX.DirectInput">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.DirectInput.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.DirectInput.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
   </Choose>
   <Choose>
-    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
+    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'UWP' ">
       <ItemGroup>
         <Reference Include="SharpDX.XInput">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXInputSdkBinDir)\SharpDX.XInput.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.XInput.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
   </Choose>
   <ItemGroup>
-    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+    <Compile Include="..\..\common\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AccelerometerSensor.cs" />

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.IO;
 using System.Reflection;
@@ -9,7 +9,7 @@ namespace SiliconStudio.Assets.Tests
 {
     public class TestBase
     {
-        public readonly string DirectoryTestBase = Path.Combine(AssemblyDirectory, @"data\SiliconStudio.Assets.Tests\");
+        public readonly string DirectoryTestBase = Path.Combine(AssemblyDirectory, @"data\");
 
         public static void GenerateAndCompare(string title, string outputFilePath, string referenceFilePath, Asset asset)
         {

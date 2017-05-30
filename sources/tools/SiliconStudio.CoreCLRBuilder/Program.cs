@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2015-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 // CoreCLRBuilder is a multi-purpose tool for building and verifying a set of DLLs that will be
 // used by CoreCLR. For this purpose, it uses the reference assemblies generated when building
@@ -362,7 +362,7 @@ namespace SiliconStudio.CoreCLRBuilder
         {
             foreach (var file in dir.EnumerateFiles())
             {
-                if (file.Extension.ToLower() == ".dll")
+                if (file.Extension.ToLowerInvariant() == ".dll")
                 {
                     yield return file;
                 }

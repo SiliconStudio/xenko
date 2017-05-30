@@ -1,12 +1,10 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.ComponentModel;
 using SiliconStudio.Assets;
-using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont
 {
@@ -16,21 +14,23 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [DataContract("SpriteFont")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Graphics.SpriteFont))]
-    [AssetCompiler(typeof(SpriteFontAssetCompiler))]
-    [AssetFormatVersion(XenkoConfig.PackageName, "1.7.0-beta04")]
-    [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.5.0-alpha09", typeof(PremultiplyUpgrader))]
-    [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha09", "1.7.0-beta02", typeof(FontTypeUpgrader))]
-    [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta02", "1.7.0-beta03", typeof(FontClassUpgrader))]
-    [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta03", "1.7.0-beta04", typeof(FontSizeUpgrader))]
     [Display(1400, "Sprite Font")]
     [CategoryOrder(10, "Font")]
     [CategoryOrder(30, "Rendering")]
-    public partial class SpriteFontAsset : Asset
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.7.0-beta04")]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta04", "2.0.0.0", typeof(EmptyAssetUpgrader))]
+#else
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
+#endif
+    public class SpriteFontAsset : Asset
     {
+        private const string CurrentVersion = "2.0.0.0";
+
         /// <summary>
         /// The default file extension used by the <see cref="SpriteFontAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xkfnt;.pdxfnt";
+        public const string FileExtension = ".xkfnt";
 
         [NotNull]
         [DataMember(10)]
@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </userdoc>
         [DataMember(130)]
         [DefaultValue(0.0f)]
-        [DataMemberRange(-500, 500, 1, 10)]
+        [DataMemberRange(-500, 500, 1, 10, 2)]
         [Display(null, "Rendering")]
         public float Spacing { get; set; }
 
@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </userdoc>
         [DataMember(140)]
         [DefaultValue(0.0f)]
-        [DataMemberRange(-500, 500, 1, 10)]
+        [DataMemberRange(-500, 500, 1, 10, 2)]
         [Display(null, "Rendering")]
         public float LineSpacing { get; set; }
 
@@ -95,7 +95,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </userdoc>
         [DataMember(150)]
         [DefaultValue(1.0f)]
-        [DataMemberRange(-500, 500, 1, 10)]
+        [DataMemberRange(-500, 500, 1, 10, 2)]
         [Display(null, "Rendering")]
         public float LineGapFactor { get; set; } = 1.0f;
 
@@ -114,25 +114,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </userdoc>
         [DataMember(160)]
         [DefaultValue(1.0f)]
-        [DataMemberRange(-500, 500, 1, 10)]
+        [DataMemberRange(-500, 500, 1, 10, 2)]
         [Display(null, "Rendering")]
         public float LineGapBaseLineFactor { get; set; } = 1.0f;
-
-        class PremultiplyUpgrader : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                if (asset.NoPremultiply != null)
-                {
-                    asset.IsPremultiplied = !(bool)asset.NoPremultiply;
-                    asset.NoPremultiply = DynamicYamlEmpty.Default;
-                }
-                if (asset.IsNotPremultiply != null)
-                {
-                    asset.IsPremultiplied = !(bool)asset.IsNotPremultiply;
-                    asset.IsNotPremultiply = DynamicYamlEmpty.Default;
-                }
-            }
-        }
     }
 }

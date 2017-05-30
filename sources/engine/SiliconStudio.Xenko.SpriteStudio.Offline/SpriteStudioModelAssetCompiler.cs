@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,9 +19,10 @@ using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
+    [AssetCompiler(typeof(SpriteStudioModelAsset), typeof(AssetCompilationContext))]
     internal class SpriteStudioModelAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (SpriteStudioModelAsset)assetItem.Asset;
             var gameSettingsAsset = context.GetGameSettingsAsset();
@@ -37,7 +40,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                 var textureAsset = new TextureAsset
                 {
                     Id = AssetId.Empty, // CAUTION: It is important to use an empty GUID here, as we don't want the command to be rebuilt (by default, a new asset is creating a new guid)
-                    Format = TextureFormat.Color32Bits,
+                    IsCompressed = false,
                     GenerateMipmaps = true,
                     Type = new ColorTextureType
                     {
@@ -47,12 +50,9 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                     }
                 };
 
-                result.BuildSteps.Add(
-                    new TextureAssetCompiler.TextureConvertCommand(
-                        targetUrlInStorage + texIndex,
-                        new TextureConvertParameters(texture, textureAsset, context.Platform,
-                            context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile,
-                            gameSettingsAsset.GetOrCreate<TextureSettings>().TextureQuality, colorSpace)));
+                var textureConvertParameters = new TextureConvertParameters(texture, textureAsset, context.Platform, context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.GetOrCreate<TextureSettings>().TextureQuality, colorSpace);
+                var textureConvertCommand = new TextureAssetCompiler.TextureConvertCommand(targetUrlInStorage + texIndex, textureConvertParameters, assetItem.Package);
+                result.BuildSteps.Add(textureConvertCommand);
 
                 asset.BuildTextures.Add(targetUrlInStorage + texIndex);
 
@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
 
             result.BuildSteps.Add(new AssetBuildStep(assetItem)
             {
-                new SpriteStudioModelAssetCommand(targetUrlInStorage, asset, colorSpace)
+                new SpriteStudioModelAssetCommand(targetUrlInStorage, asset, colorSpace, assetItem.Package)
             });
         }
 
@@ -72,8 +72,8 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
         {
             private readonly ColorSpace colorSpace;
 
-            public SpriteStudioModelAssetCommand(string url, SpriteStudioModelAsset asset, ColorSpace colorSpace)
-                : base(url, asset)
+            public SpriteStudioModelAssetCommand(string url, SpriteStudioModelAsset asset, ColorSpace colorSpace, Package package)
+                : base(url, asset, package)
             {
                 this.colorSpace = colorSpace;
             }

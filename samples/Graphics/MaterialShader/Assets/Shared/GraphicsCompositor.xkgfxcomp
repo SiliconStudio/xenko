@@ -58,12 +58,6 @@ RenderFeatures:
                 OpaqueRenderStage: ref!! 50671147-a5c1-49d4-b4ad-3625f71439b3
                 TransparentRenderStage: ref!! 0fa30591-02ee-486d-9347-2b6aee83d035
                 EffectName: Test
-    e9267aaffdfeb308d632ae267eb49b08: !SiliconStudio.Xenko.Rendering.Skyboxes.SkyboxRenderFeature,SiliconStudio.Xenko.Engine
-        RenderStageSelectors:
-            bfbf0c6faecbfc15c4ace31f498fa051: !SiliconStudio.Xenko.Rendering.SimpleGroupToRenderStageSelector,SiliconStudio.Xenko.Engine
-                RenderStage: ref!! 50671147-a5c1-49d4-b4ad-3625f71439b3
-                EffectName: SkyboxEffect
-        PipelineProcessors: {}
     60780391e205770513fdd53e07279a01: !SiliconStudio.Xenko.Rendering.Background.BackgroundRenderFeature,SiliconStudio.Xenko.Engine
         RenderStageSelectors:
             11c8b8ccb522e3cd1dd6688016062a6d: !SiliconStudio.Xenko.Rendering.SimpleGroupToRenderStageSelector,SiliconStudio.Xenko.Engine
@@ -99,7 +93,9 @@ SharedRenderers:
             Enabled: false
             RequiredApis: {}
             ResolutionScale: 1.0
+            Overlays: {}
         MSAALevel: None
+        MSAAResolver: {}
 Game: !SiliconStudio.Xenko.Rendering.Compositing.SceneCameraRenderer,SiliconStudio.Xenko.Engine
     Id: 76fe87cf-f574-4ad6-85b8-e9a9586be0e2
     Camera: {Index: 0}

@@ -3,7 +3,7 @@
 <Project ToolsVersion="14.0" DefaultTarget="Help" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
 		<XenkoRoot>$(MSBuildThisFileDirectory)..\</XenkoRoot>
-		<XenkoRootBin>$(XenkoRoot)Bin\Windows-Direct3D11\</XenkoRootBin>
+		<XenkoRootBin>$(XenkoRoot)Bin\Windows\</XenkoRootBin>
 		<XenkoPlatform></XenkoPlatform>
 		<XenkoPlatform Condition="'$(PlatformToBuild)' == 'iOS'">Platform=iPhone</XenkoPlatform>
 		<XenkoPlatform Condition="'$(PlatformToBuild)' == 'Android'">Platform=Android</XenkoPlatform>
@@ -22,12 +22,10 @@
 		<Exec Command="$(XenkoRootBin)SiliconStudio.Xenko.SamplesBootstrapper.exe AnimatedModel &quot;99371864-55BD-4C78-B25C-42471F977540&quot;" />
 		<Exec Command="$(XenkoRootBin)SiliconStudio.Xenko.SamplesBootstrapper.exe CustomEffect &quot;16476A4C-C131-4F48-865A-288EC7D5445F&quot;" />
 		<Exec Command="$(XenkoRootBin)SiliconStudio.Xenko.SamplesBootstrapper.exe MaterialShader &quot;f80f8a38-c05a-44bd-ab6d-d2a4f1cf4c58&quot;" />
-		<Exec Command="$(XenkoRootBin)SiliconStudio.Xenko.SamplesBootstrapper.exe SimpleDynamicTexture &quot;235BEE35-EE27-4578-8CB1-B8FBA86E9C9A&quot;" />
 		<Exec Command="$(XenkoRootBin)SiliconStudio.Xenko.SamplesBootstrapper.exe SpriteFonts &quot;1EEB50EC-1AA7-4D1F-9DDD-E5E12404B001&quot;" />
 		<Exec Command="$(XenkoRootBin)SiliconStudio.Xenko.SamplesBootstrapper.exe SpriteStudioDemo &quot;6BE30E8D-9346-4130-87BE-12BF9CC362DE&quot;" />
 		<Exec Command="$(XenkoRootBin)SiliconStudio.Xenko.SamplesBootstrapper.exe GravitySensor &quot;7174D040-C0FB-4D5C-8170-3411AD8AA4C2&quot;" />
 		<Exec Command="$(XenkoRootBin)SiliconStudio.Xenko.SamplesBootstrapper.exe TouchInputs &quot;662A15A4-92C1-4C43-BE06-0303C9E2FF50&quot;" />
-		<Exec Command="$(XenkoRootBin)SiliconStudio.Xenko.SamplesBootstrapper.exe NativeLinking &quot;9d082fab-bcde-45de-ae80-f84b89a26220&quot;" />
 		<Exec Command="$(XenkoRootBin)SiliconStudio.Xenko.SamplesBootstrapper.exe PhysicsSample &quot;d20d150b-d3cb-454e-8c11-620b4c9d393f&quot;" />
 		<Exec Command="$(XenkoRootBin)SiliconStudio.Xenko.SamplesBootstrapper.exe GameMenu &quot;7ac2c705-6240-4ddc-af63-fc438d10f4de&quot;" />
 		<Exec Command="$(XenkoRootBin)SiliconStudio.Xenko.SamplesBootstrapper.exe ParticlesSample &quot;35C3FB4D-2A6E-40EB-825E-D4E5670FEE78&quot;" />
@@ -43,12 +41,10 @@
 		<MSBuild Projects="$(XenkoRoot)samplesGenerated\AnimatedModel\AnimatedModel.$(PlatformToBuild)\AnimatedModel.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
 		<MSBuild Projects="$(XenkoRoot)samplesGenerated\CustomEffect\CustomEffect.$(PlatformToBuild)\CustomEffect.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
 		<MSBuild Projects="$(XenkoRoot)samplesGenerated\MaterialShader\MaterialShader.$(PlatformToBuild)\MaterialShader.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
-		<MSBuild Projects="$(XenkoRoot)samplesGenerated\SimpleDynamicTexture\SimpleDynamicTexture.$(PlatformToBuild)\SimpleDynamicTexture.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
 		<MSBuild Projects="$(XenkoRoot)samplesGenerated\SpriteFonts\SpriteFonts.$(PlatformToBuild)\SpriteFonts.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
 		<MSBuild Projects="$(XenkoRoot)samplesGenerated\SpriteStudioDemo\SpriteStudioDemo.$(PlatformToBuild)\SpriteStudioDemo.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
 		<MSBuild Projects="$(XenkoRoot)samplesGenerated\GravitySensor\GravitySensor.$(PlatformToBuild)\GravitySensor.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
 		<MSBuild Projects="$(XenkoRoot)samplesGenerated\TouchInputs\TouchInputs.$(PlatformToBuild)\TouchInputs.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
-		<MSBuild Projects="$(XenkoRoot)samplesGenerated\NativeLinking\NativeLinking.$(PlatformToBuild)\NativeLinking.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
 		<MSBuild Projects="$(XenkoRoot)samplesGenerated\PhysicsSample\PhysicsSample.$(PlatformToBuild)\PhysicsSample.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
 		<MSBuild Projects="$(XenkoRoot)samplesGenerated\GameMenu\GameMenu.$(PlatformToBuild)\GameMenu.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />
 		<MSBuild Projects="$(XenkoRoot)samplesGenerated\ParticlesSample\ParticlesSample.$(PlatformToBuild)\ParticlesSample.$(PlatformToBuild).csproj" Properties="SiliconStudioAutoTesting=true;$(XenkoPlatform);Configuration=$(XenkoBuildConfig);$(XenkoBuildOptions)" Targets="Rebuild;$(XenkoBuildTargets)" />

@@ -1,25 +1,17 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Host.Mef;
-using Microsoft.CodeAnalysis.MSBuild;
 using SiliconStudio.Assets;
+using SiliconStudio.Core;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
@@ -28,296 +20,33 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    [PackageUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.11.1.0")]
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
+    [PackageUpgrader(XenkoConfig.PackageName, "1.10.0-alpha01", CurrentVersion)]
+#else
+    [PackageUpgrader(XenkoConfig.PackageName, "2.0.0.0", CurrentVersion)]
+#endif
     public class XenkoPackageUpgrader : PackageUpgrader
     {
-        public static readonly string DefaultGraphicsCompositorLevel9Url = "Compositing/DefaultGraphicsCompositorLevel9";
-        public static readonly string DefaultGraphicsCompositorLevel10Url = "Compositing/DefaultGraphicsCompositorLevel10";
+        public const string CurrentVersion = "2.0.0.2";
+
+        public static readonly string DefaultGraphicsCompositorLevel9Url = "DefaultGraphicsCompositorLevel9";
+        public static readonly string DefaultGraphicsCompositorLevel10Url = "DefaultGraphicsCompositorLevel10";
+
+        public static readonly Guid DefaultGraphicsCompositorLevel9CameraSlot = new Guid("bbfef2cb-8c63-4cab-9caf-6ae48f44a8ba");
+        public static readonly Guid DefaultGraphicsCompositorLevel10CameraSlot = new Guid("d0a6bf72-b3cd-4bd4-94ca-69952999d537");
 
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
         {
-            if (dependency.Version.MinVersion < new PackageVersion("1.5.0-alpha01"))
-            {
-                RunAssetUpgradersUntilVersion(log, dependentPackage, XenkoConfig.PackageName, assetFiles, PackageVersion.Parse("1.5.0-alpha01"));
-            }
-
-            if (dependency.Version.MinVersion < new PackageVersion("1.5.0-alpha02"))
-            {
-                // Ideally, this should be part of asset upgrader but we can't upgrade multiple assets at once yet
-
-                var modelAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkm3d").Select(x => x.AsYamlAsset()).ToArray();
-                var animAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkanim").Select(x => x.AsYamlAsset()).ToArray();
-                var sceneAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkscene").Select(x => x.AsYamlAsset()).ToArray();
-
-                // Select models with at least two nodes
-                var modelAssetsWithSekeleton = modelAssets
-                    .Where(model => ((IEnumerable)model.DynamicRootNode.Nodes).Cast<object>().Count() > 1).ToArray();
-
-                var animToModelMapping = new Dictionary<PackageLoadingAssetFile.YamlAsset, PackageLoadingAssetFile.YamlAsset>();
-
-                // Find associations in scene
-                foreach (var sceneAsset in sceneAssets)
-                {
-                    var hierarchy = sceneAsset.DynamicRootNode.Hierarchy;
-                    foreach (dynamic entity in hierarchy.Entities)
-                    {
-                        var components = entity.Entity.Components;
-                        var animationComponent = components["AnimationComponent.Key"];
-                        var model = components["ModelComponent.Key"]?.Model;
-                        if (animationComponent != null && model != null)
-                        {
-                            var modelReference = DynamicYamlExtensions.ConvertTo<AssetReference>(model);
-                            var modelAsset = modelAssetsWithSekeleton.FirstOrDefault(x => x.Asset.AssetLocation == modelReference.Location);
-
-                            foreach (var animation in animationComponent.Animations)
-                            {
-                                var animationReference = DynamicYamlExtensions.ConvertTo<AssetReference>(animation.Value);
-                                var animationAsset = animAssets.FirstOrDefault(x => x.Asset.AssetLocation == animationReference.Location);
-
-                                if (modelAsset != null && animationAsset != null)
-                                {
-                                    animToModelMapping[animationAsset] = modelAsset;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Find associations when sharing same source file
-                foreach (var animationAsset in animAssets)
-                {
-                    // Comparing absolute path of assets
-                    var modelAsset = modelAssetsWithSekeleton.FirstOrDefault(
-                        x => UPath.Combine(animationAsset.Asset.AssetLocation.GetParent(), new UFile((string)animationAsset.DynamicRootNode.Source))
-                             == UPath.Combine(x.Asset.AssetLocation.GetParent(), new UFile((string)x.DynamicRootNode.Source)));
-                    if (modelAsset != null)
-                    {
-                        animToModelMapping[animationAsset] = modelAsset;
-                    }
-                }
-
-                var modelToSkeletonMapping = new Dictionary<PackageLoadingAssetFile.YamlAsset, PackageLoadingAssetFile.YamlAsset>();
-
-                // For each model asset, create skeleton assets
-                foreach (var modelAsset in modelAssetsWithSekeleton)
-                {
-                    var skeletonAsset = new PackageLoadingAssetFile(modelAsset.Asset.FilePath.GetFullPathWithoutExtension() + " Skeleton.xkskel", modelAsset.Asset.SourceFolder)
-                    {
-                        AssetContent = System.Text.Encoding.UTF8.GetBytes("!Skeleton\r\nId: " + Guid.NewGuid())
-                    };
-
-                    using (var skeletonAssetYaml = skeletonAsset.AsYamlAsset())
-                    {
-                        // Set source
-                        skeletonAssetYaml.DynamicRootNode.Source = modelAsset.DynamicRootNode.Source;
-                        skeletonAssetYaml.DynamicRootNode.SourceHash = modelAsset.DynamicRootNode.SourceHash;
-
-                        // To be on the safe side, mark everything as preserved
-                        var nodes = modelAsset.DynamicRootNode.Nodes;
-                        foreach (var node in nodes)
-                        {
-                            node.Preserve = true;
-                        }
-
-                        skeletonAssetYaml.DynamicRootNode.Nodes = nodes;
-                        skeletonAssetYaml.DynamicRootNode.ScaleImport = modelAsset.DynamicRootNode.ScaleImport;
-
-                        // Update model to point to this skeleton
-                        modelAsset.DynamicRootNode.Skeleton = new AssetReference(AssetId.Parse((string)skeletonAssetYaml.DynamicRootNode.Id), skeletonAsset.AssetLocation.MakeRelative(modelAsset.Asset.AssetLocation.GetParent()));
-                        modelToSkeletonMapping.Add(modelAsset, skeletonAssetYaml);
-                    }
-
-                    assetFiles.Add(skeletonAsset);
-                }
-
-                // Update animation to point to skeleton, and set preview default model
-                foreach (var animToModelEntry in animToModelMapping)
-                {
-                    var animationAsset = animToModelEntry.Key;
-                    var modelAsset = animToModelEntry.Value;
-
-                    var skeletonAsset = modelToSkeletonMapping[modelAsset];
-                    animationAsset.DynamicRootNode.Skeleton = new AssetReference(AssetId.Parse((string)skeletonAsset.DynamicRootNode.Id), skeletonAsset.Asset.AssetLocation.MakeRelative(animationAsset.Asset.AssetLocation.GetParent()));
-                    animationAsset.DynamicRootNode.PreviewModel = new AssetReference(AssetId.Parse((string)modelAsset.DynamicRootNode.Id), modelAsset.Asset.AssetLocation.MakeRelative(animationAsset.Asset.AssetLocation.GetParent()));
-                }
-
-                // Remove Nodes from models
-                foreach (var modelAsset in modelAssets)
-                {
-                    modelAsset.DynamicRootNode.Nodes = DynamicYamlEmpty.Default;
-                    modelAsset.DynamicRootNode["~Base"].Asset.Nodes = DynamicYamlEmpty.Default;
-                }
-
-                // Save back
-                foreach (var modelAsset in modelAssets)
-                    modelAsset.Dispose();
-                foreach (var animAsset in animAssets)
-                    animAsset.Dispose();
-            }
-
-            if (dependency.Version.MinVersion < new PackageVersion("1.6.0-beta"))
-            {
-                // Delete EffectLogAsset
-                foreach (var assetFile in assetFiles)
-                {
-                    if (assetFile.FilePath.GetFileNameWithoutExtension() == EffectLogAsset.DefaultFile)
-                    {
-                        assetFile.Deleted = true;
-                    }
-                }
-            }
-
-            if (dependency.Version.MinVersion < new PackageVersion("1.7.0-alpha02"))
-            {
-                foreach (var assetFile in assetFiles)
-                {
-                    if (!IsYamlAsset(assetFile))
-                        continue;
-
-                    using (var assetYaml = assetFile.AsYamlAsset())
-                    {
-                        if (assetYaml == null)
-                            continue;
-
-                        var sourceNode = assetYaml.DynamicRootNode.Source;
-                        var sourceHashNode = assetYaml.DynamicRootNode.SourceHash;
-                        if (sourceHashNode != null)
-                        {
-                            var source = DynamicYamlExtensions.ConvertTo<UFile>(sourceNode);
-                            var sourceHash = DynamicYamlExtensions.ConvertTo<ObjectId>(sourceHashNode);
-                            var dictionary = new Dictionary<UFile, ObjectId> { { source, sourceHash } };
-                            var yamlDic = DynamicYamlExtensions.ConvertFrom(dictionary);
-                            yamlDic.Node.Tag = null;
-                            assetYaml.DynamicRootNode["~SourceHashes"] = yamlDic;
-                            assetYaml.DynamicRootNode.SourceHash = DynamicYamlEmpty.Default;
-                        }
-                        assetYaml.DynamicRootNode.ImporterId = DynamicYamlEmpty.Default;
-                        assetYaml.DynamicRootNode.SourceKeepSideBySide = DynamicYamlEmpty.Default;
-
-                        var assetBase = assetYaml.DynamicRootNode["~Base"];
-                        if (assetBase != null)
-                        {
-                            if (assetBase.Location == "--import--")
-                                assetYaml.DynamicRootNode["~Base"] = DynamicYamlEmpty.Default;
-                        }
-                    }
-                }
-            }
-
-            //Audio refactor
-            if (dependency.Version.MinVersion < new PackageVersion("1.7.0-alpha03"))
-            {
-                var audioAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xksnd").Select(x => x.AsYamlAsset()).ToArray();
-                foreach (var assetFile in audioAssets)
-                {
-                    //dispose will save back
-                    using (var assetYaml = assetFile)
-                    {
-                        if (assetYaml == null)
-                            continue;
-
-                        if (assetYaml.RootNode.Tag == "!SoundMusic")
-                        {
-                            assetYaml.RootNode.Tag = "!Sound";
-                            assetYaml.DynamicRootNode.Spatialized = false;
-                            assetYaml.DynamicRootNode.StreamFromDisk = true;  
-                        }
-                        else
-                        {
-                            assetYaml.RootNode.Tag = "!Sound";
-                            assetYaml.DynamicRootNode.Spatialized = true;
-                            assetYaml.DynamicRootNode.StreamFromDisk = false;
-                        }
-                    }
-                }
-            }
-
-            if (dependency.Version.MinVersion < new PackageVersion("1.7.0-alpha03"))
-            {
-                // Delete EffectLogAsset
-                foreach (var assetFile in assetFiles)
-                {
-                    if (assetFile.FilePath.GetFileNameWithoutExtension() == EffectLogAsset.DefaultFile)
-                    {
-                        assetFile.Deleted = true;
-                    }
-                }
-            }
-
-            if (dependency.Version.MinVersion < new PackageVersion("1.8.4-beta"))
-            {
-                // Add new generic parameter of MaterialSurfaceNormalMap to effect logs
-                var regex = new Regex(@"(?<=ClassName:\s+MaterialSurfaceNormalMap\s+GenericArguments:\s+\[[^\]]*)(?=\])");
-                foreach (var assetFile in assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkeffectlog"))
-                {
-                    var filePath = assetFile.FilePath;
-
-                    // Load asset data, so the renamed file will have it's AssetContent set
-                    if (assetFile.AssetContent == null)
-                        assetFile.AssetContent = File.ReadAllBytes(filePath);
-
-                    var sourceText = System.Text.Encoding.UTF8.GetString(assetFile.AssetContent);
-                    var newSourceText = regex.Replace(sourceText, ", true");
-                    var newAssetContent = System.Text.Encoding.UTF8.GetBytes(newSourceText);
-
-                    if (newSourceText != sourceText)
-                    {
-                        assetFile.AssetContent = newAssetContent;
-                    }
-
-                    //File.WriteAllBytes(newFileName, newAssetContent);
-                }
-            }
-
-            if (dependency.Version.MinVersion < new PackageVersion("1.9.0-beta"))
-            {
-                foreach (var assetFile in assetFiles)
-                {
-                    if (!IsYamlAsset(assetFile))
-                        continue;
-
-                    // This upgrader will also mark every yaml asset as dirty. We want to re-save everything with the new serialization system
-                    using (var assetYaml = assetFile.AsYamlAsset())
-                    {
-                        if (assetYaml == null)
-                            continue;
-
-                        try
-                        {
-                            if (assetYaml.DynamicRootNode["~Base"] != null)
-                            {
-                                var location = ((YamlScalarNode)assetYaml.DynamicRootNode["~Base"].Location.Node).Value;
-                                if (location != "--import--")
-                                {
-                                    var id = ((YamlScalarNode)assetYaml.DynamicRootNode["~Base"].Asset.Id.Node).Value;
-                                    var assetUrl = $"{id}:{location}";
-                                    assetYaml.DynamicRootNode["Archetype"] = assetUrl;
-                                }
-                                assetYaml.DynamicRootNode["~Base"] = DynamicYamlEmpty.Default;
-                            }
-                        }
-                        catch
-                            (Exception e)
-                        {
-                            e.Ignore();
-                        }
-                    }
-                }
-            }
-
-            // Additive animation changes
-            if (dependency.Version.MinVersion < new PackageVersion("1.10.0-alpha01"))
-            {
-                ConvertAdditiveAnimationToAnimation(assetFiles);
-            }
-
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
             // Graphics Compositor asset
-            if (dependency.Version.MinVersion < new PackageVersion("1.10.0-alpha02"))
+            if (dependency.Version.MinVersion < new PackageVersion("1.11.0.0"))
             {
                 // Find game settings (if there is none, it's not a game and nothing to do)
                 var gameSettings = assetFiles.FirstOrDefault(x => x.AssetLocation == GameSettingsAsset.GameSettingsLocation);
                 if (gameSettings != null)
                 {
+                    RunAssetUpgradersUntilVersion(log, dependentPackage, dependency.Name, gameSettings.Yield().ToList(), new PackageVersion("1.10.0-alpha02"));
+
                     using (var gameSettingsYaml = gameSettings.AsYamlAsset())
                     {
                         // Figure out graphics profile; default is Level_10_0 (which is same as GraphicsCompositor default)
@@ -341,6 +70,7 @@ namespace SiliconStudio.Xenko.Assets
 
                         // Add graphics compositor asset by creating a derived asset of Compositing/DefaultGraphicsCompositor.xkgfxcomp
                         var graphicsCompositorUrl = graphicsProfile >= GraphicsProfile.Level_10_0 ? DefaultGraphicsCompositorLevel10Url : DefaultGraphicsCompositorLevel9Url;
+
                         var defaultGraphicsCompositor = dependencyPackage.Assets.Find(graphicsCompositorUrl);
                         if (defaultGraphicsCompositor == null)
                         {
@@ -374,10 +104,171 @@ namespace SiliconStudio.Xenko.Assets
                 }
             }
 
+
             if (dependency.Version.MinVersion < new PackageVersion("1.11.1.0"))
             {
                 ConvertNormalMapsInvertY(assetFiles);
             }
+
+            // Skybox/Background separation
+            if (dependency.Version.MinVersion < new PackageVersion("1.11.1.1"))
+            {
+                SplitSkyboxLightingUpgrader upgrader = new SplitSkyboxLightingUpgrader();
+                foreach (var skyboxAsset in assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xksky"))
+                {
+                    upgrader.ProcessSkybox(skyboxAsset);
+                }
+                foreach (var sceneAsset in assetFiles.Where(f => (f.FilePath.GetFileExtension() == ".xkscene") || (f.FilePath.GetFileExtension() == ".xkprefab")))
+                {
+                    using (var yaml = sceneAsset.AsYamlAsset())
+                    {
+                        upgrader.UpgradeAsset(yaml.DynamicRootNode);
+                    }
+                }
+            }
+            
+            if (dependency.Version.MinVersion < new PackageVersion("1.11.1.2"))
+            {
+                var navigationMeshAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xknavmesh");
+                var scenes = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkscene");
+                UpgradeNavigationBoundingBox(navigationMeshAssets, scenes);
+
+                // Upgrade game settings to have groups for navigation meshes
+                var gameSettingsAsset = assetFiles.FirstOrDefault(x => x.AssetLocation == GameSettingsAsset.GameSettingsLocation);
+                if (gameSettingsAsset != null)
+                {
+                    // Upgrade the game settings first to contain navigation mesh settings entry
+                    RunAssetUpgradersUntilVersion(log, dependentPackage, dependency.Name, gameSettingsAsset.Yield().ToList(), new PackageVersion("1.11.1.2"));
+
+                    UpgradeNavigationMeshGroups(navigationMeshAssets, gameSettingsAsset);
+                }
+            }
+
+            if (dependency.Version.MinVersion < new PackageVersion("2.0.0.2"))
+            {
+                RunAssetUpgradersUntilVersion(log, dependentPackage, dependency.Name, assetFiles, new PackageVersion("2.0.0.0"));
+
+                Guid defaultCompositorId = Guid.Empty;
+                var defaultGraphicsCompositorCameraSlot = Guid.Empty;
+
+                // Step one: find the default compositor, that will be the reference one to patch scenes
+                var gameSettings = assetFiles.FirstOrDefault(x => x.AssetLocation == GameSettingsAsset.GameSettingsLocation);
+                if (gameSettings != null)
+                {
+                    using (var gameSettingsYaml = gameSettings.AsYamlAsset())
+                    {
+                        dynamic asset = gameSettingsYaml.DynamicRootNode;
+                        string compositorReference = asset.GraphicsCompositor?.ToString();
+                        var guidString = compositorReference?.Split(':').FirstOrDefault();
+                        Guid.TryParse(guidString, out defaultCompositorId);
+
+                        // Figure out graphics profile; default is Level_10_0 (which is same as GraphicsCompositor default)
+                        var graphicsProfile = GraphicsProfile.Level_10_0;
+                        try
+                        {
+                            foreach (var mapping in gameSettingsYaml.DynamicRootNode.Defaults)
+                            {
+                                if (mapping.Node.Tag == "!SiliconStudio.Xenko.Graphics.RenderingSettings,SiliconStudio.Xenko.Graphics")
+                                {
+                                    if (mapping.DefaultGraphicsProfile != null)
+                                        Enum.TryParse((string)mapping.DefaultGraphicsProfile, out graphicsProfile);
+                                    break;
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            // If something goes wrong, keep going with the default value
+                        }
+
+                        // store the camera slot of the default graphics compositor, because the one from the project will be empty since upgrade relies on reconcile with base, which happens after
+                        defaultGraphicsCompositorCameraSlot = graphicsProfile >= GraphicsProfile.Level_10_0 ? DefaultGraphicsCompositorLevel10CameraSlot : DefaultGraphicsCompositorLevel9CameraSlot;
+                    }
+                }
+
+                // Step two: add an Guid for each item in the SceneCameraSlotCollection of each graphics compositor
+                Dictionary<int, Guid> slotIds = new Dictionary<int, Guid>();
+
+                // This upgrades a projects that already had a graphics compositor before (ie. a project created with public 1.10)
+                // In this case, the compositor that has been created above is empty, and the upgrade relies on reconciliation with base
+                // to fill it properly, which means that for now we have no camera slot. Fortunately, we know the camera slot id from the archetype.
+                slotIds.Add(0, defaultGraphicsCompositorCameraSlot);
+
+                var graphicsCompositorAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkgfxcomp");
+                foreach (var graphicsCompositorAsset in graphicsCompositorAssets)
+                {
+                    using (var yamlAsset = graphicsCompositorAsset.AsYamlAsset())
+                    {
+                        dynamic asset = yamlAsset.DynamicRootNode;
+                        int i = 0;
+                        var localSlotIds = new Dictionary<int, Guid>();
+                        if (asset.Cameras != null)
+                        {
+                            // This upgrades a projects that already had a graphics compositor before (ie. an internal project created with 1.11)
+                            foreach (dynamic cameraSlot in asset.Cameras)
+                            {
+                                var guid = Guid.NewGuid();
+                                Guid assetId;
+                                if (Guid.TryParse(asset.Id.ToString(), out assetId) && assetId == defaultCompositorId)
+                                {
+                                    slotIds[i] = guid;
+                                }
+                                localSlotIds.Add(i, guid);
+                                cameraSlot.Value.Id = guid;
+                                ++i;
+                            }
+                            var indexString = asset.Game?.Camera?.Index?.ToString();
+                            int index;
+                            int.TryParse(indexString, out index);
+                            if (localSlotIds.ContainsKey(index) && asset.Game?.Camera != null)
+                            {
+                                asset.Game.Camera = $"ref!! {localSlotIds[index]}";
+                            }
+                        }
+                        else
+                        {
+                            asset.Cameras = new YamlMappingNode();
+                            asset.Cameras.de2e75c3b2b23e54162686363f3f138e = new YamlMappingNode();
+                            asset.Cameras.de2e75c3b2b23e54162686363f3f138e.Id = defaultGraphicsCompositorCameraSlot;
+                            asset.Cameras.de2e75c3b2b23e54162686363f3f138e.Name = "Main";
+                        }
+                    }
+                }
+
+                // Step three: patch every CameraComponent to reference the Guid instead of an index
+                var entityHierarchyAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkscene" || f.FilePath.GetFileExtension() == ".xkprefab");
+                foreach (var entityHierarchyAsset in entityHierarchyAssets)
+                {
+                    using (var yamlAsset = entityHierarchyAsset.AsYamlAsset())
+                    {
+                        dynamic asset = yamlAsset.DynamicRootNode;
+                        foreach (var entity in asset.Hierarchy.Parts)
+                        {
+                            foreach (var component in entity.Entity.Components)
+                            {
+                                if (component.Value.Node.Tag == "!CameraComponent")
+                                {
+                                    var indexString = component.Value.Slot?.Index?.ToString() ?? "0";
+                                    int index;
+                                    if (int.TryParse(indexString, out index))
+                                    {
+                                        if (slotIds.ContainsKey(index))
+                                        {
+                                            component.Value.Slot = slotIds[index].ToString();
+                                        }
+                                        else
+                                        {
+                                            component.Value.Slot = Guid.Empty.ToString();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+#endif
+            // Put any new upgrader after this #endif
 
             return true;
         }
@@ -424,55 +315,8 @@ namespace SiliconStudio.Xenko.Assets
 
         public override bool UpgradeBeforeAssembliesLoaded(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage)
         {
-            if (dependency.Version.MinVersion < new PackageVersion("1.4.0-alpha01"))
-            {
-                UpgradeCode(dependentPackage, log, new RenameToXenkoCodeUpgrader());
-            }
-            else if (dependency.Version.MinVersion < new PackageVersion("1.6.0-beta"))
-            {
-                UpgradeCode(dependentPackage, log, new NewComponentsCodeUpgrader());
-            }
-
             return true;
         }
-
-        private void UpgradeCode(Package dependentPackage, ILogger log, ICodeUpgrader codeUpgrader)
-        {
-            if (dependentPackage == null) throw new ArgumentNullException(nameof(dependentPackage));
-            if (codeUpgrader == null) throw new ArgumentNullException(nameof(codeUpgrader));
-
-            var csharpWorkspaceAssemblies = new[] { Assembly.Load("Microsoft.CodeAnalysis.Workspaces"), Assembly.Load("Microsoft.CodeAnalysis.CSharp.Workspaces"), Assembly.Load("Microsoft.CodeAnalysis.Workspaces.Desktop") };
-            var workspace = MSBuildWorkspace.Create(ImmutableDictionary<string, string>.Empty, MefHostServices.Create(csharpWorkspaceAssemblies));
-
-            var tasks = dependentPackage.Profiles
-                .SelectMany(profile => profile.ProjectReferences)
-                .Select(projectReference => UPath.Combine(dependentPackage.RootDirectory, projectReference.Location))
-                .Distinct()
-                .Select(projectFullPath => Task.Run(async () =>
-                {
-                    if (codeUpgrader.UpgradeProject(workspace, projectFullPath))
-                    {
-                        // Upgrade source code
-                        var f = new FileInfo(projectFullPath.ToWindowsPath());
-                        if (f.Exists)
-                        {
-                            var project = await workspace.OpenProjectAsync(f.FullName);
-                            var compilation = await project.GetCompilationAsync();
-                            var subTasks = compilation.SyntaxTrees.Select(syntaxTree => Task.Run(() => codeUpgrader.UpgradeSourceFile(syntaxTree))).ToList();
-
-                            await Task.WhenAll(subTasks);
-                        }
-                        else
-                        {
-                            log.Error($"Cannot locate project {f.FullName}.");
-                        }
-                    }
-                }))
-                .ToArray();
-
-            Task.WaitAll(tasks);
-        }
-
         private bool IsYamlAsset(PackageLoadingAssetFile assetFile)
         {
             // Determine if asset was Yaml or not
@@ -482,173 +326,327 @@ namespace SiliconStudio.Xenko.Assets
             var serializer = AssetFileSerializer.FindSerializer(assetFileExtension);
             return serializer is YamlAssetSerializer;
         }
-        /// <summary>
-        /// Base interface for code upgrading
-        /// </summary>
-        private interface ICodeUpgrader
-        {
-            /// <summary>
-            /// Upgrades the specified project file
-            /// </summary>
-            /// <param name="workspace">The msbuild workspace</param>
-            /// <param name="projectPath">A path to a csproj file</param>
-            /// <returns><c>true</c> if <see cref="UpgradeSourceFile"/> should be called for each files in the project; otherwise <c>false</c></returns>
-            bool UpgradeProject(MSBuildWorkspace workspace, UFile projectPath);
 
-            /// <summary>
-            /// Upgrades the specified file 
-            /// </summary>
-            /// <param name="syntaxTree">The syntaxtree of the file</param>
-            /// <returns>An upgrade task</returns>
-            Task UpgradeSourceFile(SyntaxTree syntaxTree);
+        private void UpgradeNavigationBoundingBox(IEnumerable<PackageLoadingAssetFile> navigationMeshes, IEnumerable<PackageLoadingAssetFile> scenes)
+        {
+            foreach (var navigationMesh in navigationMeshes)
+            {
+                using (var navmeshYamlAsset = navigationMesh.AsYamlAsset())
+                {
+                    var navmeshAsset = navmeshYamlAsset.DynamicRootNode;
+                    var sceneId = (string)navmeshAsset.Scene;
+                    var sceneName = sceneId.Split(':').Last();
+                    var matchingScene = scenes.Where(x => x.AssetLocation == sceneName).FirstOrDefault();
+                    if (matchingScene != null)
+                    {
+                        var boundingBox = navmeshAsset.BoundingBox;
+                        var boundingBoxMin = new Vector3((float)boundingBox.Minimum.X, (float)boundingBox.Minimum.Y, (float)boundingBox.Minimum.Z);
+                        var boundingBoxMax = new Vector3((float)boundingBox.Maximum.X, (float)boundingBox.Maximum.Y, (float)boundingBox.Maximum.Z);
+                        var boundingBoxSize = (boundingBoxMax - boundingBoxMin) * 0.5f;
+                        var boundingBoxCenter = boundingBoxSize + boundingBoxMin;
+                            
+                        using (var matchingSceneYamlAsset = matchingScene.AsYamlAsset())
+                        {
+                            var sceneAsset = matchingSceneYamlAsset.DynamicRootNode;
+                            var parts = (DynamicYamlArray)sceneAsset.Hierarchy.Parts;
+                            var rootParts = (DynamicYamlArray)sceneAsset.Hierarchy.RootPartIds;
+                            dynamic newEntity = new DynamicYamlMapping(new YamlMappingNode());
+                            newEntity.Id = Guid.NewGuid().ToString();
+                            newEntity.Name = "Navigation bounding box";
+                                
+                            var components = new DynamicYamlMapping(new YamlMappingNode());
+
+                            // Transform component
+                            dynamic transformComponent = new DynamicYamlMapping(new YamlMappingNode());
+                            transformComponent.Node.Tag = "!TransformComponent";
+                            transformComponent.Id = Guid.NewGuid().ToString();
+                            transformComponent.Position = new DynamicYamlMapping(new YamlMappingNode
+                            {
+                                { "X", $"{boundingBoxCenter.X}" }, { "Y", $"{boundingBoxCenter.Y}" }, { "Z", $"{boundingBoxCenter.Z}" }
+                            });
+                            transformComponent.Rotation = new DynamicYamlMapping(new YamlMappingNode
+                            {
+                                { "X", "0.0" }, { "Y", "0.0"}, { "Z", "0.0" }, { "W", "0.0" }
+                            });
+                            transformComponent.Scale = new DynamicYamlMapping(new YamlMappingNode
+                            {
+                                { "X", "1.0" }, { "Y", "1.0" }, { "Z", "1.0" }
+                            });
+                            transformComponent.Children = new DynamicYamlMapping(new YamlMappingNode());
+                            components.AddChild(Guid.NewGuid().ToString("N"), transformComponent);
+
+                            // Bounding box component
+                            dynamic boxComponent = new DynamicYamlMapping(new YamlMappingNode());
+                            boxComponent.Id = Guid.NewGuid().ToString();
+                            boxComponent.Node.Tag = "!SiliconStudio.Xenko.Navigation.NavigationBoundingBoxComponent,SiliconStudio.Xenko.Navigation";
+                            boxComponent.Size = new DynamicYamlMapping(new YamlMappingNode
+                            {
+                                { "X", $"{boundingBoxSize.X}" }, { "Y", $"{boundingBoxSize.Y}" }, { "Z", $"{boundingBoxSize.Z}" }
+                            }); ;
+                            components.AddChild(Guid.NewGuid().ToString("N"), boxComponent);
+
+                            newEntity.Components = components;
+
+                            dynamic part = new DynamicYamlMapping(new YamlMappingNode());
+                            part.Entity = newEntity;
+                            parts.Add(part);
+                            rootParts.Add((string)newEntity.Id);
+
+                            // Currently need to sort children by Id
+                            List<YamlNode> partsList = (List<YamlNode>)parts.Node.Children;
+                            var entityKey = new YamlScalarNode("Entity");
+                            var idKey = new YamlScalarNode("Id");
+                            partsList.Sort((x,y) =>
+                            {
+                                var entityA = (YamlMappingNode)((YamlMappingNode)x).Children[entityKey];
+                                var entityB = (YamlMappingNode)((YamlMappingNode)y).Children[entityKey];
+                                var guidA =  new Guid(((YamlScalarNode)entityA.Children[idKey]).Value);
+                                var guidB = new Guid(((YamlScalarNode)entityB.Children[idKey]).Value);
+                                return guidA.CompareTo(guidB);
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+        private void UpgradeNavigationMeshGroups(IEnumerable<PackageLoadingAssetFile> navigationMeshAssets, PackageLoadingAssetFile gameSettingsAsset)
+        {
+            // Collect all unique groups from all navigation mesh assets
+            Dictionary<ObjectId, YamlMappingNode> agentSettings = new Dictionary<ObjectId, YamlMappingNode>();
+            foreach (var navigationMeshAsset in navigationMeshAssets)
+            {
+                using (var navigationMesh = navigationMeshAsset.AsYamlAsset())
+                {
+                    HashSet<ObjectId> selectedGroups = new HashSet<ObjectId>();
+                    foreach (var setting in navigationMesh.DynamicRootNode.NavigationMeshAgentSettings)
+                    {
+                        var currentAgentSettings = setting.Value;
+                        using (DigestStream digestStream = new DigestStream(Stream.Null))
+                        {
+                            BinarySerializationWriter writer = new BinarySerializationWriter(digestStream);
+                            writer.Write((float)currentAgentSettings.Height);
+                            writer.Write((float)currentAgentSettings.Radius);
+                            writer.Write((float)currentAgentSettings.MaxClimb);
+                            writer.Write((float)currentAgentSettings.MaxSlope.Radians);
+                            if (!agentSettings.ContainsKey(digestStream.CurrentHash))
+                                agentSettings.Add(digestStream.CurrentHash, currentAgentSettings.Node);
+                            selectedGroups.Add(digestStream.CurrentHash);
+                        }
+                    }
+
+                    // Replace agent settings with group reference on the navigation mesh
+                    navigationMesh.DynamicRootNode.NavigationMeshAgentSettings = DynamicYamlEmpty.Default;
+                    dynamic selectedGroupsMapping = navigationMesh.DynamicRootNode.SelectedGroups = new DynamicYamlMapping(new YamlMappingNode());
+                    foreach (var selectedGroup in selectedGroups)
+                    {
+                        selectedGroupsMapping.AddChild(Guid.NewGuid().ToString("N"), selectedGroup.ToGuid().ToString("D"));
+                    }
+                }
+            }
+
+            // Add them to the game settings
+            int groupIndex = 0;
+            using (var gameSettings = gameSettingsAsset.AsYamlAsset())
+            {
+                var defaults = gameSettings.DynamicRootNode.Defaults;
+                foreach (var setting in defaults)
+                {
+                    if (setting.Node.Tag == "!SiliconStudio.Xenko.Navigation.NavigationSettings,SiliconStudio.Xenko.Navigation")
+                    {
+                        var groups = setting.Groups as DynamicYamlArray;
+                        foreach (var groupToAdd in agentSettings)
+                        {
+                            dynamic newGroup = new DynamicYamlMapping(new YamlMappingNode());
+                            newGroup.Id = groupToAdd.Key.ToGuid().ToString("D");
+                            newGroup.Name = $"Group {groupIndex++}";
+                            newGroup.AgentSettings = groupToAdd.Value;
+                            groups.Add(newGroup);
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
-        /// Code upgrader for renaming to Xenko
+        /// Splits skybox lighting functionality from background functionality
         /// </summary>
-        private class RenameToXenkoCodeUpgrader : ICodeUpgrader
+        private class SplitSkyboxLightingUpgrader
         {
-            public bool UpgradeProject(MSBuildWorkspace workspace, UFile projectPath)
+            private readonly Dictionary<string, SkyboxAssetInfo> skyboxAssetInfos = new Dictionary<string, SkyboxAssetInfo>();
+            
+            public void UpgradeAsset(dynamic asset)
             {
-                // Upgrade .csproj file
-                // TODO: Use parsed file?
-                var fileContents = File.ReadAllText(projectPath);
-
-                // Rename referenced to the package, shaders and effects
-                var newFileContents = fileContents.Replace(".pdx", ".xk");
-
-                // Rename variables
-                newFileContents = newFileContents.Replace("Paradox", "Xenko");
-
-                // Save file if there were any changes
-                if (newFileContents != fileContents)
+                var parts = GetPartsArray(asset);
+                foreach (dynamic part in parts)
                 {
-                    File.WriteAllText(projectPath, newFileContents);
-                }
-                return true;
-            }
+                    var entity = part.Entity;
+                    var components = entity.Components;
 
-            // TODO: Reverted to simple regex, to upgrade text in .pdxfx's generated code files. Should use syntax analysis again.
-            public async Task UpgradeSourceFile(SyntaxTree syntaxTree)
-            {
-                var fileContents = File.ReadAllText(syntaxTree.FilePath);
+                    List<ComponentInfo> skyboxInfos = new List<ComponentInfo>();
+                    List<dynamic> skyboxKeys = new List<dynamic>();
 
-                // Rename referenced to the package, shaders and effects
-                var newFileContents = fileContents.Replace(".pdx", ".xk");
+                    // Find skybox components
+                    foreach (dynamic component in components)
+                    {
+                        ComponentInfo componentInfo = GetComponentInfo(component);
 
-                // Rename variables
-                newFileContents = newFileContents.Replace("Paradox", "Xenko");
+                        if (componentInfo.Component.Node.Tag == "!SkyboxComponent")
+                        {
+                            skyboxInfos.Add(componentInfo);
+                            skyboxKeys.Add(component);
+                        }
+                    }
 
-                // Save file if there were any changes
-                if (newFileContents != fileContents)
-                {
-                    File.WriteAllText(syntaxTree.FilePath, newFileContents);
-                }
-
-                //var root = await syntaxTree.GetRootAsync();
-                //var rewriter = new RenamingRewriter();
-                //var newRoot = rewriter.Visit(root);
-
-                //if (newRoot != root)
-                //{
-                //    var newSyntaxTree = syntaxTree.WithRootAndOptions(newRoot, syntaxTree.Options);
-                //    var sourceText = await newSyntaxTree.GetTextAsync();
-
-                //    using (var textWriter = new StreamWriter(syntaxTree.FilePath))
-                //    {
-                //        sourceText.Write(textWriter);
-                //    }
-                //}
-            }
-        }
-
-        private class NewComponentsCodeUpgrader : ICodeUpgrader
-        {
-            private readonly Regex regexGetComponent;
-            private readonly Regex regexInheritScript;
-
-            public NewComponentsCodeUpgrader()
-            {
-                regexGetComponent = new Regex(@"\.Get\(([A-Za-z0-9_]*Component)\.Key\)");
-                regexInheritScript = new Regex(@"class\s+(.*?):\s*Script(\W)");
-            }
-
-            public bool UpgradeProject(MSBuildWorkspace workspace, UFile projectPath)
-            {
-                return true;
-            }
-
-            public async Task UpgradeSourceFile(SyntaxTree syntaxTree)
-            {
-                var fileContents = File.ReadAllText(syntaxTree.FilePath);
-                var newFileContents = fileContents;
-
-                // Handle Scripts
-                newFileContents = newFileContents.Replace("Get(ScriptComponent.Key).Scripts", "GetAll<ScriptComponent>()");
-                newFileContents = newFileContents.Replace("Get<ScriptComponent>().Scripts", "GetAll<ScriptComponent>()");
-                newFileContents = regexGetComponent.Replace(newFileContents, @".Get<$1>()");
-                newFileContents = regexInheritScript.Replace(newFileContents, "class $1 : ScriptComponent$2");
-
-                // Handle Physics
-                newFileContents = newFileContents.Replace("Get(PhysicsComponent.Key).Elements", "GetAll<PhysicsComponent>()");
-                newFileContents = newFileContents.Replace("Get<PhysicsComponent>().Elements", "GetAll<ScriptComponent>()");
-                newFileContents = newFileContents.Replace("Get<PhysicsComponent>()[0]", "Get<PhysicsComponent>()");
-
-                // Save file if there were any changes
-                if (newFileContents != fileContents)
-                {
-                    File.WriteAllText(syntaxTree.FilePath, newFileContents);
-                }
-            }
-        }
-
-        private class RenamingRewriter : CSharpSyntaxRewriter
-        {
-            public override SyntaxNode VisitIdentifierName(IdentifierNameSyntax node)
-            {
-                var identifier = node.Identifier;
-
-                if (node.Identifier.ValueText.Contains("Paradox"))
-                {
-                    var newName = node.Identifier.ValueText.Replace("Paradox", "Xenko");
-                    return node.WithIdentifier(SyntaxFactory.Identifier(identifier.LeadingTrivia, newName, identifier.TrailingTrivia));
-                }
-
-                return base.VisitIdentifierName(node);
-            }
-        }
-
-        private void ConvertAdditiveAnimationToAnimation(IList<PackageLoadingAssetFile> assetFiles)
-        {
-            //var animAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkanim").Select(x => x.AsYamlAsset()).ToArray();
-            var animAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkanim");
-
-            foreach (var assetFile in animAssets)
-            {
-                if (!IsYamlAsset(assetFile))
-                    continue;
-
-                // This upgrader will also mark every yaml asset as dirty. We want to re-save everything with the new serialization system
-                using (var yamlAsset = assetFile.AsYamlAsset())
-                {
-                    dynamic asset = yamlAsset.DynamicRootNode;
-
-                    var assetTag = asset.Node.Tag;
-                    if (assetTag != "!AdditiveAnimation")
+                    if (skyboxInfos.Count == 0)
                         continue;
 
-                    asset.Node.Tag = "!Animation";
-                    dynamic newType = new DynamicYamlMapping(new YamlMappingNode());
-                    newType.Node.Tag = "!DifferenceAnimationAssetType";
-                    newType["BaseSource"] = asset["BaseSource"];
-                    newType["Mode"] = asset["Mode"];
+                    // Remove skybox light dependency on skybox component
+                    foreach (var component in entity.Components)
+                    {
+                        ComponentInfo componentInfo = GetComponentInfo(component);
+                        if (componentInfo.Component.Node.Tag == "!LightComponent")
+                        {
+                            var lightComponent = componentInfo.Component;
+                            if (lightComponent.Type != null && lightComponent.Type.Node.Tag == "!LightSkybox")
+                            {
+                                // Use first skybox component
+                                var skyboxInfo = skyboxInfos.First();
+                                
+                                // Combine light and skybox intensity into light intensity
+                                var lightIntensity = lightComponent.Intensity;
+                                var skyboxIntensity = skyboxInfo.Component.Intensity;
+                                float intensity = (lightIntensity != null) ? lightIntensity : 1.0f;
+                                intensity *= ((skyboxIntensity != null) ? (float)skyboxIntensity : 1.0f);
+                                lightComponent.Intensity = intensity;
 
-                    asset.RemoveChild("BaseSource");
-                    asset.RemoveChild("Mode");
-                    asset.RemoveChild("Type");
+                                // Copy skybox assignment
+                                lightComponent.Type["Skybox"] = (string)skyboxInfo.Component.Skybox;
 
-                    asset.AddChild("Type", newType);
+                                // Check if this light is now referencing a removed skybox asset
+                                string referenceId = ((string)skyboxInfo.Component.Skybox)?.Split('/').Last().Split(':').First();
+                                if (referenceId == null || !skyboxAssetInfos.ContainsKey(referenceId) || skyboxAssetInfos[referenceId].Deleted)
+                                {
+                                    lightComponent.Type["Skybox"] = "null";
+                                }
+
+                                // 1 light per entity max.
+                                break;
+                            }
+                        }
+                    }
+
+                    // Add background components
+                    foreach (var skyboxInfo in skyboxInfos)
+                    {
+                        SkyboxAssetInfo skyboxAssetInfo;
+                        if (skyboxInfo.Component.Skybox == null)
+                            continue;
+
+                        string referenceId = ((string)skyboxInfo.Component.Skybox).Split('/').Last().Split(':').First();
+                        if (!skyboxAssetInfos.TryGetValue(referenceId, out skyboxAssetInfo))
+                            continue;
+                        
+                        if (skyboxAssetInfo.IsBackground)
+                        {
+                            var backgroundComponentNode = new YamlMappingNode();
+                            backgroundComponentNode.Tag = "!BackgroundComponent";
+                            backgroundComponentNode.Add("Texture", skyboxAssetInfo.TextureReference);
+                            if (skyboxInfo.Component.Intensity != null)
+                                backgroundComponentNode.Add("Intensity", (string)skyboxInfo.Component.Intensity);
+                            AddComponent(components, backgroundComponentNode, Guid.NewGuid());
+                        }
+                    }
+
+                    // Remove skybox components
+                    foreach (var skybox in skyboxKeys)
+                    {
+                        RemoveComponent(components, skybox);
+                    }
                 }
+            }
+
+            public void ProcessSkybox(PackageLoadingAssetFile skyboxAsset)
+            {
+                using (var skyboxYaml = skyboxAsset.AsYamlAsset())
+                {
+                    var root = skyboxYaml.DynamicRootNode;
+                    var rootMapping = (DynamicYamlMapping)root;
+
+                    string cubemapReference = "null";
+
+                    // Insert cubmap into skybox root instead of in Model
+                    if (root.Model != null)
+                    {
+                        if (root.Model.Node.Tag == "!SkyboxCubeMapModel")
+                        {
+                            cubemapReference = root.Model.CubeMap;
+                        }
+                        rootMapping.RemoveChild("Model");
+                    }
+                    rootMapping.AddChild("CubeMap", cubemapReference);
+                    var splitReference = cubemapReference.Split('/'); // TODO
+                    
+                    // We will remove skyboxes that are only used as a background
+                    if (root.Usage != null && (string)root.Usage == "Background")
+                    {
+                        skyboxAsset.Deleted = true;
+                    }
+                    
+                    bool isBackground = root.Usage == null ||
+                                        (string)root.Usage == "Background" ||
+                                        (string)root.Usage == "LightingAndBackground";
+                    skyboxAssetInfos.Add((string)root.Id, new SkyboxAssetInfo
+                    {
+                        TextureReference = splitReference.Last(),
+                        IsBackground = isBackground,
+                        Deleted = skyboxAsset.Deleted,
+                    });
+                }
+            }
+
+            private void AddComponent(dynamic componentsNode, YamlMappingNode node, Guid id)
+            {
+                // New format (1.9)
+                DynamicYamlMapping mapping = (DynamicYamlMapping)componentsNode;
+                mapping.AddChild(new YamlScalarNode(Guid.NewGuid().ToString("N")), node);
+                node.Add("Id", id.ToString("D"));
+            }
+
+            private void RemoveComponent(dynamic componentsNode, dynamic componentsEntry)
+            {
+                // New format (1.9)
+                DynamicYamlMapping mapping = (DynamicYamlMapping)componentsNode;
+                mapping.RemoveChild(componentsEntry.Key);
+            }
+
+            private DynamicYamlArray GetPartsArray(dynamic asset)
+            {
+                var hierarchy = asset.Hierarchy;
+                return (DynamicYamlArray)hierarchy.Parts; // > 1.6.0
+            }
+            
+            private ComponentInfo GetComponentInfo(dynamic componentNode)
+            {
+                // New format (1.9)
+                return new ComponentInfo
+                {
+                    Id = (string)componentNode.Key,
+                    Component = componentNode.Value
+                };
+            }
+
+            private struct SkyboxAssetInfo
+            {
+                public string TextureReference;
+                public bool IsBackground;
+                public bool Deleted;
+            }
+
+            private struct ComponentInfo
+            {
+                public string Id;
+                public dynamic Component;
             }
         }
 

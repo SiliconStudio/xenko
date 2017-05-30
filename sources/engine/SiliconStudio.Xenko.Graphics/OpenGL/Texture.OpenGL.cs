@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 using System;
 using System.Runtime.InteropServices;
@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-        public IntPtr StagingData { get; set; }
+        internal IntPtr StagingData { get; set; }
 #endif
 
         public static bool IsDepthStencilReadOnlySupported(GraphicsDevice device)

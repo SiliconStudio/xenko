@@ -1,16 +1,19 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Xenko.Assets.Entities;
+using SiliconStudio.Xenko.Assets.Materials;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Extensions;
 using SiliconStudio.Xenko.Graphics;
@@ -18,29 +21,58 @@ using SiliconStudio.Xenko.Graphics.Data;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
+using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
+    [AssetCompiler(typeof(PrefabModelAsset), typeof(AssetCompilationContext))]
     internal class PrefabModelAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        {
+            //The following types will never make it to the game!
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(PrefabAsset), BuildDependencyType.CompileContent);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SceneAsset), BuildDependencyType.CompileContent);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(ModelAsset), BuildDependencyType.CompileContent);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(PrefabModelAsset), BuildDependencyType.CompileContent);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(ProceduralModelAsset), BuildDependencyType.CompileContent);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SkeletonAsset), BuildDependencyType.CompileAsset);
+
+            //Material are needed both in game and in compiler
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
+        }
+
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
+        {
+            return base.GetInputFiles(context, assetItem);
+        }
+
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (PrefabModelAsset)assetItem.Asset;
             var renderingSettings = context.GetGameSettingsAsset().GetOrCreate<RenderingSettings>();
-            result.BuildSteps = new ListBuildStep { new PrefabModelAssetCompileCommand(targetUrlInStorage, asset, assetItem, renderingSettings) };
-            result.ShouldWaitForPreviousBuilds = true;
+            result.BuildSteps = new AssetBuildStep(assetItem) { new PrefabModelAssetCompileCommand(targetUrlInStorage, asset, assetItem, renderingSettings) };
         }
 
         private class PrefabModelAssetCompileCommand : AssetCommand<PrefabModelAsset>
         {
-            private readonly Package package;
             private readonly RenderingSettings renderingSettings;
 
             public PrefabModelAssetCompileCommand(string url, PrefabModelAsset parameters, AssetItem assetItem, RenderingSettings renderingSettings)
-                : base(url, parameters)
+                : base(url, parameters, assetItem.Package)
             {
-                package = assetItem.Package;
                 this.renderingSettings = renderingSettings;
+            }
+
+            protected override void ComputeParameterHash(BinarySerializationWriter writer)
+            {
+                base.ComputeParameterHash(writer);
+
+                var prefabAsset = Package.Session.FindAsset(Parameters.Prefab.Location);
+                if (prefabAsset != null)
+                {
+                    writer.Write(prefabAsset.Version);
+                }
             }
 
             private class MeshData
@@ -57,18 +89,6 @@ namespace SiliconStudio.Xenko.Assets.Models
                 public Entity Entity;
                 public Model Model;
                 public int MaterialIndex;
-            }
-
-            protected override void ComputeParameterHash(BinarySerializationWriter writer)
-            {
-                base.ComputeParameterHash(writer);
-
-                if (Parameters.Prefab == null) return;
-
-                // We also want to serialize recursively the compile-time dependent assets
-                // (since they are not added as reference but actually embedded as part of the current asset)
-                // TODO: Ideally we would want to put that automatically in AssetCommand<>, but we would need access to package
-                ComputeCompileTimeDependenciesHash(package, writer, Parameters);
             }
 
             private static unsafe void ProcessMaterial(ContentManager manager, ICollection<EntityChunk> chunks, MaterialInstance material, Model prefabModel)
@@ -100,7 +120,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                             }
                             else if (!string.IsNullOrEmpty(vertexBufferRef.Url))
                             {
-                                var dataAsset = manager.Load<Graphics.Buffer>(vertexBufferRef.Url);
+                                var dataAsset = manager.Load<Buffer>(vertexBufferRef.Url);
                                 vertexData = dataAsset.GetSerializationData().Content;
                             }
                             else
@@ -134,7 +154,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                             }
                             else if (!string.IsNullOrEmpty(indexBufferRef.Url))
                             {
-                                var dataAsset = manager.Load<Graphics.Buffer>(indexBufferRef.Url);
+                                var dataAsset = manager.Load<Buffer>(indexBufferRef.Url);
                                 indexData = dataAsset.GetSerializationData().Content;
                             }
                             else
@@ -255,7 +275,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 
             private static IEnumerable<T> IterateTree<T>(T root, Func<T, IEnumerable<T>> childrenF)
             {
-                var q = new List<T>() { root };
+                var q = new List<T> { root };
                 while (q.Any())
                 {
                     var c = q[0];
@@ -282,7 +302,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 
                 var loadSettings = new ContentManagerLoaderSettings
                 {
-                    ContentFilter = ContentManagerLoaderSettings.NewContentFilterByType(typeof(Mesh), typeof(Skeleton), typeof(Material), typeof(Prefab))
+                    ContentFilter = ContentManagerLoaderSettings.NewContentFilterByType(typeof(Mesh), typeof(Material), typeof(Prefab), typeof(Scene))
                 };
 
                 IList<Entity> allEntities = new List<Entity>();

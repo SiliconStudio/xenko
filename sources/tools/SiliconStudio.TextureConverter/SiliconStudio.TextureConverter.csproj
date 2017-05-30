@@ -9,16 +9,13 @@
     <RootNamespace>SiliconStudio.TextureConverter</RootNamespace>
     <AssemblyName>SiliconStudio.TextureConverter</AssemblyName>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>
     </StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.core.interfaces">
-      <HintPath>$(SiliconStudioDependenciesDir)NUnit\addins\nunit.core.interfaces.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>$(SiliconStudioDependenciesDir)NUnit\nunit.framework.dll</HintPath>
     </Reference>
@@ -154,28 +151,20 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="$(XenkoDependenciesDir)FreeImage\Release\**\*.dll">
+    <SiliconStudioNativeLib Include="$(XenkoDependenciesDir)FreeImage\Release\**\*.dll">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(XenkoDependenciesDir)TextureWrappers\Release\**\*.dll">
+    </SiliconStudioNativeLib>
+    <SiliconStudioNativeLib Include="$(XenkoDependenciesDir)TextureWrappers\Release\**\*.dll">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(XenkoDependenciesDir)PVRTT\**\*.dll">
+    </SiliconStudioNativeLib>
+    <SiliconStudioNativeLib Include="$(XenkoDependenciesDir)PVRTT\**\*.dll">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </SiliconStudioNativeLib>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
       <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Native\SiliconStudio.Core.Native.csproj">
-      <Project>{fcf36d39-bffe-4719-b245-05640ee34c5f}</Project>
-      <Name>SiliconStudio.Core.Native</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">

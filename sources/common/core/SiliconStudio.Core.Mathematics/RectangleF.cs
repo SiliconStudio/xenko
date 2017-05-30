@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under MIT License. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
 //
@@ -35,11 +35,6 @@ namespace SiliconStudio.Core.Mathematics
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct RectangleF : IEquatable<RectangleF>
     {
-        private float x;
-        private float y;
-        private float width;
-        private float height;
-
         /// <summary>
         /// An empty rectangle
         /// </summary>
@@ -59,10 +54,10 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="height">The height.</param>
         public RectangleF(float x, float y, float width, float height)
         {
-            this.x = x;
-            this.y= y;
-            this.width = width;
-            this.height = height;
+            this.X = x;
+            this.Y= y;
+            this.Width = width;
+            this.Height = height;
         }
 
         /// <summary>
@@ -72,8 +67,8 @@ namespace SiliconStudio.Core.Mathematics
         [DataMemberIgnore]
         public float Left
         {
-            get { return x; }
-            set { x = value; }
+            get { return X; }
+            set { X = value; }
         }
 
         /// <summary>
@@ -83,8 +78,8 @@ namespace SiliconStudio.Core.Mathematics
         [DataMemberIgnore]
         public float Top
         {
-            get { return y; }
-            set { y = value; }
+            get { return Y; }
+            set { Y = value; }
         }
 
         /// <summary>
@@ -96,7 +91,7 @@ namespace SiliconStudio.Core.Mathematics
         {
             get
             {
-                return x + width;
+                return X + Width;
             }
         }
 
@@ -108,7 +103,7 @@ namespace SiliconStudio.Core.Mathematics
         {
             get
             {
-                return y + height;
+                return Y + Height;
             }
         }
 
@@ -118,17 +113,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <value>The X position.</value>
         /// <userdoc>The beginning of the rectangle along the Ox axis.</userdoc>
         [DataMember(0)]
-        public float X
-        {
-            get
-            {
-                return x;
-            }
-            set
-            {
-                x = value;
-            }
-        }
+        public float X;
 
         /// <summary>
         /// Gets or sets the Y position.
@@ -136,17 +121,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <value>The Y position.</value>
         /// <userdoc>The beginning of the rectangle along the Oy axis.</userdoc>
         [DataMember(1)]
-        public float Y
-        {
-            get
-            {
-                return y;
-            }
-            set
-            {
-                y = value;
-            }
-        }
+        public float Y;
 
         /// <summary>
         /// Gets or sets the width.
@@ -154,11 +129,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <value>The width.</value>
         /// <userdoc>The width of the rectangle.</userdoc>
         [DataMember(2)]
-        public float Width
-        {
-            get { return width; }
-            set { width = value; }
-        }
+        public float Width;
 
         /// <summary>
         /// Gets or sets the height.
@@ -166,11 +137,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <value>The height.</value>
         /// <userdoc>The height of the rectangle.</userdoc>
         [DataMember(3)]
-        public float Height
-        {
-            get { return height; }
-            set { height = value; }
-        }
+        public float Height;
 
         /// <summary>
         /// Gets or sets the location.
@@ -243,19 +210,19 @@ namespace SiliconStudio.Core.Mathematics
         /// Gets the position of the top-left corner of the rectangle.
         /// </summary>
         /// <value>The top-left corner of the rectangle.</value>
-        public Vector2 TopLeft { get { return new Vector2(x, y); } }
+        public Vector2 TopLeft { get { return new Vector2(X, Y); } }
 
         /// <summary>
         /// Gets the position of the top-right corner of the rectangle.
         /// </summary>
         /// <value>The top-right corner of the rectangle.</value>
-        public Vector2 TopRight { get { return new Vector2(Right, y); } }
+        public Vector2 TopRight { get { return new Vector2(Right, Y); } }
 
         /// <summary>
         /// Gets the position of the bottom-left corner of the rectangle.
         /// </summary>
         /// <value>The bottom-left corner of the rectangle.</value>
-        public Vector2 BottomLeft { get { return new Vector2(x, Bottom); } }
+        public Vector2 BottomLeft { get { return new Vector2(X, Bottom); } }
 
         /// <summary>
         /// Gets the position of the bottom-right corner of the rectangle.
@@ -328,7 +295,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns><c>true</c> if point is inside <see cref="RectangleF"/>, otherwise <c>false</c>.</returns>
         public bool Contains(float x, float y)
         {
-            return (x >= this.x && x <= Right && y >= this.y && y <= Bottom);
+            return (x >= this.X && x <= Right && y >= this.Y && y <= Bottom);
         }
 
         /// <summary>
@@ -474,10 +441,10 @@ namespace SiliconStudio.Core.Mathematics
         {
             unchecked
             {
-                int result = x.GetHashCode();
-                result = (result * 397) ^ y.GetHashCode();
-                result = (result * 397) ^ width.GetHashCode();
-                result = (result * 397) ^ height.GetHashCode();
+                int result = X.GetHashCode();
+                result = (result * 397) ^ Y.GetHashCode();
+                result = (result * 397) ^ Width.GetHashCode();
+                result = (result * 397) ^ Height.GetHashCode();
                 return result;
             }
         }

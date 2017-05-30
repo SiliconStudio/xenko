@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,8 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using NShader;
-using NuGet;
 using SiliconStudio.Assets;
+using SiliconStudio.Packages;
 
 namespace SiliconStudio.Xenko.VisualStudio.Commands
 {
@@ -21,6 +21,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
 
         public struct PackageInfo
         {
+            public string StorePath;
             public string SdkPath;
 
             public Version ExpectedVersion;
@@ -239,17 +240,28 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
             if (xenkoSdkDir == null)
                 return null;
 
-            var xenkoSdkBinDir = Path.Combine(xenkoSdkDir, @"Bin\Windows-Direct3D11");
+            var xenkoSdkBinDirectories = new[]
+            {
+                // Xenko 2.x
+                Path.Combine(xenkoSdkDir, @"Bin\Windows\Direct3D11"),
+                Path.Combine(xenkoSdkDir, @"Bin\Windows"),
+                // Backward compatibility with Xenko 1.x
+                Path.Combine(xenkoSdkDir, @"Bin\Windows-Direct3D11"),
+            };
 
-            // Try to load .dll/.exe from Xenko SDK directory
             var assemblyName = new AssemblyName(args.Name);
-            var assemblyFile = Path.Combine(xenkoSdkBinDir, assemblyName.Name + ".dll");
-            if (File.Exists(assemblyFile))
-                return LoadAssembly(assemblyFile);
 
-            assemblyFile = Path.Combine(xenkoSdkBinDir, assemblyName.Name + ".exe");
-            if (File.Exists(assemblyFile))
-                return LoadAssembly(assemblyFile);
+            foreach (var xenkoSdkBinDirectory in xenkoSdkBinDirectories)
+            {
+                // Try to load .dll/.exe from Xenko SDK directory
+                var assemblyFile = Path.Combine(xenkoSdkBinDirectory, assemblyName.Name + ".dll");
+                if (File.Exists(assemblyFile))
+                    return LoadAssembly(assemblyFile);
+
+                assemblyFile = Path.Combine(xenkoSdkBinDirectory, assemblyName.Name + ".exe");
+                if (File.Exists(assemblyFile))
+                    return LoadAssembly(assemblyFile);
+            }
 
             // PCL System assemblies are using version 2.0.5.0 while we have a 4.0
             // Redirect the PCL to use the 4.0 from the current app domain.
@@ -297,6 +309,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
             // If we are in a dev directory, assume we have the right version
             if (File.Exists(Path.Combine(xenkoSdkDir, "build\\Xenko.sln")))
             {
+                packageInfo.StorePath = xenkoSdkDir;
                 packageInfo.SdkPath = xenkoSdkDir;
                 packageInfo.LoadedVersion = packageInfo.ExpectedVersion;
                 return packageInfo;
@@ -306,7 +319,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
             if (NugetStore.IsStoreDirectory(xenkoSdkDir))
             {
                 var store = new NugetStore(xenkoSdkDir);
-                IPackage xenkoPackage = null;
+                NugetPackage xenkoPackage = null;
 
                 // Try to find the package with the expected version
                 if (packageInfo.ExpectedVersion != null && packageInfo.ExpectedVersion >= MinimumVersion)
@@ -321,15 +334,16 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
                     return packageInfo;
 
                 // Return the loaded version and the sdk path
-                var packageDirectory = store.PathResolver.GetPackageDirectory(xenkoPackage);
+                var packageDirectory = store.GetPackageDirectory(xenkoPackage);
                 packageInfo.LoadedVersion = GetVersion(xenkoPackage);
+                packageInfo.StorePath = xenkoSdkDir;
                 packageInfo.SdkPath = Path.Combine(xenkoSdkDir, store.RepositoryPath, packageDirectory);
             }
 
             return packageInfo;
         }
 
-        private static Version GetVersion(IPackage package)
+        private static Version GetVersion(NugetPackage package)
         {
             var originalVersion = package.Version.Version;
             return new Version(originalVersion.Major, originalVersion.Minor);

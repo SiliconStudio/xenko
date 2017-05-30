@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System.Threading.Tasks;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Events;
@@ -27,6 +29,10 @@ namespace PhysicsSample
             while (!CancellationToken.IsCancellationRequested)
             {
                 var state = await receiver.ReceiveAsync();
+				
+				if (CancellationToken.IsCancellationRequested)
+                    return;
+				
                 if (state)
                 {
                     //switch to dynamic and awake the rigid body

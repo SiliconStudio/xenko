@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under MIT License. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 //  This file is part of YamlDotNet - A .NET library for YAML.
 //  Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013 Antoine Aubry
@@ -67,10 +67,14 @@ namespace SiliconStudio.Xenko.VisualStudio.Assets
         internal static FileExtensionToContentTypeDefinition xktexFileExtensionDefinition = null;
 
         [Export]
-        [FileExtension(".xkentity")]
+        [FileExtension(".xkscene")]
         [ContentType(Constants.ContentType)]
-        internal static FileExtensionToContentTypeDefinition xkentityFileExtensionDefinition = null;
+        internal static FileExtensionToContentTypeDefinition xksceneFileExtensionDefinition = null;
 
+	    [Export]
+	    [FileExtension(".xkprefab")]
+	    [ContentType(Constants.ContentType)]
+	    internal static FileExtensionToContentTypeDefinition xkprefabFileExtensionDefinition = null;
 
         [Export]
         [FileExtension(".xkm3d")]
@@ -103,26 +107,26 @@ namespace SiliconStudio.Xenko.VisualStudio.Assets
         [Export(typeof(ClassificationTypeDefinition))]
         [Name(AnchorClassificationName)]
 		internal static ClassificationTypeDefinition YamlAnchorType = null;
-	    public const string AnchorClassificationName = "Xenko.YamlAnchor";
+	    public const string AnchorClassificationName = "Xenko.Yaml.Anchor";
 
 		[Export(typeof(ClassificationTypeDefinition))]
         [Name(AliasClassificationName)]
 		internal static ClassificationTypeDefinition YamlAliasType = null;
-        public const string AliasClassificationName = "Xenko.YamlAlias";
+        public const string AliasClassificationName = "Xenko.Yaml.Alias";
 
         [Export(typeof(ClassificationTypeDefinition))]
         [Name(NumberClassificationName)]
         internal static ClassificationTypeDefinition YamlNumberType = null;
-        public const string NumberClassificationName = "Xenko.YamlNumber";
+        public const string NumberClassificationName = "Xenko.Yaml.Number";
 
         [Export(typeof(ClassificationTypeDefinition))]
         [Name(KeyClassificationName)]
         internal static ClassificationTypeDefinition YamlKeyType = null;
-        public const string KeyClassificationName = "Xenko.YamlKey";
+        public const string KeyClassificationName = "Xenko.Yaml.Key";
 
         [Export(typeof(ClassificationTypeDefinition))]
         [Name(ErrorClassificationName)]
         internal static ClassificationTypeDefinition YamlErrorType = null;
-        public const string ErrorClassificationName = "Xenko.YamlError";
+        public const string ErrorClassificationName = "Xenko.Yaml.Error";
     }
 }

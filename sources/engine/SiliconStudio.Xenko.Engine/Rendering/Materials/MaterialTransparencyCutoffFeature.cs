@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
@@ -43,6 +43,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         public override void VisitFeature(MaterialGeneratorContext context)
         {
             var alpha = Alpha ?? new ComputeFloat(DefaultAlpha);
+            alpha.ClampFloat(0, 1);
             context.SetStream(AlphaDiscardStream.Stream, alpha, MaterialKeys.AlphaDiscardMap, MaterialKeys.AlphaDiscardValue, new Color(DefaultAlpha));
 
             if (!context.Tags.Get(HasFinalCallback))

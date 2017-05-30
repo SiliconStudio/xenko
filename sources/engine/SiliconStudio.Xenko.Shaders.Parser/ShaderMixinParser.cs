@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -234,6 +234,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
             {
                 var finalModule = finalModuleList[0];
                 //PerformanceLogger.Start(PerformanceStage.Mix);
+                parsingResult.Reflection = new EffectReflection();
                 var mixer = new XenkoShaderMixer(finalModule, parsingResult, mixinDictionary, externDict, new CloneContext(mixCloneContext));
                 mixer.Mix();
                 //PerformanceLogger.Stop(PerformanceStage.Mix);
@@ -248,7 +249,6 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                 var simplifier = new ExpressionSimplifierVisitor();
                 simplifier.Run(finalShader);
 
-                parsingResult.Reflection = new EffectReflection();
                 var xkShaderLinker = new ShaderLinker(parsingResult);
                 xkShaderLinker.Run(finalShader);
 

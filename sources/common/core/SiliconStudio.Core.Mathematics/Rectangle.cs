@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under MIT License. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
 //
@@ -35,11 +35,6 @@ namespace SiliconStudio.Core.Mathematics
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct Rectangle : IEquatable<Rectangle>
     {
-        private int x;
-        private int y;
-        private int width;
-        private int height;
-
         /// <summary>
         /// An empty rectangle.
         /// </summary>
@@ -59,10 +54,10 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="height">The height.</param>
         public Rectangle(int x, int y, int width, int height)
         {
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
+            this.X = x;
+            this.Y = y;
+            this.Width = width;
+            this.Height = height;
         }
 
         /// <summary>
@@ -72,8 +67,8 @@ namespace SiliconStudio.Core.Mathematics
         [DataMemberIgnore]
         public int Left
         {
-            get { return x; }
-            set { x = value; }
+            get { return X; }
+            set { X = value; }
         }
 
         /// <summary>
@@ -83,8 +78,8 @@ namespace SiliconStudio.Core.Mathematics
         [DataMemberIgnore]
         public int Top
         {
-            get { return y; }
-            set { y = value; }
+            get { return Y; }
+            set { Y = value; }
         }
 
         /// <summary>
@@ -94,7 +89,7 @@ namespace SiliconStudio.Core.Mathematics
         [DataMemberIgnore]
         public int Right
         {
-            get { return x + width; }
+            get { return X + Width; }
         }
 
         /// <summary>
@@ -104,7 +99,7 @@ namespace SiliconStudio.Core.Mathematics
         [DataMemberIgnore]
         public int Bottom
         {
-            get { return y + height; }
+            get { return Y + Height; }
         }
 
         /// <summary>
@@ -112,62 +107,28 @@ namespace SiliconStudio.Core.Mathematics
         /// </summary>
         /// <value>The X position.</value>
         [DataMember(0)]
-        public int X
-        {
-            get
-            {
-                return x;
-            }
-            set
-            {
-                x = value;
-            }
-        }
+        public int X;
 
         /// <summary>
         /// Gets or sets the Y position.
         /// </summary>
         /// <value>The Y position.</value>
         [DataMember(1)]
-        public int Y
-        {
-            get
-            {
-                return y;
-            }
-            set
-            {
-                y = value;
-            }
-        }
+        public int Y;
 
         /// <summary>
         /// Gets or sets the width.
         /// </summary>
         /// <value>The width.</value>
         [DataMember(2)]
-        public int Width
-        {
-            get
-            {
-                return width;
-            }
-            set
-            {
-                width = value;
-            }
-        }
+        public int Width;
 
         /// <summary>
         /// Gets or sets the height.
         /// </summary>
         /// <value>The height.</value>
         [DataMember(3)]
-        public int Height
-        {
-            get { return height; }
-            set { height = value; }
-        }
+        public int Height;
 
         /// <summary>
         /// Gets or sets the location.
@@ -337,7 +298,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns><c>true</c> if point is inside <see cref="Rectangle"/>, otherwise <c>false</c>.</returns>
         public bool Contains(float x, float y)
         {
-            return (x >= this.x && x <= Right && y >= this.y && y <= Bottom);
+            return (x >= this.X && x <= Right && y >= this.Y && y <= Bottom);
         }
 
         /// <summary>
@@ -477,7 +438,7 @@ namespace SiliconStudio.Core.Mathematics
         /// </returns>
         public bool Equals(Rectangle other)
         {
-            return other.x == this.x && other.y == this.y && other.width == width && other.height == height;
+            return other.X == this.X && other.Y == this.Y && other.Width == Width && other.Height == Height;
         }
 
         /// <summary>
@@ -490,10 +451,10 @@ namespace SiliconStudio.Core.Mathematics
         {
             unchecked
             {
-                int result = x;
-                result = (result * 397) ^ y;
-                result = (result * 397) ^ width;
-                result = (result * 397) ^ height;
+                int result = X;
+                result = (result * 397) ^ Y;
+                result = (result * 397) ^ Width;
+                result = (result * 397) ^ Height;
                 return result;
             }
         }

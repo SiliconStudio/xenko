@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <userdoc>The strength of the effect</userdoc>
         [DataMember(10)]
         [DefaultValue(0.25f)]
-        [DataMemberRange(0f, 1f, 0.01f, 0.1f)]
+        [DataMemberRange(0f, 1f, 0.01f, 0.1f, 3)]
         public float Amount { get; set; }
 
 
@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <userdoc>The size of the grains (in pixels)</userdoc>
         [DataMember(20)]
         [DefaultValue(1.6f)]
-        [DataMemberRange(0f, 10f, 0.01f, 0.1f)]
+        [DataMemberRange(0f, 10f, 0.1f, 1.0f, 3)]
         public float GrainSize { get; set; }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <userdoc>Specifies how strongly the original pixel luminance is affected by the grain pattern.</userdoc>
         [DataMember(40)]
         [DefaultValue(1.0)]
-        [DataMemberRange(0f, 1f, 0.01f, 0.1f)]
+        [DataMemberRange(0f, 1f, 0.01f, 0.1f, 3)]
         public float LuminanceFactor { get; set; }
 
         private float time = 1f;

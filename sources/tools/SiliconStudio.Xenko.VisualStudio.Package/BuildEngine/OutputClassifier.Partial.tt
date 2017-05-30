@@ -28,43 +28,43 @@ namespace SiliconStudio.Xenko.VisualStudio
 {
     public partial class OutputClassifier
     {
-        private Dictionary<char, string> classificationTypes = new Dictionary<char, string>();
+        private Dictionary<string, string> classificationTypes = new Dictionary<string, string>();
 
         private void InitializeClassifiers()
         {
 <#foreach (var classifier in classifiers)
 {#>
-            classificationTypes.Add('<#=classifier.Name[0]#>', BuildEngine<#=classifier.Name#>);
+            classificationTypes.Add("<#=classifier.Name#>", AssetCompiler<#=classifier.Name#>);
 <#}#>
         }
 
 <#foreach (var classifier in classifiers)
 {#>
-        public const string BuildEngine<#=classifier.Name#> = "xk.buildengine.<#=classifier.Name.ToLowerInvariant()#>";
+        public const string AssetCompiler<#=classifier.Name#> = "Xenko.AssetCompiler.<#=classifier.Name#>";
 <#}#>
 
 <#foreach (var classifier in classifiers)
 {#>
         [Export]
-        [Name(BuildEngine<#=classifier.Name#>)]
-        internal static ClassificationTypeDefinition buildEngine<#=classifier.Name#> = null;
+        [Name(AssetCompiler<#=classifier.Name#>)]
+        internal static ClassificationTypeDefinition assetCompiler<#=classifier.Name#> = null;
 
 <# } #>
 <# foreach (var classifier in classifiers)
 {#>
         [Export(typeof(EditorFormatDefinition))]
-        [ClassificationType(ClassificationTypeNames = BuildEngine<#=classifier.Name#>)]
-        [Name(BuildEngine<#=classifier.Name#>)]
+        [ClassificationType(ClassificationTypeNames = AssetCompiler<#=classifier.Name#>)]
+        [Name(AssetCompiler<#=classifier.Name#>)]
         [UserVisible(true)] //this should be visible to the end user
         [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
-        internal sealed class BuildEngine<#=classifier.Name#>Format : ClassificationFormatDefinition
+        internal sealed class AssetCompiler<#=classifier.Name#>Format : ClassificationFormatDefinition
         {
             [ImportingConstructor]
-            public BuildEngine<#=classifier.Name#>Format(OutputClassificationColorManager colorManager)
+            public AssetCompiler<#=classifier.Name#>Format(OutputClassificationColorManager colorManager)
             {
-                DisplayName = "Xenko BuildEngine <#=classifier.Name#>";
+                DisplayName = "Xenko AssetCompiler <#=classifier.Name#>";
                 this.IsBold = <#=classifier.IsBold.ToString().ToLower()#>;
-                var classificationColor = colorManager.GetClassificationColor(BuildEngine<#=classifier.Name#>);
+                var classificationColor = colorManager.GetClassificationColor(AssetCompiler<#=classifier.Name#>);
                 ForegroundColor = classificationColor.ForegroundColor;
                 BackgroundColor = classificationColor.BackgroundColor;
             }

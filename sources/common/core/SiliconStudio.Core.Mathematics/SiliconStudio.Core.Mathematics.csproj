@@ -12,7 +12,7 @@
     <RootNamespace>SiliconStudio.Core.Mathematics</RootNamespace>
     <AssemblyName>SiliconStudio.Core.Mathematics</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <XenkoBuildTags>*</XenkoBuildTags>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
     <SiliconStudioPublicApi>true</SiliconStudioPublicApi>
@@ -40,6 +40,7 @@
     <Compile Include="Color4.cs" />
     <Compile Include="Color3.cs" />
     <Compile Include="ColorBGRA.cs" />
+    <Compile Include="ColorExtensions.cs" />
     <Compile Include="ColorHSV.cs" />
     <Compile Include="ContainmentType.cs" />
     <Compile Include="GuillotinePacker.cs" />

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
@@ -95,6 +97,9 @@ namespace SiliconStudio.Xenko.Rendering
 
                 renderMesh.Enabled = modelComponent.Enabled;
 
+                //TODO GRAPHICS REFACTOR: we have to copy it here, otherwise any RenderStageSelector will not evaluate it correctly, 
+                renderMesh.RenderGroup = modelComponent.RenderGroup;
+
                 if (renderMesh.Enabled)
                 {
                     // Update material
@@ -107,8 +112,7 @@ namespace SiliconStudio.Xenko.Rendering
                     var nodeIndex = mesh.NodeIndex;
                     renderMesh.World = nodeTransformations[nodeIndex].WorldMatrix;
                     renderMesh.IsScalingNegative = nodeTransformations[nodeIndex].IsScalingNegative;
-                    renderMesh.BoundingBox = new BoundingBoxExt(meshInfo.BoundingBox);
-                    renderMesh.RenderGroup = modelComponent.RenderGroup;
+                    renderMesh.BoundingBox = new BoundingBoxExt(meshInfo.BoundingBox);                    
                     renderMesh.BlendMatrices = meshInfo.BlendMatrices;
                 }
             }
@@ -131,6 +135,8 @@ namespace SiliconStudio.Xenko.Rendering
             var model = renderModel.ModelComponent.Model;
             if (renderModel.Model == model)
                 return;
+
+            renderModel.Model = model;
 
             // Remove old meshes
             if (renderModel.Meshes != null)
@@ -167,7 +173,6 @@ namespace SiliconStudio.Xenko.Rendering
                 UpdateMaterial(renderMeshes[index], modelComponent.Materials.SafeGet(materialIndex), model.Materials.GetItemOrNull(materialIndex), modelComponent);
             }
 
-            renderModel.Model = model;
             renderModel.Meshes = renderMeshes;
 
             // Update before first add so that RenderGroup is properly set

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.ComponentModel;
 using System.Diagnostics;
@@ -84,7 +84,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <seealso cref="SpriteFont.Size"/>
         /// <userdoc>The size of the text in virtual pixels unit.</userdoc>
         [DataMember]
-        [DataMemberRange(0.0f, float.MaxValue, AllowNaN = true)]
+        [DataMemberRange(0.0f, 3)]
         [Display(category: AppearanceCategory)]
         [DefaultValue(float.NaN)]
         public float TextSize

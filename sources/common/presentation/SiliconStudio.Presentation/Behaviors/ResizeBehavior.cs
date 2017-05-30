@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Windows;
 using System.Windows.Interactivity;
 using SiliconStudio.Core.Annotations;
@@ -28,7 +30,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         private void SizeChanged(object sender, [NotNull] SizeChangedEventArgs e)
         {
-            if (IsSizeRatioInValid() || !e.HeightChanged || !e.WidthChanged)
+            if (!IsSizeRatioValid() || !e.HeightChanged || !e.WidthChanged)
                 return;
 
             // Measure the required size
@@ -50,11 +52,10 @@ namespace SiliconStudio.Presentation.Behaviors
             AssociatedObject.Height = height;
         }
 
-        private bool IsSizeRatioInValid()
+        private bool IsSizeRatioValid()
         {
-            return SizeRatio.IsEmpty
-                || double.IsNaN(SizeRatio.Width) || double.IsInfinity(SizeRatio.Width) || SizeRatio.Width < 1
-                || double.IsNaN(SizeRatio.Height) || double.IsInfinity(SizeRatio.Height) || SizeRatio.Height < 1;
+            return !SizeRatio.IsEmpty && !double.IsNaN(SizeRatio.Width) && !double.IsInfinity(SizeRatio.Width) && SizeRatio.Width >= 1
+                                      && !double.IsNaN(SizeRatio.Height) && !double.IsInfinity(SizeRatio.Height) && SizeRatio.Height >= 1;
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -13,6 +13,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Animations;
 using SiliconStudio.Xenko.Shaders;
 using System.Linq;
+using SiliconStudio.Assets;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Assets.Models
@@ -42,6 +43,8 @@ namespace SiliconStudio.Xenko.Assets.Models
         }
 
         private string ContextAsString => $"model [{Location}] from import [{SourcePath}]";
+
+        public Package Package { get; set; }
 
         /// <summary>
         /// The method to override containing the actual command code. It is called by the <see cref="DoCommand" /> function
@@ -133,16 +136,8 @@ namespace SiliconStudio.Xenko.Assets.Models
         {
             base.ComputeParameterHash(writer);
 
+            //this serialized the parameters of the command
             writer.SerializeExtended(this, ArchiveMode.Serialize);
-        }
-
-        protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
-        {
-            // Skeleton is a compile time dependency
-            if (SkeletonUrl != null)
-                yield return new ObjectUrl(UrlType.Content, SkeletonUrl);
-
-            yield return new ObjectUrl(UrlType.File, SourcePath);
         }
 
         /// <summary>

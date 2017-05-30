@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.ComponentModel;
@@ -56,7 +56,6 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>The value is coerced in the range [<see cref="Minimum"/>, <see cref="Maximum"/>].</remarks>
         /// <userdoc>The current value of the slider.</userdoc>
         [DataMember]
-        [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
         public float Value
         {
@@ -82,7 +81,6 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>The value is coerced in the range [<see cref="float.MinValue"/>, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>The smallest possible value of the slider.</userdoc>
         [DataMember]
-        [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
         public float Minimum
         {
@@ -102,7 +100,6 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>The value is coerced in the range [<see cref="Minimum"/>, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>The greatest possible value of the slider.</userdoc>
         [DataMember]
-        [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(1.0f)]
         public float Maximum
         {
@@ -121,7 +118,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>The step of a change of the value.</userdoc>
         [DataMember]
-        [DataMemberRange(0, float.MaxValue)]
+        [DataMemberRange(0, 3)]
         [DefaultValue(0.1f)]
         public float Step
         {
@@ -213,7 +210,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>The value is coerced in the range [1, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>The frequency of the ticks on the slider track.</userdoc>
         [DataMember]
-        [DataMemberRange(1, float.MaxValue)]
+        [DataMemberRange(1, 3)]
         [Display(category: AppearanceCategory)]
         [DefaultValue(10.0f)]
         public float TickFrequency
@@ -234,7 +231,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>The offset in virtual pixels between the center of the track and center of the ticks (for an not-stretched slider).</userdoc>
         [DataMember]
-        [DataMemberRange(0, float.MaxValue)]
+        [DataMemberRange(0, 3)]
         [Display(category: AppearanceCategory)]
         [DefaultValue(10.0f)]
         public float TickOffset

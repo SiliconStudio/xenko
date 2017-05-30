@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 #include "../../../../deps/NativePath/NativePath.h"
 #include "../../SiliconStudio.Xenko.Native/XenkoNative.h"
@@ -161,7 +161,7 @@ extern "C" {
 		ovrLayerQuad Layer;
 	};
 
-	DLL_EXPORT_API xnOvrQuadLayer* xnOvrCreateQuadLayerTexturesDx(xnOvrSession* session, void* dxDevice, int* outTextureCount, int width, int height)
+	DLL_EXPORT_API xnOvrQuadLayer* xnOvrCreateQuadLayerTexturesDx(xnOvrSession* session, void* dxDevice, int* outTextureCount, int width, int height, int mipLevels, int sampleCount)
 	{
 		auto layer = new xnOvrQuadLayer;
 
@@ -171,8 +171,8 @@ extern "C" {
 		texDesc.ArraySize = 1;
 		texDesc.Width = width;
 		texDesc.Height = height;
-		texDesc.MipLevels = 1;
-		texDesc.SampleCount = 1;
+		texDesc.MipLevels = mipLevels;
+		texDesc.SampleCount = sampleCount;
 		texDesc.StaticImage = ovrFalse;
 		texDesc.MiscFlags = ovrTextureMisc_None;
 		texDesc.BindFlags = ovrTextureBind_DX_RenderTarget;
@@ -392,7 +392,7 @@ extern "C" {
 		}
 	}
 
-	DLL_EXPORT_API npBool xnOvrCommitFrame(xnOvrSession* session, xnOvrQuadLayer** extraLayers, int numberOfExtraLayers)
+	DLL_EXPORT_API npBool xnOvrCommitFrame(xnOvrSession* session, int numberOfExtraLayers, xnOvrQuadLayer** extraLayers)
 	{
 		ovrLayerHeader* layers[1 + numberOfExtraLayers];
 		//add the default layer first
@@ -540,7 +540,7 @@ extern "C" {
 		
 	}
 
-	DLL_EXPORT_API npBool xnOvrCommitFrame(void* session)
+	DLL_EXPORT_API npBool xnOvrCommitFrame(void* session, int numberOfExtraLayers, void** extraLayers)
 	{
 		return true;
 	}
@@ -569,7 +569,7 @@ extern "C" {
 	{
 	}
 
-	DLL_EXPORT_API void* xnOvrCreateQuadLayerTexturesDx(void* session, void* dxDevice, int* outTextureCount, int width, int height, npBool headLocked)
+	DLL_EXPORT_API void* xnOvrCreateQuadLayerTexturesDx(void* session, void* dxDevice, int* outTextureCount, int width, int height, int mipLevels, int sampleCount)
 	{
 		return NULL;
 	}
@@ -584,7 +584,7 @@ extern "C" {
 		return NULL;
 	}
 
-	DLL_EXPORT_API void xnOvrSetQuadLayerParams(void* layer, float* position, float* orientation, float* size)
+	DLL_EXPORT_API void xnOvrSetQuadLayerParams(void* layer, float* position, float* orientation, float* size, npBool headLocked)
 	{
 	}
 }

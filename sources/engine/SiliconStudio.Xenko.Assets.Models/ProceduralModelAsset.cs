@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,7 +8,6 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Rendering;
@@ -22,21 +21,21 @@ namespace SiliconStudio.Xenko.Assets.Models
     [DataContract("ProceduralModelAsset")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Model))]
-    [AssetCompiler(typeof(ProceduralModelAssetCompiler))]
     [Display(1850, "Procedural Model")]
-    [AssetFormatVersion(XenkoConfig.PackageName, "1.9.0-beta01")]
-    [AssetUpgrader(XenkoConfig.PackageName, 0, 2, typeof(Upgrader))]
-    [AssetUpgrader(XenkoConfig.PackageName, 2, 3, typeof(RenameCapsuleHeight))]
-    [AssetUpgrader(XenkoConfig.PackageName, 3, 4, typeof(RenameDiameters))]
-    [AssetUpgrader(XenkoConfig.PackageName, 4, 5, typeof(Standardization))]
-    [AssetUpgrader(XenkoConfig.PackageName, "0.0.5", "1.5.0-alpha01", typeof(CapsuleRadiusDefaultChange))]
-    [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha01", "1.9.0-beta01", typeof(ConeOffsetChange))]
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.9.0-beta01")]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta01", "2.0.0.0", typeof(EmptyAssetUpgrader))]
+#else
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
+#endif
     public sealed class ProceduralModelAsset : Asset, IModelAsset
     {
+        private const string CurrentVersion = "2.0.0.0";
+
         /// <summary>
         /// The default file extension used by the <see cref="ProceduralModelAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xkpromodel;.pdxpromodel";
+        public const string FileExtension = ".xkpromodel";
 
         /// <summary>
         /// Gets or sets the type.
@@ -50,7 +49,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 
         /// <inheritdoc/>
         [DataMemberIgnore]
-        public List<ModelMaterial> Materials => Type?.MaterialInstances.Select(x => new ModelMaterial { Name = x.Key, MaterialInstance = x.Value }).ToList() ?? new List<ModelMaterial>();
+        public List<ModelMaterial> Materials => Type.MaterialInstances.Select(x => new ModelMaterial { Name = x.Key, MaterialInstance = x.Value }).ToList();
 
         private class Upgrader : AssetUpgraderBase
         {

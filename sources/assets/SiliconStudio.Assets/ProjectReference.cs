@@ -1,8 +1,9 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Diagnostics;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Assets
@@ -39,6 +40,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The identifier.</value>
         [DataMember(10)]
+        [NonOverridable]
         public Guid Id { get; set; }
 
         /// <summary>

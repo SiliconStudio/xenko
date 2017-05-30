@@ -14,7 +14,7 @@
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <XenkoProjectPlatformDependentWindows>true</XenkoProjectPlatformDependentWindows>
     <FileAlignment>512</FileAlignment>
-    <XenkoBuildTags>*</XenkoBuildTags>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
   </PropertyGroup>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
@@ -24,18 +24,8 @@
       </ItemGroup>
     </When>
   </Choose>
-  <ItemGroup Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
-    <Reference Include="SharpDX">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D11">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
-    </Reference>
-  </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+    <Compile Include="..\..\common\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Controls\Border.cs" />

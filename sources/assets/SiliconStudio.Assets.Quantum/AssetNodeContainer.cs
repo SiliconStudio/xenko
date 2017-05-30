@@ -1,5 +1,6 @@
-﻿using System;
-using SiliconStudio.Assets.Quantum.Commands;
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
@@ -12,12 +13,6 @@ namespace SiliconStudio.Assets.Quantum
     {
         public AssetNodeContainer()
         {
-            NodeBuilder.AvailableCommands.Add(new AddNewItemCommand());
-            NodeBuilder.AvailableCommands.Add(new AddPrimitiveKeyCommand());
-            NodeBuilder.AvailableCommands.Add(new CreateNewInstanceCommand());
-            NodeBuilder.AvailableCommands.Add(new RemoveItemCommand());
-            NodeBuilder.AvailableCommands.Add(new MoveItemCommand());
-            NodeBuilder.AvailableCommands.Add(new RenameStringKeyCommand());
             NodeBuilder.RegisterPrimitiveType(typeof(IReference));
             NodeBuilder.RegisterPrimitiveType(typeof(PropertyKey));
             NodeBuilder.RegisterPrimitiveType(typeof(TimeSpan));
@@ -43,6 +38,16 @@ namespace SiliconStudio.Assets.Quantum
             {
                 NodeBuilder.RegisterPrimitiveType(contentType);
             }
+        }
+
+        public new IAssetObjectNode GetOrCreateNode(object rootObject)
+        {
+            return (IAssetObjectNode)base.GetOrCreateNode(rootObject);
+        }
+
+        public new IAssetObjectNode GetNode(object rootObject)
+        {
+            return (IAssetObjectNode)base.GetNode(rootObject);
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.ComponentModel;
 using SiliconStudio.Core;
@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         [DataMember(10)]
         [DefaultValue(13)]
-        [DataMemberRange(1, 50)]
+        [DataMemberRange(1, 50, 1, 5, 0)]
         [Display("Number of samples")]
         public int NumberOfSamples { get; set; } = 13;
 
@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         [DataMember(70)]
         [DefaultValue(2)]
-        [DataMemberRange(0, 3)]
+        [DataMemberRange(0, 3, 1, 1, 0)]
         [Display("Blur Count")]
         public int NumberOfBounces { get; set; } = 2;
 

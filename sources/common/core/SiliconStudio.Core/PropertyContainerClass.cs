@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.Collections;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ namespace SiliconStudio.Core
     /// </summary>
     [DataContract]
     [DataSerializer(typeof(DictionaryAllSerializer<PropertyContainerClass, PropertyKey, object>))]
-    public class PropertyContainerClass : IDictionary<PropertyKey, object>
+    public class PropertyContainerClass : IDictionary<PropertyKey, object>, IReadOnlyDictionary<PropertyKey, object>
     {
         private PropertyContainer inner;
 
@@ -174,5 +174,11 @@ namespace SiliconStudio.Core
         {
             inner.SetObject(key, value);
         }
+
+        /// <inheritdoc />
+        IEnumerable<PropertyKey> IReadOnlyDictionary<PropertyKey, object>.Keys => Keys;
+
+        /// <inheritdoc />
+        IEnumerable<object> IReadOnlyDictionary<PropertyKey, object>.Values => Values;
     }
 }

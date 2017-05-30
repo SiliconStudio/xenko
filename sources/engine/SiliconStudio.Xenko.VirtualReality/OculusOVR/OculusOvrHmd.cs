@@ -1,8 +1,11 @@
-﻿#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using SharpDX.Direct3D11;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
@@ -13,17 +16,41 @@ namespace SiliconStudio.Xenko.VirtualReality
     internal class OculusOvrHmd : VRDevice
     {
         private static bool initDone;
+
         //private static readonly Guid dx12ResourceGuid = new Guid("696442be-a72e-4059-bc79-5b5c98040fad");
-        private static readonly Guid Dx11Texture2DGuid = new Guid("6f15aaf2-d208-4e89-9ab4-489535d34f9c");
+        internal static readonly Guid Dx11Texture2DGuid = new Guid("6f15aaf2-d208-4e89-9ab4-489535d34f9c");
 
         private IntPtr ovrSession;
         private Texture[] textures;
 
         private OculusTouchController leftHandController;
         private OculusTouchController rightHandController;
+        private readonly List<OculusOverlay> overlays = new List<OculusOverlay>();
+        private IntPtr[] overlayPtrs = new IntPtr[0];
+
+        internal OculusOvrHmd()
+        {
+            SupportsOverlays = true;
+            VRApi = VRApi.Oculus;
+        }
+
+        public override void Dispose()
+        {
+            foreach (var oculusOverlay in overlays)
+            {
+                oculusOverlay.Dispose();
+            }
+
+            if (ovrSession != IntPtr.Zero)
+            {
+                OculusOvr.DestroySession(ovrSession);
+                ovrSession = IntPtr.Zero;
+            }
+        }
 
         public override void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool requireMirror, int mirrorWidth, int mirrorHeight)
         {
+            graphicsDevice = device;
             long adapterId;
             ovrSession = OculusOvr.CreateSessionDx(out adapterId);
             //Game.GraphicsDeviceManager.RequiredAdapterUid = adapterId.ToString(); //should not be needed
@@ -38,7 +65,7 @@ namespace SiliconStudio.Xenko.VirtualReality
             {
                 var mirrorTex = OculusOvr.GetMirrorTexture(ovrSession, Dx11Texture2DGuid);
                 MirrorTexture = new Texture(device);
-                MirrorTexture.InitializeFrom(new Texture2D(mirrorTex), false);
+                MirrorTexture.InitializeFromImpl(new Texture2D(mirrorTex), false);
             }
 
             textures = new Texture[texturesCount];
@@ -52,7 +79,7 @@ namespace SiliconStudio.Xenko.VirtualReality
                 }
 
                 textures[i] = new Texture(device);
-                textures[i].InitializeFrom(new Texture2D(ptr), false);
+                textures[i].InitializeFromImpl(new Texture2D(ptr), false);
             }
 
             ActualRenderFrameSize = new Size2(textures[0].Width, textures[0].Height);
@@ -62,6 +89,7 @@ namespace SiliconStudio.Xenko.VirtualReality
         }
 
         private OculusOvr.PosesProperties currentPoses;
+        private GraphicsDevice graphicsDevice;
 
         public override void Update(GameTime gameTime)
         {
@@ -176,7 +204,22 @@ namespace SiliconStudio.Xenko.VirtualReality
         {
             var index = OculusOvr.GetCurrentTargetIndex(ovrSession);
             commandList.Copy(renderFrame, textures[index]);
-            OculusOvr.CommitFrame(ovrSession, null, 0);
+            overlayPtrs = overlays.Where(x => x.Enabled).Select(x => x.OverlayPtr).ToArray();
+            OculusOvr.CommitFrame(ovrSession, overlayPtrs.Length, overlayPtrs);
+        }
+
+        public override VROverlay CreateOverlay(int width, int height, int mipLevels, int sampleCount)
+        {
+            var overlay = new OculusOverlay(ovrSession, graphicsDevice, width, height, mipLevels, sampleCount);
+            overlays.Add(overlay);
+            return overlay;
+        }
+
+        public override void ReleaseOverlay(VROverlay overlay)
+        {
+            var oculusOverlay = (OculusOverlay)overlay;
+            oculusOverlay.Dispose();
+            overlays.Remove(oculusOverlay);
         }
     }
 }

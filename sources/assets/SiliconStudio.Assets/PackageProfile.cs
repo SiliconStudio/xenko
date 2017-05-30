@@ -1,10 +1,9 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using NuGet;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Settings;
@@ -86,7 +85,10 @@ namespace SiliconStudio.Assets
         {
             if (name == null) throw new ArgumentNullException("name");
             Name = name;
-            AssetFolders.AddRange(folders);
+            foreach (var folder in folders)
+            {
+                AssetFolders.Add(folder);
+            }
         }
 
 

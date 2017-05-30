@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -18,6 +18,12 @@ namespace SiliconStudio.Xenko.Particles
     [DataContract("PaticleModule")]
     public abstract class ParticleModule : ParticleTransform
     {
+        internal delegate void ChangeParticleFields(ParticleFieldDescription fieldDescription);
+        internal ChangeParticleFields AddFieldDescription = null;
+        internal ChangeParticleFields RemoveFieldDescription = null;
+
+        private bool enabled = true;
+
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="ParticleModule"/> is enabled.
         /// </summary>
@@ -26,7 +32,36 @@ namespace SiliconStudio.Xenko.Particles
         /// </value>
         [DataMember(-10)]
         [DefaultValue(true)]
-        public bool Enabled { get; set; } = true;
+        public bool Enabled
+        {
+            get
+            {
+                return enabled;
+            }
+
+            set
+            {
+                if (enabled != value)
+                {
+                    if (enabled && RemoveFieldDescription != null)
+                    {
+                        for (var i = 0; i < RequiredFields.Count; i++)
+                        {
+                            RemoveFieldDescription(RequiredFields[i]);
+                        }
+                    }
+                    else if (!enabled && AddFieldDescription != null)
+                    {
+                        for (var i = 0; i < RequiredFields.Count; i++)
+                        {
+                            AddFieldDescription(RequiredFields[i]);
+                        }
+                    }
+                }
+
+                enabled = value;
+            }
+        }
 
         /// <summary>
         /// Resets the current state to the module's initial state

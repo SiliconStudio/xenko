@@ -1,6 +1,7 @@
 !Texture
 Id: 73a678b3-1b69-437f-a447-29d9b473864c
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 1.11.1.2}
 Tags: []
 Source: ../../Resources/water.jpg
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Type: !ColorTextureType
+    ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

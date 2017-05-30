@@ -1,4 +1,6 @@
-﻿using SiliconStudio.Core.Annotations;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Quantum
 {
@@ -12,12 +14,6 @@ namespace SiliconStudio.Quantum
         /// </summary>
         [NotNull]
         IGraphNode Node { get; }
-
-        /// <summary>
-        /// The index where the change occurred. Must be <see cref="Quantum.Index.Empty"/> if <see cref="ChangeType"/> is
-        /// <see cref="ContentChangeType.ValueChange"/>, and another value than <see cref="Quantum.Index.Empty"/> in other cases.
-        /// </summary>
-        Index Index { get; }
 
         /// <summary>
         /// The type of change.

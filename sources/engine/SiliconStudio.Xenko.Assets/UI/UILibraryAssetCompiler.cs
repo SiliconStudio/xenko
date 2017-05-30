@@ -1,22 +1,37 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using SiliconStudio.Assets;
+using SiliconStudio.Assets.Analysis;
+using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
+using SiliconStudio.Xenko.Assets.Sprite;
+using SiliconStudio.Xenko.Assets.SpriteFont;
 
 namespace SiliconStudio.Xenko.Assets.UI
 {
+    [AssetCompiler(typeof(UILibraryAsset), typeof(AssetCompilationContext))]
     public sealed class UILibraryAssetCompiler : UIAssetCompilerBase<UILibraryAsset>
     {
-        protected override UIConvertCommand Create(string url, UILibraryAsset parameters)
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
         {
-            return new UILibraryCommand(url, parameters);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SpriteFontAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SpriteSheetAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
+        }
+
+        protected override UIConvertCommand Create(string url, UILibraryAsset parameters, Package package)
+        {
+            return new UILibraryCommand(url, parameters, package);
         }
 
         private sealed class UILibraryCommand : UIConvertCommand
         {
-            public UILibraryCommand(string url, UILibraryAsset parameters)
-                : base(url, parameters)
+            public UILibraryCommand(string url, UILibraryAsset parameters, Package package)
+                : base(url, parameters, package)
             {
             }
 
@@ -25,7 +40,7 @@ namespace SiliconStudio.Xenko.Assets.UI
                 var uiLibrary = new Engine.UILibrary();
                 foreach (var kv in Parameters.PublicUIElements)
                 {
-                    if (!Parameters.Hierarchy.RootPartIds.Contains(kv.Key))
+                    if (Parameters.Hierarchy.RootParts.All(x => x.Id != kv.Key))
                     {
                         // We might want to allow that in the future.
                         commandContext.Logger.Warning($"Only root elements can be exposed publicly. Skipping [{kv.Key}].");

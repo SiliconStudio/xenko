@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under MIT License. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
@@ -60,29 +60,28 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>A three component vector containing the red, green, and blue components of the color.</returns>
         public Color4 ToColor()
         {
-            var hdiv = (int)(H / 60);
-            int hi = hdiv % 6;
-            float f = H / 60 - hdiv;
-
-            float v = V;
+            float hdiv = H / 60;
+            int hi = (int)hdiv;
+            float f = hdiv - hi;
+            
             float p = V * (1 - S);
-            float q = V * (1 - f * S);
-            float t = V * (1 - (1 - f) * S);
+            float q = V * (1 - (S * f));
+            float t = V * (1 - (S * (1 - f)));
 
             switch (hi)
             {
                 case 0:
-                    return new Color4(v, t, p, A);
+                    return new Color4(V, t, p, A);
                 case 1:
-                    return new Color4(q, v, p, A);
+                    return new Color4(q, V, p, A);
                 case 2:
-                    return new Color4(p, v, t, A);
+                    return new Color4(p, V, t, A);
                 case 3:
-                    return new Color4(p, q, v, A);
+                    return new Color4(p, q, V, A);
                 case 4:
-                    return new Color4(t, p, v, A);
+                    return new Color4(t, p, V, A);
                 default:
-                    return new Color4(v, p, q, A);
+                    return new Color4(V, p, q, A);
             }
         }
 
@@ -101,16 +100,21 @@ namespace SiliconStudio.Core.Mathematics
 
             if (delta > 0.0f)
             {
-                if (max == color.R && max != color.G)
-                    h += (color.G - color.B) / delta;
-                if (max == color.G && max != color.B)
-                    h += (2.0f + (color.B - color.R) / delta);
-                if (max == color.B && max != color.R)
-                    h += (4.0f + (color.R - color.G) / delta);
+                if (color.R >= max)
+                    h = (color.G - color.B) / delta;
+                else if (color.G >= max)
+                    h = (color.B - color.R) / delta + 2.0f;
+                else
+                    h = (color.R - color.G) / delta + 4.0f;
                 h *= 60.0f;
+
+                if (h < 0)
+                    h += 360f;
             }
 
-            return new ColorHSV(h, (max != 0.0f) ? 1.0f - min / max : 0.0f, max, color.A);
+            float s = MathUtil.IsZero(max) ? 0.0f : delta / max;
+
+            return new ColorHSV(h, s, max, color.A);
         }
 
         /// <inheritdoc/>

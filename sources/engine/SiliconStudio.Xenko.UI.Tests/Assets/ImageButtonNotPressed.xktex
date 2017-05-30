@@ -1,6 +1,8 @@
 !Texture
 Id: cccf5d15-cf6e-4a6b-a759-faacaff0ec6c
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Source: ../../../data/tests/ImageButtonNotPressed.dds
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+IsCompressed: false
+Type: !ColorTextureType
+    ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

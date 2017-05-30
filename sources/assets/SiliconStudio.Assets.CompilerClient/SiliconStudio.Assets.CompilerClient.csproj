@@ -9,10 +9,13 @@
     <RootNamespace>SiliconStudio.Assets.CompilerClient</RootNamespace>
     <AssemblyName>SiliconStudio.Assets.CompilerClient</AssemblyName>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer</SiliconStudioAssemblyProcessorOptions>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject></StartupObject>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <Prefer32Bit>false</Prefer32Bit>
@@ -26,6 +29,15 @@
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\common\core\SiliconStudio.Core\ModuleInitializerAttribute.cs">
+      <Link>ModuleInitializerAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\..\shared\ToolAssemblyResolveModuleInitializer.cs">
+      <Link>ToolAssemblyResolveModuleInitializer.cs</Link>
+    </Compile>
     <Compile Include="..\SiliconStudio.Assets\DirectoryHelper.cs">
       <Link>DirectoryHelper.cs</Link>
     </Compile>

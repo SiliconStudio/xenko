@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Specialized;
 using System.Diagnostics;
@@ -8,6 +8,8 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using SiliconStudio.Assets;
+using SiliconStudio.Core;
+using SiliconStudio.Packages;
 using SiliconStudio.Xenko.Engine.Network;
 
 namespace SiliconStudio.Xenko.ConnectionRouter
@@ -45,14 +47,18 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                 var store = new NugetStore(xenkoSdkDir);
 
                 var xenkoPackages = store.GetPackagesInstalled(store.MainPackageIds);
-                var xenkoPackage = xenkoVersion != null
-                    ? (xenkoPackages.FirstOrDefault(p => p.Version.ToString() == xenkoVersion)
-                        ?? xenkoPackages.FirstOrDefault(p => VersionWithoutSpecialPart(p.Version.ToString()) == VersionWithoutSpecialPart(xenkoVersion))) // If no exact match, try a second time without the special version tag (beta, alpha, etc...)
+                // Convert the provided xenko version into a valid package version
+                PackageVersion packageVersion;
+                PackageVersion.TryParse(xenkoVersion, out packageVersion);
+                // Retrieve the corresponding package, if it exists
+                var xenkoPackage = packageVersion != null
+                    ? (xenkoPackages.FirstOrDefault(p => p.Version == packageVersion)
+                       ?? xenkoPackages.FirstOrDefault(p => p.Version.Version == packageVersion.Version)) // If no exact match, try a second time without the special version tag (beta, alpha, etc...)
                     : xenkoPackages.FirstOrDefault();
                 if (xenkoPackage == null)
                     return null;
 
-                var packageDirectory = store.PathResolver.GetPackageDirectory(xenkoPackage);
+                var packageDirectory = store.GetPackageDirectory(xenkoPackage);
                 return Path.Combine(xenkoSdkDir, store.RepositoryPath, packageDirectory);
             }
 
@@ -102,9 +108,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                 if (xenkoSdkDir != null)
                 {
                     // Try to find Connection Router in Xenko Sdk
-                    routerAssemblyLocation = Path.Combine(xenkoSdkDir, @"Bin\Windows-Direct3D11", routerAssemblyExe);
-                    if (!File.Exists(routerAssemblyLocation))
-                        routerAssemblyLocation = Path.Combine(xenkoSdkDir, @"Bin\Windows", routerAssemblyExe);
+                    routerAssemblyLocation = Path.Combine(xenkoSdkDir, @"Bin\Windows", routerAssemblyExe);
 
                     // Could not find anything, use router from current version instead of latest version
                     if (!File.Exists(routerAssemblyLocation))
@@ -117,7 +121,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                     var routerAssemblyFileVersionInfo = FileVersionInfo.GetVersionInfo(routerAssemblyLocation);
 
                     // Check that current router is at least as good as the one of latest found Xenko
-                    if (new Version(routerAssemblyFileVersionInfo.FileVersion) <= new Version(runningRouterVersion.FileVersion))
+                    if (new PackageVersion(routerAssemblyFileVersionInfo.FileVersion) <= new PackageVersion(runningRouterVersion.FileVersion))
                         return true;
                 }
 

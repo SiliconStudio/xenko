@@ -1,7 +1,8 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 
@@ -15,19 +16,19 @@ namespace SiliconStudio.Assets
     [AssemblyScan]
     public class PackageUpgraderAttribute : Attribute
     {
-        private readonly PackageVersionRange packageUpdatedVersionRange;
+        private readonly PackageVersionRange updatedVersionRange;
         
         public string PackageName { get; private set; }
 
         public PackageVersion PackageMinimumVersion { get; private set; }
 
-        public PackageVersionRange PackageUpdatedVersionRange { get { return packageUpdatedVersionRange; } }
+        public PackageVersionRange UpdatedVersionRange { get { return updatedVersionRange; } }
 
         public PackageUpgraderAttribute(string packageName, string packageMinimumVersion, string packageUpdatedVersionRange)
         {
             PackageName = packageName;
             PackageMinimumVersion = new PackageVersion(packageMinimumVersion);
-            PackageVersionRange.TryParse(packageUpdatedVersionRange, out this.packageUpdatedVersionRange);
+            PackageVersionRange.TryParse(packageUpdatedVersionRange, out this.updatedVersionRange);
         }
     }
 }

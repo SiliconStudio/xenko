@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.ComponentModel;
 using System.Threading;
@@ -37,7 +37,6 @@ namespace SiliconStudio.Xenko.Engine
         {
             Type = new LightDirectional();
             Intensity = 1.0f;
-            CullingMask = RenderGroupMask.All;
             Id = Interlocked.Increment(ref LightComponentIds);
         }
 
@@ -64,17 +63,6 @@ namespace SiliconStudio.Xenko.Engine
         [DataMember(30)]
         [DefaultValue(1.0f)]
         public float Intensity { get; set; }
-
-        /// <summary>
-        /// Get or sets the layers that the light influences
-        /// </summary>
-        /// <value>
-        /// The layer mask.
-        /// </value>
-        /// <userdoc>The group of entities that this light belongs to.</userdoc>
-        [DataMember(40)]
-        [DefaultValue(RenderGroupMask.All)]
-        public RenderGroupMask CullingMask { get; set; }
 
         /// <summary>
         /// Gets the light position in World-Space (computed by the <see cref="LightProcessor"/>) (readonly field). See remarks.

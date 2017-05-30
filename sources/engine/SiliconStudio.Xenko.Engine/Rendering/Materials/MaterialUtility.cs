@@ -1,20 +1,19 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Globalization;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Xenko.Rendering.Materials.Processor.Visitors
+namespace SiliconStudio.Xenko.Rendering.Materials
 {
     /// <summary>
     /// Class MaterialUtility.
     /// </summary>
-    internal class MaterialUtility
+    internal static class MaterialUtility
     {
         public const string BackgroundCompositionName = "color1";
 
@@ -136,6 +135,32 @@ namespace SiliconStudio.Xenko.Rendering.Materials.Processor.Visitors
                 default:
                     throw new ArgumentOutOfRangeException("Asked for " + i + " but no more than 10 default textures are currently supported");
             }
+        }
+
+        /// <summary>
+        /// Clamps <see cref="ComputeColors.ComputeFloat"/> value within a specified range [min; max].
+        /// </summary>
+        /// <param name="key">Input scalar.</param>
+        /// <param name="min">The minimum value.</param>
+        /// <param name="max">The maximum value.</param>
+        public static void ClampFloat([NotNull] this IComputeScalar key, float min, float max)
+        {
+            var asFloat = key as ComputeColors.ComputeFloat;
+            if (asFloat != null)
+                asFloat.Value = MathUtil.Clamp(asFloat.Value, min, max);
+        }
+
+        /// <summary>
+        /// Clamps <see cref="ComputeColors.ComputeFloat4"/> value within a specified range [min; max].
+        /// </summary>
+        /// <param name="key">Input scalar.</param>
+        /// <param name="min">The minimum value.</param>
+        /// <param name="max">The maximum value.</param>
+        public static void ClampFloat4([NotNull] this IComputeColor key, ref Vector4 min, ref Vector4 max)
+        {
+            var asFloat4 = key as ComputeColors.ComputeFloat4;
+            if (asFloat4 != null)
+                asFloat4.Value = Vector4.Clamp(asFloat4.Value, min, max);
         }
     }
 }

@@ -1,8 +1,9 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -40,14 +41,14 @@ namespace SiliconStudio.Xenko.Engine
         /// <returns>The attributes for the specified type.</returns>
         /// <exception cref="System.ArgumentNullException"></exception>
         /// <exception cref="System.ArgumentException">The type must be of EntityComponent;type</exception>
-        public static EntityComponentAttributes Get(Type type)
+        public static EntityComponentAttributes Get([NotNull] Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
-            if (!typeof(EntityComponent).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo())) throw new ArgumentException("The type must be of EntityComponent", "type");
+            if (!typeof(EntityComponent).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo())) throw new ArgumentException(@"The type must be of EntityComponent", nameof(type));
             return GetInternal(type);
         }
 
-        private static EntityComponentAttributes GetInternal(Type type)
+        private static EntityComponentAttributes GetInternal([NotNull] Type type)
         {
             EntityComponentAttributes attributes;
             lock (ComponentAttributes)

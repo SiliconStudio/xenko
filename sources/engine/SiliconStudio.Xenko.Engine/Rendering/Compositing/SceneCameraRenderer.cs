@@ -1,3 +1,6 @@
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
@@ -10,18 +13,18 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     /// <remarks>
     /// Since it sets a view, it is usually not shareable for multiple rendering.
     /// </remarks>
-    [Display("Render Camera")]
+    [Display("Camera Renderer")]
     public partial class SceneCameraRenderer : SceneRendererBase
     {
         [DataMemberIgnore]
         public RenderView RenderView { get; } = new RenderView();
-
+        
         /// <summary>
         /// Gets or sets the camera.
         /// </summary>
         /// <value>The camera.</value>
         /// <userdoc>The camera to use to render the scene.</userdoc>
-        public SceneCameraSlotIndex Camera { get; set; } = new SceneCameraSlotIndex(0);
+        public SceneCameraSlot Camera { get; set; }
 
         public ISceneRenderer Child { get; set; }
 
@@ -60,9 +63,14 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             }
         }
 
+        /// <summary>
+        /// Resolves camera to the one contained in slot <see cref="Camera"/>.
+        /// </summary>
         protected virtual CameraComponent ResolveCamera(RenderContext renderContext)
         {
-            return renderContext.GetCameraFromSlot(Camera);
+            var camera = Camera?.Camera;
+            if (camera == null) throw new InvalidOperationException($"A {nameof(SceneCameraRenderer)} in use has no camera set. Make sure the camera component to use is enabled and has its [{nameof(CameraComponent.Slot)}] property correctly set.");
+            return camera;
         }
 
         protected virtual void CollectInner(RenderContext renderContext)
@@ -77,40 +85,39 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         public static void UpdateCameraToRenderView(RenderContext context, RenderView renderView, CameraComponent camera)
         {
-            //// Copy scene camera renderer data
-            //renderView.CullingMask = sceneCameraRenderer.CullingMask;
-            //renderView.CullingMode = sceneCameraRenderer.CullingMode;
+            if (context == null || renderView == null)
+                return;
 
             // TODO: Multiple viewports?
             var currentViewport = context.ViewportState.Viewport0;
             renderView.ViewSize = new Vector2(currentViewport.Width, currentViewport.Height);
 
-            if (camera != null)
+            if (camera == null)
+                return;
+
+            // Setup viewport size
+            var aspectRatio = currentViewport.AspectRatio;
+
+            // Update the aspect ratio
+            if (camera.UseCustomAspectRatio)
             {
-                // Setup viewport size
-                var aspectRatio = currentViewport.AspectRatio;
-
-                // Update the aspect ratio
-                if (camera.UseCustomAspectRatio)
-                {
-                    aspectRatio = camera.AspectRatio;
-                }
-
-                // If the aspect ratio is calculated automatically from the current viewport, update matrices here
-                camera.Update(aspectRatio);
-
-                // Copy camera data
-                renderView.View = camera.ViewMatrix;
-                renderView.Projection = camera.ProjectionMatrix;
-                renderView.NearClipPlane = camera.NearClipPlane;
-                renderView.FarClipPlane = camera.FarClipPlane;
-                renderView.Frustum = camera.Frustum;
-
-                // Enable frustum culling
-                renderView.CullingMode = CameraCullingMode.Frustum;
-
-                Matrix.Multiply(ref renderView.View, ref renderView.Projection, out renderView.ViewProjection);
+                aspectRatio = camera.AspectRatio;
             }
+
+            // If the aspect ratio is calculated automatically from the current viewport, update matrices here
+            camera.Update(aspectRatio);
+
+            // Copy camera data
+            renderView.View = camera.ViewMatrix;
+            renderView.Projection = camera.ProjectionMatrix;
+            renderView.NearClipPlane = camera.NearClipPlane;
+            renderView.FarClipPlane = camera.FarClipPlane;
+            renderView.Frustum = camera.Frustum;
+
+            // Enable frustum culling
+            renderView.CullingMode = CameraCullingMode.Frustum;
+
+            Matrix.Multiply(ref renderView.View, ref renderView.Projection, out renderView.ViewProjection);
         }
     }
 }

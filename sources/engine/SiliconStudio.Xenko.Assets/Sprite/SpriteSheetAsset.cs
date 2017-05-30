@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -23,21 +23,24 @@ namespace SiliconStudio.Xenko.Assets.Sprite
     [CategoryOrder(10, "Parameters")]
     [CategoryOrder(50, "Atlas Packing")]
     [CategoryOrder(150, "Sprites")]
-    [AssetFormatVersion(XenkoConfig.PackageName, "1.10.0-alpha01")]
-    [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(RenameImageGroupsUpgrader))]
-    [AssetUpgrader(XenkoConfig.PackageName, 1, 2, typeof(RemoveMaxSizeUpgrader))]
-    [AssetUpgrader(XenkoConfig.PackageName, "0.0.2", "1.5.0-alpha01", typeof(BorderSizeOrderUpgrader))]
-    [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha01", "1.10.0-alpha01", typeof(SpriteSheetSRGBUpgrader))]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(SpriteSheet))]
-    [AssetCompiler(typeof(SpriteSheetAssetCompiler))]
     [Display(1600, "Sprite Sheet")]
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.5.0-alpha01")]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha01", "1.10.0-alpha01", typeof(SpriteSheetSRGBUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.10.0-alpha01", "2.0.0.0", typeof(CompressionUpgrader))]
+#else
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
+#endif
     public class SpriteSheetAsset : Asset
     {
+        private const string CurrentVersion = "2.0.0.0";
+
         /// <summary>
         /// The default file extension used by the <see cref="SpriteSheetAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xksheet;.pdxsheet;.pdxsprite;.pdxuiimage";
+        public const string FileExtension = ".xksheet";
         
         /// <summary>
         /// Gets or sets the type of the current sheet
@@ -73,16 +76,15 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         public bool ColorKeyEnabled { get; set; }
 
         /// <summary>
-        /// Gets or sets the texture format.
+        /// If Compressed, the final texture will be compressed to an appropriate format based on the target platform. The final texture size must be a multiple of 4.
         /// </summary>
-        /// <value>The texture format.</value>
         /// <userdoc>
-        /// The texture format in which all the images of the group should be converted to.
+        /// If Compressed, the final texture will be compressed to an appropriate format based on the target platform. The final texture size must be a multiple of 4.
         /// </userdoc>
         [DataMember(40)]
-        [DefaultValue(TextureFormat.Compressed)]
-        [Display(category: "Parameters")]
-        public TextureFormat Format { get; set; } = TextureFormat.Compressed;
+        [DefaultValue(true)]
+        [Display("Compressed", "Parameters")]
+        public bool IsCompressed { get; set; } = true;
 
         /// <summary>
         /// Indicates if the texture is in sRGB format (standard for color textures). When working in Linear color space the texture will bed converted to linear space when sampling.
@@ -176,54 +178,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
             return textureAbsolutePath + "__ATLAS_TEXTURE__" + atlasIndex;
         }
 
-        class RenameImageGroupsUpgrader : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                var images = asset.Images;
-                if (images != null)
-                {
-                    asset.Sprites = images;
-                    asset.Images = DynamicYamlEmpty.Default;
-                }
-            }
-        }
-        class RemoveMaxSizeUpgrader : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                var packing = asset.Packing;
-                if (packing != null)
-                {
-                    packing.AtlasMaximumSize = DynamicYamlEmpty.Default;
-                }
-            }
-        }
-
-        class BorderSizeOrderUpgrader : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                // SerializedVersion format changed during renaming upgrade. However, before this was merged back in master, some asset upgrader still with older version numbers were developed.
-                // As a result, upgrade is not needed for version 3
-                var sprites = asset.Sprites;
-                if (sprites == null || currentVersion == PackageVersion.Parse("0.0.3"))
-                    return;
-
-                foreach (var sprite in asset.Sprites)
-                {
-                    if (sprite.Borders == null)
-                    {
-                        continue;
-                    }
-                    var y = sprite.Borders.Y ?? 0.0f;
-                    sprite.Borders.Y = sprite.Borders.Z ?? 0.0f;
-                    sprite.Borders.Z = y;
-                }
-            }
-        }
-
-        class SpriteSheetSRGBUpgrader : AssetUpgraderBase
+        private class SpriteSheetSRGBUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
             {
@@ -231,6 +186,38 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                 {
                     asset.UseSRgbSampling = (asset.ColorSpace != "Gamma"); // This is correct. It converts some legacy code with ambiguous meaning.
                     asset.RemoveChild("ColorSpace");
+                }
+            }
+        }
+
+        private class CompressionUpgrader : AssetUpgraderBase
+        {
+            // public TextureFormat Format { get; set; } = TextureFormat.Compressed;
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                if (asset.ContainsChild("IsCompressed"))
+                {
+                    // This asset was already upgraded manually, so just bump the version
+                    return;
+                }
+
+                if (asset.ContainsChild("Format"))
+                {
+                    if (asset.Format == "Compressed")
+                    {
+                        asset.IsCompressed = true;
+                    }
+                    else
+                    {
+                        asset.IsCompressed = false;
+                    }
+
+                    asset.RemoveChild("Format");
+                }
+                else
+                {
+                    // The asset has no Format, so assign a value matching the default Format (Compressed)
+                    asset.IsCompressed = true;
                 }
             }
         }

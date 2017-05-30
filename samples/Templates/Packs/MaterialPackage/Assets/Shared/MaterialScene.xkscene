@@ -1,8 +1,9 @@
 !SceneAsset
 Id: 0a97d04d-6d2c-4cfb-81b6-13b641b363ff
-SerializedVersion: {Xenko: 1.10.0-beta01}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
-Parent: null
+ChildrenIds: []
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
         - 86cb0337-070f-44c2-be1d-8f1551fd9953
@@ -64,14 +65,15 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: {}
-                    78e19ef1435e9948b91703424e9fe8fe: !SkyboxComponent
-                        Id: f19ee178-5e43-4899-b917-03424e9fe8fe
-                        Skybox: 39265df4-d32a-418d-baa2-ba073d499ee1:BlueSky
-                        Intensity: 3.0
                     275ba638bd91f644bec1a6f6bbc756c6: !LightComponent
                         Id: 38a65b27-91bd-44f6-bec1-a6f6bbc756c6
-                        Type: !LightSkybox {}
-                        Intensity: 0.25
+                        Type: !LightSkybox
+                            Skybox: 39265df4-d32a-418d-baa2-ba073d499ee1:BlueSky
+                        Intensity: 0.75
+                    261e5e47119a48f99c6793d87f751b04: !BackgroundComponent
+                        Id: d1b75ddb-a285-497f-8058-43603e42b1af
+                        Texture: 0454adf4-63d8-4f0d-9305-91f8ec79194f:sky
+                        Intensity: 3.0
         -   Entity:
                 Id: 6b8e7a54-2a0c-474c-9e74-ad206c6040ec
                 Name: Brick
@@ -134,7 +136,7 @@ Hierarchy:
                         Id: 6d8c5dbd-0330-4c3a-b687-8f4187b97c9a
                         Name: null
                         Projection: Perspective
-                        Slot: {Index: 0}
+                        Slot: 00000000-0000-0000-0000-000000000000
         -   Entity:
                 Id: 8b03f317-5605-499a-8fce-dad1714fc7e3
                 Name: Rock

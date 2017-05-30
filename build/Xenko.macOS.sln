@@ -1,7 +1,7 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 14.0.23107.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "10-CoreRuntime", "10-CoreRuntime", "{2E93E2B5-4500-4E47-9B65-E705218AB578}"
 EndProject
@@ -16,17 +16,20 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets.Private", "00-Ta
 		..\sources\common\targets\SiliconStudio.CSharp.targets = ..\sources\common\targets\SiliconStudio.CSharp.targets
 		..\sources\common\targets\SiliconStudio.GlobalSettings.targets = ..\sources\common\targets\SiliconStudio.GlobalSettings.targets
 		..\sources\common\targets\SiliconStudio.iOS.CSharp.targets = ..\sources\common\targets\SiliconStudio.iOS.CSharp.targets
+		..\sources\common\targets\SiliconStudio.PostSettings.Dependencies.targets = ..\sources\common\targets\SiliconStudio.PostSettings.Dependencies.targets
 		..\sources\common\targets\SiliconStudio.PostSettings.targets = ..\sources\common\targets\SiliconStudio.PostSettings.targets
 		..\sources\common\targets\SiliconStudio.PreSettings.targets = ..\sources\common\targets\SiliconStudio.PreSettings.targets
 		..\sources\common\targets\SiliconStudio.UWP.Cpp.targets = ..\sources\common\targets\SiliconStudio.UWP.Cpp.targets
 		..\sources\common\targets\SiliconStudio.UWP.CSharp.targets = ..\sources\common\targets\SiliconStudio.UWP.CSharp.targets
 		..\store.config = ..\store.config
 		..\sources\targets\Xenko.GlobalSettings.targets = ..\sources\targets\Xenko.GlobalSettings.targets
+		..\sources\targets\Xenko.InternalReferences.targets = ..\sources\targets\Xenko.InternalReferences.targets
 		..\sources\native\Xenko.Native.targets = ..\sources\native\Xenko.Native.targets
 		..\sources\targets\Xenko.PostSettings.References.targets = ..\sources\targets\Xenko.PostSettings.References.targets
 		..\sources\targets\Xenko.PostSettings.targets = ..\sources\targets\Xenko.PostSettings.targets
 		..\sources\targets\Xenko.PostSettings.User.targets = ..\sources\targets\Xenko.PostSettings.User.targets
 		..\sources\targets\Xenko.PreSettings.targets = ..\sources\targets\Xenko.PreSettings.targets
+		..\sources\targets\Xenko.PreSettings.UnitTests.targets = ..\sources\targets\Xenko.PreSettings.UnitTests.targets
 		..\sources\targets\Xenko.PreSettings.User.targets = ..\sources\targets\Xenko.PreSettings.User.targets
 		..\sources\targets\Xenko.UnitTests.DisableBuild.targets = ..\sources\targets\Xenko.UnitTests.DisableBuild.targets
 		..\sources\targets\Xenko.UnitTests.targets = ..\sources\targets\Xenko.UnitTests.targets
@@ -51,6 +54,45 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets.User", "00-Targe
 		..\Targets\Xenko.targets = ..\Targets\Xenko.targets
 		..\Targets\Xenko.UWP.targets = ..\Targets\Xenko.UWP.targets
 		..\Targets\Xenko.Windows.targets = ..\Targets\Xenko.Windows.targets
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Config", "00-Config", "{7662CECF-2A3D-4DBA-AB3D-77FD8536E7A3}"
+	ProjectSection(SolutionItems) = preProject
+		..\sources\shared\SharedAssemblyInfo.cs = ..\sources\shared\SharedAssemblyInfo.cs
+		..\Xenko.xkpkg = ..\Xenko.xkpkg
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SiliconStudio.Xenko.Shared", "SiliconStudio.Xenko.Shared", "{1AC70118-C90F-4EC6-9D8B-C628BDF900F7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "21-XenkoRuntime.Tests", "21-XenkoRuntime.Tests", "{A7ED9F01-7D78-4381-90A6-D50E51C17250}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets.Build", "00-Targets.Build", "{0B81090E-4066-4723-A658-8AEDBEADE619}"
+	ProjectSection(SolutionItems) = preProject
+		SiliconStudio.GlobalSettings.Local.targets = SiliconStudio.GlobalSettings.Local.targets
+		SiliconStudio.PostSettings.Local.targets = SiliconStudio.PostSettings.Local.targets
+		SiliconStudio.PreSettings.Local.targets = SiliconStudio.PreSettings.Local.targets
+		Xenko.Android.PreSettings.Local.targets = Xenko.Android.PreSettings.Local.targets
+		Xenko.build = Xenko.build
+		Xenko.Direct3D.CoreCLR.PreSettings.Local.targets = Xenko.Direct3D.CoreCLR.PreSettings.Local.targets
+		Xenko.Direct3D.PreSettings.Local.targets = Xenko.Direct3D.PreSettings.Local.targets
+		Xenko.Direct3D.SDL.PreSettings.Local.targets = Xenko.Direct3D.SDL.PreSettings.Local.targets
+		Xenko.Direct3D12.PreSettings.Local.targets = Xenko.Direct3D12.PreSettings.Local.targets
+		Xenko.ILMerge.CSharp.targets = Xenko.ILMerge.CSharp.targets
+		Xenko.iOS.PreSettings.Local.targets = Xenko.iOS.PreSettings.Local.targets
+		Xenko.Linux.CoreCLR.PreSettings.Local.targets = Xenko.Linux.CoreCLR.PreSettings.Local.targets
+		Xenko.Linux.PreSettings.Local.targets = Xenko.Linux.PreSettings.Local.targets
+		Xenko.Linux.Vulkan.CoreCLR.PreSettings.Local.targets = Xenko.Linux.Vulkan.CoreCLR.PreSettings.Local.targets
+		Xenko.Linux.Vulkan.PreSettings.Local.targets = Xenko.Linux.Vulkan.PreSettings.Local.targets
+		Xenko.macOS.CoreCLR.PreSettings.Local.targets = Xenko.macOS.CoreCLR.PreSettings.Local.targets
+		Xenko.macOS.PreSettings.Local.targets = Xenko.macOS.PreSettings.Local.targets
+		Xenko.OpenGL.CoreCLR.PreSettings.Local.targets = Xenko.OpenGL.CoreCLR.PreSettings.Local.targets
+		Xenko.OpenGL.PreSettings.Local.targets = Xenko.OpenGL.PreSettings.Local.targets
+		Xenko.OpenGLES.PreSettings.Local.targets = Xenko.OpenGLES.PreSettings.Local.targets
+		Xenko.PreSettings.Local.targets = Xenko.PreSettings.Local.targets
+		Xenko.UWP.GlobalSettings.Local.targets = Xenko.UWP.GlobalSettings.Local.targets
+		Xenko.UWP.PreSettings.Local.targets = Xenko.UWP.PreSettings.Local.targets
+		Xenko.Vulkan.PreSettings.Local.targets = Xenko.Vulkan.PreSettings.Local.targets
+		Xenko.Vulkan.SDL.PreSettings.Local.targets = Xenko.Vulkan.SDL.PreSettings.Local.targets
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Engine", "..\sources\engine\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj", "{C121A566-555E-42B9-9B0A-1696529A9088}"
@@ -114,53 +156,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Games.Testing", "..\sources\engine\SiliconStudio.Xenko.Games.Testing\SiliconStudio.Xenko.Games.Testing.csproj", "{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Native", "..\sources\engine\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj", "{1DBBC150-F085-43EF-B41D-27C72D133770}"
-	ProjectSection(ProjectDependencies) = postProject
-		{FCF36D39-BFFE-4719-B245-05640EE34C5F} = {FCF36D39-BFFE-4719-B245-05640EE34C5F}
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Config", "00-Config", "{7662CECF-2A3D-4DBA-AB3D-77FD8536E7A3}"
-	ProjectSection(SolutionItems) = preProject
-		..\sources\shared\SharedAssemblyInfo.cs = ..\sources\shared\SharedAssemblyInfo.cs
-		..\Xenko.xkpkg = ..\Xenko.xkpkg
-	EndProjectSection
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SiliconStudio.Xenko.Refactor", "..\sources\engine\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.shproj", "{B33E576F-2279-4BFC-A438-D9B84343B56B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SiliconStudio.Xenko.Shared", "SiliconStudio.Xenko.Shared", "{1AC70118-C90F-4EC6-9D8B-C628BDF900F7}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "21-XenkoRuntime.Tests", "21-XenkoRuntime.Tests", "{A7ED9F01-7D78-4381-90A6-D50E51C17250}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.Native", "..\sources\common\core\SiliconStudio.Core.Native\SiliconStudio.Core.Native.csproj", "{FCF36D39-BFFE-4719-B245-05640EE34C5F}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets.Build", "00-Targets.Build", "{0B81090E-4066-4723-A658-8AEDBEADE619}"
-	ProjectSection(SolutionItems) = preProject
-		SiliconStudio.GlobalSettings.Local.targets = SiliconStudio.GlobalSettings.Local.targets
-		SiliconStudio.PostSettings.Local.targets = SiliconStudio.PostSettings.Local.targets
-		Xenko.Android.PreSettings.Local.targets = Xenko.Android.PreSettings.Local.targets
-		Xenko.build = Xenko.build
-		Xenko.Direct3D.CoreCLR.PreSettings.Local.targets = Xenko.Direct3D.CoreCLR.PreSettings.Local.targets
-		Xenko.Direct3D.PreSettings.Local.targets = Xenko.Direct3D.PreSettings.Local.targets
-		Xenko.Direct3D.SDL.PreSettings.Local.targets = Xenko.Direct3D.SDL.PreSettings.Local.targets
-		Xenko.Direct3D12.PreSettings.Local.targets = Xenko.Direct3D12.PreSettings.Local.targets
-		Xenko.ILMerge.CSharp.targets = Xenko.ILMerge.CSharp.targets
-		Xenko.iOS.PreSettings.Local.targets = Xenko.iOS.PreSettings.Local.targets
-		Xenko.Linux.CoreCLR.PreSettings.Local.targets = Xenko.Linux.CoreCLR.PreSettings.Local.targets
-		Xenko.Linux.PreSettings.Local.targets = Xenko.Linux.PreSettings.Local.targets
-		Xenko.Linux.Vulkan.CoreCLR.PreSettings.Local.targets = Xenko.Linux.Vulkan.CoreCLR.PreSettings.Local.targets
-		Xenko.Linux.Vulkan.PreSettings.Local.targets = Xenko.Linux.Vulkan.PreSettings.Local.targets
-		Xenko.macOS.CoreCLR.PreSettings.Local.targets = Xenko.macOS.CoreCLR.PreSettings.Local.targets
-		Xenko.macOS.PreSettings.Local.targets = Xenko.macOS.PreSettings.Local.targets
-		Xenko.OpenGL.CoreCLR.PreSettings.Local.targets = Xenko.OpenGL.CoreCLR.PreSettings.Local.targets
-		Xenko.OpenGL.PreSettings.Local.targets = Xenko.OpenGL.PreSettings.Local.targets
-		Xenko.OpenGLES.PreSettings.Local.targets = Xenko.OpenGLES.PreSettings.Local.targets
-		Xenko.PreSettings.Local.targets = Xenko.PreSettings.Local.targets
-		Xenko.UWP.GlobalSettings.Local.targets = Xenko.UWP.GlobalSettings.Local.targets
-		Xenko.UWP.PreSettings.Local.targets = Xenko.UWP.PreSettings.Local.targets
-		Xenko.Vulkan.PreSettings.Local.targets = Xenko.Vulkan.PreSettings.Local.targets
-		Xenko.Vulkan.SDL.PreSettings.Local.targets = Xenko.Vulkan.SDL.PreSettings.Local.targets
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.VirtualReality", "..\sources\engine\SiliconStudio.Xenko.VirtualReality\SiliconStudio.Xenko.VirtualReality.csproj", "{53782603-3096-40C2-ABD3-F8F311BAE4BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Navigation", "..\sources\engine\SiliconStudio.Xenko.Navigation\SiliconStudio.Xenko.Navigation.csproj", "{FBE1FA7B-E699-4BB2-9C8F-41F4C9F3F088}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -171,6 +172,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AppStore|macOS = AppStore|macOS
+		CoreCLR_Debug|macOS = CoreCLR_Debug|macOS
+		CoreCLR_Release|macOS = CoreCLR_Release|macOS
 		Debug|macOS = Debug|macOS
 		Release|macOS = Release|macOS
 		Testing|macOS = Testing|macOS
@@ -179,6 +182,12 @@ Global
 		{C121A566-555E-42B9-9B0A-1696529A9088}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{C121A566-555E-42B9-9B0A-1696529A9088}.AppStore|macOS.Build.0 = Release|Any CPU
 		{C121A566-555E-42B9-9B0A-1696529A9088}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{C121A566-555E-42B9-9B0A-1696529A9088}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{C121A566-555E-42B9-9B0A-1696529A9088}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{C121A566-555E-42B9-9B0A-1696529A9088}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{C121A566-555E-42B9-9B0A-1696529A9088}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{C121A566-555E-42B9-9B0A-1696529A9088}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{C121A566-555E-42B9-9B0A-1696529A9088}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
 		{C121A566-555E-42B9-9B0A-1696529A9088}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{C121A566-555E-42B9-9B0A-1696529A9088}.Debug|macOS.Build.0 = Debug|Any CPU
 		{C121A566-555E-42B9-9B0A-1696529A9088}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -191,6 +200,12 @@ Global
 		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.AppStore|macOS.Build.0 = Release|Any CPU
 		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
 		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.Debug|macOS.Build.0 = Debug|Any CPU
 		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -203,6 +218,12 @@ Global
 		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}.AppStore|macOS.Build.0 = Release|Any CPU
 		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
 		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}.Debug|macOS.Build.0 = Debug|Any CPU
 		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -215,6 +236,12 @@ Global
 		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.AppStore|macOS.Build.0 = Release|Any CPU
 		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
 		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.Debug|macOS.Build.0 = Debug|Any CPU
 		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -227,6 +254,12 @@ Global
 		{42780CBD-3FE7-48E3-BD5B-59945EA20137}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{42780CBD-3FE7-48E3-BD5B-59945EA20137}.AppStore|macOS.Build.0 = Release|Any CPU
 		{42780CBD-3FE7-48E3-BD5B-59945EA20137}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{42780CBD-3FE7-48E3-BD5B-59945EA20137}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{42780CBD-3FE7-48E3-BD5B-59945EA20137}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{42780CBD-3FE7-48E3-BD5B-59945EA20137}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{42780CBD-3FE7-48E3-BD5B-59945EA20137}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{42780CBD-3FE7-48E3-BD5B-59945EA20137}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{42780CBD-3FE7-48E3-BD5B-59945EA20137}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
 		{42780CBD-3FE7-48E3-BD5B-59945EA20137}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{42780CBD-3FE7-48E3-BD5B-59945EA20137}.Debug|macOS.Build.0 = Debug|Any CPU
 		{42780CBD-3FE7-48E3-BD5B-59945EA20137}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -239,6 +272,12 @@ Global
 		{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}.AppStore|macOS.Build.0 = Release|Any CPU
 		{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
 		{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}.Debug|macOS.Build.0 = Debug|Any CPU
 		{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -251,6 +290,12 @@ Global
 		{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}.AppStore|macOS.Build.0 = Release|Any CPU
 		{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
 		{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}.Debug|macOS.Build.0 = Debug|Any CPU
 		{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -263,6 +308,12 @@ Global
 		{5210FB81-B807-49BB-AF0D-31FB6A83A572}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{5210FB81-B807-49BB-AF0D-31FB6A83A572}.AppStore|macOS.Build.0 = Release|Any CPU
 		{5210FB81-B807-49BB-AF0D-31FB6A83A572}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{5210FB81-B807-49BB-AF0D-31FB6A83A572}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{5210FB81-B807-49BB-AF0D-31FB6A83A572}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{5210FB81-B807-49BB-AF0D-31FB6A83A572}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{5210FB81-B807-49BB-AF0D-31FB6A83A572}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{5210FB81-B807-49BB-AF0D-31FB6A83A572}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{5210FB81-B807-49BB-AF0D-31FB6A83A572}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
 		{5210FB81-B807-49BB-AF0D-31FB6A83A572}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{5210FB81-B807-49BB-AF0D-31FB6A83A572}.Debug|macOS.Build.0 = Debug|Any CPU
 		{5210FB81-B807-49BB-AF0D-31FB6A83A572}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -275,6 +326,12 @@ Global
 		{1320F627-EE43-4115-8E89-19D1753E51F2}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{1320F627-EE43-4115-8E89-19D1753E51F2}.AppStore|macOS.Build.0 = Release|Any CPU
 		{1320F627-EE43-4115-8E89-19D1753E51F2}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{1320F627-EE43-4115-8E89-19D1753E51F2}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{1320F627-EE43-4115-8E89-19D1753E51F2}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{1320F627-EE43-4115-8E89-19D1753E51F2}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{1320F627-EE43-4115-8E89-19D1753E51F2}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{1320F627-EE43-4115-8E89-19D1753E51F2}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{1320F627-EE43-4115-8E89-19D1753E51F2}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
 		{1320F627-EE43-4115-8E89-19D1753E51F2}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{1320F627-EE43-4115-8E89-19D1753E51F2}.Debug|macOS.Build.0 = Debug|Any CPU
 		{1320F627-EE43-4115-8E89-19D1753E51F2}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -287,6 +344,12 @@ Global
 		{1DE01410-22C9-489B-9796-1ADDAB1F64E5}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{1DE01410-22C9-489B-9796-1ADDAB1F64E5}.AppStore|macOS.Build.0 = Release|Any CPU
 		{1DE01410-22C9-489B-9796-1ADDAB1F64E5}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{1DE01410-22C9-489B-9796-1ADDAB1F64E5}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{1DE01410-22C9-489B-9796-1ADDAB1F64E5}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{1DE01410-22C9-489B-9796-1ADDAB1F64E5}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{1DE01410-22C9-489B-9796-1ADDAB1F64E5}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{1DE01410-22C9-489B-9796-1ADDAB1F64E5}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{1DE01410-22C9-489B-9796-1ADDAB1F64E5}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
 		{1DE01410-22C9-489B-9796-1ADDAB1F64E5}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{1DE01410-22C9-489B-9796-1ADDAB1F64E5}.Debug|macOS.Build.0 = Debug|Any CPU
 		{1DE01410-22C9-489B-9796-1ADDAB1F64E5}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -299,6 +362,12 @@ Global
 		{14A47447-2A24-4ECD-B24D-6571499DCD4C}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{14A47447-2A24-4ECD-B24D-6571499DCD4C}.AppStore|macOS.Build.0 = Release|Any CPU
 		{14A47447-2A24-4ECD-B24D-6571499DCD4C}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{14A47447-2A24-4ECD-B24D-6571499DCD4C}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{14A47447-2A24-4ECD-B24D-6571499DCD4C}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{14A47447-2A24-4ECD-B24D-6571499DCD4C}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{14A47447-2A24-4ECD-B24D-6571499DCD4C}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{14A47447-2A24-4ECD-B24D-6571499DCD4C}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{14A47447-2A24-4ECD-B24D-6571499DCD4C}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
 		{14A47447-2A24-4ECD-B24D-6571499DCD4C}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{14A47447-2A24-4ECD-B24D-6571499DCD4C}.Debug|macOS.Build.0 = Debug|Any CPU
 		{14A47447-2A24-4ECD-B24D-6571499DCD4C}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -311,6 +380,12 @@ Global
 		{273BDD15-7392-4078-91F0-AF23594A3D7B}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{273BDD15-7392-4078-91F0-AF23594A3D7B}.AppStore|macOS.Build.0 = Release|Any CPU
 		{273BDD15-7392-4078-91F0-AF23594A3D7B}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{273BDD15-7392-4078-91F0-AF23594A3D7B}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{273BDD15-7392-4078-91F0-AF23594A3D7B}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{273BDD15-7392-4078-91F0-AF23594A3D7B}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{273BDD15-7392-4078-91F0-AF23594A3D7B}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{273BDD15-7392-4078-91F0-AF23594A3D7B}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{273BDD15-7392-4078-91F0-AF23594A3D7B}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
 		{273BDD15-7392-4078-91F0-AF23594A3D7B}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{273BDD15-7392-4078-91F0-AF23594A3D7B}.Debug|macOS.Build.0 = Debug|Any CPU
 		{273BDD15-7392-4078-91F0-AF23594A3D7B}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -323,6 +398,12 @@ Global
 		{DE042125-C270-4D1D-9270-0759C167567A}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{DE042125-C270-4D1D-9270-0759C167567A}.AppStore|macOS.Build.0 = Release|Any CPU
 		{DE042125-C270-4D1D-9270-0759C167567A}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{DE042125-C270-4D1D-9270-0759C167567A}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{DE042125-C270-4D1D-9270-0759C167567A}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{DE042125-C270-4D1D-9270-0759C167567A}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{DE042125-C270-4D1D-9270-0759C167567A}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{DE042125-C270-4D1D-9270-0759C167567A}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{DE042125-C270-4D1D-9270-0759C167567A}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
 		{DE042125-C270-4D1D-9270-0759C167567A}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{DE042125-C270-4D1D-9270-0759C167567A}.Debug|macOS.Build.0 = Debug|Any CPU
 		{DE042125-C270-4D1D-9270-0759C167567A}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -335,6 +416,12 @@ Global
 		{72390339-B2A1-4F61-A800-31ED0975B515}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{72390339-B2A1-4F61-A800-31ED0975B515}.AppStore|macOS.Build.0 = Release|Any CPU
 		{72390339-B2A1-4F61-A800-31ED0975B515}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{72390339-B2A1-4F61-A800-31ED0975B515}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{72390339-B2A1-4F61-A800-31ED0975B515}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{72390339-B2A1-4F61-A800-31ED0975B515}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{72390339-B2A1-4F61-A800-31ED0975B515}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{72390339-B2A1-4F61-A800-31ED0975B515}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{72390339-B2A1-4F61-A800-31ED0975B515}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
 		{72390339-B2A1-4F61-A800-31ED0975B515}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{72390339-B2A1-4F61-A800-31ED0975B515}.Debug|macOS.Build.0 = Debug|Any CPU
 		{72390339-B2A1-4F61-A800-31ED0975B515}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -347,6 +434,12 @@ Global
 		{E8B3553F-A79F-4E50-B75B-ACEE771C320C}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{E8B3553F-A79F-4E50-B75B-ACEE771C320C}.AppStore|macOS.Build.0 = Release|Any CPU
 		{E8B3553F-A79F-4E50-B75B-ACEE771C320C}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{E8B3553F-A79F-4E50-B75B-ACEE771C320C}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{E8B3553F-A79F-4E50-B75B-ACEE771C320C}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{E8B3553F-A79F-4E50-B75B-ACEE771C320C}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{E8B3553F-A79F-4E50-B75B-ACEE771C320C}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{E8B3553F-A79F-4E50-B75B-ACEE771C320C}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{E8B3553F-A79F-4E50-B75B-ACEE771C320C}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
 		{E8B3553F-A79F-4E50-B75B-ACEE771C320C}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{E8B3553F-A79F-4E50-B75B-ACEE771C320C}.Debug|macOS.Build.0 = Debug|Any CPU
 		{E8B3553F-A79F-4E50-B75B-ACEE771C320C}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -359,6 +452,12 @@ Global
 		{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}.AppStore|macOS.Build.0 = Release|Any CPU
 		{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
 		{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}.Debug|macOS.Build.0 = Debug|Any CPU
 		{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -371,6 +470,12 @@ Global
 		{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}.AppStore|macOS.Build.0 = Release|Any CPU
 		{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
 		{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}.Debug|macOS.Build.0 = Debug|Any CPU
 		{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -383,6 +488,12 @@ Global
 		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.AppStore|macOS.Build.0 = Release|Any CPU
 		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
 		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Debug|macOS.Build.0 = Debug|Any CPU
 		{D002FEB1-00A6-4AB1-A83F-1F253465E64D}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -395,6 +506,12 @@ Global
 		{DD592516-B341-40FE-9100-1B0FA784A060}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{DD592516-B341-40FE-9100-1B0FA784A060}.AppStore|macOS.Build.0 = Release|Any CPU
 		{DD592516-B341-40FE-9100-1B0FA784A060}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{DD592516-B341-40FE-9100-1B0FA784A060}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{DD592516-B341-40FE-9100-1B0FA784A060}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{DD592516-B341-40FE-9100-1B0FA784A060}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{DD592516-B341-40FE-9100-1B0FA784A060}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{DD592516-B341-40FE-9100-1B0FA784A060}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{DD592516-B341-40FE-9100-1B0FA784A060}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
 		{DD592516-B341-40FE-9100-1B0FA784A060}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{DD592516-B341-40FE-9100-1B0FA784A060}.Debug|macOS.Build.0 = Debug|Any CPU
 		{DD592516-B341-40FE-9100-1B0FA784A060}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -407,6 +524,12 @@ Global
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.AppStore|macOS.Build.0 = Release|Any CPU
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{9BC63BEC-F305-451D-BB31-262938EA964D}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.Debug|macOS.Build.0 = Debug|Any CPU
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -419,6 +542,12 @@ Global
 		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.AppStore|macOS.Build.0 = Release|Any CPU
 		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.CoreCLR_Debug|macOS.ActiveCfg = CoreCLR_Debug|Any CPU
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.CoreCLR_Debug|macOS.Build.0 = CoreCLR_Debug|Any CPU
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.CoreCLR_Debug|macOS.Deploy.0 = CoreCLR_Debug|Any CPU
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.CoreCLR_Release|macOS.ActiveCfg = CoreCLR_Release|Any CPU
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.CoreCLR_Release|macOS.Build.0 = CoreCLR_Release|Any CPU
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.CoreCLR_Release|macOS.Deploy.0 = CoreCLR_Release|Any CPU
 		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Debug|macOS.Build.0 = Debug|Any CPU
 		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -431,6 +560,12 @@ Global
 		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.AppStore|macOS.Build.0 = Release|Any CPU
 		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
 		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Debug|macOS.Build.0 = Debug|Any CPU
 		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -443,6 +578,12 @@ Global
 		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.AppStore|macOS.Build.0 = Release|Any CPU
 		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
 		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Debug|macOS.Build.0 = Debug|Any CPU
 		{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -455,6 +596,12 @@ Global
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.AppStore|macOS.Build.0 = Release|Any CPU
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.Debug|macOS.Build.0 = Debug|Any CPU
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -467,6 +614,12 @@ Global
 		{1DBBC150-F085-43EF-B41D-27C72D133770}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{1DBBC150-F085-43EF-B41D-27C72D133770}.AppStore|macOS.Build.0 = Release|Any CPU
 		{1DBBC150-F085-43EF-B41D-27C72D133770}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
 		{1DBBC150-F085-43EF-B41D-27C72D133770}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{1DBBC150-F085-43EF-B41D-27C72D133770}.Debug|macOS.Build.0 = Debug|Any CPU
 		{1DBBC150-F085-43EF-B41D-27C72D133770}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -476,21 +629,15 @@ Global
 		{1DBBC150-F085-43EF-B41D-27C72D133770}.Testing|macOS.ActiveCfg = Release|Any CPU
 		{1DBBC150-F085-43EF-B41D-27C72D133770}.Testing|macOS.Build.0 = Release|Any CPU
 		{1DBBC150-F085-43EF-B41D-27C72D133770}.Testing|macOS.Deploy.0 = Release|Any CPU
-		{FCF36D39-BFFE-4719-B245-05640EE34C5F}.AppStore|macOS.ActiveCfg = Release|Any CPU
-		{FCF36D39-BFFE-4719-B245-05640EE34C5F}.AppStore|macOS.Build.0 = Release|Any CPU
-		{FCF36D39-BFFE-4719-B245-05640EE34C5F}.AppStore|macOS.Deploy.0 = Release|Any CPU
-		{FCF36D39-BFFE-4719-B245-05640EE34C5F}.Debug|macOS.ActiveCfg = Debug|Any CPU
-		{FCF36D39-BFFE-4719-B245-05640EE34C5F}.Debug|macOS.Build.0 = Debug|Any CPU
-		{FCF36D39-BFFE-4719-B245-05640EE34C5F}.Debug|macOS.Deploy.0 = Debug|Any CPU
-		{FCF36D39-BFFE-4719-B245-05640EE34C5F}.Release|macOS.ActiveCfg = Release|Any CPU
-		{FCF36D39-BFFE-4719-B245-05640EE34C5F}.Release|macOS.Build.0 = Release|Any CPU
-		{FCF36D39-BFFE-4719-B245-05640EE34C5F}.Release|macOS.Deploy.0 = Release|Any CPU
-		{FCF36D39-BFFE-4719-B245-05640EE34C5F}.Testing|macOS.ActiveCfg = Release|Any CPU
-		{FCF36D39-BFFE-4719-B245-05640EE34C5F}.Testing|macOS.Build.0 = Release|Any CPU
-		{FCF36D39-BFFE-4719-B245-05640EE34C5F}.Testing|macOS.Deploy.0 = Release|Any CPU
 		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.AppStore|macOS.ActiveCfg = Release|Any CPU
 		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.AppStore|macOS.Build.0 = Release|Any CPU
 		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
 		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.Debug|macOS.ActiveCfg = Debug|Any CPU
 		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.Debug|macOS.Build.0 = Debug|Any CPU
 		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.Debug|macOS.Deploy.0 = Debug|Any CPU
@@ -500,12 +647,31 @@ Global
 		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.Testing|macOS.ActiveCfg = Release|Any CPU
 		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.Testing|macOS.Build.0 = Release|Any CPU
 		{53782603-3096-40C2-ABD3-F8F311BAE4BE}.Testing|macOS.Deploy.0 = Release|Any CPU
+		{FBE1FA7B-E699-4BB2-9C8F-41F4C9F3F088}.AppStore|macOS.ActiveCfg = Release|Any CPU
+		{FBE1FA7B-E699-4BB2-9C8F-41F4C9F3F088}.AppStore|macOS.Build.0 = Release|Any CPU
+		{FBE1FA7B-E699-4BB2-9C8F-41F4C9F3F088}.AppStore|macOS.Deploy.0 = Release|Any CPU
+		{FBE1FA7B-E699-4BB2-9C8F-41F4C9F3F088}.CoreCLR_Debug|macOS.ActiveCfg = Debug|Any CPU
+		{FBE1FA7B-E699-4BB2-9C8F-41F4C9F3F088}.CoreCLR_Debug|macOS.Build.0 = Debug|Any CPU
+		{FBE1FA7B-E699-4BB2-9C8F-41F4C9F3F088}.CoreCLR_Debug|macOS.Deploy.0 = Debug|Any CPU
+		{FBE1FA7B-E699-4BB2-9C8F-41F4C9F3F088}.CoreCLR_Release|macOS.ActiveCfg = Release|Any CPU
+		{FBE1FA7B-E699-4BB2-9C8F-41F4C9F3F088}.CoreCLR_Release|macOS.Build.0 = Release|Any CPU
+		{FBE1FA7B-E699-4BB2-9C8F-41F4C9F3F088}.CoreCLR_Release|macOS.Deploy.0 = Release|Any CPU
+		{FBE1FA7B-E699-4BB2-9C8F-41F4C9F3F088}.Debug|macOS.ActiveCfg = Debug|Any CPU
+		{FBE1FA7B-E699-4BB2-9C8F-41F4C9F3F088}.Debug|macOS.Build.0 = Debug|Any CPU
+		{FBE1FA7B-E699-4BB2-9C8F-41F4C9F3F088}.Debug|macOS.Deploy.0 = Debug|Any CPU
+		{FBE1FA7B-E699-4BB2-9C8F-41F4C9F3F088}.Release|macOS.ActiveCfg = Release|Any CPU
+		{FBE1FA7B-E699-4BB2-9C8F-41F4C9F3F088}.Release|macOS.Build.0 = Release|Any CPU
+		{FBE1FA7B-E699-4BB2-9C8F-41F4C9F3F088}.Release|macOS.Deploy.0 = Release|Any CPU
+		{FBE1FA7B-E699-4BB2-9C8F-41F4C9F3F088}.Testing|macOS.ActiveCfg = Release|Any CPU
+		{FBE1FA7B-E699-4BB2-9C8F-41F4C9F3F088}.Testing|macOS.Build.0 = Release|Any CPU
+		{FBE1FA7B-E699-4BB2-9C8F-41F4C9F3F088}.Testing|macOS.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{D2A80DA7-3C1A-4A73-BE85-0B28847EA44C} = {2E93E2B5-4500-4E47-9B65-E705218AB578}
+		{1AC70118-C90F-4EC6-9D8B-C628BDF900F7} = {4C142567-C42B-40F5-B092-798882190209}
 		{C121A566-555E-42B9-9B0A-1696529A9088} = {4C142567-C42B-40F5-B092-798882190209}
 		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5} = {4C142567-C42B-40F5-B092-798882190209}
 		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F} = {10D145AF-C8AE-428F-A80F-CA1B591D0DB2}
@@ -532,8 +698,7 @@ Global
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9} = {A7ED9F01-7D78-4381-90A6-D50E51C17250}
 		{1DBBC150-F085-43EF-B41D-27C72D133770} = {4C142567-C42B-40F5-B092-798882190209}
 		{B33E576F-2279-4BFC-A438-D9B84343B56B} = {1AC70118-C90F-4EC6-9D8B-C628BDF900F7}
-		{1AC70118-C90F-4EC6-9D8B-C628BDF900F7} = {4C142567-C42B-40F5-B092-798882190209}
-		{FCF36D39-BFFE-4719-B245-05640EE34C5F} = {2E93E2B5-4500-4E47-9B65-E705218AB578}
 		{53782603-3096-40C2-ABD3-F8F311BAE4BE} = {4C142567-C42B-40F5-B092-798882190209}
+		{FBE1FA7B-E699-4BB2-9C8F-41F4C9F3F088} = {4C142567-C42B-40F5-B092-798882190209}
 	EndGlobalSection
 EndGlobal

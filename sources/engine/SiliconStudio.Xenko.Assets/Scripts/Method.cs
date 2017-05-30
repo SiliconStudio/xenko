@@ -1,10 +1,11 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Xenko.Assets.Scripts
 {
@@ -22,6 +23,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         }
 
         [DataMember(-100), Display(Browsable = false)]
+        [NonOverridable]
         public Guid Id { get; set; }
 
         /// <inheritdoc/>
@@ -53,12 +55,15 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         [DataMember(50)]
         [NonIdentifiableCollectionItems]
-        public AssetPartCollection<Block> Blocks { get; } = new AssetPartCollection<Block>();
+        public AssetPartCollection<Block, Block> Blocks { get; } = new AssetPartCollection<Block, Block>();
 
         [DataMember(60)]
         [NonIdentifiableCollectionItems]
-        public AssetPartCollection<Link> Links { get; } = new AssetPartCollection<Link>();
+        public AssetPartCollection<Link, Link> Links { get; } = new AssetPartCollection<Link, Link>();
 
-        Method IAssetPartDesign<Method>.Part { get { return this; } set { throw new InvalidOperationException(); } }
+        /// <inheritdoc/>
+        IIdentifiable IAssetPartDesign.Part => this;
+
+        Method IAssetPartDesign<Method>.Part { get => this; set => throw new InvalidOperationException(); }
     }
 }

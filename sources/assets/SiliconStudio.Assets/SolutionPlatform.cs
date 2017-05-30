@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -52,6 +52,12 @@ namespace SiliconStudio.Assets
         /// <value><c>true</c> if available; otherwise, <c>false</c>.</value>
         [DataMember(50)]
         public bool IsAvailable { get; set; }
+
+        /// <summary>
+        /// The list of templates. If empty, no choice will be given to user and default one will be created by concatening ProjectExecutable and <see cref="SolutionPlatformPart.Name"/>.
+        /// </summary>
+        [DataMember(60)]
+        public List<SolutionPlatformTemplate> Templates { get; } = new List<SolutionPlatformTemplate>();
 
         /// <summary>
         /// Gets the all <see cref="SolutionPlatformPart"/>.

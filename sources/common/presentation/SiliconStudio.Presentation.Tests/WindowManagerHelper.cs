@@ -1,10 +1,10 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Interop;
 using System.Windows.Threading;
 using NUnit.Framework;
 using SiliconStudio.Core.Diagnostics;
@@ -16,9 +16,16 @@ namespace SiliconStudio.Presentation.Tests
     internal static class WindowManagerHelper
     {
         private const int TimeoutDelay = 10000;
+        // This must remains a field to prevent garbage collection!
+        private static TaskCompletionSource<int> nextWindowShown = new TaskCompletionSource<int>();
+        private static TaskCompletionSource<int> nextWindowHidden = new TaskCompletionSource<int>();
         private static bool forwardingToConsole;
 
         public static Task Timeout => !Debugger.IsAttached ? Task.Delay(TimeoutDelay) : new TaskCompletionSource<int>().Task;
+
+        public static Task NextWindowShown => nextWindowShown.Task;
+
+        public static Task NextWindowHidden => nextWindowHidden.Task;
 
         public static Task<Dispatcher> CreateUIThread()
         {
@@ -37,6 +44,14 @@ namespace SiliconStudio.Presentation.Tests
             return tcs.Task;
         }
 
+        public static void ShutdownUIThread(Dispatcher dispatcher)
+        {
+            Thread thread = null;
+            dispatcher.Invoke(() => thread = Thread.CurrentThread);
+            dispatcher.InvokeShutdown();
+            thread.Join();
+        }
+
         public static async Task TaskWithTimeout(Task task)
         {
             await Task.WhenAny(task, Timeout);
@@ -45,139 +60,6 @@ namespace SiliconStudio.Presentation.Tests
 
             Assert.True(task.IsCompleted, "Test timed out");
         }
-
-        public static Task NextMainWindowChanged(Window newMainWindow)
-        {
-            var tcs = new TaskCompletionSource<int>();
-            WindowManager.MainWindowChanged += (s, e) =>
-            {
-                if (tcs == null)
-                    return;
-
-                try
-                {
-                    Assert.AreEqual(newMainWindow, e.Window?.Window);
-                    tcs?.SetResult(0);
-                }
-                catch (AssertionException ex)
-                {
-                    tcs.SetException(ex);
-                }
-                finally
-                {
-                    tcs = null;
-                }
-            };
-            return tcs.Task;
-        }
-
-        public static Task NextMessageBoxOpened()
-        {
-            var tcs = new TaskCompletionSource<int>();
-            WindowManager.ModalWindowOpened += (s, e) =>
-            {
-                if (tcs == null)
-                    return;
-
-                try
-                {
-                    Assert.IsNotNull(e.Window);
-                    Assert.IsNull(e.Window.Window);
-                    tcs?.SetResult(0);
-                }
-                catch (AssertionException ex)
-                {
-                    tcs.SetException(ex);
-                }
-                finally
-                {
-                    tcs = null;
-                }
-            };
-            return tcs.Task;
-        }
-
-        public static Task NextMessageBoxClosed()
-        {
-            var tcs = new TaskCompletionSource<int>();
-            WindowManager.ModalWindowClosed += (s, e) =>
-            {
-                if (tcs == null)
-                    return;
-
-                try
-                {
-                    Assert.IsNotNull(e.Window);
-                    Assert.IsNull(e.Window.Window);
-                    tcs?.SetResult(0);
-                }
-                catch (AssertionException ex)
-                {
-                    tcs.SetException(ex);
-                }
-                finally
-                {
-                    tcs = null;
-                }
-            };
-            return tcs.Task;
-        }
-
-        public static Task NextModalWindowOpened(Window modalWindow)
-        {
-            var tcs = new TaskCompletionSource<int>();
-            WindowManager.ModalWindowOpened += (s, e) =>
-            {
-                if (tcs == null)
-                    return;
-
-                try
-                {
-                    Assert.AreEqual(modalWindow, e.Window?.Window);
-                    tcs?.SetResult(0);
-                }
-                catch (AssertionException ex)
-                {
-                    tcs.SetException(ex);
-                }
-                finally
-                {
-                    tcs = null;
-                }
-            };
-            return tcs.Task;
-        }
-
-        public static Task NextModalWindowClosed(Window modalWindow)
-        {
-            var tcs = new TaskCompletionSource<int>();
-            WindowManager.ModalWindowClosed += (s, e) =>
-            {
-                if (tcs == null)
-                    return;
-
-                try
-                {
-                    Assert.AreEqual(modalWindow, e.Window?.Window);
-                    tcs?.SetResult(0);
-                }
-                catch (AssertionException ex)
-                {
-                    tcs.SetException(ex);
-                }
-                finally
-                {
-                    tcs = null;
-                }
-            };
-            return tcs.Task;
-        }
-
-        public static IntPtr ToHwnd(this Window window, Dispatcher dispatcher)
-        {
-            return dispatcher.Invoke(() => new WindowInteropHelper(window).Handle);
-        }
-
 
         public static LoggerResult CreateLoggerResult(Logger logger)
         {
@@ -191,66 +73,82 @@ namespace SiliconStudio.Presentation.Tests
             return loggerResult;
         }
 
-        public static WindowManager InitWindowManager(Dispatcher dispatcher)
+        public static IDisposable InitWindowManager(Dispatcher dispatcher, out LoggerResult loggerResult)
         {
-            LoggerResult loggerResult;
-            return InitWindowManager(dispatcher, out loggerResult);
-        }
-
-        public static WindowManager InitWindowManager(Dispatcher dispatcher, out LoggerResult loggerResult)
-        {
-            var manager = new WindowManager(dispatcher);
+            var manager = new WindowManagerWrapper(dispatcher);
             loggerResult = CreateLoggerResult(WindowManager.Logger);
             return manager;
         }
 
-        public static void KillWindow(IntPtr hwnd)
+        private class WindowManagerWrapper : IDisposable
         {
-            NativeHelper.SendMessage(hwnd, NativeHelper.WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
-        }
+            private static Dispatcher uiDispatcher;
+            private static NativeHelper.WinEventDelegate winEventProc;
+            private static IntPtr hook;
+            private readonly WindowManager manager;
 
-        public static void AssertWindowsStatus(Window mainWindow, params Window[] modalWindows)
-        {
-            if (modalWindows != null)
+            public WindowManagerWrapper(Dispatcher dispatcher)
             {
-                Assert.AreEqual(modalWindows.Length, WindowManager.ModalWindows.Count);
-                for (var i = 0; i < modalWindows.Length; ++i)
+                uiDispatcher = dispatcher;
+                manager = uiDispatcher.Invoke(() =>
                 {
-                    var expectedIsDisabled = i < modalWindows.Length - 1;
-                    var expectedOwner = i > 0 ? WindowManager.ModalWindows[i - 1] : WindowManager.MainWindow;
-                    Assert.AreEqual(modalWindows[i], WindowManager.ModalWindows[i].Window);
-                    Assert.AreEqual(modalWindows[i]?.Owner, WindowManager.ModalWindows[i].Window?.Owner);
-                    Assert.AreEqual(expectedOwner, WindowManager.ModalWindows[i].Owner);
-                    Assert.AreEqual(true, WindowManager.ModalWindows[i].IsModal);
-                    Assert.AreEqual(expectedIsDisabled, WindowManager.ModalWindows[i].IsDisabled);
-                    Assert.AreEqual(true, WindowManager.ModalWindows[i].IsShown);
-                    Assert.AreEqual(false, WindowManager.ModalWindows[i].WindowClosed.Task.IsCompleted);
+                    winEventProc = WinEventProc;
+                    var processId = (uint)Process.GetCurrentProcess().Id;
+                    hook = NativeHelper.SetWinEventHook(NativeHelper.EVENT_OBJECT_SHOW, NativeHelper.EVENT_OBJECT_HIDE, IntPtr.Zero, winEventProc, processId, 0, NativeHelper.WINEVENT_OUTOFCONTEXT);
+                    if (hook == IntPtr.Zero) throw new InvalidOperationException("Unable to initialize the window manager.");
+                    return new WindowManager(uiDispatcher);
+                });
+            }
+
+            public void Dispose()
+            {
+                uiDispatcher.Invoke(() =>
+                {
+                    manager.Dispose();
+                    if (!NativeHelper.UnhookWinEvent(hook)) throw new InvalidOperationException("An error occurred while disposing the window manager.");
+                    hook = IntPtr.Zero;
+                    winEventProc = null;
+                });
+            }
+
+            private static void WinEventProc(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
+            {
+                if (hwnd == IntPtr.Zero)
+                    return;
+
+                var rootHwnd = NativeHelper.GetAncestor(hwnd, NativeHelper.GetAncestorFlags.GetRoot);
+                if (rootHwnd != IntPtr.Zero && rootHwnd != hwnd)
+                    return;
+
+                // idObject == 0 means it is the window itself, not a child object
+                if (eventType == NativeHelper.EVENT_OBJECT_SHOW && idObject == 0)
+                {
+                    Assert.True(uiDispatcher.CheckAccess());
+                    WindowShown(hwnd);
+                }
+                if (eventType == NativeHelper.EVENT_OBJECT_HIDE && idObject == 0)
+                {
+                    Assert.True(uiDispatcher.CheckAccess());
+                    WindowHidden();
                 }
             }
-            if (mainWindow != null)
-            {
-                Assert.NotNull(WindowManager.MainWindow);
-                Assert.AreEqual(mainWindow, WindowManager.MainWindow.Window);
-                Assert.AreEqual(null, WindowManager.MainWindow.Owner);
-                Assert.AreEqual(null, WindowManager.MainWindow.Window.Owner);
-                Assert.AreEqual(true, WindowManager.MainWindow.IsModal);
-                Assert.AreEqual(WindowManager.ModalWindows.Count > 0, WindowManager.MainWindow.IsDisabled);
-                Assert.AreEqual(true, WindowManager.MainWindow.IsShown);
-                Assert.AreEqual(false, WindowManager.MainWindow.WindowClosed.Task.IsCompleted);
-            }
-            else
-            {
-                Assert.Null(WindowManager.MainWindow);
-            }
-        }
 
-        public static void AssertWindowClosed(WindowInfo window)
-        {
-            Assert.AreEqual(null, window.Owner);
-            //Assert.AreEqual(false, window.IsModal);
-            Assert.AreEqual(false, window.IsDisabled);
-            Assert.AreEqual(false, window.IsShown);
-            Assert.AreEqual(true, window.WindowClosed.Task.IsCompleted);
+            private static void WindowShown(IntPtr hwnd)
+            {
+                if (!HwndHelper.HasStyleFlag(hwnd, NativeHelper.WS_VISIBLE))
+                    return;
+
+                var oldTcs = nextWindowShown;
+                nextWindowShown = new TaskCompletionSource<int>();
+                oldTcs.SetResult(0);
+            }
+
+            private static void WindowHidden()
+            {
+                var oldTcs = nextWindowHidden;
+                nextWindowHidden = new TaskCompletionSource<int>();
+                oldTcs.SetResult(0);
+            }
         }
     }
 }

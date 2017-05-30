@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -15,6 +15,7 @@ namespace SiliconStudio.Core.Serialization.Contents
     public sealed class ContentIndexMap : DictionaryStore<string, ObjectId>, IContentIndexMap
     {
         private static readonly Regex RegexEntry = new Regex(@"^(.*?)\s+(\w+)$");
+        private static readonly Regex RegexEntrySpace = new Regex(@"^(.*?)\s(\w+)$");
 
         private ContentIndexMap()
             : base(null)
@@ -121,6 +122,17 @@ namespace SiliconStudio.Core.Serialization.Contents
 
                 var url = match.Groups[1].Value;
                 var objectIdStr = match.Groups[2].Value;
+
+                // Test if the name has leading or ending spaces
+                var matchSpace = RegexEntrySpace.Match(line);
+                if (matchSpace.Success)
+                {
+                    if (!matchSpace.Groups[1].Value.Equals(url))
+                    {
+                        throw new InvalidOperationException("Assets names cannot have empty spaces before or after the name. Please rename [{0}] and compile again.".ToFormat(matchSpace.Groups[1].Value));
+                    }
+                }
+
 
                 ObjectId objectId;
                 if (!ObjectId.TryParse(objectIdStr, out objectId))

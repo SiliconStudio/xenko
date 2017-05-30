@@ -1,8 +1,12 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Compositing;
 using SiliconStudio.Xenko.Rendering.Materials;
 
 namespace SiliconStudio.Xenko.Rendering.Images
@@ -66,6 +70,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         /// <inheritdoc/>
         [DataMember(-100), Display(Browsable = false)]
+        [NonOverridable]
         public Guid Id { get; set; } = Guid.NewGuid();
 
         /// <summary>
@@ -245,13 +250,23 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
         }
 
-        public void Draw(RenderDrawContext drawContext, IRenderTarget inputTargetsComposition, Texture inputDepthStencil, Texture outputTarget)
+        public void Draw(RenderDrawContext drawContext, RenderOutputValidator outputValidator, Texture[] inputs, Texture inputDepthStencil, Texture outputTarget)
         {
-            var colorInput = inputTargetsComposition as IColorTarget;
-            if (colorInput == null) return;
-
-            SetInput(0, colorInput.Color);
+            var colorIndex = outputValidator.Find<ColorTargetSemantic>();
+            if (colorIndex < 0)
+                return;
+            
+            SetInput(0, inputs[colorIndex]);
             SetInput(1, inputDepthStencil);
+
+            var reflectionIndex0 = outputValidator.Find<OctahedronNormalSpecularColorTargetSemantic>();
+            var reflectionIndex1 = outputValidator.Find<EnvironmentLightRoughnessTargetSemantic>();
+            if (reflectionIndex0 >= 0 && reflectionIndex1 >= 0)
+            {
+                SetInput(2, inputs[reflectionIndex0]);
+                SetInput(3, inputs[reflectionIndex1]);
+            }
+            
             SetOutput(outputTarget);
             Draw(drawContext);
         }
@@ -259,6 +274,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         public bool RequiresVelocityBuffer => false;
 
         public bool RequiresNormalBuffer => false;
+
+        public bool RequiresSsrGBuffers => false; // localReflections.Enabled; TODO : to merge with RLR branch.
 
         protected override void DrawCore(RenderDrawContext context)
         {
@@ -268,6 +285,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             {
                 return;
             }
+
+            var inputDepthTexture = GetInput(1); // Depth
 
             // Update the parameters for this post effect
             if (!Enabled)
@@ -328,22 +347,20 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 currentInput = aaSurface;
             }
 
-            if (ambientOcclusion.Enabled && InputCount > 1 && GetInput(1) != null && GetInput(1).IsDepthStencil)
+            if (ambientOcclusion.Enabled && inputDepthTexture != null)
             {
                 // Ambient Occlusion
                 var aoOutput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
-                var inputDepthTexture = GetInput(1); // Depth
                 ambientOcclusion.SetColorDepthInput(currentInput, inputDepthTexture);
                 ambientOcclusion.SetOutput(aoOutput);
                 ambientOcclusion.Draw(context);
                 currentInput = aoOutput;
             }
 
-            if (depthOfField.Enabled && InputCount > 1 && GetInput(1) != null && GetInput(1).IsDepthStencil)
+            if (depthOfField.Enabled && inputDepthTexture != null)
             {
                 // DoF
                 var dofOutput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
-                var inputDepthTexture = GetInput(1); // Depth
                 depthOfField.SetColorDepthInput(currentInput, inputDepthTexture);
                 depthOfField.SetOutput(dofOutput);
                 depthOfField.Draw(context);

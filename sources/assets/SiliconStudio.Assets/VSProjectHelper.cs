@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -300,7 +300,7 @@ namespace SiliconStudio.Assets
 
                 // Make sure that we are using the project collection from the loaded project, otherwise we are getting
                 // weird cache behavior with the msbuild system
-                var projectInstance = new ProjectInstance(project.Xml, project.ProjectCollection.GlobalProperties, null, project.ProjectCollection);
+                var projectInstance = new ProjectInstance(project.Xml, project.ProjectCollection.GlobalProperties, project.ToolsVersion, project.ProjectCollection);
 
                 BuildTask = previousTask.ContinueWith(completedPreviousTask =>
                 {

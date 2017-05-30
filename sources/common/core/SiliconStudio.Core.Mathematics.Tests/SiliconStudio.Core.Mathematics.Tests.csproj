@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+  </PropertyGroup>
+  <Import Project="..\..\targets\SiliconStudio.PreSettings.targets" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A9A83BE5-271B-4347-9C4D-340FC3BD0B2B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SiliconStudio.Core.Mathematics.Tests</RootNamespace>
+    <AssemblyName>SiliconStudio.Core.Mathematics.Tests</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
+    <XenkoBuildTags>Windows</XenkoBuildTags>
+    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
+    <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioSkipUnitTests)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="nunit.core.interfaces" Label="Xenko.DoNotSync">
+      <HintPath>$(SiliconStudioDependenciesDir)NUnit\addins\nunit.core.interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework" Label="Xenko.DoNotSync">
+      <HintPath>$(SiliconStudioDependenciesDir)NUnit\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestColor.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

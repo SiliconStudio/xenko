@@ -1,8 +1,7 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Globalization;
-using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
@@ -12,19 +11,16 @@ namespace SiliconStudio.Presentation.ValueConverters
     public class TimeSpanToDouble : ValueConverterBase<TimeSpanToDouble>
     {
         /// <inheritdoc/>
-        [NotNull]
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var timeSpan = (TimeSpan)value;
-            return timeSpan.TotalSeconds;
+            return targetType == typeof(double) ? ConverterHelper.ConvertToTimeSpan(value, culture).TotalSeconds : ConverterHelper.TryConvertToTimeSpan(value, culture)?.TotalSeconds;
         }
 
         /// <inheritdoc/>
-        [NotNull]
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var seconds = ConverterHelper.ConvertToDouble(value, culture);
-            return TimeSpan.FromSeconds(seconds);
+            var doubleValue = targetType == typeof(TimeSpan) ? ConverterHelper.ConvertToDouble(value, culture) : ConverterHelper.TryConvertToDouble(value, culture);
+            return doubleValue != null ? (object)TimeSpan.FromSeconds(doubleValue.Value) : null;
         }
     }
 }

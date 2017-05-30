@@ -1,6 +1,7 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Assets;
@@ -16,7 +17,6 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [DataContract("PregeneratedSpriteFont")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Graphics.SpriteFont))]
-    [AssetCompiler(typeof(PrecompiledSpriteFontAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.7.0-alpha01")]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.5.0-alpha09", typeof(PremultiplyUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha09", "1.7.0-alpha01", typeof(SourceMembersUpgrader))]
@@ -24,6 +24,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [CategoryOrder(10, "Font Data")]
     [CategoryOrder(20, "Font Properties")]
     [CategoryOrder(30, "Font Characters")]
+    [Obsolete("This asset will be removed soon")]
     public class PrecompiledSpriteFontAsset : Asset
     {
         /// <summary>

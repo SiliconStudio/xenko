@@ -1,10 +1,12 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Data;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Engine.Design
 {
@@ -29,6 +31,10 @@ namespace SiliconStudio.Xenko.Engine.Design
         public string DefaultSceneUrl { get; set; }
 
         public string DefaultGraphicsCompositorUrl { get; set; }
+
+        public string SplashScreenUrl { get; set; }
+
+        public Color4 SplashScreenColor { get; set; }
 
         /// <summary>
         /// Gets or sets the compilation mode used.

@@ -1,13 +1,10 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
-
-using SiliconStudio.Assets.Analysis;
-using SiliconStudio.Core.IO;
+using SiliconStudio.BuildEngine;
 
 namespace SiliconStudio.Assets.Compiler
 {
@@ -17,9 +14,8 @@ namespace SiliconStudio.Assets.Compiler
     /// </summary>
     public class PackageCompiler : IPackageCompiler
     {
-        private static readonly AssetCompilerRegistry assetCompilerRegistry = new AssetCompilerRegistry();
-        private readonly List<IPackageCompiler> compilers;
         private readonly IPackageCompilerSource packageCompilerSource;
+        private readonly AssetDependenciesCompiler dependenciesCompiler = new AssetDependenciesCompiler(typeof(AssetCompilationContext));
 
         static PackageCompiler()
         {
@@ -39,7 +35,6 @@ namespace SiliconStudio.Assets.Compiler
         public PackageCompiler(IPackageCompilerSource packageCompilerSource)
         {
             this.packageCompilerSource = packageCompilerSource;
-            compilers = new List<IPackageCompiler>();
         }
 
         /// <summary>
@@ -48,12 +43,11 @@ namespace SiliconStudio.Assets.Compiler
         /// <value>The SDK directory.</value>
         public static string SdkDirectory { get; set; }
 
-
         /// <summary>
         /// Compile the current package session.
         /// That is generate the list of build steps to execute to create the package assets.
         /// </summary>
-        public AssetCompilerResult Compile(AssetCompilerContext compilerContext)
+        public AssetCompilerResult Prepare(AssetCompilerContext compilerContext)
         {
             if (compilerContext == null) throw new ArgumentNullException("compilerContext");
 
@@ -65,25 +59,8 @@ namespace SiliconStudio.Assets.Compiler
                 return result;
             }
 
-            var defaultAssetsCompiler = new DefaultAssetsCompiler(assets);
-            defaultAssetsCompiler.AssetCompiled += OnAssetCompiled;
-
-            // Add default compilers
-            compilers.Clear();
-            compilers.Add(defaultAssetsCompiler);
-
-            // Compile using all PackageCompiler
-            foreach (var compiler in compilers)
-            {
-                var compilerResult = compiler.Compile(compilerContext);
-                compilerResult.CopyTo(result);
-                while (compilerResult.BuildSteps.Count > 0)
-                {
-                    var step = compilerResult.BuildSteps[0];
-                    compilerResult.BuildSteps.RemoveAt(0);
-                    result.BuildSteps.Add(step);
-                }
-            }
+            dependenciesCompiler.AssetCompiled += OnAssetCompiled;
+            result = dependenciesCompiler.PrepareMany(compilerContext, assets);
 
             return result;
         }
@@ -91,30 +68,6 @@ namespace SiliconStudio.Assets.Compiler
         private void OnAssetCompiled(object sender, AssetCompiledArgs assetCompiledArgs)
         {
             AssetCompiled?.Invoke(this, assetCompiledArgs);
-        }
-
-        /// <summary>
-        /// Internal default compiler for compiling all assets 
-        /// </summary>
-        private class DefaultAssetsCompiler : ItemListCompiler, IPackageCompiler
-        {
-            private readonly IList<AssetItem> assets;
-
-            public DefaultAssetsCompiler(IList<AssetItem> assets)
-                : base(assetCompilerRegistry)
-            {
-                this.assets = assets;
-            }
-
-            public AssetCompilerResult Compile(AssetCompilerContext context)
-            {
-                var result = new AssetCompilerResult();
-
-                // generate the build steps required to build the assets via base class
-                Compile(context, assets, result);
-
-                return result;
-            }
         }
     }
 }

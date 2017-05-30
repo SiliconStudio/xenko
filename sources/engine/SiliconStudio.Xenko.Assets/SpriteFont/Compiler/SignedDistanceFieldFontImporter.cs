@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -130,7 +130,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
             // Get the msdfgen.exe location
             var installationDir = DirectoryHelper.GetPackageDirectory("Xenko");
             var binDir = UPath.Combine(installationDir, new UDirectory("Bin"));
-            binDir = UPath.Combine(binDir, new UDirectory("Windows-Direct3D11"));
+            binDir = UPath.Combine(binDir, new UDirectory("Windows"));
             var msdfgen = UPath.Combine(binDir, new UFile("msdfgen.exe"));
             if (!File.Exists(msdfgen))
             {

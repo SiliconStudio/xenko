@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
 // 
@@ -30,42 +30,40 @@ using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core.Mathematics;
 using Windows.Foundation;
 using Windows.UI.ViewManagement;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
+//using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Core;
 
 namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
-    /// An abstract window.
+    /// <see cref="GameWindow"/> implementation for UWP. Handles both <see cref="SwapChainPanel"/> and <see cref="CoreWindow"/>.
     /// </summary>
-    internal class GameWindowUWPSwapChainPanel : GameWindow<SwapChainPanel>
+    internal class GameWindowUWP : GameWindow
     {
 #region Fields
         private const DisplayOrientations PortraitOrientations = DisplayOrientations.Portrait | DisplayOrientations.PortraitFlipped;
         private const DisplayOrientations LandscapeOrientations = DisplayOrientations.Landscape | DisplayOrientations.LandscapeFlipped;
 
-        private SwapChainPanel swapChainPanel;
         private WindowHandle windowHandle;
         private int currentWidth;
         private int currentHeight;
-        private readonly CoreWindow coreWindow;
+
+        private SwapChainPanel swapChainPanel = null;
+        private CoreWindow coreWindow = null;
+
         private static readonly Windows.Devices.Input.MouseCapabilities mouseCapabilities = new Windows.Devices.Input.MouseCapabilities();
-        private readonly DispatcherTimer resizeTimer;
+
+        private DispatcherTimer resizeTimer = null;
+
         private double requiredRatio;
         private ApplicationView applicationView;
         private bool canResize;
 #endregion
 
 #region Public Properties
-
-        public GameWindowUWPSwapChainPanel()
-        {
-            coreWindow = CoreWindow.GetForCurrentThread();
-            resizeTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
-            resizeTimer.Tick += ResizeTimerOnTick;
-        } 
 
         public override bool AllowUserResizing
         {
@@ -82,25 +80,26 @@ namespace SiliconStudio.Xenko.Games
         {
             get
             {
-                return new Rectangle(0, 0, (int)(this.swapChainPanel.ActualWidth * swapChainPanel.CompositionScaleX + 0.5f), (int)(this.swapChainPanel.ActualHeight * swapChainPanel.CompositionScaleY + 0.5f));
+                if (swapChainPanel != null)
+                {
+                    return new Rectangle(0, 0, 
+                        (int)(swapChainPanel.ActualWidth  * swapChainPanel.CompositionScaleX + 0.5f),
+                        (int)(swapChainPanel.ActualHeight * swapChainPanel.CompositionScaleY + 0.5f));
+
+                }
+
+                if (coreWindow != null)
+                {
+                    return new Rectangle((int)(coreWindow.Bounds.X), (int)(coreWindow.Bounds.Y), (int)(coreWindow.Bounds.Width), (int)(coreWindow.Bounds.Height));
+                }
+
+                throw new ArgumentException($"{nameof(GameWindow)} should have either a {nameof(SwapChainPanel)} or a {nameof(CoreWindow)}");
             }
         }
 
-        public override DisplayOrientation CurrentOrientation
-        {
-            get
-            {
-                return DisplayOrientation.Default;
-            }
-        }
+        public override DisplayOrientation CurrentOrientation => DisplayOrientation.Default;
 
-        public override bool IsMinimized
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override bool IsMinimized => false;
 
         private bool isMouseVisible;
         private CoreCursor cursor;
@@ -193,11 +192,28 @@ namespace SiliconStudio.Xenko.Games
 
 #region Methods
 
-        protected override void Initialize(GameContext<SwapChainPanel> windowContext)
+        protected internal override void Initialize(GameContext windowContext)
         {
-            Debug.Assert(windowContext is GameContextUWP, "By design only one descendant of GameContext<SwapChainPanel>");
-            swapChainPanel = windowContext.Control;
-            windowHandle = new WindowHandle(AppContextType.UWP, swapChainPanel, IntPtr.Zero);
+            swapChainPanel = (windowContext as GameContextUWPXaml)?.Control;
+            coreWindow = (windowContext as GameContextUWPCoreWindow)?.Control;
+
+            if (swapChainPanel != null)
+            {
+                resizeTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
+                resizeTimer.Tick += ResizeTimerOnTick;
+
+                coreWindow = CoreWindow.GetForCurrentThread();
+                windowHandle = new WindowHandle(AppContextType.UWPXaml, swapChainPanel, IntPtr.Zero);
+            }
+            else if (coreWindow != null)
+            {
+                coreWindow.SizeChanged += ResizeOnWindowChange;
+                windowHandle = new WindowHandle(AppContextType.UWPCoreWindow, coreWindow, IntPtr.Zero);
+            }
+            else
+            {
+                Debug.Assert(swapChainPanel == null && coreWindow == null, "GameContext was neither UWPXaml nor UWPCoreWindow");
+            }
 
             applicationView = ApplicationView.GetForCurrentView();            
             if (applicationView != null && windowContext.RequestedWidth != 0 && windowContext.RequestedHeight != 0)
@@ -208,8 +224,12 @@ namespace SiliconStudio.Xenko.Games
 
             requiredRatio = windowContext.RequestedWidth/(double)windowContext.RequestedHeight;
 
-            swapChainPanel.SizeChanged += swapChainPanel_SizeChanged;
-            swapChainPanel.CompositionScaleChanged += swapChainPanel_CompositionScaleChanged;
+            if (swapChainPanel != null)
+            {
+                swapChainPanel.SizeChanged += swapChainPanel_SizeChanged;
+                swapChainPanel.CompositionScaleChanged += swapChainPanel_CompositionScaleChanged;
+            }
+
             coreWindow.SizeChanged += CurrentWindowOnSizeChanged;
         }
 
@@ -230,11 +250,17 @@ namespace SiliconStudio.Xenko.Games
             OnClientSizeChanged(sender, EventArgs.Empty);
         }
 
+        private void ResizeOnWindowChange(object sender, object o)
+        {
+            OnClientSizeChanged(sender, EventArgs.Empty);
+        }
+
         private void HandleSizeChanged(object sender, Size newSize)
         {
             var bounds = newSize;
 
-            if (bounds.Width > 0 && bounds.Height > 0 && currentWidth > 0 && currentHeight > 0)
+            // Only supports swapChainPanel for now
+            if (swapChainPanel != null && bounds.Width > 0 && bounds.Height > 0 && currentWidth > 0 && currentHeight > 0)
             {
                 double panelWidth;
                 double panelHeight;
@@ -256,7 +282,7 @@ namespace SiliconStudio.Xenko.Games
                 else
                 {
                     //mobile device, keep aspect fine
-                    var aspect = panelWidth/panelHeight;
+                    var aspect = panelWidth / panelHeight;
                     if (aspect < requiredRatio)
                     {
                         panelWidth = bounds.Width; //real screen width
@@ -280,26 +306,28 @@ namespace SiliconStudio.Xenko.Games
                 }
             }
 
-            resizeTimer.Stop();
-            resizeTimer.Start();
+            if (resizeTimer != null)
+            {
+                resizeTimer.Stop();
+                resizeTimer.Start();
+            }
         }
 
         private void swapChainPanel_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             var bounds = e.NewSize;
             HandleSizeChanged(sender, bounds);
+            if (resizeTimer != null)
+            {
+                resizeTimer.Stop();
+                resizeTimer.Start();
+            }
         }
 
         internal override void Resize(int width, int height)
         {
             currentWidth = width;
             currentHeight = height;
-        }
-
-        internal override void Run()
-        {
-            // Perform the rendering loop
-            CompositionTarget.Rendering += CompositionTarget_Rendering;
         }
 
         void CompositionTarget_Rendering(object sender, object e)
@@ -310,7 +338,43 @@ namespace SiliconStudio.Xenko.Games
                 InitCallback();
                 InitCallback = null;
             }
+
             RunCallback();
+        }
+
+        internal override void Run()
+        {
+            if (swapChainPanel != null)
+            {
+                CompositionTarget.Rendering += CompositionTarget_Rendering;
+                return;
+            }
+
+            // Call InitCallback only first time
+            if (InitCallback != null)
+            {
+                InitCallback();
+                InitCallback = null;
+            }
+
+            try
+            {
+                while (true)
+                {
+                    coreWindow.Dispatcher.ProcessEvents(CoreProcessEventsOption.ProcessAllIfPresent);
+                    if (Exiting)
+                    {
+                        Destroy();
+                        break;
+                    }
+
+                    RunCallback();
+                }
+            }
+            finally
+            {
+                ExitCallback?.Invoke();
+            }
         }
 
         protected internal override void SetSupportedOrientations(DisplayOrientation orientations)
@@ -325,7 +389,10 @@ namespace SiliconStudio.Xenko.Games
 
         protected override void Destroy()
         {
-            CompositionTarget.Rendering -= CompositionTarget_Rendering;
+            if (swapChainPanel != null)
+            {
+                CompositionTarget.Rendering -= CompositionTarget_Rendering;
+            }
             base.Destroy();
         }
 #endregion

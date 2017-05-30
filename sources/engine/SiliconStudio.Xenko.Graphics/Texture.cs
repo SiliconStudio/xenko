@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2012 SharpDX - Alexandre Mutel
 // 
@@ -241,11 +241,11 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         /// <value>The multi sample level.</value>
         /// <remarks>This field is only valid for a 2D <see cref="Texture" />.</remarks>
-        public MSAALevel MultiSampleLevel
+        public MultisampleCount MultisampleCount
         {
             get
             {
-                return textureDescription.MultiSampleLevel;
+                return textureDescription.MultisampleCount;
             }
         }
 
@@ -335,11 +335,11 @@ namespace SiliconStudio.Xenko.Graphics
         /// Gets a value indicating whether this instance is a multi sample texture.
         /// </summary>
         /// <value><c>true</c> if this instance is multi sample texture; otherwise, <c>false</c>.</value>
-        public bool IsMultiSample
+        public bool IsMultisample
         {
             get
             {
-                return this.MultiSampleLevel > MSAALevel.None;
+                return this.MultisampleCount > MultisampleCount.None;
             }
         }
         
@@ -1114,7 +1114,8 @@ namespace SiliconStudio.Xenko.Graphics
         internal static int CalculateMipMapCount(MipMapCount requestedLevel, int width, int height = 0, int depth = 0)
         {
             int size = Math.Max(Math.Max(width, height), depth);
-            int maxMipMap = 1 + (int)Math.Ceiling(Math.Log(size) / Math.Log(2.0));
+            //int maxMipMap = 1 + (int)Math.Ceiling(Math.Log(size) / Math.Log(2.0));
+            int maxMipMap = CountMips(size);
 
             return requestedLevel  == 0 ? maxMipMap : Math.Min(requestedLevel, maxMipMap);
         }
@@ -1250,43 +1251,12 @@ namespace SiliconStudio.Xenko.Graphics
 
         private static int CountMips(int width, int height)
         {
-            int mipLevels = 1;
-
-            // TODO: Use Math.Log2 or a loop?
-            while (height > 1 || width > 1)
-            {
-                ++mipLevels;
-
-                if (height > 1)
-                    height >>= 1;
-
-                if (width > 1)
-                    width >>= 1;
-            }
-
-            return mipLevels;
+            return CountMips(Math.Max(width, height));
         }
 
         private static int CountMips(int width, int height, int depth)
         {
-            int mipLevels = 1;
-
-            // TODO: Use Math.Log2 or a loop?
-            while (height > 1 || width > 1 || depth > 1)
-            {
-                ++mipLevels;
-
-                if (height > 1)
-                    height >>= 1;
-
-                if (width > 1)
-                    width >>= 1;
-
-                if (depth > 1)
-                    depth >>= 1;
-            }
-
-            return mipLevels;
+            return CountMips(Math.Max(width, Math.Max(height, depth)));
         }
     }
 }

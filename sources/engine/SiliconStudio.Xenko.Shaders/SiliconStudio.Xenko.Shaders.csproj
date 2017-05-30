@@ -14,7 +14,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--serialization --parameter-key</SiliconStudioAssemblyProcessorOptions>
-    <XenkoBuildTags>*</XenkoBuildTags>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
   </PropertyGroup>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
@@ -25,7 +25,7 @@
     </When>
   </Choose>
   <ItemGroup>
-    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+    <Compile Include="..\..\common\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Compiler\CompilerResults.cs" />
@@ -50,6 +50,7 @@
     <Compile Include="ParameterKeyHashSerializer.cs" />
     <Compile Include="EffectConstantBufferDescription.cs" />
     <Compile Include="ShaderInputBytecode.cs" />
+    <Compile Include="ShaderInputAttributeDescription.cs" />
     <Compile Include="ShaderLevelBytecode.cs" />
     <Compile Include="ShaderMixinDiscardException.cs" />
     <Compile Include="ShaderMixinGeneratorSource.cs" />

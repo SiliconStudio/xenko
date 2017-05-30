@@ -12,15 +12,12 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
     <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Options">
       <HintPath>$(SiliconStudioDependenciesDir)Mono.Options\Mono.Options.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.core.interfaces">
-      <HintPath>$(SiliconStudioDependenciesDir)NUnit\addins\nunit.core.interfaces.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>$(SiliconStudioDependenciesDir)NUnit\nunit.framework.dll</HintPath>
@@ -34,7 +31,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+    <Compile Include="..\..\common\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Program.cs" />

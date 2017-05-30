@@ -11,7 +11,7 @@
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
     <RootNamespace>SiliconStudio.Xenko.UI.Tests</RootNamespace>
     <AssemblyName>SiliconStudioXenkoUITests</AssemblyName>
-    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
     <SiliconStudioPlatform>iOS</SiliconStudioPlatform>
     <SiliconStudioBuildProfile>iOS</SiliconStudioBuildProfile>
     <SiliconStudioPackageGuid>{b18707e8-1d26-49fc-9911-3834506d8149}</SiliconStudioPackageGuid>
@@ -179,6 +179,14 @@
       <Project>{D002FEB1-00A6-4AB1-A83F-1F253465E64D}</Project>
       <Name>SiliconStudio.Xenko.Graphics.Regression</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj">
+      <Project>{1dbbc150-f085-43ef-b41d-27c72d133770}</Project>
+      <Name>SiliconStudio.Xenko.Native</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Particles\SiliconStudio.Xenko.Particles.csproj">
+      <Project>{f32fda80-b6dd-47a8-8681-437e2c0d3f31}</Project>
+      <Name>SiliconStudio.Xenko.Particles</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Physics\SiliconStudio.Xenko.Physics.csproj">
       <Project>{dd592516-b341-40fe-9100-1b0fa784a060}</Project>
       <Name>SiliconStudio.Xenko.Physics</Name>
@@ -190,6 +198,14 @@
     <ProjectReference Include="..\SiliconStudio.Xenko.SpriteStudio.Runtime\SiliconStudio.Xenko.SpriteStudio.Runtime.csproj">
       <Project>{9BC63BEC-F305-451D-BB31-262938EA964D}</Project>
       <Name>SiliconStudio.Xenko.SpriteStudio.Runtime</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.VirtualReality\SiliconStudio.Xenko.VirtualReality.csproj">
+      <Project>{53782603-3096-40c2-abd3-f8f311bae4be}</Project>
+      <Name>SiliconStudio.Xenko.VirtualReality</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Xenko.Navigation\SiliconStudio.Xenko.Navigation.csproj">
+      <Project>{fbe1fa7b-e699-4bb2-9c8f-41f4c9f3f088}</Project>
+      <Name>SiliconStudio.Xenko.Navigation</Name>
     </ProjectReference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -225,7 +241,6 @@
     <Compile Include="Layering\ToggleButtonTests.cs" />
     <Compile Include="Layering\UIElementLayeringTests.cs" />
     <Compile Include="Layering\UniformGridTests.cs" />
-    <Compile Include="Module.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="RandomExtension.cs" />
     <Compile Include="Regression\BillboardModeTests.cs" />
@@ -258,13 +273,33 @@
     <Compile Include="Regression\ScrollViewerTest.cs" />
     <Compile Include="Regression\SliderTest.cs" />
     <Compile Include="Regression\StackPanelTest.cs" />
-    <Compile Include="Regression\TestCamera.cs" />
+    <Compile Include="Regression\TestUICamera.cs" />
     <Compile Include="Regression\TextBlockTest.cs" />
     <Compile Include="Regression\TextBlockWrappingTest.cs" />
     <Compile Include="Regression\ToggleButtonTest.cs" />
     <Compile Include="Regression\TransparencyTest.cs" />
     <Compile Include="Regression\UniformGridTest.cs" />
     <Compile Include="Regression\UITestGameBase.cs" />
+    <None Include="Assets\BorderButton.xktex" />
+    <None Include="Assets\BorderButtonCentered.xktex" />
+    <None Include="Assets\CourierNew12.xkfnt" />
+    <None Include="Assets\cube Model.xkm3d" />
+    <None Include="Assets\DebugSlider.xksheet" />
+    <None Include="Assets\DumbWhite.xktex" />
+    <None Include="Assets\GameSettings.xkgamesettings" />
+    <None Include="Assets\GraphicsCompositor.xkgfxcomp" />
+    <None Include="Assets\HanSans13.xkfnt" />
+    <None Include="Assets\ImageButtonNotPressed.xktex" />
+    <None Include="Assets\ImageButtonPressed.xktex" />
+    <None Include="Assets\lambert1.xkmat" />
+    <None Include="Assets\MainScene.xkscene" />
+    <None Include="Assets\MicrosoftSansSerif15.xkfnt" />
+    <None Include="Assets\RotatedImages.xksheet" />
+    <None Include="Assets\rotatedUV.xktex" />
+    <None Include="Assets\UIImages.xksheet" />
+    <None Include="Assets\Untitled.xktex" />
+    <None Include="Assets\uv.xktex" />
+    <None Include="Assets\XenkoBackground.xktex" />
     <None Include="Regression\ElementTestDesigns.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ElementTestDesigns.cs</LastGenOutput>

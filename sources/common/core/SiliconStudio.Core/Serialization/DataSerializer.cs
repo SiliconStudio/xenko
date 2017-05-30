@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -15,8 +15,8 @@ namespace SiliconStudio.Core.Serialization
     public abstract class DataSerializer
     {
         // Binary format version, needs to be bumped in case of big changes in serialization formats (i.e. primitive types).
-        public const int BinaryFormatVersion = 1 * 1000000 // Major version: any number is ok
-                                             + 11 * 10000   // Minor version: supported range: 0-99
+        public const int BinaryFormatVersion = 2 * 1000000 // Major version: any number is ok
+                                             + 0 * 10000   // Minor version: supported range: 0-99
                                              + 0 * 100     // Patch version: supported range: 0-99
                                              + 0;          // Bump ID: supported range: 0-99
         /// <summary>

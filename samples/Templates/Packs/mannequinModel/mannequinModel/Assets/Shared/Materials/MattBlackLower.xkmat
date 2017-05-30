@@ -1,6 +1,6 @@
 !MaterialAsset
 Id: 41b54c7a-d61c-4c02-9d5d-f3a2e6e688ab
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Attributes:
     Surface: !MaterialNormalMapFeature
@@ -12,7 +12,6 @@ Attributes:
             Offset: {X: 0.0, Y: 0.0}
             Swizzle: null
         IsXYNormal: true
-        InvertY: false
     MicroSurface: !MaterialGlossinessMapFeature
         GlossinessMap: !ComputeFloat
             Value: 0.5

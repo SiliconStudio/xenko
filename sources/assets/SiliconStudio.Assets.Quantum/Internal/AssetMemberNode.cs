@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +20,7 @@ namespace SiliconStudio.Assets.Quantum.Internal
         public AssetMemberNode(INodeBuilder nodeBuilder, Guid guid, IObjectNode parent, IMemberDescriptor memberDescriptor, bool isPrimitive, IReference reference)
             : base(nodeBuilder, guid, parent, memberDescriptor, isPrimitive, reference)
         {
-            Changed += ContentChanged;
+            ValueChanged += ContentChanged;
             IsNonIdentifiableCollectionContent = MemberDescriptor.GetCustomAttributes<NonIdentifiableCollectionItemsAttribute>(true)?.Any() ?? false;
             CanOverride = MemberDescriptor.GetCustomAttributes<NonOverridableAttribute>(true)?.Any() != true;
         }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -160,38 +162,33 @@ namespace SiliconStudio.Assets.Quantum.Tests.Helpers
             public int Number { get; set; }
         }
 
-        [AssetPropertyGraph(typeof(MyAssetWithRef))]
-        public class AssetWithRefPropertyGraph : MyAssetBasePropertyGraph
+        [AssetPropertyGraphDefinition(typeof(MyAssetWithRef))]
+        public class AssetWithRefPropertyGraphDefinition : AssetPropertyGraphDefinition
         {
-            public AssetWithRefPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
-                : base(container, assetItem, logger)
-            {
-            }
-
             public static Func<IGraphNode, Index, bool> IsObjectReferenceFunc { get; set; }
 
-            public override bool IsObjectReference(IGraphNode targetNode, Index index, object value)
+            public override bool IsMemberTargetObjectReference(IMemberNode member, object value)
             {
-                return IsObjectReferenceFunc?.Invoke(targetNode, index) ?? base.IsObjectReference(targetNode, index, value);
+                return IsObjectReferenceFunc?.Invoke(member, Index.Empty) ?? base.IsMemberTargetObjectReference(member, value);
+            }
+
+            public override bool IsTargetItemObjectReference(IObjectNode collection, Index itemIndex, object value)
+            {
+                return IsObjectReferenceFunc?.Invoke(collection, itemIndex) ?? base.IsTargetItemObjectReference(collection, itemIndex, value);
             }
         }
 
-        [AssetPropertyGraph(typeof(MyAssetWithRef2))]
-        public class AssetWithRefPropertyGraph2 : MyAssetBasePropertyGraph
+        [AssetPropertyGraphDefinition(typeof(MyAssetWithRef2))]
+        public class AssetWithRefPropertyGraph2 : AssetPropertyGraphDefinition
         {
-            public AssetWithRefPropertyGraph2(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
-                : base(container, assetItem, logger)
+            public override bool IsMemberTargetObjectReference(IMemberNode member, object value)
             {
+                return member.Name == nameof(MyAssetWithRef2.Reference);
             }
 
-            public override bool IsObjectReference(IGraphNode targetNode, Index index, object value)
+            public override bool IsTargetItemObjectReference(IObjectNode collection, Index itemIndex, object value)
             {
-                if ((targetNode as IMemberNode)?.Name == nameof(MyAssetWithRef2.Reference))
-                    return true;
-                if ((targetNode as IObjectNode)?.Retrieve() == ((MyAssetWithRef2)Asset).References)
-                    return true;
-
-                return false;
+                return collection.Retrieve() is List<MyReferenceable>;
             }
         }
 
@@ -204,12 +201,12 @@ namespace SiliconStudio.Assets.Quantum.Tests.Helpers
         {
             [NonOverridable]
             public Guid Id { get; set; }
-            public string Name { get; set; }
-            public MyPart Parent { get; set; }
-            public MyPart MyReference { get; set; }
-            public List<MyPart> MyReferences { get; set; }
-            public List<MyPart> Children { get; } = new List<MyPart>();
-            public SomeObject Object { get; set; }
+            [DefaultValue(null)] public string Name { get; set; }
+            [DefaultValue(null)] public MyPart Parent { get; set; }
+            [DefaultValue(null)] public MyPart MyReference { get; set; }
+            [DefaultValue(null)] public List<MyPart> MyReferences { get; set; }
+            [DefaultValue(null)] public SomeObject Object { get; set; }
+            [NonIdentifiableCollectionItems] public List<MyPart> Children { get; } = new List<MyPart>();
             public void AddChild([NotNull] MyPart child) { Children.Add(child); child.Parent = this; }
             public override string ToString() => $"{Name} [{Id}]";
         }
@@ -217,16 +214,20 @@ namespace SiliconStudio.Assets.Quantum.Tests.Helpers
         [DataContract("MyPartDesign")]
         public class MyPartDesign : IAssetPartDesign<MyPart>
         {
+            [DefaultValue(null)]
             public BasePart Base { get; set; }
+            IIdentifiable IAssetPartDesign.Part => Part;
             // ReSharper disable once NotNullMemberIsNotInitialized
             public MyPart Part { get; set; }
             public override string ToString() => $"Design: {Part.Name} [{Part.Id}]";
         }
 
+        [DataContract("MyAssetHierarchy")]
+        [AssetDescription(FileExtension)]
         public class MyAssetHierarchy : AssetCompositeHierarchy<MyPartDesign, MyPart>
         {
             public override MyPart GetParent(MyPart part) => part.Parent;
-            public override int IndexOf(MyPart part) => GetParent(part)?.Children.IndexOf(part) ?? Hierarchy.RootPartIds.IndexOf(part.Id);
+            public override int IndexOf(MyPart part) => GetParent(part)?.Children.IndexOf(part) ?? Hierarchy.RootParts.IndexOf(part);
             public override MyPart GetChild(MyPart part, int index) => part.Children[index];
             public override int GetChildCount(MyPart part) => part.Children.Count;
             public override IEnumerable<MyPart> EnumerateChildParts(MyPart part, bool isRecursive) => isRecursive ? part.Children.DepthFirst(t => t.Children) : part.Children;
@@ -234,7 +235,7 @@ namespace SiliconStudio.Assets.Quantum.Tests.Helpers
             {
                 Dictionary<Guid, Guid> idRemapping;
                 var instance = (MyAssetHierarchy)CreateDerivedAsset("", out idRemapping);
-                var instanceId = instance.Hierarchy.Parts.FirstOrDefault()?.Base?.InstanceId ?? Guid.NewGuid();
+                var instanceId = instance.Hierarchy.Parts.Values.FirstOrDefault()?.Base?.InstanceId ?? Guid.NewGuid();
                 return instance.Hierarchy;
             }
         }

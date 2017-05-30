@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -22,6 +22,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// </remarks>
     public class LightClusteredPointSpotGroupRenderer : LightGroupRendererBase
     {
+        private readonly List<int> selectedLightIndices = new List<int>();
+
         private PointLightShaderGroupData pointGroup;
         private PointSpotShaderGroupData spotGroup;
 
@@ -29,6 +31,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         private Buffer lightIndicesBuffer;
         private Buffer pointLightsBuffer;
         private Buffer spotLightsBuffer;
+
 
         public override Type[] LightTypes { get; } = { typeof(LightPoint), typeof(LightSpot) };
 
@@ -80,10 +83,34 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 ? (LightShaderGroupDynamic)pointGroup
                 : spotGroup;
 
-            group.AddView(parameters.ViewIndex, parameters.View, parameters.LightEnd - parameters.LightStart);
+            // Check if we have a fallback renderer next in the chain, in case it might render shadows
+            bool hasNextRenderer = parameters.RendererIndex < (parameters.Renderers.Length - 1);
 
-            for (int index = parameters.LightStart; index < parameters.LightEnd; index++)
+            // First, evaluate how many any which light we want to render (store them in selectedLightIndices)
+            selectedLightIndices.Clear();
+            for (int i = 0; i < parameters.LightIndices.Count;)
             {
+                int index = parameters.LightIndices[i];
+                var light = parameters.LightCollection[index];
+
+                // Check if there might be a renderer that supports shadows instead (in that case skip the light)
+                LightShadowMapTexture shadowMap;
+                if (hasNextRenderer && parameters.ShadowMapTexturesPerLight.TryGetValue(light, out shadowMap))
+                {
+                    // Skip this light
+                    i++;
+                }
+                else
+                {
+                    selectedLightIndices.Add(index);
+                    parameters.LightIndices.RemoveAt(i);
+                }
+            }
+
+            group.AddView(parameters.ViewIndex, parameters.View, selectedLightIndices.Count);
+            foreach (var index in selectedLightIndices)
+            {
+                // Add light to this group and remove it from the light indices
                 group.AddLight(parameters.LightCollection[index], null);
             }
         }
@@ -198,8 +225,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             public void ComputeViewParameter(int viewIndex)
             {
-                // TODO ref locals when C# 7 is out
-                var renderViewInfo = renderViewInfos[viewIndex];
+                ref var renderViewInfo = ref renderViewInfos[viewIndex];
                 var renderView = renderViewInfo.RenderView;
 
                 var viewSize = renderView.ViewSize;
@@ -260,9 +286,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 {
                     var light = clusteredGroupRenderer.spotGroup.Lights[i].Light;
                     var spotLight = (LightSpot)light.Type;
-
-                    if (spotLight.Shadow != null && spotLight.Shadow.Enabled)
-                        continue;
 
                     // Create spot light data
                     var spotLightData = new SpotLightData
@@ -395,9 +418,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 // Clear data
                 lightNodes.Clear();
                 clusterInfos.Clear();
-
-                // Struct, so copy back (TODO: remove this when C# 7 is out with ref locals)
-                renderViewInfos[viewIndex] = renderViewInfo;
             }
 
             public unsafe void ComputeViewsParameter(RenderDrawContext drawContext)
@@ -452,11 +472,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 // Note: no need to fill CurrentLights since we have no shadow maps
                 base.ApplyViewParameters(context, viewIndex, parameters);
 
-                // TODO ref locals when C# 7 is out
-                var renderViewInfo = renderViewInfos[viewIndex];
-                var renderView = renderViewInfo.RenderView;
-
-                var viewSize = renderView.ViewSize;
+                ref var renderViewInfo = ref renderViewInfos[viewIndex];
+                var viewSize = renderViewInfo.RenderView.ViewSize;
 
                 // No screen size set?
                 if (viewSize.X == 0 || viewSize.Y == 0)
@@ -476,8 +493,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             /// <inheritdoc/>
             public override unsafe void UpdateViewResources(RenderDrawContext context, int viewIndex)
             {
-                // TODO ref locals when C# 7 is out
-                var renderViewInfo = renderViewInfos[viewIndex];
+                ref var renderViewInfo = ref renderViewInfos[viewIndex];
 
                 // Upload data to texture
                 if (renderViewInfo.LightClusters != null && renderViewInfo.LightClusters.Length > 0)

@@ -15,7 +15,7 @@
     </TargetFrameworkProfile>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <XenkoBuildTags>*</XenkoBuildTags>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
   </PropertyGroup>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">

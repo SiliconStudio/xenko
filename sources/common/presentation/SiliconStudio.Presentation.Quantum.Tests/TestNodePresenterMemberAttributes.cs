@@ -1,5 +1,8 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using NUnit.Framework;
 using SiliconStudio.Core;
+using SiliconStudio.Presentation.Quantum.Presenters;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum.Tests
@@ -35,7 +38,7 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             var instance = new ClassA();
             var rootNode = BuildQuantumGraph(instance);
             var factory = new NodePresenterFactory();
-            var presenter = factory.CreateNodeTree(rootNode, new GraphNodePath(rootNode));
+            var presenter = factory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
             Assert.AreEqual(3, presenter.Children.Count);
 
             var string1 = (MemberNodePresenter)presenter.Children[0];
@@ -60,7 +63,7 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             var instance = new ClassB();
             var rootNode = BuildQuantumGraph(instance);
             var factory = new NodePresenterFactory();
-            var presenter = factory.CreateNodeTree(rootNode, new GraphNodePath(rootNode));
+            var presenter = factory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
             Assert.AreEqual(3, presenter.Children.Count);
 
             var string1 = (MemberNodePresenter)presenter.Children[0];
@@ -85,7 +88,7 @@ namespace SiliconStudio.Presentation.Quantum.Tests
             var instance = new ClassC();
             var rootNode = BuildQuantumGraph(instance);
             var factory = new NodePresenterFactory();
-            var presenter = factory.CreateNodeTree(rootNode, new GraphNodePath(rootNode));
+            var presenter = factory.CreateNodeHierarchy(rootNode, new GraphNodePath(rootNode));
             Assert.AreEqual(3, presenter.Children.Count);
 
             var string1 = (MemberNodePresenter)presenter.Children[0];

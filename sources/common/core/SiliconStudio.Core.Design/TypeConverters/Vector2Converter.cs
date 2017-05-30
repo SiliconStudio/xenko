@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under MIT License. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
 // 
@@ -69,31 +69,15 @@ namespace SiliconStudio.Core.TypeConverters
             var type = typeof(Vector2);
             Properties = new PropertyDescriptorCollection(new PropertyDescriptor[] 
             { 
-                new FieldPropertyDescriptor(type.GetField("X")), 
-                new FieldPropertyDescriptor(type.GetField("Y")) 
+                new FieldPropertyDescriptor(type.GetField(nameof(Vector2.X))), 
+                new FieldPropertyDescriptor(type.GetField(nameof(Vector2.Y))) 
             });
         }
 
-        /// <summary>
-        /// Converts the given value object to the specified type, using the specified context and culture information.
-        /// </summary>
-        /// <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that provides a format context.</param>
-        /// <param name="culture">A <see cref="T:System.Globalization.CultureInfo"/>. If null is passed, the current culture is assumed.</param>
-        /// <param name="value">The <see cref="T:System.Object"/> to convert.</param>
-        /// <param name="destinationType">The <see cref="T:System.Type"/> to convert the <paramref name="value"/> parameter to.</param>
-        /// <returns>
-        /// An <see cref="T:System.Object"/> that represents the converted value.
-        /// </returns>
-        /// <exception cref="T:System.ArgumentNullException">
-        /// The <paramref name="destinationType"/> parameter is null.
-        /// </exception>
-        /// <exception cref="T:System.NotSupportedException">
-        /// The conversion cannot be performed.
-        /// </exception>
+        /// <inheritdoc/>
         public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
         {
-            if (destinationType == null)
-                throw new ArgumentNullException("destinationType");
+            if (destinationType == null) throw new ArgumentNullException(nameof(destinationType));
 
             if (value is Vector2)
             {
@@ -113,37 +97,17 @@ namespace SiliconStudio.Core.TypeConverters
             return base.ConvertTo(context, culture, value, destinationType);
         }
 
-        /// <summary>
-        /// Converts the given object to the type of this converter, using the specified context and culture information.
-        /// </summary>
-        /// <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that provides a format context.</param>
-        /// <param name="culture">The <see cref="T:System.Globalization.CultureInfo"/> to use as the current culture.</param>
-        /// <param name="value">The <see cref="T:System.Object"/> to convert.</param>
-        /// <returns>
-        /// An <see cref="T:System.Object"/> that represents the converted value.
-        /// </returns>
-        /// <exception cref="T:System.NotSupportedException">
-        /// The conversion cannot be performed.
-        /// </exception>
+        /// <inheritdoc/>
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
             return value != null ? ConvertFromString<Vector2, float>(context, culture, value) : base.ConvertFrom(context, culture, null);
         }
 
-        /// <summary>
-        /// Creates an instance of the type that this <see cref="T:System.ComponentModel.TypeConverter"/> is associated with, using the specified context, given a set of property values for the object.
-        /// </summary>
-        /// <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that provides a format context.</param>
-        /// <param name="propertyValues">An <see cref="T:System.Collections.IDictionary"/> of new property values.</param>
-        /// <returns>
-        /// An <see cref="T:System.Object"/> representing the given <see cref="T:System.Collections.IDictionary"/>, or null if the object cannot be created. This method always returns null.
-        /// </returns>
+        /// <inheritdoc/>
         public override object CreateInstance(ITypeDescriptorContext context, IDictionary propertyValues)
         {
-            if (propertyValues == null)
-                throw new ArgumentNullException("propertyValues");
-
-            return new Vector2((float)propertyValues["X"], (float)propertyValues["Y"]);
+            if (propertyValues == null) throw new ArgumentNullException(nameof(propertyValues));
+            return new Vector2((float)propertyValues[nameof(Vector2.X)], (float)propertyValues[nameof(Vector2.Y)]);
         }
     }
 }

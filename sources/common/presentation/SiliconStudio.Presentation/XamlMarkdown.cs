@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 #region Copyright and license
 /*
@@ -353,8 +353,8 @@ namespace SiliconStudio.Presentation
             }
 
             var result = Create<Hyperlink, Inline>(RunSpanGamut(linkText));
-            result.CommandParameter = url;
-            result.Command = HyperlinkCommand;
+            // Note: cannot use Command and CommandParameter because of a WPF bug (when copying the text). See https://stackoverflow.com/questions/3206258/commandconverter-valid-exception-or-net-bug
+            result.Click += (_, __) => HyperlinkCommand.Execute(url);
             return result;
         }
 

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -114,6 +114,22 @@ namespace SiliconStudio.Core
                 return value;
             }
         }
+
+        /// <summary>
+        /// Gets the display name of the given type. The display name is the name of the type, or, if the <see cref="DisplayAttribute"/> is
+        /// applied on the type, value of the <see cref="DisplayAttribute.Name"/> property.
+        /// </summary>
+        /// <param name="type">The type for which to get the display name.</param>
+        /// <returns>A string representing the display name of the type.</returns>
+        [Obsolete("Display attribute should be retrieved via an AttributeRegistry.")]
+        public static string GetDisplayName(Type type)
+        {
+            if (type == null)
+                return null;
+
+            return GetDisplay(type.GetTypeInfo())?.Name ?? type.Name;
+        }
+
 
         [Obsolete("Display attribute should be retrieved via an AttributeRegistry.")]
         public static int? GetOrder([NotNull] MemberInfo memberInfo)

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -57,7 +57,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         
         private Vector2 GetLightClippingPlanes(LightPoint pointLight)
         {
-            return new Vector2(0.1f, pointLight.Radius);
+            // Note: we don't take exactly the required depth range since this will result in a very poor resolution in most of the light's range
+            return new Vector2(0.1f, pointLight.Radius*2);
         }
 
         private void GetViewParameters(LightShadowMapTexture shadowMapTexture, int index, out Matrix view)
@@ -87,6 +88,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 case 5: // Down
                     rotation *= Matrix.RotationX(MathUtil.PiOverTwo);
                     break;
+                default:
+                    throw new IndexOutOfRangeException(nameof(index));
             }
 
             view *= rotation;
@@ -99,12 +102,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         {
             var lightPoint = shadowMapTexture.Light as LightPoint;
             Vector2 clippingPlanes = GetLightClippingPlanes(lightPoint);
-            return new Vector2(clippingPlanes.X, 1.0f/(clippingPlanes.Y - clippingPlanes.X));
-        }
 
-        public override void ApplyViewParameters(RenderDrawContext context, ParameterCollection parameters, LightShadowMapTexture shadowMapTexture)
-        {
-            parameters.Set(ShadowMapCasterCubeMapProjectionKeys.DepthParameters, GetShadowMapDepthParameters(shadowMapTexture));
+            return CameraKeys.ZProjectionACalculate(clippingPlanes.X, clippingPlanes.Y);
         }
 
         public override void Collect(RenderContext context, RenderView sourceView, LightShadowMapTexture lightShadowMap)
@@ -113,7 +112,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             lightShadowMap.ShaderData = shaderData;
             shaderData.Texture = lightShadowMap.Atlas.Texture;
             shaderData.DepthBias = lightShadowMap.Light.Shadow.BiasParameters.DepthBias;
-            shaderData.Position = lightShadowMap.LightComponent.Position;
+            shaderData.OffsetScale = lightShadowMap.Light.Shadow.BiasParameters.NormalOffsetScale;
             shaderData.DepthParameters = GetShadowMapDepthParameters(lightShadowMap);
 
             var clippingPlanes = GetLightClippingPlanes((LightPoint)lightShadowMap.Light);
@@ -124,9 +123,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             float halfMapSize = (float)textureMapSize.Width / 2;
             float halfFov = (float)Math.Atan((halfMapSize + BorderPixels) / halfMapSize);
             shaderData.Projection = Matrix.PerspectiveFovRH(halfFov * 2, 1.0f, clippingPlanes.X, clippingPlanes.Y);
-
-            // Get the local xy offset for a single pixel by deprojecting a a screen space point, offset by 1 pixel
-            shaderData.DirectionOffset = 1 / halfMapSize;
 
             Vector2 atlasSize = new Vector2(lightShadowMap.Atlas.Width, lightShadowMap.Atlas.Height);
             
@@ -143,6 +139,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 shadowRenderView.RenderView = sourceView;
                 shadowRenderView.ShadowMapTexture = lightShadowMap;
                 shadowRenderView.Rectangle = lightShadowMap.GetRectangle(i);
+                shadowRenderView.ViewSize = new Vector2(lightShadowMap.GetRectangle(i).Width, lightShadowMap.GetRectangle(i).Height);
 
                 shadowRenderView.NearClipPlane = clippingPlanes.X;
                 shadowRenderView.FarClipPlane = clippingPlanes.Y;
@@ -187,11 +184,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             public Vector2 DepthParameters;
 
             /// <summary>
-            /// Position of the light
-            /// </summary>
-            public Vector3 Position;
-
-            /// <summary>
             /// Projection matrix used for each cubemap face
             /// </summary>
             public Matrix Projection;
@@ -206,9 +198,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             /// </summary>
             public Matrix[] WorldToShadow = new Matrix[6];
 
-            public float DirectionOffset;
-
             public float DepthBias;
+            public float OffsetScale;
         }
 
         private class ShaderGroupData : LightShadowMapShaderGroupDataBase
@@ -221,9 +212,11 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             private Matrix[] worldToShadow;
             private float[] depthBiases;
+            private float[] offsetScales;
             private Vector2[] depthParameters;
 
             private ValueParameterKey<float> depthBiasesKey;
+            private ValueParameterKey<float> offsetScalesKey;
             private ValueParameterKey<Matrix> worldToShadowKey;
             private ValueParameterKey<Vector2> depthParametersKey;
 
@@ -243,6 +236,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 worldToShadowKey = ShadowMapReceiverPointCubeMapKeys.WorldToShadow.ComposeWith(compositionName);
                 depthBiasesKey = ShadowMapReceiverPointCubeMapKeys.DepthBiases.ComposeWith(compositionName);
                 depthParametersKey = ShadowMapReceiverPointCubeMapKeys.DepthParameters.ComposeWith(compositionName);
+                offsetScalesKey = ShadowMapReceiverPointCubeMapKeys.OffsetScales.ComposeWith(compositionName);
             }
 
             public override void UpdateLightCount(int lightLastCount, int lightCurrentCount)
@@ -252,6 +246,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 Array.Resize(ref worldToShadow, lightCurrentCount * 6);
                 Array.Resize(ref depthBiases, lightCurrentCount);
                 Array.Resize(ref depthParameters, lightCurrentCount);
+                Array.Resize(ref offsetScales, lightCurrentCount);
             }
 
             public override ShaderClassSource CreateShaderSource(int lightCurrentCount)
@@ -279,6 +274,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                         }
 
                         depthBiases[lightIndex] = shaderData.DepthBias;
+                        offsetScales[lightIndex] = shaderData.OffsetScale;
                         depthParameters[lightIndex] = shaderData.DepthParameters;
                         lightIndex++;
 
@@ -303,6 +299,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 parameters.Set(worldToShadowKey, worldToShadow);
                 parameters.Set(depthParametersKey, depthParameters);
                 parameters.Set(depthBiasesKey, depthBiases);
+                parameters.Set(offsetScalesKey, offsetScales);
             }
         }
     }

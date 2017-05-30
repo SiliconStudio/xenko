@@ -2,6 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+    <SiliconStudioXenkoGraphicsApiDependent>true</SiliconStudioXenkoGraphicsApiDependent>
   </PropertyGroup>
   <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
@@ -9,11 +10,12 @@
     <OutputType>Library</OutputType>
     <RootNamespace>SiliconStudio.Xenko.Graphics.Regression</RootNamespace>
     <AssemblyName>SiliconStudio.Xenko.Graphics.Regression</AssemblyName>
-    <XenkoBuildTags>Windows;Android;iOS;Linux;macOS;UWP</XenkoBuildTags>
+    <SiliconStudioXenkoPlatformFilter>Windows;Android;iOS;Linux;macOS;UWP</SiliconStudioXenkoPlatformFilter>
     <DefineConstants>$(DefineConstants);XAMCORE_2_0</DefineConstants>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
+    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>
@@ -22,11 +24,9 @@
   <Choose>
     <When Condition="('$(SiliconStudioRuntime)' == '') and (('$(SiliconStudioPlatform)' == 'Windows') or ('$(SiliconStudioPlatform)' == 'Linux') or ('$(SiliconStudioPlatform)' == 'macOS'))">
       <ItemGroup>
-        <Reference Include="nunit.core.interfaces">
-          <HintPath>$(SiliconStudioDependenciesDir)NUnit\addins\nunit.core.interfaces.dll</HintPath>
-        </Reference>
         <Reference Include="nunit.framework">
           <HintPath>$(SiliconStudioDependenciesDir)NUnit\nunit.framework.dll</HintPath>
+          <Private>False</Private>
         </Reference>
       </ItemGroup>
     </When>
@@ -135,7 +135,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+    <Compile Include="..\..\common\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="BackBufferSizeMode.cs" />
@@ -152,6 +152,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegressionHelpers.cs" />
     <Compile Include="NUnitLite\TextUI.cs" />
+    <Compile Include="TestCamera.cs" />
     <Compile Include="TestGraphicsDeviceManager.cs" />
     <Compile Include="TestResultImage.cs" />
     <Compile Include="TestRunnerMessageType.cs" />

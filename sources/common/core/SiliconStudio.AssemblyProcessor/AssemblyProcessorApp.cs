@@ -1,5 +1,6 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,8 +10,11 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Mono.Cecil.Mdb;
+using Mono.Cecil.Pdb;
 using Mono.Cecil.Rocks;
 using SiliconStudio.Core;
 using MethodAttributes = Mono.Cecil.MethodAttributes;
@@ -21,6 +25,13 @@ namespace SiliconStudio.AssemblyProcessor
     public class AssemblyProcessorApp
     {
         private TextWriter log;
+
+        static AssemblyProcessorApp()
+        {
+            // Force inclusion of Mono.Cecil.Pdb.dll and Mono.Cecil.Mdb.dll by referencing them
+            typeof(NativePdbReader).ToString();
+            typeof(MdbReader).ToString();
+        }
 
         public AssemblyProcessorApp(TextWriter info)
         {
@@ -81,49 +92,71 @@ namespace SiliconStudio.AssemblyProcessor
                 outputFile = inputFile;
             }
 
+            CustomAssemblyResolver assemblyResolver = null;
+            AssemblyDefinition assemblyDefinition = null;
+
             try
             {
-                var assemblyResolver = CreateAssemblyResolver();
-
-                var readWriteSymbols = UseSymbols;
-                // Double check that 
-                var symbolFile = Path.ChangeExtension(inputFile, "pdb");
-                if (!File.Exists(symbolFile))
+                try
                 {
-                    readWriteSymbols = false;
-                }
-
-                var assemblyDefinition = AssemblyDefinition.ReadAssembly(inputFile, new ReaderParameters { AssemblyResolver = assemblyResolver, ReadSymbols = readWriteSymbols });
-
-                bool modified;
-
-                var result = Run(ref assemblyDefinition, ref readWriteSymbols, out modified);
-                if (modified || inputFile != outputFile)
-                {
-                    // Make sure output directory is created
-                    var outputDirectory = Path.GetDirectoryName(outputFile);
-                    if (!string.IsNullOrEmpty(outputDirectory) && !Directory.Exists(outputDirectory))
+                    assemblyResolver = CreateAssemblyResolver();
+                    var readWriteSymbols = UseSymbols;
+                    // Double check that 
+                    var symbolFile = Path.ChangeExtension(inputFile, "pdb");
+                    if (!File.Exists(symbolFile))
                     {
-                        Directory.CreateDirectory(outputDirectory);
+                        readWriteSymbols = false;
                     }
 
-                    // Keep the original assembly by adding a .old prefix to the current extension
-                    if (KeepOriginal)
+                    assemblyDefinition = AssemblyDefinition.ReadAssembly(inputFile, new ReaderParameters { AssemblyResolver = assemblyResolver, ReadSymbols = readWriteSymbols, ReadWrite = true });
+                    bool modified;
+
+                    // Check if pdb was actually read
+                    readWriteSymbols = assemblyDefinition.MainModule.SymbolReader != null;
+
+                    var symbolWriterProvider = assemblyDefinition.MainModule.SymbolReader?.GetWriterProvider();
+
+                    var result = Run(ref assemblyDefinition, ref readWriteSymbols, out modified);
+                    if (modified || inputFile != outputFile)
                     {
-                        var copiedFile = Path.ChangeExtension(inputFile, "old" + Path.GetExtension(inputFile));
-                        File.Copy(inputFile, copiedFile, true);
+                        // Make sure output directory is created
+                        var outputDirectory = Path.GetDirectoryName(outputFile);
+                        if (!string.IsNullOrEmpty(outputDirectory) && !Directory.Exists(outputDirectory))
+                        {
+                            Directory.CreateDirectory(outputDirectory);
+                        }
+
+                        // Keep the original assembly by adding a .old prefix to the current extension
+                        if (KeepOriginal)
+                        {
+                            var copiedFile = Path.ChangeExtension(inputFile, "old" + Path.GetExtension(inputFile));
+                            File.Copy(inputFile, copiedFile, true);
+                        }
+
+                        if (assemblyDefinition.MainModule.FileName != outputFile)
+                        {
+                            // Note: using FileShare.Read otherwise often had access conflict (maybe with antivirus or window ssearch?)
+                            assemblyDefinition.MainModule.Write(outputFile, new WriterParameters() { WriteSymbols = readWriteSymbols, SymbolWriterProvider = symbolWriterProvider });
+                        }
+                        else
+                        {
+                            assemblyDefinition.MainModule.Write(new WriterParameters() { WriteSymbols = readWriteSymbols });
+                        }
                     }
 
-                    assemblyDefinition.Write(outputFile, new WriterParameters() { WriteSymbols = readWriteSymbols });
+                    return result;
                 }
-
-                return result;
+                finally
+                {
+                    assemblyResolver?.Dispose();
+                    assemblyDefinition?.Dispose();
+                }
             }
             catch (Exception e)
             {
+                OnErrorAction(null, e);
                 if (DeleteOutputOnError)
                     File.Delete(outputFile);
-                OnErrorAction(null, e);
                 return false;
             }
         }
@@ -143,7 +176,7 @@ namespace SiliconStudio.AssemblyProcessor
 
             try
             {
-                var assemblyResolver = (CustomAssemblyResolver)assemblyDefinition.MainModule.AssemblyResolver;
+                var assemblyResolver = (CustomAssemblyResolver) assemblyDefinition.MainModule.AssemblyResolver;
 
                 // Register self
                 assemblyResolver.Register(assemblyDefinition);
@@ -180,7 +213,8 @@ namespace SiliconStudio.AssemblyProcessor
                     processors.Add(new GenerateUserDocumentationProcessor(DocumentationFile));
                 }
 
-                var roslynExtraCodeProcessor = new RoslynExtraCodeProcessor(SignKeyFile, References, MemoryReferences, log);
+                var roslynExtraCodeProcessor = new RoslynExtraCodeProcessor(SignKeyFile, References, MemoryReferences,
+                    log);
 
                 if (SerializationAssembly)
                 {
@@ -199,12 +233,11 @@ namespace SiliconStudio.AssemblyProcessor
                 processors.Add(new DispatcherProcessor());
                 processors.Add(new OpenSourceSignProcessor());
 
-                // Check if pdb was actually read
-                readWriteSymbols = assemblyDefinition.MainModule.HasDebugHeader;
-
                 // Check if there is already a AssemblyProcessedAttribute (in which case we can skip processing, it has already been done).
                 // Note that we should probably also match the command line as well so that we throw an error if processing is different (need to rebuild).
-                if (assemblyDefinition.CustomAttributes.Any(x => x.AttributeType.FullName == "SiliconStudio.Core.AssemblyProcessedAttribute"))
+                if (
+                    assemblyDefinition.CustomAttributes.Any(
+                        x => x.AttributeType.FullName == "SiliconStudio.Core.AssemblyProcessedAttribute"))
                 {
                     OnInfoAction($"Assembly [{assemblyDefinition.Name}] has already been processed, skip it.");
                     return true;
@@ -229,17 +262,24 @@ namespace SiliconStudio.AssemblyProcessor
                         return false;
                     }
 
-                    var internalsVisibleToAttribute = mscorlibAssembly.MainModule.GetTypeResolved(typeof(InternalsVisibleToAttribute).FullName);
+                    var internalsVisibleToAttribute =
+                        mscorlibAssembly.MainModule.GetTypeResolved(typeof(InternalsVisibleToAttribute).FullName);
                     var serializationAssemblyName = assemblyDefinition.Name.Name + ".Serializers";
                     bool internalsVisibleAlreadyApplied = false;
 
                     // Check if already applied
-                    foreach (var customAttribute in assemblyDefinition.CustomAttributes.Where(x => x.AttributeType.FullName == internalsVisibleToAttribute.FullName))
+                    foreach (
+                        var customAttribute in
+                            assemblyDefinition.CustomAttributes.Where(
+                                x => x.AttributeType.FullName == internalsVisibleToAttribute.FullName))
                     {
-                        var assemblyName = (string)customAttribute.ConstructorArguments[0].Value;
+                        var assemblyName = (string) customAttribute.ConstructorArguments[0].Value;
 
                         int publicKeyIndex;
-                        if ((publicKeyIndex = assemblyName.IndexOf(", PublicKey=", StringComparison.InvariantCulture)) != -1 || (publicKeyIndex = assemblyName.IndexOf(",PublicKey=", StringComparison.InvariantCulture)) != -1)
+                        if ((publicKeyIndex = assemblyName.IndexOf(", PublicKey=", StringComparison.InvariantCulture)) !=
+                            -1 ||
+                            (publicKeyIndex = assemblyName.IndexOf(",PublicKey=", StringComparison.InvariantCulture)) !=
+                            -1)
                         {
                             assemblyName = assemblyName.Substring(0, publicKeyIndex);
                         }
@@ -255,37 +295,48 @@ namespace SiliconStudio.AssemblyProcessor
                     {
                         // Apply public key
                         if (assemblyDefinition.Name.HasPublicKey)
-                            serializationAssemblyName += ", PublicKey=" + ByteArrayToString(assemblyDefinition.Name.PublicKey);
+                            serializationAssemblyName += ", PublicKey=" +
+                                                         ByteArrayToString(assemblyDefinition.Name.PublicKey);
 
                         // Add [InteralsVisibleTo] attribute
-                        var internalsVisibleToAttributeCtor = assemblyDefinition.MainModule.ImportReference(internalsVisibleToAttribute.GetConstructors().Single());
+                        var internalsVisibleToAttributeCtor =
+                            assemblyDefinition.MainModule.ImportReference(
+                                internalsVisibleToAttribute.GetConstructors().Single());
                         var internalsVisibleAttribute = new CustomAttribute(internalsVisibleToAttributeCtor)
                         {
                             ConstructorArguments =
                             {
-                                new CustomAttributeArgument(assemblyDefinition.MainModule.TypeSystem.String, serializationAssemblyName)
+                                new CustomAttributeArgument(assemblyDefinition.MainModule.TypeSystem.String,
+                                    serializationAssemblyName)
                             }
                         };
                         assemblyDefinition.CustomAttributes.Add(internalsVisibleAttribute);
 
-                        var assemblyFilePath = assemblyDefinition.MainModule.FullyQualifiedName;
+                        // Save updated file
+                        var assemblyFilePath = assemblyDefinition.MainModule.FileName;
                         if (string.IsNullOrEmpty(assemblyFilePath))
                         {
                             assemblyFilePath = Path.ChangeExtension(Path.GetTempFileName(), ".dll");
+                            assemblyDefinition.MainModule.Write(assemblyFilePath, new WriterParameters() {WriteSymbols = readWriteSymbols});
+                        }
+                        else
+                        {
+                            assemblyDefinition.MainModule.Write(new WriterParameters() {WriteSymbols = readWriteSymbols});
                         }
 
-                        // Save updated file
-                        assemblyDefinition.Write(assemblyFilePath, new WriterParameters() { WriteSymbols = readWriteSymbols });
+                        assemblyDefinition.Dispose();
 
                         // Reread file (otherwise it seems Mono Cecil is buggy and generate invalid PDB)
-                        assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyFilePath, new ReaderParameters { AssemblyResolver = assemblyResolver, ReadSymbols = readWriteSymbols });
+                        assemblyDefinition = AssemblyDefinition.ReadAssembly(assemblyFilePath,
+                            new ReaderParameters {AssemblyResolver = assemblyResolver, ReadSymbols = readWriteSymbols, ReadWrite = true});
 
                         // Check if pdb was actually read
                         readWriteSymbols = assemblyDefinition.MainModule.HasDebugHeader;
                     }
                 }
 
-                var assemblyProcessorContext = new AssemblyProcessorContext(assemblyResolver, assemblyDefinition, Platform, log);
+                var assemblyProcessorContext = new AssemblyProcessorContext(assemblyResolver, assemblyDefinition,
+                    Platform, log);
 
                 foreach (var processor in processors)
                     modified = processor.Process(assemblyProcessorContext) || modified;
@@ -304,18 +355,26 @@ namespace SiliconStudio.AssemblyProcessor
                         return false;
                     }
 
-                    var attributeType = mscorlibAssembly.MainModule.GetTypeResolved(typeof (Attribute).FullName);
+                    var attributeType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(Attribute).FullName);
                     var attributeTypeRef = assemblyDefinition.MainModule.ImportReference(attributeType);
-                    var attributeCtorRef = assemblyDefinition.MainModule.ImportReference(attributeType.GetConstructors().Single(x => x.Parameters.Count == 0));
+                    var attributeCtorRef =
+                        assemblyDefinition.MainModule.ImportReference(
+                            attributeType.GetConstructors().Single(x => x.Parameters.Count == 0));
                     var voidType = assemblyDefinition.MainModule.TypeSystem.Void;
 
                     // Create custom attribute
-                    var assemblyProcessedAttributeType = new TypeDefinition("SiliconStudio.Core", "AssemblyProcessedAttribute", TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass | TypeAttributes.AutoClass | TypeAttributes.Public, attributeTypeRef);
+                    var assemblyProcessedAttributeType = new TypeDefinition("SiliconStudio.Core",
+                        "AssemblyProcessedAttribute",
+                        TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass | TypeAttributes.AutoClass |
+                        TypeAttributes.Public, attributeTypeRef);
 
                     // Add constructor (call parent constructor)
-                    var assemblyProcessedAttributeConstructor = new MethodDefinition(".ctor", MethodAttributes.RTSpecialName | MethodAttributes.SpecialName | MethodAttributes.HideBySig | MethodAttributes.Public, voidType);
+                    var assemblyProcessedAttributeConstructor = new MethodDefinition(".ctor",
+                        MethodAttributes.RTSpecialName | MethodAttributes.SpecialName | MethodAttributes.HideBySig |
+                        MethodAttributes.Public, voidType);
                     assemblyProcessedAttributeConstructor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
-                    assemblyProcessedAttributeConstructor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, attributeCtorRef));
+                    assemblyProcessedAttributeConstructor.Body.Instructions.Add(Instruction.Create(OpCodes.Call,
+                        attributeCtorRef));
                     assemblyProcessedAttributeConstructor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
                     assemblyProcessedAttributeType.Methods.Add(assemblyProcessedAttributeConstructor);
 
@@ -328,6 +387,9 @@ namespace SiliconStudio.AssemblyProcessor
             {
                 OnErrorAction(null, e);
                 return false;
+            }
+            finally
+            {
             }
 
             return true;

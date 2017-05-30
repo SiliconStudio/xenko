@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -42,7 +42,6 @@ namespace SiliconStudio.Xenko.Rendering.ProceduralModels
         /// <value>The UV scale</value>
         /// <userdoc>The scale to apply to the UV coordinates of the shape. This can be used to tile a texture on it.</userdoc>
         [DataMember(520)]
-        [DefaultValue(1.0f)]
         [Display("UV Scale")]
         public Vector2 UvScale { get; set; }
 

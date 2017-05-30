@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.ComponentModel;
 
@@ -7,7 +7,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Rendering.Materials.Processor.Visitors;
 using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
@@ -47,7 +46,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
         /// <userdoc>The fallback value used when no texture is set.</userdoc>
         [NotNull]
         [DataMember(15)]
-        [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
         public ComputeFloat FallbackValue { get; set; }
 
         /// <summary>

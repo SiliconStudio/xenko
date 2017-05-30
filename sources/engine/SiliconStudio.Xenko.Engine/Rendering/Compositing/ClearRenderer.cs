@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -75,9 +77,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             // clear the targets
             if (depthStencil != null && (ClearFlags == ClearRendererFlags.ColorAndDepth || ClearFlags == ClearRendererFlags.DepthOnly))
             {
-                var clearOptions = DepthStencilClearOptions.DepthBuffer;
-                if (depthStencil.HasStencil)
-                    clearOptions |= DepthStencilClearOptions.Stencil;
+                var clearOptions = DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil;
 
                 commandList.Clear(depthStencil, clearOptions, Depth, Stencil);
             }

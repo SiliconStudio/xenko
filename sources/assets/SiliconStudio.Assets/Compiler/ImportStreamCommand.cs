@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -21,16 +21,17 @@ namespace SiliconStudio.Assets.Compiler
 
         public bool SaveSourcePath { get; set; }
 
-        private TagSymbol DisableCompressionSymbol;
+        private readonly TagSymbol disableCompressionSymbol;
 
         public ImportStreamCommand() : this(null, null)
         {
+            InputFilesGetter = GetInputFilesImpl;
         }
 
         public ImportStreamCommand(UFile location, UFile sourcePath)
             : base(location, sourcePath)
         {
-            DisableCompressionSymbol = RegisterTag(Builder.DoNotCompressTag, () => Builder.DoNotCompressTag);
+            disableCompressionSymbol = RegisterTag(Builder.DoNotCompressTag, () => Builder.DoNotCompressTag);
         }
 
         protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
@@ -44,7 +45,7 @@ namespace SiliconStudio.Assets.Compiler
                 var objectURL = new ObjectUrl(UrlType.ContentLink, Location);
 
                 if (DisableCompression)
-                    commandContext.AddTag(objectURL, DisableCompressionSymbol);
+                    commandContext.AddTag(objectURL, disableCompressionSymbol);
             }
 
             if (SaveSourcePath)
@@ -64,7 +65,7 @@ namespace SiliconStudio.Assets.Compiler
             return Task.FromResult(ResultStatus.Successful);
         }
 
-        protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
+        private IEnumerable<ObjectUrl> GetInputFilesImpl()
         {
             yield return new ObjectUrl(UrlType.File, SourcePath);
         }

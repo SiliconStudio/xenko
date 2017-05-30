@@ -1,11 +1,12 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
+using SiliconStudio.Presentation.Quantum.ViewModels;
 
 namespace SiliconStudio.Presentation.Quantum.View
 {
     /// <summary>
-    /// An implementation of the <see cref="NodeViewModelTemplateProvider"/> that matches <see cref="INodeViewModel"/> of a specific type.
+    /// An implementation of the <see cref="NodeViewModelTemplateProvider"/> that matches <see cref="SiliconStudio.Presentation.Quantum.ViewModels.NodeViewModel"/> of a specific type.
     /// </summary>
     public class TypeMatchTemplateProvider : NodeViewModelTemplateProvider
     {
@@ -18,8 +19,8 @@ namespace SiliconStudio.Presentation.Quantum.View
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="Type"/> to match. This provider will accept any node that has either a <see cref="INodeViewModel.Type"/>
-        /// or a <see cref="INodeViewModel.Value"/> with a type that is assignable to the type represented in this property.
+        /// Gets or sets the <see cref="Type"/> to match. This provider will accept any node that has either a <see cref="SiliconStudio.Presentation.Quantum.ViewModels.NodeViewModel.Type"/>
+        /// or a <see cref="SiliconStudio.Presentation.Quantum.ViewModels.NodeViewModel.Value"/> with a type that is assignable to the type represented in this property.
         /// </summary>
         public Type Type { get; set; }
 
@@ -32,7 +33,7 @@ namespace SiliconStudio.Presentation.Quantum.View
         public override string Name => Type.Name;
 
         /// <inheritdoc/>
-        public override bool MatchNode(INodeViewModel node)
+        public override bool MatchNode(NodeViewModel node)
         {
             if (Type == null)
                 return true;

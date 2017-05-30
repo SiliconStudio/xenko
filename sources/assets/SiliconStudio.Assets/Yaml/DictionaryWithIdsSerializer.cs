@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -49,22 +51,6 @@ namespace SiliconStudio.Core.Yaml
                 TransformAfterDeserialization((IDictionary)objectContext.Instance, info.Descriptor, info.Instance, deletedItems);
             }
             objectContext.Instance = info.Instance;
-
-            var enumerable = objectContext.Instance as IEnumerable;
-            if (enumerable != null)
-            {
-                var ids = CollectionItemIdHelper.GetCollectionItemIds(objectContext.Instance);
-                var descriptor = (DictionaryDescriptor)info.Descriptor;
-                foreach (var item in descriptor.GetEnumerator(objectContext.Instance))
-                {
-                    ItemId id;
-                    if (ids.TryGet(item.Key, out id) && id != ItemId.Empty)
-                        continue;
-
-                    var guid = item.Value != null ? IdentifiableHelper.GetId(item.Value) : Guid.NewGuid();
-                    ids[item.Key] = guid != Guid.Empty ? new ItemId(guid.ToByteArray()) : ItemId.New();
-                }
-            }
 
             base.TransformObjectAfterRead(ref objectContext);
         }

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -40,7 +40,7 @@ namespace SiliconStudio.AssemblyProcessor
                 return false;
 
             // Generate serialization assembly
-            var serializationAssemblyFilepath = RoslynCodeMerger.GenerateRolsynAssemblyLocation(context.Assembly.MainModule.FullyQualifiedName);
+            var serializationAssemblyFilepath = RoslynCodeMerger.GenerateRolsynAssemblyLocation(context.Assembly.MainModule.FileName);
             context.Assembly = RoslynCodeMerger.GenerateRoslynAssembly(context.AssemblyResolver, context.Assembly, serializationAssemblyFilepath, SignKeyFile, References, MemoryReferences, Log, SourceCodes);
 
             return true;

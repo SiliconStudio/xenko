@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Linq;
 using System.Reflection;
@@ -19,12 +19,6 @@ namespace SiliconStudio.AssemblyProcessor
     internal class NotifyPropertyProcessor : IAssemblyDefinitionProcessor
     {
         private TypeReference voidType, stringType, objectType;
-
-        static NotifyPropertyProcessor()
-        {
-            // Force inclusion of Mono.Cecil.Pdb.dll by referencing it
-            typeof(PdbReader).ToString();
-        }
 
         public FieldReference GetPropertyChangedField(TypeDefinition typeDefinition)
         {
@@ -94,7 +88,7 @@ namespace SiliconStudio.AssemblyProcessor
             {
                 siliconStudioCoreAssembly = assembly.Name.Name == "SiliconStudio.Core"
                     ? assembly
-                    : context.AssemblyResolver.Resolve("SiliconStudio.Core");
+                    : context.AssemblyResolver.Resolve(new AssemblyNameReference("SiliconStudio.Core", null));
 
             }
             catch (Exception)
@@ -253,10 +247,10 @@ namespace SiliconStudio.AssemblyProcessor
                         returnInstruction.OpCode = OpCodes.Nop;
                         returnInstruction.Operand = null;
 
-                        var propertyChangedVariable = new VariableDefinition("propertyChanged", assembly.MainModule.ImportReference(propertyChangedFieldType));
+                        var propertyChangedVariable = new VariableDefinition(assembly.MainModule.ImportReference(propertyChangedFieldType));
                         property.SetMethod.Body.Variables.Add(propertyChangedVariable);
 
-                        var oldValueVariable = new VariableDefinition("oldValue", objectType);
+                        var oldValueVariable = new VariableDefinition(objectType);
                         property.SetMethod.Body.Variables.Add(oldValueVariable);
 
                         Instruction jump1, jump2;

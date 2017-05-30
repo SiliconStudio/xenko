@@ -10,7 +10,7 @@
     <RootNamespace>SiliconStudio.Xenko.SamplesTestServer</RootNamespace>
     <AssemblyName>SiliconStudio.Xenko.SamplesTestServer</AssemblyName>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
@@ -21,7 +21,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+    <Compile Include="..\..\common\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Program.cs" />

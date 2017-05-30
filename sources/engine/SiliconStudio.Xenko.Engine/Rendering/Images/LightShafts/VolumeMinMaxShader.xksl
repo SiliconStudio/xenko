@@ -1,26 +1,20 @@
-﻿// Copyright (c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 shader VolumeMinMaxShader : ShaderBase, PositionHStream4
 {
-    cbuffer PerDraw
-    {
-        matrix WorldViewProjection;
-    }
-
+    stage matrix WorldViewProjection;
     stage stream float4 Position : POSITION;
 
-    override void VSMain()
+    stage override void VSMain()
     {
         streams.ShadingPosition = mul(streams.Position, WorldViewProjection);
         streams.PositionH = streams.ShadingPosition;
     }
 
-    override void PSMain()
+    stage override void PSMain()
     {
         float depth = streams.PositionH.z / streams.PositionH.w;
-
-        // Output 1.0f - depth for blend min-max
-        streams.ColorTarget = float4(1.0f-depth, 1.0f-depth, 0, 1);
+        streams.ColorTarget = float4(depth, depth, 0, 1);
     }
 };

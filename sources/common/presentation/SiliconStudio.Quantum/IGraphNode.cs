@@ -1,7 +1,9 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Quantum.Commands;
 
 namespace SiliconStudio.Quantum
 {
@@ -16,14 +18,10 @@ namespace SiliconStudio.Quantum
         Guid Guid { get; }
 
         /// <summary>
-        /// Gets the command collection.
-        /// </summary>
-        IReadOnlyCollection<INodeCommand> Commands { get; }
-
-        /// <summary>
         /// Gets the expected type of for the content of this node.
         /// </summary>
         /// <remarks>The actual type of the content can be different, for example it could be a type inheriting from this type.</remarks>
+        [NotNull]
         Type Type { get; }
 
         /// <summary>
@@ -35,6 +33,7 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Gets or sets the type descriptor of this content
         /// </summary>
+        [NotNull]
         ITypeDescriptor Descriptor { get; }
 
         /// <summary>

@@ -1,5 +1,5 @@
-// Copyright (c) 2016-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using SiliconStudio.Core;
@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         protected LightShadowMapRendererBase()
         {
             ShadowRenderViews = new PoolListStruct<ShadowMapRenderView>(16, () => new ShadowMapRenderView());
-            ShadowMaps = new PoolListStruct<LightShadowMapTexture>(16, () => new LightShadowMapTexture { Renderer = this });
+            ShadowMaps = new PoolListStruct<LightShadowMapTexture>(16, () => new LightShadowMapTexture());
         }
 
         /// <summary>

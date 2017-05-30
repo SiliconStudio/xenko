@@ -1,7 +1,8 @@
 !SceneAsset
 Id: 7207a5b4-cbf4-4edc-a7fb-0dfa83e2414e
-SerializedVersion: {Xenko: 1.10.0-beta03}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
+ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
@@ -161,4 +162,4 @@ Hierarchy:
                         NearClipPlane: 1.0
                         FarClipPlane: 340.0
                         AspectRatio: 0.563
-                        Slot: {Index: 0}
+                        Slot: 2a6bcd90-e26a-4017-87b2-5c322e57f92d

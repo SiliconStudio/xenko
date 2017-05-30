@@ -1,39 +1,39 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 /// <summary>
 /// Base shader to perfom shading. Defines the basic method and inserts it in the pipeline.
 /// </summary>
 /// <remarks>
-/// RENDER_TARGET_COUNT: Macro - Number of render targets.
+/// SILICON_STUDIO_RENDER_TARGET_COUNT: Macro - Number of render targets.
 /// </remarks>
 
-#ifndef RENDER_TARGET_COUNT
-# define RENDER_TARGET_COUNT 1
+#ifndef SILICON_STUDIO_RENDER_TARGET_COUNT
+# define SILICON_STUDIO_RENDER_TARGET_COUNT 1
 #endif
 
 shader ShadingBase : ShaderBase
 {
     compose ComputeColor ShadingColor0;
 
-#if RENDER_TARGET_COUNT > 1
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 1
     compose ComputeColor ShadingColor1;
 #endif
-#if RENDER_TARGET_COUNT > 2
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 2
     compose ComputeColor ShadingColor2;
 #endif
-#if RENDER_TARGET_COUNT > 3
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 3
     compose ComputeColor ShadingColor3;
 #endif
-#if RENDER_TARGET_COUNT > 4
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 4
     compose ComputeColor ShadingColor4;
 #endif
-#if RENDER_TARGET_COUNT > 5
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 5
     compose ComputeColor ShadingColor5;
 #endif
-#if RENDER_TARGET_COUNT > 6
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 6
     compose ComputeColor ShadingColor6;
 #endif
-#if RENDER_TARGET_COUNT > 7
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 7
     compose ComputeColor ShadingColor7;
 #endif
 
@@ -48,25 +48,25 @@ shader ShadingBase : ShaderBase
         base.PSMain();
         streams.ColorTarget = this.Shading();
 
-#if RENDER_TARGET_COUNT > 1
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 1
         streams.ColorTarget1 = ShadingColor1.Compute();
 #endif
-#if RENDER_TARGET_COUNT > 2
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 2
         streams.ColorTarget2 = ShadingColor2.Compute();
 #endif
-#if RENDER_TARGET_COUNT > 3
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 3
         streams.ColorTarget3 = ShadingColor3.Compute();
 #endif
-#if RENDER_TARGET_COUNT > 4
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 4
         streams.ColorTarget4 = ShadingColor4.Compute();
 #endif
-#if RENDER_TARGET_COUNT > 5
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 5
         streams.ColorTarget5 = ShadingColor5.Compute();
 #endif
-#if RENDER_TARGET_COUNT > 6
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 6
         streams.ColorTarget6 = ShadingColor6.Compute();
 #endif
-#if RENDER_TARGET_COUNT > 7
+#if SILICON_STUDIO_RENDER_TARGET_COUNT > 7
         streams.ColorTarget7 = ShadingColor7.Compute();
 #endif
     }

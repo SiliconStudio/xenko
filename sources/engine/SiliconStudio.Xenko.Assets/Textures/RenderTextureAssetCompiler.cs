@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
@@ -9,14 +11,15 @@ using SiliconStudio.Xenko.Rendering.RenderTextures;
 
 namespace SiliconStudio.Xenko.Assets.Textures
 {
+    [AssetCompiler(typeof(RenderTextureAsset), typeof(AssetCompilationContext))]
     public class RenderTextureAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (RenderTextureAsset)assetItem.Asset;
             var colorSpace = context.GetColorSpace();
 
-            result.BuildSteps = new AssetBuildStep(assetItem) { new RenderTextureConvertCommand(targetUrlInStorage, new RenderTextureParameters(asset, colorSpace) ) };
+            result.BuildSteps = new AssetBuildStep(assetItem) { new RenderTextureConvertCommand(targetUrlInStorage, new RenderTextureParameters(asset, colorSpace), assetItem.Package) };
         }
 
         /// <summary>
@@ -24,8 +27,8 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </summary>
         private class RenderTextureConvertCommand : AssetCommand<RenderTextureParameters>
         {
-            public RenderTextureConvertCommand(string url, RenderTextureParameters parameters)
-                : base(url, parameters)
+            public RenderTextureConvertCommand(string url, RenderTextureParameters parameters, Package package)
+                : base(url, parameters, package)
             {
             }
 

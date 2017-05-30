@@ -1,14 +1,12 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics.Data;
 using SiliconStudio.Xenko.Physics;
 using System;
@@ -16,14 +14,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
-using SiliconStudio.Core.Extensions;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Shaders.Ast;
+using SiliconStudio.Xenko.Assets.Textures;
 using VHACDSharp;
 using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Assets.Physics
 {
+    [AssetCompiler(typeof(ColliderShapeAsset), typeof(AssetCompilationContext))]
     internal class ColliderShapeAssetCompiler : AssetCompilerBase
     {
         static ColliderShapeAssetCompiler()
@@ -31,31 +30,53 @@ namespace SiliconStudio.Xenko.Assets.Physics
             NativeLibrary.PreloadLibrary("VHACD.dll");
         }
 
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        {
+            foreach (var type in AssetRegistry.GetAssetTypes(typeof(Model)))
+            {
+                yield return new KeyValuePair<Type, BuildDependencyType>(type, BuildDependencyType.CompileContent);
+            }
+            foreach (var type in AssetRegistry.GetAssetTypes(typeof(Skeleton)))
+            {
+                yield return new KeyValuePair<Type, BuildDependencyType>(type, BuildDependencyType.CompileContent);
+            }
+        }
+
+        public override IEnumerable<Type> GetInputTypesToExclude(AssetCompilerContext context, AssetItem assetItem)
+        {
+            foreach(var type in AssetRegistry.GetAssetTypes(typeof(Material)))
+            {
+                yield return type;
+            }
+            yield return typeof(TextureAsset);
+        }
+
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
+        {
+            var asset = (ColliderShapeAsset)assetItem.Asset;
+            foreach (var convexHullDesc in
+                (from shape in asset.ColliderShapes let type = shape.GetType() where type == typeof(ConvexHullColliderShapeDesc) select shape)
+                    .Cast<ConvexHullColliderShapeDesc>())
+            {
+                var url = AttachedReferenceManager.GetUrl(convexHullDesc.Model);
+                yield return new ObjectUrl(UrlType.Content, url);
+            }
+        }
+
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (ColliderShapeAsset)assetItem.Asset;
             result.BuildSteps = new AssetBuildStep(assetItem)
             {
-                new ColliderShapeCombineCommand(targetUrlInStorage, asset, assetItem.Package),
+                new ColliderShapeCombineCommand(targetUrlInStorage, asset, assetItem.Package)
             };
-
-            result.ShouldWaitForPreviousBuilds = asset.ColliderShapes.Any(shape => shape != null && shape.GetType() == typeof(ConvexHullColliderShapeDesc));
         }
 
         public class ColliderShapeCombineCommand : AssetCommand<ColliderShapeAsset>
         {
             public ColliderShapeCombineCommand(string url, ColliderShapeAsset parameters, Package package)
-                : base(url, parameters)
+                : base(url, parameters, package)
             {
-                this.package = package;
-            }
-
-            private readonly Package package;
-
-            protected override void ComputeParameterHash(BinarySerializationWriter writer)
-            {
-                base.ComputeParameterHash(writer);
-                ComputeCompileTimeDependenciesHash(package, writer, Parameters);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
@@ -65,12 +86,12 @@ namespace SiliconStudio.Xenko.Assets.Physics
                 // Cloned list of collider shapes
                 var descriptions = Parameters.ColliderShapes.ToList();
 
-                Parameters.ColliderShapes = Parameters.ColliderShapes.Where(x => x != null
+                var validShapes = Parameters.ColliderShapes.Where(x => x != null
                     && (x.GetType() != typeof(ConvexHullColliderShapeDesc) || ((ConvexHullColliderShapeDesc)x).Model != null)).ToList();
 
                 //pre process special types
                 foreach (var convexHullDesc in
-                    (from shape in Parameters.ColliderShapes let type = shape.GetType() where type == typeof(ConvexHullColliderShapeDesc) select shape)
+                    (from shape in validShapes let type = shape.GetType() where type == typeof(ConvexHullColliderShapeDesc) select shape)
                     .Cast<ConvexHullColliderShapeDesc>())
                 {
                     // Clone the convex hull shape description so the fields that should not be serialized can be cleared (Model in this case)

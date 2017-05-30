@@ -1,6 +1,7 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Globalization;
-using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Presentation.ValueConverters
@@ -8,19 +9,16 @@ namespace SiliconStudio.Presentation.ValueConverters
     public class AngleSingleToDegrees : ValueConverterBase<AngleSingleToDegrees>
     {
         /// <inheritdoc/>
-        [NotNull]
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var angle = (AngleSingle)value;
-            return angle.Degrees;
+            return targetType == typeof(double) ? ConverterHelper.ConvertToAngleSingle(value, culture).Degrees : ConverterHelper.TryConvertToAngleSingle(value, culture)?.Degrees;
         }
 
         /// <inheritdoc/>
-        [NotNull]
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var degree = (double)value;
-            return new AngleSingle((float)degree, AngleType.Degree);
+            var doubleValue = targetType == typeof(AngleSingle) ? ConverterHelper.ConvertToDouble(value, culture) : ConverterHelper.TryConvertToDouble(value, culture);
+            return doubleValue != null ? (object)new AngleSingle((float)doubleValue.Value, AngleType.Degree) : null;
         }
     }
 }

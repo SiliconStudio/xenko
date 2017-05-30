@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
@@ -33,7 +35,7 @@ namespace SiliconStudio.Assets.Quantum
     public class AssetItemNodeChangeEventArgs : ItemChangeEventArgs, IAssetNodeChangeEventArgs
     {
         public AssetItemNodeChangeEventArgs([NotNull] ItemChangeEventArgs e, OverrideType previousOverride, OverrideType newOverride, ItemId itemId)
-            : base(e.Node, e.Index, e.ChangeType, e.OldValue, e.NewValue)
+            : base(e.Collection, e.Index, e.ChangeType, e.OldValue, e.NewValue)
         {
             PreviousOverride = previousOverride;
             NewOverride = newOverride;

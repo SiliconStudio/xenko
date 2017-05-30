@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Threading;
@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
             public bool IsSizeInPercentage;
 
-            public TextureFormat DesiredFormat;
+            public bool ShouldCompress;
 
             public AlphaFormat DesiredAlpha;
 
@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
                 IsSRgb = textureParameters.Texture.Type.IsSRgb(textureParameters.ColorSpace);
                 DesiredSize = new Size2((int)asset.Width, (int)asset.Height);
                 IsSizeInPercentage = asset.IsSizeInPercentage;
-                DesiredFormat = asset.Format;
+                ShouldCompress = asset.IsCompressed;
                 DesiredAlpha = asset.Type.Alpha;
                 TextureHint = asset.Type.Hint;
                 InvertY = (asset.Type.Hint == TextureHint.NormalMap) ? ((NormapMapTextureType)asset.Type).InvertY : false;
@@ -92,7 +92,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
                 DesiredSize = new Size2(100, 100);
                 IsSizeInPercentage = true;
-                DesiredFormat = asset.Format;
+                ShouldCompress = asset.IsCompressed;
                 DesiredAlpha = asset.Alpha;
                 TextureHint = TextureHint.Color;
                 GenerateMipmaps = asset.GenerateMipmaps;
@@ -132,7 +132,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
                 (outputFormat >= PixelFormat.BC6H_Typeless && outputFormat <= PixelFormat.BC7_UNorm_SRgb);
 
             // compressed DDS files has to have a size multiple of 4.
-            if ((parameters.DesiredFormat == TextureFormat.Compressed) && isBlockCompressed &&
+            if (parameters.ShouldCompress && isBlockCompressed &&
                 ((textureSize.Width % 4) != 0 || (textureSize.Height % 4) != 0))
             {
                 textureSize.Width = unchecked((int)(((uint)(textureSize.Width + 3)) & ~(uint)3));
@@ -205,9 +205,9 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
             // Default output format
             var outputFormat = PixelFormat.R8G8B8A8_UNorm;
-            switch (parameters.DesiredFormat)
+            switch (parameters.ShouldCompress)
             {
-                case TextureFormat.Compressed:
+                case true:
                     switch (parameters.Platform)
                     {
                         case PlatformType.Android:
@@ -377,35 +377,39 @@ namespace SiliconStudio.Xenko.Assets.Textures
                             throw new NotSupportedException("Platform " + parameters.Platform + " is not supported by TextureTool");
                     }
                     break;
-                case TextureFormat.Color16Bits:
-                    if (parameters.IsSRgb)
-                    {
-                        outputFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
-                    }
-                    else
-                    {
-                        if (alphaMode == AlphaFormat.None)
-                        {
-                            outputFormat = PixelFormat.B5G6R5_UNorm;
-                        }
-                        else if (alphaMode == AlphaFormat.Mask)
-                        {
-                            outputFormat = PixelFormat.B5G5R5A1_UNorm;
-                        }
-                    }
-                    break;
-                case TextureFormat.Color32Bits:
-                    if (parameters.IsSRgb)
-                    {
-                        outputFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
-                    }
-                    break;
-                case TextureFormat.AsIs:
+                case false:
                     outputFormat = inputImageFormat;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+            // OpenGLES: avoid BGRA (optional extension)
+            if (parameters.GraphicsPlatform == GraphicsPlatform.OpenGLES)
+            {
+                switch (outputFormat)
+                {
+                    case PixelFormat.B8G8R8A8_UNorm:
+                        outputFormat = PixelFormat.R8G8B8A8_UNorm;
+                        break;
+                    case PixelFormat.B8G8R8A8_UNorm_SRgb:
+                        outputFormat = PixelFormat.R8G8B8A8_UNorm_SRgb;
+                        break;
+                }
+            }
+
+            // OpenGL and OpenGLES: avoid R5G6B5 (not implemented)
+            if (parameters.GraphicsPlatform == GraphicsPlatform.OpenGLES || parameters.GraphicsPlatform == GraphicsPlatform.OpenGL)
+            {
+                switch (outputFormat)
+                {
+                    case PixelFormat.B5G5R5A1_UNorm:
+                    case PixelFormat.B5G6R5_UNorm:
+                        outputFormat = PixelFormat.R8G8B8A8_UNorm;
+                        break;
+                }
+            }
+
             return outputFormat;
         }
 

@@ -1,67 +1,74 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Materials;
 
 namespace SiliconStudio.Xenko.Assets.Materials
 {
+    [AssetCompiler(typeof(MaterialAsset), typeof(AssetCompilationContext))]
     internal class MaterialAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        {
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(TextureAsset), BuildDependencyType.Runtime);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MaterialAsset), BuildDependencyType.CompileAsset);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(GameSettingsAsset), BuildDependencyType.CompileAsset);
+        }
+
+        protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (MaterialAsset)assetItem.Asset;
-            result.ShouldWaitForPreviousBuilds = true;
-            result.BuildSteps = new AssetBuildStep(assetItem) { new MaterialCompileCommand(targetUrlInStorage, assetItem, asset, context) };
+            result.BuildSteps = new AssetBuildStep(assetItem)
+            {
+                new MaterialCompileCommand(targetUrlInStorage, assetItem, asset, context)
+            };
         }
 
         private class MaterialCompileCommand : AssetCommand<MaterialAsset>
         {
             private readonly AssetItem assetItem;
 
-            private readonly Package package;
-
-            private ColorSpace colorSpace;
+            private readonly ColorSpace colorSpace;
 
             private UFile assetUrl;
 
             public MaterialCompileCommand(string url, AssetItem assetItem, MaterialAsset value, AssetCompilerContext context)
-                : base(url, value)
+                : base(url, value, assetItem.Package)
             {
                 this.assetItem = assetItem;
-                package = assetItem.Package;
                 colorSpace = context.GetColorSpace();
                 assetUrl = new UFile(url);
-            }
-
-            protected override System.Collections.Generic.IEnumerable<ObjectUrl> GetInputFilesImpl()
-            {
-                // TODO: Add textures when we will bake them
-                foreach (var compileTimeDependency in ((MaterialAsset)assetItem.Asset).EnumerateCompileTimeDependencies(package.Session))
-                {
-                    yield return new ObjectUrl(UrlType.ContentLink, compileTimeDependency.Location);
-                }
             }
 
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
             {
                 base.ComputeParameterHash(writer);
+
                 writer.Serialize(ref assetUrl, ArchiveMode.Serialize);
 
                 // Write the 
                 writer.Write(colorSpace);
-                
-                // We also want to serialize recursively the compile-time dependent assets
-                // (since they are not added as reference but actually embedded as part of the current asset)
-                // TODO: Ideally we would want to put that automatically in AssetCommand<>, but we would need access to package
-                ComputeCompileTimeDependenciesHash(package, writer, Parameters);
+
+                foreach (var compileTimeDependency in ((MaterialAsset)assetItem.Asset).FindMaterialReferences())
+                {
+                    var linkedAsset = Package.FindAsset(compileTimeDependency);
+                    if (linkedAsset?.Asset != null)
+                    {
+                        writer.SerializeExtended(linkedAsset.Asset, ArchiveMode.Serialize);
+                    }
+                }
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
@@ -100,10 +107,10 @@ namespace SiliconStudio.Xenko.Assets.Materials
                     Content = assetManager,
                     ColorSpace = colorSpace
                 };
-                materialContext.AddLoadingFromSession(package);
+                materialContext.AddLoadingFromSession(Package);
 
                 var materialClone = AssetCloner.Clone(Parameters);
-                var result = MaterialGenerator.Generate(new MaterialDescriptor() { MaterialId = materialClone.Id, Attributes = materialClone.Attributes, Layers = materialClone.Layers}, materialContext, string.Format("{0}:{1}", materialClone.Id, assetUrl));
+                var result = MaterialGenerator.Generate(new MaterialDescriptor { MaterialId = materialClone.Id, Attributes = materialClone.Attributes, Layers = materialClone.Layers}, materialContext, string.Format("{0}:{1}", materialClone.Id, assetUrl));
 
                 if (result.HasErrors)
                 {

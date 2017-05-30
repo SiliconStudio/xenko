@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.IO;
 using System.Linq;
 using Mono.Cecil;
@@ -33,7 +35,7 @@ namespace SiliconStudio.AssemblyProcessor
                     // Scan interfaces
                     foreach (var @interface in currentType.Interfaces)
                     {
-                        ScanAttributes(context.Log, assemblyScanCodeGenerator, @interface, type);
+                        ScanAttributes(context.Log, assemblyScanCodeGenerator, @interface.InterfaceType, type);
                     }
 
                     ScanAttributes(context.Log, assemblyScanCodeGenerator, currentType, type);

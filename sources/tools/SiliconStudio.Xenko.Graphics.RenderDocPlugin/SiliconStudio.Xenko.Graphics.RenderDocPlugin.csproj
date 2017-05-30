@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioXenkoGraphicsApiDependent>true</SiliconStudioXenkoGraphicsApiDependent>
+  </PropertyGroup>
   <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -18,15 +21,15 @@
     <Reference Include="System.Data" />
   </ItemGroup>
   <Choose>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
+    <When Condition=" '$(SiliconStudioXenkoGraphicsApi)' == 'Direct3D11' ">
       <ItemGroup>
         <Reference Include="SharpDX">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.dll</HintPath>
         </Reference>
         <Reference Include="SharpDX.Direct3D11">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>

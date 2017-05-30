@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2012 SharpDX - Alexandre Mutel
 // 
@@ -82,6 +82,11 @@ namespace SiliconStudio.Xenko.Graphics
         public readonly bool HasDepthAsReadOnlyRT;
 
         /// <summary>
+        /// Boolean indicating if the multi-sampled Depth buffer can directly be used as a ShaderResourceView
+        /// </summary>
+        public readonly bool HasMultisampleDepthAsSRV;
+
+        /// <summary>
         /// Boolean indicating if the graphics API supports resource renaming (with either <see cref="MapMode.WriteDiscard"/> or <see cref="CommandList.UpdateSubresource"/> with full size).
         /// </summary>
         public readonly bool HasResourceRenaming;
@@ -108,11 +113,11 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         public struct FeaturesPerFormat
         {
-            //internal FeaturesPerFormat(PixelFormat format, MSAALevel maximumMSAALevel, ComputeShaderFormatSupport computeShaderFormatSupport, FormatSupport formatSupport)
-            internal FeaturesPerFormat(PixelFormat format, MSAALevel maximumMSAALevel, FormatSupport formatSupport)
+            //internal FeaturesPerFormat(PixelFormat format, MultisampleCount maximumMultisampleCount, ComputeShaderFormatSupport computeShaderFormatSupport, FormatSupport formatSupport)
+            internal FeaturesPerFormat(PixelFormat format, MultisampleCount maximumMultisampleCount, FormatSupport formatSupport)
             {
                 Format = format;
-                this.MSAALevelMax = maximumMSAALevel;
+                this.MultisampleCountMax = maximumMultisampleCount;
                 //ComputeShaderFormatSupport = computeShaderFormatSupport;
                 FormatSupport = formatSupport;
             }
@@ -123,9 +128,9 @@ namespace SiliconStudio.Xenko.Graphics
             public readonly PixelFormat Format;
 
             /// <summary>
-            /// Gets the maximum MSAA sample count for a particular <see cref="PixelFormat"/>.
+            /// Gets the maximum multisample count for a particular <see cref="PixelFormat"/>.
             /// </summary>
-            public readonly MSAALevel MSAALevelMax;
+            public readonly MultisampleCount MultisampleCountMax;
 
             /// <summary>	
             /// Gets the unordered resource support options for a compute shader resource.	
@@ -139,8 +144,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             public override string ToString()
             {
-                //return string.Format("Format: {0}, MSAALevelMax: {1}, ComputeShaderFormatSupport: {2}, FormatSupport: {3}", Format, this.MSAALevelMax, ComputeShaderFormatSupport, FormatSupport);
-                return string.Format("Format: {0}, MSAALevelMax: {1}, FormatSupport: {2}", Format, this.MSAALevelMax, FormatSupport);
+                //return string.Format("Format: {0}, MultisampleCountMax: {1}, ComputeShaderFormatSupport: {2}, FormatSupport: {3}", Format, this.MSAALevelMax, ComputeShaderFormatSupport, FormatSupport);
+                return string.Format("Format: {0}, MultisampleCountMax: {1}, FormatSupport: {2}", Format, this.MultisampleCountMax, FormatSupport);
             }
         }
 

@@ -1,5 +1,6 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -84,51 +85,9 @@ namespace SiliconStudio.Assets.Analysis
 
             isDisposed = true;
         }
-
-        /// <inheritdoc />
-        public List<AssetItem> FindAssetInheritances(AssetId assetId, AssetInheritanceSearchOptions searchOptions = AssetInheritanceSearchOptions.All)
-        {
-            var list = new List<AssetItem>();
-            lock (Initialize())
-            {
-                ContentLinkType searchType = 0;
-                if ((searchOptions & AssetInheritanceSearchOptions.Base) != 0)
-                    searchType |= ContentLinkType.Inheritance;
-                if ((searchOptions & AssetInheritanceSearchOptions.Composition) != 0)
-                    searchType |= ContentLinkType.CompositionInheritance;
-
-                AssetDependencies dependencies;
-                if (Dependencies.TryGetValue(assetId, out dependencies))
-                {
-                    list.AddRange(dependencies.LinksOut.Where(p => (p.Type & searchType) != 0).Select(p => p.Item.Clone(true)));
-                }
-            }
-            return list;
-        }
         
         /// <inheritdoc />
-        public List<AssetItem> FindAssetsInheritingFrom(AssetId assetId, AssetInheritanceSearchOptions searchOptions = AssetInheritanceSearchOptions.All)
-        {
-            var list = new List<AssetItem>();
-            lock (Initialize())
-            {
-                ContentLinkType searchType = 0;
-                if((searchOptions & AssetInheritanceSearchOptions.Base) != 0)
-                    searchType |= ContentLinkType.Inheritance;
-                if((searchOptions & AssetInheritanceSearchOptions.Composition) != 0)
-                    searchType |= ContentLinkType.CompositionInheritance;
-
-                AssetDependencies dependencies;
-                if (Dependencies.TryGetValue(assetId, out dependencies))
-                {
-                    list.AddRange(dependencies.LinksIn.Where(p => (p.Type & searchType) != 0).Select(p => p.Item.Clone(true)));
-                }
-            }
-            return list;
-        }
-
-        /// <inheritdoc />
-        public AssetDependencies ComputeDependencies(AssetId assetId, AssetDependencySearchOptions dependenciesOptions = AssetDependencySearchOptions.All, ContentLinkType linkTypes = ContentLinkType.All, HashSet<AssetId> visited = null)
+        public AssetDependencies ComputeDependencies(AssetId assetId, AssetDependencySearchOptions dependenciesOptions = AssetDependencySearchOptions.All, ContentLinkType linkTypes = ContentLinkType.Reference, HashSet<AssetId> visited = null)
         {
             bool recursive = (dependenciesOptions & AssetDependencySearchOptions.Recursive) != 0;
             if (visited == null && recursive)
@@ -611,7 +570,7 @@ namespace SiliconStudio.Assets.Analysis
             }
         }
 
-        private void Session_AssetDirtyChanged(Asset asset, bool oldValue, bool newValue)
+        private void Session_AssetDirtyChanged(AssetItem asset, bool oldValue, bool newValue)
         {
             // Don't update the dependency manager while saving (setting dirty flag to false)
             if (!isSessionSaving)
@@ -621,7 +580,8 @@ namespace SiliconStudio.Assets.Analysis
                     AssetDependencies dependencies;
                     if (Dependencies.TryGetValue(asset.Id, out dependencies))
                     {
-                        dependencies.Item.Asset = AssetCloner.Clone(asset);
+                        dependencies.Item.Asset = AssetCloner.Clone(asset.Asset);
+                        dependencies.Item.Version = asset.Version;
                         UpdateAssetDependencies(dependencies);
 
                         // Notify an asset changed
@@ -784,17 +744,7 @@ namespace SiliconStudio.Assets.Analysis
             public IEnumerable<IContentLink> GetDependencies(AssetItem item)
             {
                 dependencies = new AssetDependencies(item);
-
                 Visit(item.Asset);
-
-                // composition inheritances
-                var assetComposite = item.Asset as IAssetComposite;
-                if (assetComposite != null)
-                {
-                    foreach (var compositionBase in assetComposite.CollectParts().Select(x => x.Base).NotNull())
-                        dependencies.AddBrokenLinkOut(compositionBase.BasePartAsset, ContentLinkType.CompositionInheritance);
-                }
-
                 return dependencies.BrokenLinksOut;
             }
 
@@ -823,7 +773,7 @@ namespace SiliconStudio.Assets.Analysis
             {
                 if (typeof(Asset).IsAssignableFrom(member.DeclaringType) && member.Name == nameof(Asset.Archetype) && value != null)
                 {
-                    dependencies.AddBrokenLinkOut((AssetReference)value, ContentLinkType.Inheritance | ContentLinkType.Reference);
+                    dependencies.AddBrokenLinkOut((AssetReference)value, ContentLinkType.Reference);
                     return;
                 }
 

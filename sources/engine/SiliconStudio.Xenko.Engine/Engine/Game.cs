@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Globalization;
@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Audio;
@@ -189,18 +190,37 @@ namespace SiliconStudio.Xenko.Engine
             // Create all core services, except Input which is created during `Initialize'.
             // Registration takes place in `Initialize'.
             Script = new ScriptSystem(Services);
+            Services.AddService(typeof(ScriptSystem), Script);
+
             SceneSystem = new SceneSystem(Services);
+            Services.AddService(typeof(SceneSystem), SceneSystem);
+
             Audio = new AudioSystem(Services);
+            Services.AddService(typeof(AudioSystem), Audio);
+            Services.AddService(typeof(IAudioEngineProvider), Audio);
+
             gameFontSystem = new GameFontSystem(Services);
+            Services.AddService(typeof(FontSystem), gameFontSystem.FontSystem);
+            Services.AddService(typeof(IFontFactory), gameFontSystem.FontSystem);
+
             SpriteAnimation = new SpriteAnimationSystem(Services);
+            Services.AddService(typeof(SpriteAnimationSystem), SpriteAnimation);
+
             DebugConsoleSystem = new DebugConsoleSystem(Services);
+            Services.AddService(typeof(DebugConsoleSystem), DebugConsoleSystem);
+
             ProfilerSystem = new GameProfilingSystem(Services);
+            Services.AddService(typeof(GameProfilingSystem), ProfilerSystem);
+
             VRDeviceSystem = new VRDeviceSystem(Services);
+            Services.AddService(typeof(VRDeviceSystem), VRDeviceSystem);
 
             Content.Serializer.LowLevelSerializerSelector = ParameterContainerExtensions.DefaultSceneSerializerSelector;
 
             // Creates the graphics device manager
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
+            Services.AddService(typeof(IGraphicsDeviceManager), GraphicsDeviceManager);
+            Services.AddService(typeof(IGraphicsDeviceService), GraphicsDeviceManager);
 
             AutoLoadDefaultSettings = true;
         }
@@ -257,6 +277,8 @@ namespace SiliconStudio.Xenko.Engine
                     deviceManager.PreferredColorSpace = renderingSettings.ColorSpace;
                     SceneSystem.InitialSceneUrl = Settings?.DefaultSceneUrl;
                     SceneSystem.InitialGraphicsCompositorUrl = Settings?.DefaultGraphicsCompositorUrl;
+                    SceneSystem.SplashScreenUrl = Settings?.SplashScreenUrl;
+                    SceneSystem.SplashScreenColor = Settings?.SplashScreenColor ?? Color4.Black;
                 }
             }
         }
@@ -310,6 +332,7 @@ namespace SiliconStudio.Xenko.Engine
 
             // Add the input manager
             Input = InputManagerFactory.NewInputManager(Services, Context);
+            Services.AddService(typeof(InputManager), Input);
             GameSystems.Add(Input);
 
             // Add the scheduler system
@@ -328,6 +351,7 @@ namespace SiliconStudio.Xenko.Engine
             GameSystems.Add(ProfilerSystem);
 
             EffectSystem = new EffectSystem(Services);
+            Services.AddService(typeof(EffectSystem), EffectSystem);
 
             // If requested in game settings, compile effects remotely and/or notify new shader requests
             if (Settings != null)

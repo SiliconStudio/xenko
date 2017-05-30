@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
@@ -55,6 +55,11 @@ namespace SiliconStudio.BuildEngine.Tests.Commands
 
         public override string OutputLocation => Location;
 
+        public InputOutputTestCommand()
+        {
+            InputFilesGetter = GetInputFilesImpl;
+        }
+
         private bool WaitDelay()
         {
             // Simulating actual work on input to generate output
@@ -109,7 +114,7 @@ namespace SiliconStudio.BuildEngine.Tests.Commands
             return ResultStatus.Successful;
         }
 
-        protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
+        private IEnumerable<ObjectUrl> GetInputFilesImpl()
         {
             yield return Source;
         }

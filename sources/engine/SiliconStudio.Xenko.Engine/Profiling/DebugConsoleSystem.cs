@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
@@ -22,8 +24,6 @@ namespace SiliconStudio.Xenko.Profiling
 
         public DebugConsoleSystem(IServiceRegistry registry) : base(registry)
         {
-            registry.AddService(typeof(DebugConsoleSystem), this);
-
             Visible = true;
 
             DrawOrder = 0xffffff;

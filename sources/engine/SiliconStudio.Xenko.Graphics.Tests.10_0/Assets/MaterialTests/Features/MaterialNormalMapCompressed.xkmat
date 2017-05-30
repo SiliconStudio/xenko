@@ -1,6 +1,6 @@
 !MaterialAsset
 Id: 8c44b810-9571-448b-b94a-0143a2c89c5f
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Attributes:
     Surface: !MaterialNormalMapFeature
@@ -12,7 +12,6 @@ Attributes:
             Offset: {X: 0.0, Y: 0.0}
             Swizzle: null
         IsXYNormal: true
-        InvertY: false
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
             Texture: e8a73264-e909-4e38-943e-b8b5c7b6950a:MaterialTests/stone4_dif

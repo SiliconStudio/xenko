@@ -1,5 +1,11 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+
+using System;
+using System.Collections.Generic;
+using SiliconStudio.Assets.Analysis;
+using SiliconStudio.Core.Serialization.Contents;
+
 namespace SiliconStudio.Assets.Compiler
 {
     /// <summary>
@@ -13,6 +19,31 @@ namespace SiliconStudio.Assets.Compiler
         /// <param name="context"></param>
         /// <param name="assetItem">The asset reference.</param>
         /// <returns>The result of the compilation.</returns>
-        AssetCompilerResult Compile(CompilerContext context, AssetItem assetItem);
+        AssetCompilerResult Prepare(AssetCompilerContext context, AssetItem assetItem);
+
+        /// <summary>
+        /// Enumerates all the dependencies required to compile this asset
+        /// </summary>
+        /// <param name="context">The asset compiler context</param>
+        /// <param name="assetItem">The asset for which dependencies are enumerated</param>
+        /// <returns>The dependencies</returns>
+        IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem);
+
+        /// <summary>
+        /// Enumerates all the asset types required to compile this asset
+        /// </summary>
+        /// <param name="context">The asset compiler context</param>
+        /// <param name="assetItem">The asset for which types are enumerated</param>
+        /// <returns>The dependencies</returns>
+        IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem);
+
+        /// <summary>
+        /// Enumerates all the asset types to exclude when compiling this asset
+        /// </summary>
+        /// <param name="context">The asset compiler context</param>
+        /// <param name="assetItem">The asset for which types are enumerated</param>
+        /// <returns>The types to exclude</returns>
+        /// <remarks>This method takes higher priority, it will exclude assets included with inclusion methods even in the same compiler</remarks>
+        IEnumerable<Type> GetInputTypesToExclude(AssetCompilerContext context, AssetItem assetItem);
     }
 }

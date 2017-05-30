@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
 using System.Collections.Generic;
@@ -136,7 +136,7 @@ namespace SiliconStudio.Core.IO
 
             if (path != null && Directory.Exists(path))
             {
-                info = new DirectoryInfo(path.ToLower());
+                info = new DirectoryInfo(path.ToLowerInvariant());
             }
             else
             {
@@ -310,7 +310,13 @@ namespace SiliconStudio.Core.IO
             var handler = Modified;
             if (handler != null)
             {
-                OnModified(this, new FileEvent((FileEventChangeType)e.ChangeType, e.Name, e.FullPath));
+                if (e.ChangeType == WatcherChangeTypes.Renamed)
+                {
+                    var renamedEventArgs = e as RenamedEventArgs;
+                    OnModified(this, new FileRenameEvent(e.Name, e.FullPath, renamedEventArgs.OldFullPath));
+                }
+                else
+                    OnModified(this, new FileEvent((FileEventChangeType)e.ChangeType, e.Name, e.FullPath));
             }
         }
 
@@ -319,7 +325,7 @@ namespace SiliconStudio.Core.IO
         {
             public DirectoryWatcherItem(DirectoryInfo path)
             {
-                Path = path.FullName.ToLower();
+                Path = path.FullName.ToLowerInvariant();
             }
 
             public DirectoryWatcherItem Parent;

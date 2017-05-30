@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -50,9 +52,10 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
         protected override void Destroy()
         {
-            base.Destroy();
+            sprite3DBatch?.Dispose();
+            sprite3DBatch = null;
 
-            sprite3DBatch.Dispose();
+            base.Destroy();
         }
 
         public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)

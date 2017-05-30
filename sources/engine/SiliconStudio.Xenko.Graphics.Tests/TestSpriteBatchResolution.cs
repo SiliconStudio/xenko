@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.Threading.Tasks;
 
 using NUnit.Framework;
@@ -23,7 +23,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestSpriteBatchResolution()
         {
-            CurrentVersion = 5; // Changes in font type/size
+            //CurrentVersion = 5; // Changes in font type/size
+            CurrentVersion = 6; // Texture assets set to uncompressed, build machine changed
         }
 
         protected override void RegisterTests()

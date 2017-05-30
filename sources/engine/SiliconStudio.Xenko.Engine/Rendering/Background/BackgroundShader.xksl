@@ -1,0 +1,13 @@
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+
+shader BackgroundShader : SpriteBase
+{
+    stage float Intensity;
+
+    // Shading of the sprite
+    stage override float4 Shading()
+    { 
+        return Intensity * base.Shading();
+    }
+};

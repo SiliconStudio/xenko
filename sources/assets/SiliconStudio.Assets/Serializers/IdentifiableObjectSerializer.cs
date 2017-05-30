@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Collections.Generic;
 using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
@@ -95,7 +97,7 @@ namespace SiliconStudio.Assets.Serializers
                 // Return default(T)
                 //return !context.Descriptor.Type.IsValueType ? null : Activator.CreateInstance(context.Descriptor.Type);
                 // Return temporary proxy instance
-                var proxy = (IIdentifiable)Activator.CreateInstance(context.Descriptor.Type);
+                var proxy = (IIdentifiable)AbstractObjectInstantiator.CreateConcreteInstance(context.Descriptor.Type);
                 proxy.Id = identifier;
                 return proxy;
             }

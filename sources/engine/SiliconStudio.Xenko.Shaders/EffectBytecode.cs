@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.IO;
@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Shaders
         /// <remarks>
         /// If EffectBytecode is changed, this number must be changed manually.
         /// </remarks>
-        public const uint MagicHeader = 0xEFFEC004;
+        public const uint MagicHeader = 0xEFFEC005;
 
         /// <summary>
         /// The reflection from the bytecode.

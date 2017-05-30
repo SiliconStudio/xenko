@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -21,7 +21,7 @@ namespace SiliconStudio.AssemblyProcessor
         public bool Process(AssemblyProcessorContext context)
         {
             this.assembly = context.Assembly;
-            asyncBridgeAssembly = context.AssemblyResolver.Resolve("AsyncBridge");
+            asyncBridgeAssembly = context.AssemblyResolver.Resolve(new AssemblyNameReference("AsyncBridge", null));
 
             assembly.MainModule.AssemblyReferences.Add(asyncBridgeAssembly.Name);
 
@@ -166,7 +166,7 @@ namespace SiliconStudio.AssemblyProcessor
 
             for (int i = 0; i < type.Interfaces.Count; ++i)
             {
-                type.Interfaces[i] = ProcessTypeReference(type.Interfaces[i], null);
+                type.Interfaces[i].InterfaceType = ProcessTypeReference(type.Interfaces[i].InterfaceType, null);
             }
 
             foreach (var field in type.Fields)

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         /// If the parent particle is younger than the lower limit, it won't spawn children. When the lower limit is higher than the upper limit the condition is reversed.
         /// </summary>
         [DataMember(10)]
-        [DataMemberRange(0, 1, 0.001, 0.1)]
+        [DataMemberRange(0, 1, 0.01, 0.1, 3)]
         [Display("Lower Limit")]
         public float LifetimeLowerLimit { get; set; } = 0f;
 
@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         /// If the parent particle is older than the upper limit, it won't spawn children. When the upper limit is smaller than the lower limit the condition is reversed.
         /// </summary>
         [DataMember(20)]
-        [DataMemberRange(0, 1, 0.001, 0.1)]
+        [DataMemberRange(0, 1, 0.01, 0.1, 3)]
         [Display("Upper Limit")]
         public float LifetimeUpperLimit { get; set; } = 1f;
 

@@ -1,13 +1,13 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 
 namespace SiliconStudio.Core.IO
 {
     /// <summary>
-    /// Ä file event used notified by <see cref="DirectoryWatcher"/>
+    /// ï¿½ file event used notified by <see cref="DirectoryWatcher"/>
     /// </summary>
-    public sealed class FileEvent : EventArgs
+    public class FileEvent : EventArgs
     {
         private readonly FileEventChangeType changeType;
         private readonly string name;
@@ -61,10 +61,40 @@ namespace SiliconStudio.Core.IO
                 return fullPath;
             }
         }
+    }
+
+
+    /// <summary>
+    /// ï¿½ file rename event used notified by <see cref="DirectoryWatcher"/>
+    /// </summary>
+    public class FileRenameEvent : FileEvent
+    {
+        private readonly string oldFullPath;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileRenameEvent"/> class.
+        /// </summary>
+        /// <param name="changeType">Type of the change.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="fullPath">The full path.</param>
+        /// <param name="oldFullPath">The old full path. (before rename) </param>
+        public FileRenameEvent(string name, string fullPath, string oldFullPath) : base(FileEventChangeType.Renamed, name, fullPath)
+        {
+            this.oldFullPath = oldFullPath;
+        }
+
+        /// <summary>
+        /// Gets the full path. (in case of rename)
+        /// </summary>
+        /// <value>The full path. (in case of rename)</value>
+        public string OldFullPath
+        {
+            get { return oldFullPath; }
+        }
 
         public override string ToString()
         {
-            return string.Format("{0}: {1}", changeType, fullPath);
+            return string.Format("{0}: {1} -> {2}", ChangeType, FullPath, OldFullPath);
         }
     }
 }

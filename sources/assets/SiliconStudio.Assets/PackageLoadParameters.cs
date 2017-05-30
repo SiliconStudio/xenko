@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -26,6 +26,19 @@ namespace SiliconStudio.Assets
             return DefaultParameters.Clone();
         }
 
+        /// <summary>
+        /// Indicates if the given value of <see cref="PackageUpgradeRequestedAnswer"/> should trigger an upgrade.
+        /// </summary>
+        /// <param name="answer">The value to evaluate.</param>
+        /// <returns>True if it should trigger an upgrade, false otherwise.</returns>
+        public static bool ShouldUpgrade(PackageUpgradeRequestedAnswer answer)
+        {
+            return answer == PackageUpgradeRequestedAnswer.Upgrade || answer == PackageUpgradeRequestedAnswer.UpgradeAll;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PackageLoadParameters"/> class.
+        /// </summary>
         public PackageLoadParameters()
         {
             LoadMissingDependencies = true;
@@ -126,7 +139,7 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Occurs when one or more package upgrades are required for a single package. Returning false will cancel upgrades on this package.
         /// </summary>
-        public Func<Package, IList<PackageSession.PendingPackageUpgrade>, bool> PackageUpgradeRequested;
+        public Func<Package, IList<PackageSession.PendingPackageUpgrade>, PackageUpgradeRequestedAnswer> PackageUpgradeRequested;
 
         /// <summary>
         /// Occurs when an asset is about to be loaded, if false is returned the asset will be ignored and not loaded.

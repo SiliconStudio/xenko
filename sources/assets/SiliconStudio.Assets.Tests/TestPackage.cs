@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -41,7 +41,8 @@ namespace SiliconStudio.Assets.Tests
                 File.Delete(session.SolutionPath);
             }
 
-            var result = session.Save();
+            var result = new LoggerResult();
+            session.Save(result);
             Assert.IsFalse(result.HasErrors);
 
             // Reload the raw package and if UFile and UDirectory were saved relative
@@ -128,7 +129,8 @@ namespace SiliconStudio.Assets.Tests
             project.FullPath = Path.Combine(DirectoryTestBase, @"TestPackage2\TestPackage2.xkpkg");
             var subPackage = session.Packages.Find(Guid.Parse("281321F0-7664-4523-B1DC-3CFC26F80F77"));
             subPackage.FullPath = Path.Combine(DirectoryTestBase, @"TestPackage2\SubPackage\SubPackage.xkpkg");
-            session.Save();
+            var result = new LoggerResult();
+            session.Save(result);
 
             var project2Result = PackageSession.Load(DirectoryTestBase + @"TestPackage2\TestPackage2.xkpkg");
             AssertResult(project2Result);
@@ -167,7 +169,8 @@ namespace SiliconStudio.Assets.Tests
                 project.FullPath = Path.Combine(DirectoryTestBase, @"TestPackageMovingAssets1\TestPackage2.xkpkg");
                 var subPackage = session.Packages.Find(Guid.Parse("281321F0-7664-4523-B1DC-3CFC26F80F77"));
                 subPackage.FullPath = Path.Combine(DirectoryTestBase, @"TestPackageMovingAssets1\SubPackage\SubPackage.xkpkg");
-                session.Save();
+                var result = new LoggerResult();
+                session.Save(result);
             }
 
             // Reload the project from the location TestPackageMovingAssets1
@@ -191,7 +194,8 @@ namespace SiliconStudio.Assets.Tests
                 project.FullPath = Path.Combine(DirectoryTestBase, @"TestPackageMovingAssets2\TestPackage2.xkpkg");
                 var subPackage = session.Packages.Find(Guid.Parse("281321F0-7664-4523-B1DC-3CFC26F80F77"));
                 subPackage.FullPath = Path.Combine(DirectoryTestBase, @"TestPackageMovingAssets2\SubPackage\SubPackage.xkpkg");
-                session.Save();
+                var result = new LoggerResult();
+                session.Save(result);
             }
 
             // Reload the project from location TestPackageMovingAssets2

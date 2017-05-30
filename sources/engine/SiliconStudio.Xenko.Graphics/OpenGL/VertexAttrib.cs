@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 using System;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
@@ -109,6 +109,10 @@ namespace SiliconStudio.Xenko.Graphics
                     return new ElementFormat(VertexAttribPointerType.Short, 1);
                 case PixelFormat.R16_UInt:
                     return new ElementFormat(VertexAttribPointerType.UnsignedShort, 1);
+                case PixelFormat.R32_SInt:
+                    return new ElementFormat(VertexAttribPointerType.Int, 4);
+                case PixelFormat.R32_UInt:
+                    return new ElementFormat(VertexAttribPointerType.UnsignedInt, 4);
                 case PixelFormat.R8G8_SInt:
                     return new ElementFormat(VertexAttribPointerType.Byte, 2);
                 case PixelFormat.R8G8_UInt:

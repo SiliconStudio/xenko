@@ -12,6 +12,9 @@
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\..\common\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="AdditiveAnimationBaseMode.cs" />
     <Compile Include="AnimationAsset.cs" />
     <Compile Include="AnimationAsset.Upgrader.cs" />
@@ -55,6 +58,11 @@
       <Name>SiliconStudio.Assets</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\assets\SiliconStudio.Packages\SiliconStudio.Packages.csproj">
+      <Project>{acd2c831-bda2-4512-b4cc-75e8e1804f73}</Project>
+      <Name>SiliconStudio.Packages</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\common\buildengine\SiliconStudio.BuildEngine.Common\SiliconStudio.BuildEngine.Common.csproj">
       <Project>{7732cb84-a39a-4adf-b740-fd32a352fa8a}</Project>
       <Name>SiliconStudio.BuildEngine.Common</Name>
@@ -68,11 +76,6 @@
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
       <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Native\SiliconStudio.Core.Native.csproj">
-      <Project>{fcf36d39-bffe-4719-b245-05640ee34c5f}</Project>
-      <Name>SiliconStudio.Core.Native</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">

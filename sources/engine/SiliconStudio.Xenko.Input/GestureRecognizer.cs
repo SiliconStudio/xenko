@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -100,7 +100,8 @@ namespace SiliconStudio.Xenko.Input
                         break;
                     case PointerState.Move:
                         // just memorize the last position to avoid useless processing on move events
-                        fingerIdsToLastMovePos[id] = pos;
+                        if (FingerIdToBeginPositions.ContainsKey(id))
+                            fingerIdsToLastMovePos[id] = pos;
                         break;
                     case PointerState.Up:
                     case PointerState.Out:

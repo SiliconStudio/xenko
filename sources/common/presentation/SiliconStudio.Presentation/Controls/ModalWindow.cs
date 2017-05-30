@@ -1,6 +1,11 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Interop;
+using SiliconStudio.Presentation.Interop;
 using SiliconStudio.Presentation.Services;
 using SiliconStudio.Presentation.Windows;
 
@@ -10,7 +15,18 @@ namespace SiliconStudio.Presentation.Controls
     {
         public virtual async Task<DialogResult> ShowModal()
         {
-            await WindowManager.ShowModal(this);
+			Loaded += (sender, e) =>
+            {
+                // Disable minimize on modal windows
+                var handle = new WindowInteropHelper(this).Handle;
+                if (handle != IntPtr.Zero)
+                {
+                    NativeHelper.DisableMinimizeButton(handle);
+                }
+            };
+            Owner = WindowManager.MainWindow?.Window ?? WindowManager.BlockingWindows.LastOrDefault()?.Window;
+            WindowStartupLocation = Owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen;
+            await Dispatcher.InvokeAsync(ShowDialog);
             return Result;
         }
 

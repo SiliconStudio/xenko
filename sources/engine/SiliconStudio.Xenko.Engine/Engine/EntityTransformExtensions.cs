@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Linq;
@@ -156,7 +156,7 @@ namespace SiliconStudio.Xenko.Engine
             Matrix.Invert(ref transformComponent.WorldMatrix, out worldMatrixInv);
 
             Vector3.Transform(ref position, ref worldMatrixInv, out position);
-            rotation.Invert();
+            worldRotation.Invert();
             Quaternion.Multiply(ref rotation, ref worldRotation, out rotation);
             Vector3.Demodulate(ref scale, ref worldScale, out scale);
         }

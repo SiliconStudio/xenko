@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -11,6 +11,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Animations;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Regression;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Colors;
@@ -35,9 +36,20 @@ namespace SiliconStudio.Xenko.Engine.Tests
             //CurrentVersion = 6; // Fix normal maps again
             //CurrentVersion = 7; // Noise due to changing normals from signed to unsigned
             //CurrentVersion = 8; // Changes in FBX importer (Use GetMeshEdgeIndexForPolygon() instead of GetMeshEdgeIndex() )
-            CurrentVersion = 9; // MSBUild tests
+            //CurrentVersion = 9; // MSBUild tests
+            //CurrentVersion = 10; // Build machine changed
+            //CurrentVersion = 11; // Additive animation samples added
+            //CurrentVersion = 12; // Delta time is fixed, animation times are manually set
+            //CurrentVersion = 13; // Changed the scale of the models to reduce aliasing problems in tests
+            CurrentVersion = 14;    // Disabling the additive animation until a less noisy model/animation is found
+
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_3 };
+
+            // Use a fixed time step
+            IsFixedTimeStep = true;
+            ForceOneUpdatePerDraw = true;
+            IsDrawDesynchronized = false;
         }
 
         protected override async Task LoadContent()
@@ -61,7 +73,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
             Scene.Entities.Add(knight);
 
-            camera = new TestCamera();
+            camera = new TestCamera(Services.GetServiceAs<SceneSystem>().GraphicsCompositor);
             CameraComponent = camera.Camera;
             Script.Add(camera);
 

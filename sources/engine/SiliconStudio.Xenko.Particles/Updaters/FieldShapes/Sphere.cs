@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
         /// The maximum distance from the central point.
         /// </userdoc>
         [DataMember(20)]
-        [DataMemberRange(0f, float.MaxValue)]
+        [DataMemberRange(0f, 3)]
         [Display("Radius")]
         public float Radius
         {

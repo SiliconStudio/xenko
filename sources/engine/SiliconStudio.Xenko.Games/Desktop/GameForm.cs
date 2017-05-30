@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
 // 
@@ -72,11 +72,13 @@ namespace SiliconStudio.Xenko.Games
         private const int SC_SCREENSAVE = 0xF140;
         private const int MNC_CLOSE = 1;
         private const byte VK_RETURN = 0x0D;
+        private const byte VK_TAB = 0x09;
         private Size cachedSize;
         private FormWindowState previousWindowState;
         private bool isUserResizing;
         private bool isBackgroundFirstDraw;
         private bool isSizeChangedWithoutResizeBegin;
+        private bool isSwitchingFullScreen;
 
         /// Initializes a new instance of the <see cref="GameForm"/> class.
         /// </summary>
@@ -362,6 +364,12 @@ namespace SiliconStudio.Xenko.Games
                     else
                     {
                         OnAppDeactivated(EventArgs.Empty);
+
+                        //also remove full screen if this is the case
+                        if (IsFullScreen && !isSwitchingFullScreen) //exit full screen on alt-tab if in fullscreen
+                        {
+                            OnFullscreenToggle(new EventArgs());
+                        }
                     }
                     break;
                 case Win32Native.WM_POWERBROADCAST:
@@ -397,8 +405,10 @@ namespace SiliconStudio.Xenko.Games
                 case Win32Native.WM_SYSKEYDOWN: //alt is down
                     if(wparam == VK_RETURN)
                     {
-                        if(!EnableFullscreenToggle) return;
+                        isSwitchingFullScreen = true;
+                        if (!EnableFullscreenToggle) return;
                         OnFullscreenToggle(new EventArgs()); //we handle alt enter manually
+                        isSwitchingFullScreen = false;
                     }
                     break;
             }

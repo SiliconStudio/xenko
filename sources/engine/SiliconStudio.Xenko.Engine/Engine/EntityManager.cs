@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections;
@@ -52,6 +52,11 @@ namespace SiliconStudio.Xenko.Engine
         /// Occurs when an entity is removed.
         /// </summary>
         public event EventHandler<Entity> EntityRemoved;
+
+        /// <summary>
+        /// Occurs when an entity is removed.
+        /// </summary>
+        public event EventHandler<Entity> HierarchyChanged;
 
         /// <summary>
         /// Occurs when a new component type is added.
@@ -576,6 +581,11 @@ namespace SiliconStudio.Xenko.Engine
         protected virtual void OnComponentChanged(Entity entity, int index, EntityComponent previousComponent, EntityComponent newComponent)
         {
             ComponentChanged?.Invoke(this, new EntityComponentEventArgs(entity, index, previousComponent, newComponent));
+        }
+
+        internal void OnHierarchyChanged(Entity entity)
+        {
+            HierarchyChanged?.Invoke(this, entity);
         }
 
         /// <summary>

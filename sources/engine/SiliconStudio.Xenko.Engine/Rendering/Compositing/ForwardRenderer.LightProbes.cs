@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -24,7 +26,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         private unsafe void PrepareLightprobeConstantBuffer(RenderContext context)
         {
             var renderView = context.RenderView;
-            var lightProbesData = context.RenderView.SceneInstance.Tags.Get(LightProbeComponent.RuntimeData);
+            var lightProbesData = context.RenderView.SceneInstance.GetProcessor<LightProbeProcessor>()?.RuntimeData;
             if (lightProbesData != null)
             {
                 foreach (var renderFeature in context.RenderSystem.RenderFeatures)
@@ -44,8 +46,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                             continue;
 
                         var mappedCB = (LightProbeCBuffer*)(resourceGroup.ConstantBuffer.Data + logicalGroup.ConstantBufferOffset);
-                        mappedCB->Enabled = lightProbesData != null ? 1 : 0;
-                        mappedCB->UserVertexCount = lightProbesData?.UserVertexCount ?? 0;
+                        mappedCB->UserVertexCount = lightProbesData.UserVertexCount;
                     }
                 }
             }
@@ -63,8 +64,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             Buffer lightprobesCoefficients = null;
             var renderView = context.RenderView;
 
-            var lightProbesData = renderView.SceneInstance.Tags.Get(LightProbeComponent.RuntimeData);
-            if (lightProbesData == null)
+            var lightProbesData = renderView.SceneInstance.GetProcessor<LightProbeProcessor>()?.RuntimeData;
+            if (lightProbesData == null || lightProbesData.Tetrahedra.Count == 0)
             {
                 // No lightprobes, we still set GPU resources (otherwise rendering might fetch invalid data)
                 goto SetGPUResources;
@@ -84,7 +85,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             // Render IBL tetrahedra ID so that we can assign them per pixel
             //ibl = PushScopedResource(Context.Allocator.GetTemporaryTexture2D(drawContext.CommandList.DepthStencilBuffer.Width, drawContext.CommandList.DepthStencilBuffer.Height, PixelFormat.R16_UInt));
             ibl = PushScopedResource(Context.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(drawContext.CommandList.DepthStencilBuffer.Width, drawContext.CommandList.DepthStencilBuffer.Height,
-                        1, PixelFormat.R16_UInt, TextureFlags.ShaderResource | TextureFlags.RenderTarget, 1 , GraphicsResourceUsage.Default, actualMSAALevel)));
+                        1, PixelFormat.R16_UInt, TextureFlags.ShaderResource | TextureFlags.RenderTarget, 1 , GraphicsResourceUsage.Default, actualMultisampleCount)));
             using (drawContext.PushRenderTargetsAndRestore())
             {
                 drawContext.CommandList.Clear(ibl, Color4.Black);
@@ -381,7 +382,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         [StructLayout(LayoutKind.Sequential)]
         struct LightProbeCBuffer
         {
-            public int Enabled;
             public int UserVertexCount;
         }
     }

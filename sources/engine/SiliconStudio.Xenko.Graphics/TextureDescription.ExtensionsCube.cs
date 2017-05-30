@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 namespace SiliconStudio.Xenko.Graphics
 {
     public partial struct TextureDescription
@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private static TextureDescription NewCube(int size, PixelFormat format, TextureFlags textureFlags, int mipCount, GraphicsResourceUsage usage)
         {
-            var desc = New2D(size, size, format, textureFlags, mipCount, 6, usage, MSAALevel.None);
+            var desc = New2D(size, size, format, textureFlags, mipCount, 6, usage, MultisampleCount.None);
             desc.Dimension = TextureDimension.TextureCube;
             return desc;
         }

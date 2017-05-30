@@ -8,7 +8,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>SiliconStudio.Presentation</RootNamespace>
     <AssemblyName>SiliconStudio.Presentation</AssemblyName>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
@@ -17,6 +18,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\build\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\Microsoft.Expression.Interactions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Windows.Shell, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\build\packages\Microsoft.Windows.Shell.3.0.1.0\lib\net40\Microsoft.Windows.Shell.dll</HintPath>
@@ -26,14 +31,18 @@
     <Reference Include="PresentationFramework.Aero" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Windows.Interactivity">
-      <HintPath>$(SiliconStudioDependenciesDir)ExpressionBlendSDK\System.Windows.Interactivity.dll</HintPath>
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\build\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\System.Windows.Interactivity.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Behaviors\NumericTextBoxDragBehavior.cs" />
     <Compile Include="Behaviors\ToggleButtonPopupBehavior.cs" />
     <Compile Include="Controls\PopupModalWindow.cs" />
@@ -151,7 +160,6 @@
     <Compile Include="Extensions\MathExtensions.cs" />
     <Compile Include="Extensions\WindowHelper.cs" />
     <Compile Include="Core\Utils.cs" />
-    <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="MarkupExtensions\MaxDoubleExtension.cs" />
     <Compile Include="MarkupExtensions\MaxIntExtension.cs" />
@@ -164,9 +172,11 @@
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
     <Compile Include="ValueConverters\AllEqualMultiConverter.cs" />
+    <Compile Include="ValueConverters\CharToString.cs" />
     <Compile Include="ValueConverters\ConverterHelper.cs" />
     <Compile Include="ValueConverters\DegreeAngleSingle.cs" />
     <Compile Include="ValueConverters\EmptyStringToBool.cs" />
+    <Compile Include="ValueConverters\UDirectoryToString.cs" />
     <Compile Include="ValueConverters\ValueToUnset.cs" />
     <Compile Include="ValueConverters\ToLower.cs" />
     <Compile Include="ValueConverters\StringConcat.cs" />
@@ -183,7 +193,6 @@
     <Compile Include="Controls\ModalWindow.cs" />
     <Compile Include="Windows\WindowInfo.cs" />
     <Compile Include="Windows\WindowInitialPosition.cs" />
-    <Compile Include="Windows\WindowOwner.cs" />
     <Compile Include="XamlMarkdown.cs" />
     <Compile Include="MarkupExtensions\FalseExtension.cs" />
     <Compile Include="MarkupExtensions\IntExtension.cs" />
@@ -246,7 +255,7 @@
     <Compile Include="Interactivity\BehaviorCollection.cs" />
     <Compile Include="Behaviors\DeferredBehaviorBase.cs" />
     <Compile Include="Interactivity\Interaction.cs" />
-    <Compile Include="Extensions\ColorExtensions.cs" />
+    <Compile Include="Extensions\SystemColorExtensions.cs" />
     <Compile Include="Interop\NativeHelper.cs" />
     <Compile Include="Extensions\VisualExtensions.cs" />
     <Compile Include="Core\CancelRoutedEvent.cs" />
@@ -289,7 +298,6 @@
     <Compile Include="ValueConverters\ToDouble.cs" />
     <Compile Include="ValueConverters\UFileToFileName.cs" />
     <Compile Include="ValueConverters\UFileToFileNameWithExt.cs" />
-    <Compile Include="ValueConverters\UFileToString.cs" />
     <Compile Include="ValueConverters\UFileToUri.cs" />
     <Compile Include="ValueConverters\UnderlyingType.cs" />
     <Compile Include="ValueConverters\NullToUnset.cs" />
@@ -302,7 +310,7 @@
     <Compile Include="ValueConverters\OrMultiConverter.cs" />
     <Compile Include="ValueConverters\ObjectToFullTypeName.cs" />
     <Compile Include="ValueConverters\TrimString.cs" />
-    <Compile Include="ValueConverters\UPathToString.cs" />
+    <Compile Include="ValueConverters\UFileToString.cs" />
     <Compile Include="ValueConverters\ValueConverterBase.cs" />
     <Compile Include="ValueConverters\XOrMultiConverter.cs" />
     <Compile Include="ViewModel\DirtiableEditableViewModel.cs" />

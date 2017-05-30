@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -57,6 +57,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 DeviceCreationFlags = DeviceCreationFlags.Debug,
                 PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_1 }
             };
+            Services.AddService(typeof(IGraphicsDeviceManager), GraphicsDeviceManager);
+            Services.AddService(typeof(IGraphicsDeviceService), GraphicsDeviceManager);
 
             // Enable profiling
             //Profiler.EnableAll();
@@ -81,6 +83,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             if (string.IsNullOrEmpty(ImageTester.ImageTestResultConnection.BranchName))
                 ImageTester.ImageTestResultConnection.BranchName = Environment.GetEnvironmentVariable("XENKO_BRANCH_NAME") ?? "";
 #endif
+
+            SceneSystem.SplashScreenEnabled = false;
         }
 
         /// <summary>

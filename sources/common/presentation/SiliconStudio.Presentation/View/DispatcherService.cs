@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Threading;
@@ -112,10 +112,12 @@ namespace SiliconStudio.Presentation.View
         }
 
         /// <inheritdoc/>
-        public void EnsureAccess()
+        public void EnsureAccess(bool inDispatcherThread = true)
         {
-            if (Thread.CurrentThread != dispatcher.Thread)
+            if (inDispatcherThread && Thread.CurrentThread != dispatcher.Thread)
                 throw new InvalidOperationException("The current thread was expected to be the dispatcher thread.");
+            if (!inDispatcherThread && Thread.CurrentThread == dispatcher.Thread)
+                throw new InvalidOperationException("The current thread was expected to be different from the dispatcher thread.");
         }
     }
 }

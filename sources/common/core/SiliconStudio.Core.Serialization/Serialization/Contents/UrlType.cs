@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 namespace SiliconStudio.Core.Serialization.Contents
 {
     [DataContract]
@@ -8,23 +8,18 @@ namespace SiliconStudio.Core.Serialization.Contents
         None,
 
         /// <summary>
-        /// The location is a file on the disk
+        /// The location is a file on the disk and just the file name and the existence of the file will be taken into account
         /// </summary>
         File,
 
         /// <summary>
-        /// The location is a IReference just used as a link
+        /// The location is an asset url just used in its asset representation (no need to be compiled)
         /// </summary>
         ContentLink,
 
         /// <summary>
-        /// The location is a IReference and the content is used by the command
+        /// The location is an asset url and the content is used by the command (the asset needs to be compiled)
         /// </summary>
-        Content,
-
-        /// <summary>
-        /// TODO: Is it something still used?
-        /// </summary>
-        Virtual,
+        Content
     }
 }

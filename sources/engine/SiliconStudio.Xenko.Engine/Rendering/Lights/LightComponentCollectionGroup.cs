@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections;
@@ -156,7 +156,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         internal void PrepareLight(LightComponent lightComponent)
         {
-            var cullingMask = lightComponent.CullingMask;
+            var cullingMask = RenderGroupMask.All; //lightComponent.CullingMask;
 
             // Don't procses a mask have we have already processed. We don't expect a huge combination of culling mask here
             if (!allMasks.Add(cullingMask))
@@ -224,7 +224,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         internal void AddLight(LightComponent lightComponent)
         {
-            var cullingMask = lightComponent.CullingMask;
+            var cullingMask = RenderGroupMask.All; //lightComponent.CullingMask;
 
             // Iterate only on allocated collections
             foreach (var lightCollectionGroup in lightCollectionPool)

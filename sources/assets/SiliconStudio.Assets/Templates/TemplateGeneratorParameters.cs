@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
@@ -172,7 +172,7 @@ namespace SiliconStudio.Assets.Templates
         }
 
         /// <summary>
-        /// Gets the tag corresponding to the given property key.
+        /// Gets the tag corresponding to the given property key. This will fail if key doesn't exist.
         /// </summary>
         /// <typeparam name="T">The generic type of the property key.</typeparam>
         /// <param name="key">The property key for which to retrieve the value.</param>
@@ -189,7 +189,7 @@ namespace SiliconStudio.Assets.Templates
         }
 
         /// <summary>
-        /// Gets the tag corresponding to the given property key if available.
+        /// Gets the tag corresponding to the given property key if available, otherwise returns default value.
         /// </summary>
         /// <typeparam name="T">The generic type of the property key.</typeparam>
         /// <param name="key">The property key for which to retrieve the value.</param>

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -307,7 +307,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         {
             var classSource = (ShaderClassSource)mixinInfo.ShaderSource;
 
-            // If we allow to parse non instantiated generics, put empty generic arguments to let the ShaderLoader expanding correctly the class
+            // If we allow to parse non instantiated generics, put empty generic arguments to let the ShaderLoader correctly expand the class
             var shaderClass = ShaderLoader.LoadClassSource(classSource, mixinInfo.Macros, mixinInfo.Log, AllowNonInstantiatedGenerics);
 
             // If result is null, there was some errors while parsing.

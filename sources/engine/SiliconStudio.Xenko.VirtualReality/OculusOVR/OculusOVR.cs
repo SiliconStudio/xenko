@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Runtime.InteropServices;
@@ -10,7 +10,7 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.VirtualReality
 {
-    public static class OculusOvr
+    internal static class OculusOvr
     {
         static OculusOvr()
         {
@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrCreateQuadLayerTexturesDx", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr CreateQuadLayerTexturesDx(IntPtr session, IntPtr dxDevice, out int outTextureCount, int width, int height);
+        public static extern IntPtr CreateQuadLayerTexturesDx(IntPtr session, IntPtr dxDevice, out int outTextureCount, int width, int height, int mipLevels, int sampleCount);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrSetQuadLayerParams", CallingConvention = CallingConvention.Cdecl)]
@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.VirtualReality
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrCommitFrame", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool CommitFrame(IntPtr session, IntPtr[] extraLayer, int numberOfExtraLayers);
+        public static extern bool CommitFrame(IntPtr session, int numberOfExtraLayers, [MarshalAs(UnmanagedType.LPArray)] IntPtr[] extraLayer);
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
         public struct FrameProperties

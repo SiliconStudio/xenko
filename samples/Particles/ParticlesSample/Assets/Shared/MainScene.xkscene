@@ -1,8 +1,9 @@
 !SceneAsset
 Id: b4210f42-14a3-4917-80b6-006d7f81b1c6
-SerializedVersion: {Xenko: 1.10.0-beta01}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
-Parent: null
+ChildrenIds: []
+Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
     RootPartIds:
         - a41aa685-3271-4e96-a72c-639c52070011
@@ -128,13 +129,13 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             SeedOffset: 1
-                                            DisplayParticlePosition: false
-                                            DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticleRotation: false
+                                            DisplayParticlePosition: false
                                             RandomSize: {X: 2.0, Y: 2.0}
                                         17e2ad588b4eee4c826b3dec7f7f30e9: !InitialPositionSeed
                                             InheritPosition: true
@@ -142,8 +143,8 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            ScaleUniform: 1.0
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
@@ -161,10 +162,10 @@ Hierarchy:
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
+                                            DisplayParticlePosition: false
                                             RotationQuaternionMin: {X: -0.707106769, Y: 0.0, Z: 0.0, W: 0.707106769}
                                             RotationQuaternionMax: {X: 3.090862E-08, Y: 0.707106769, Z: 0.707106769, W: -3.090862E-08}
                                     Updaters: {}
@@ -205,10 +206,10 @@ Hierarchy:
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
+                                            DisplayParticlePosition: false
                                             ColorMin: {R: 1.0, G: 0.5686275, B: 0.384313732, A: 0.266666681}
                                             ColorMax: {R: 1.0, G: 0.9529412, B: 0.549019635, A: 0.266666681}
                                         4d0f14b7e403a947a005b685cb49f682: !InitialPositionSeed
@@ -217,8 +218,8 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            ScaleUniform: 1.0
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
@@ -233,13 +234,13 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
-                                            DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticleRotation: false
+                                            DisplayParticlePosition: false
                                             RandomSize: {X: 0.25, Y: 0.75}
                                     Updaters: {}
         -   Entity:
@@ -301,10 +302,10 @@ Hierarchy:
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
                                             VelocityMin: {X: -1.0, Y: 0.0, Z: -1.0}
                                             VelocityMax: {X: 1.0, Y: 0.0, Z: 1.0}
                                         132b8f715578354f89ec7b0b74a7e209: !InitialSizeSeed
@@ -313,13 +314,13 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             SeedOffset: 1
-                                            DisplayParticlePosition: false
-                                            DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticleRotation: false
+                                            DisplayParticlePosition: false
                                             RandomSize: {X: 0.5, Y: 1.0}
                                         ef1353cc50497449804cd73287f17fde: !InitialPositionSeed
                                             InheritPosition: true
@@ -327,8 +328,8 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            ScaleUniform: 1.0
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
@@ -343,13 +344,13 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
-                                            DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticlePosition: false
                                             AngularRotation: {X: 0.0, Y: 360.0}
                                     Updaters:
                                         75b283bf73a71445a9cb4250a5117a81: !UpdaterForceField
@@ -360,13 +361,13 @@ Hierarchy:
                                             InheritScale: true
                                             ScaleUniform: 1.0
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                                            DisplayParticleRotation: true
+                                            DisplayParticleScaleUniform: false
                                             DisplayParticlePosition: true
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: true
                                             FieldShape: !FieldShapeCylinder
                                                 HalfHeight: 1.0
                                                 Radius: 1.0
-                                            DisplayParticleScale: true
-                                            DisplayParticleScaleUniform: false
                                             FieldFalloff:
                                                 StrengthInside: 1.0
                                                 FalloffStart: 0.1
@@ -386,13 +387,13 @@ Hierarchy:
                                             InheritScale: true
                                             ScaleUniform: 1.0
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                                            DisplayParticleRotation: true
+                                            DisplayParticleScaleUniform: false
                                             DisplayParticlePosition: true
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: true
                                             FieldShape: !FieldShapeCylinder
                                                 HalfHeight: 1.0
                                                 Radius: 4.0
-                                            DisplayParticleScale: true
-                                            DisplayParticleScaleUniform: false
                                             FieldFalloff:
                                                 StrengthInside: 0.0
                                                 FalloffStart: 0.1
@@ -485,7 +486,7 @@ Hierarchy:
                         Id: 2d3c6f87-3797-4988-95bd-0c6964dd3579
                         Name: null
                         Projection: Perspective
-                        Slot: {Index: 0}
+                        Slot: 3217b71f-b48d-4321-bab1-7cb4da999c19
                     293cc85b2678d649a70b5c6f5b9f20ee: !ParticlesSample.CameraOrbitScript,ParticlesSample.Game
                         Id: 5bc83c29-7826-49d6-a70b-5c6f5b9f20ee
         -   Entity:
@@ -580,10 +581,10 @@ Hierarchy:
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
                                             VelocityMin: {X: -0.5, Y: 2.0, Z: -0.5}
                                             VelocityMax: {X: 0.5, Y: 1.5, Z: 0.5}
                                         132b8f715578354f89ec7b0b74a7e209: !InitialSizeSeed
@@ -592,13 +593,13 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             SeedOffset: 1
-                                            DisplayParticlePosition: false
-                                            DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticleRotation: false
+                                            DisplayParticlePosition: false
                                             RandomSize: {X: 1.0, Y: 2.0}
                                         197d758c6611a640b7c8b5f92e32c50f: !InitialRotationSeed
                                             InheritPosition: true
@@ -606,13 +607,13 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
-                                            DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticlePosition: false
                                             AngularRotation: {X: -120.0, Y: 0.0}
                                         b95cefd00a95724684d3bdd5d7dd3af0: !InitialPositionSeed
                                             InheritPosition: true
@@ -620,8 +621,8 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            ScaleUniform: 1.0
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
@@ -672,10 +673,10 @@ Hierarchy:
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
                                             VelocityMin: {X: 0.0, Y: 0.2, Z: 0.0}
                                             VelocityMax: {X: 0.0, Y: 0.2, Z: 0.0}
                                         035851410d91a348a7d55ba035dd8a86: !InitialPositionSeed
@@ -684,8 +685,8 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            ScaleUniform: 1.0
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
@@ -700,13 +701,13 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
-                                            DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticleRotation: false
+                                            DisplayParticlePosition: false
                                             RandomSize: {X: 1.5, Y: 1.5}
                                     Updaters:
                                         822c673f534d8440bb45869993414fbe: !UpdaterSpeedToDirection
@@ -715,12 +716,12 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
-                                            DisplayParticlePosition: false
-                                            DisplayParticleRotation: false
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
                                 df21533234e24b4e9533a80c2fd10dca:
                                     EmitterName: Smoke
                                     ParticleLifetime: {X: 1.0, Y: 2.0}
@@ -760,8 +761,8 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            ScaleUniform: 1.0
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
@@ -779,10 +780,10 @@ Hierarchy:
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 1000
-                                            DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
                                             VelocityMin: {X: -0.3, Y: 1.0, Z: -0.3}
                                             VelocityMax: {X: 0.3, Y: 2.0, Z: 0.3}
                                         6bb3d6da37c8b24e8a600223b793a151: !InitialSizeSeed
@@ -791,13 +792,13 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
-                                            DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticleRotation: false
+                                            DisplayParticlePosition: false
                                             RandomSize: {X: 1.0, Y: 2.0}
                                         efd3996dab28c2448e89e9f18521701c: !InitialColorSeed
                                             InheritPosition: true
@@ -808,10 +809,10 @@ Hierarchy:
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
+                                            DisplayParticlePosition: false
                                             ColorMin: {R: 0.112750009, G: 0.112750009, B: 0.112750009, A: 1.0}
                                             ColorMax: {R: 0.07525, G: 0.07525, B: 0.07525, A: 1.0}
                                         712f226d6287934ab8c6082e17c4a1e8: !InitialRotationSeed
@@ -820,13 +821,13 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
-                                            DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticlePosition: false
                                             AngularRotation: {X: 0.0, Y: 360.0}
                                     Updaters: {}
         -   Entity:
@@ -888,10 +889,10 @@ Hierarchy:
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
                                             VelocityMin: {X: 2.0, Y: 3.0, Z: -1.0}
                                             VelocityMax: {X: 3.0, Y: 4.0, Z: 1.0}
                                         132b8f715578354f89ec7b0b74a7e209: !InitialSizeSeed
@@ -900,13 +901,13 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             SeedOffset: 1
-                                            DisplayParticlePosition: false
-                                            DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticleRotation: false
+                                            DisplayParticlePosition: false
                                             RandomSize: {X: 0.05, Y: 0.1}
                                         3bc5f2f434d8f544a5ffdd320671c9ba: !InitialPositionSeed
                                             InheritPosition: true
@@ -914,8 +915,8 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            ScaleUniform: 1.0
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
                                             SeedOffset: 0
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
@@ -933,10 +934,10 @@ Hierarchy:
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
+                                            DisplayParticlePosition: false
                                             ColorMin: {R: 1.0, G: 0.0, B: 0.8625002, A: 1.0}
                                             ColorMax: {R: 0.0125000477, G: 1.0, B: 0.0, A: 1.0}
                                     Updaters:
@@ -946,13 +947,13 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
-                                            GravitationalAcceleration: {X: 0.0, Y: -9.80665, Z: 0.0}
-                                            DisplayParticlePosition: false
-                                            DisplayParticleRotation: false
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
+                                            DisplayParticleRotation: false
+                                            GravitationalAcceleration: {X: 0.0, Y: -9.80665, Z: 0.0}
+                                            DisplayParticlePosition: false
                                         94e594c658199c45b840899989258a55: !UpdaterCollider
                                             DebugDraw: true
                                             InheritPosition: true
@@ -960,15 +961,15 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            ScaleUniform: 1.0
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                                            DisplayParticleRotation: true
+                                            ScaleUniform: 1.0
                                             DisplayParticlePosition: true
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScaleUniform: false
+                                            DisplayParticleScale: true
                                             FieldShape: !FieldShapeCylinder
                                                 HalfHeight: 1.0
                                                 Radius: 1.6
-                                            DisplayParticleScale: true
-                                            DisplayParticleScaleUniform: false
                                             IsHollow: true
                                             KillParticles: false
                                             Restitution: 0.5
@@ -1041,10 +1042,10 @@ Hierarchy:
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticlePosition: false
                                             VelocityMin: {X: -0.5, Y: 1.0, Z: -0.5}
                                             VelocityMax: {X: 0.5, Y: 3.0, Z: 0.5}
                                         132b8f715578354f89ec7b0b74a7e209: !InitialSizeSeed
@@ -1053,12 +1054,12 @@ Hierarchy:
                                             InheritRotation: true
                                             Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
-                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             SeedOffset: 1
-                                            DisplayParticlePosition: false
-                                            DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
+                                            DisplayParticleRotation: false
+                                            DisplayParticlePosition: false
                                             RandomSize: {X: 0.05, Y: 0.1}
                                     Updaters: {}

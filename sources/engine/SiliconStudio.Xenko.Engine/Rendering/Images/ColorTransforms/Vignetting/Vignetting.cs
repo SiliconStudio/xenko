@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <userdoc>The strength of the effect</userdoc>
         [DataMember(10)]
         [DefaultValue(0.8f)]
-        [DataMemberRange(0f, 1f, 0.01f, 0.1f)]
+        [DataMemberRange(0f, 1f, 0.01f, 0.1f, 3)]
         public float Amount { get; set; }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <userdoc>The radius of the vignette from the center of the screen. This value is relative to the size of the screen (1 => half screen, 0 => null radius).</userdoc>
         [DataMember(20)]
         [DefaultValue(0.7f)]
-        [DataMemberRange(0f, 1f, 0.01f, 0.1f)]
+        [DataMemberRange(0f, 1f, 0.01f, 0.1f, 3)]
         public float Radius { get; set; }
 
         /// <summary>

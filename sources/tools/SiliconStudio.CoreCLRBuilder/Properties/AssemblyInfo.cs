@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -8,9 +10,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("SiliconStudio.CoreCLRBuilder")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Silicon Studio Corporation")]
 [assembly: AssemblyProduct("SiliconStudio.CoreCLRBuilder")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
+[assembly: AssemblyCopyright("Copyright © 2011-2017 Silicon Studio Corp. All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

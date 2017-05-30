@@ -10,13 +10,22 @@
 	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/SPACE_BEFORE_TYPEOF_PARENTHESES/@EntryValue">False</s:Boolean>
 	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/SPACE_WITHIN_SINGLE_LINE_ARRAY_INITIALIZER_BRACES/@EntryValue">True</s:Boolean>
 	<s:Int64 x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/WRAP_LIMIT/@EntryValue">200</s:Int64>
-	<s:String x:Key="/Default/CodeStyle/FileHeader/FileHeaderText/@EntryValue">Copyright (c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)&#xD;
-This file is distributed under GPL v3. See LICENSE.md for details.</s:String>
+	<s:String x:Key="/Default/CodeStyle/FileHeader/FileHeaderText/@EntryValue">Copyright (c) 2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)&#xD;
+See LICENSE.md for full license information.</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=IDE/@EntryIndexedValue">IDE</s:String>
+	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=MSAA/@EntryIndexedValue">MSAA</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=UI/@EntryIndexedValue">UI</s:String>
+	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/EventHandlerPatternLong/@EntryValue">$object$$event$</s:String>
+	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/EventHandlerPatternShort/@EntryValue">On$event$</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/PredefinedNamingRules/=PrivateInstanceFields/@EntryIndexedValue">&lt;Policy Inspect="True" Prefix="" Suffix="" Style="aaBb" /&gt;</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/PredefinedNamingRules/=PrivateStaticFields/@EntryIndexedValue">&lt;Policy Inspect="True" Prefix="" Suffix="" Style="aaBb" /&gt;</s:String>
 	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002ECSharp_002ECodeStyle_002ESettingsUpgrade_002EAddAccessorOwnerDeclarationBracesMigration/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002ECSharp_002ECodeStyle_002ESettingsUpgrade_002EMigrateBlankLinesAroundFieldToBlankLinesAroundProperty/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002ECSharp_002ECodeStyle_002ESettingsUpgrade_002EMigrateThisQualifierSettings/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/Environment/UnitTesting/ShadowCopy/@EntryValue">False</s:Boolean></wpf:ResourceDictionary>
+	<s:Boolean x:Key="/Default/Environment/UnitTesting/ShadowCopy/@EntryValue">False</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/Todo/TodoPatterns/=C060724E6815554E9061A8ED55D5A1C7/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/Todo/TodoPatterns/=C060724E6815554E9061A8ED55D5A1C7/Color/@EntryValue">DarkOrange</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/Todo/TodoPatterns/=C060724E6815554E9061A8ED55D5A1C7/MatchComments/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/Todo/TodoPatterns/=C060724E6815554E9061A8ED55D5A1C7/Name/@EntryValue">Fixme</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/Todo/TodoPatterns/=C060724E6815554E9061A8ED55D5A1C7/Pattern/@EntryValue">(?&lt;=\W|^)(?&lt;TAG&gt;FIXME)(\W|$)(.*)</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/Todo/TodoPatterns/=C060724E6815554E9061A8ED55D5A1C7/TodoIconStyle/@EntryValue">Warning</s:String></wpf:ResourceDictionary>
