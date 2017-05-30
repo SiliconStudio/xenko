@@ -117,8 +117,10 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="unorderedAccessView">The unordered access view.</param>
         public void SetUnorderedAccessView(int slot, GraphicsResource unorderedAccessView)
         {
-            // TODO D3D12
-            throw new NotImplementedException();
+            if (unorderedAccessView is Texture t)
+            {
+                Device.NativeDevice.CopyDescriptorsSimple(1, SrvStart + BindingOffsets[slot], t.NativeUnorderedAccessView, DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView);
+            }
         }
     }
 }
