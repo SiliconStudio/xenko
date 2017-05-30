@@ -33,6 +33,7 @@ namespace SiliconStudio.Xenko.Graphics
     {
         internal CpuDescriptorHandle NativeRenderTargetView;
         internal CpuDescriptorHandle NativeDepthStencilView;
+        internal CpuDescriptorHandle NativeUnorderedAccessView;
         public bool HasStencil;
 
         private int TexturePixelSize => Format.SizeInBytes();
@@ -179,6 +180,7 @@ namespace SiliconStudio.Xenko.Graphics
             NativeShaderResourceView = GetShaderResourceView(ViewType, ArraySlice, MipLevel);
             NativeRenderTargetView = GetRenderTargetView(ViewType, ArraySlice, MipLevel);
             NativeDepthStencilView = GetDepthStencilView(out HasStencil);
+            NativeUnorderedAccessView = GetUnorderedAccessView(ArraySlice, MipLevel);
         }
 
         protected internal override void OnDestroyed()
@@ -453,6 +455,72 @@ namespace SiliconStudio.Xenko.Graphics
             return descriptorHandle;
         }
 
+        private CpuDescriptorHandle GetUnorderedAccessView(int arrayOrDepthSlice, int mipIndex)
+        {
+            if (!IsUnorderedAccess)
+            {
+                return new CpuDescriptorHandle();
+            }
+
+            // Check that the format is supported
+            var format = ComputeUnorderedAccessViewFormatFromTextureFormat(ViewFormat);
+            if (format == SharpDX.DXGI.Format.Unknown)
+                throw new NotSupportedException("Unordered Access format [{0}] not supported".ToFormat(ViewFormat));
+
+            // Create a Unordered Access view on this texture2D
+            var uavDescription = new UnorderedAccessViewDescription
+            {
+                Format = format,
+            };
+
+            if (ArraySize > 1)
+            {
+                switch (Dimension)
+                {
+                    case TextureDimension.Texture1D:
+                        uavDescription.Dimension = UnorderedAccessViewDimension.Texture1DArray;
+                        break;
+                    case TextureDimension.TextureCube:
+                    case TextureDimension.Texture2D:
+                        uavDescription.Dimension = UnorderedAccessViewDimension.Texture2DArray;
+                        break;
+                    case TextureDimension.Texture3D:
+                        throw new NotSupportedException("Texture 3D is not supported for Texture Arrays");
+
+                }
+
+                uavDescription.Texture2DArray.ArraySize = ArraySize;
+                uavDescription.Texture2DArray.FirstArraySlice = arrayOrDepthSlice;
+                uavDescription.Texture2DArray.MipSlice = mipIndex;
+            }
+            else
+            {
+                switch (Dimension)
+                {
+                    case TextureDimension.Texture1D:
+                        uavDescription.Dimension = UnorderedAccessViewDimension.Texture1D;
+                        uavDescription.Texture1D.MipSlice = mipIndex;
+                        break;
+                    case TextureDimension.Texture2D:
+                        uavDescription.Dimension = UnorderedAccessViewDimension.Texture2D;
+                        uavDescription.Texture2D.MipSlice = mipIndex;
+                        break;
+                    case TextureDimension.Texture3D:
+                        uavDescription.Dimension = UnorderedAccessViewDimension.Texture3D;
+                        uavDescription.Texture3D.FirstWSlice = arrayOrDepthSlice;
+                        uavDescription.Texture3D.MipSlice = mipIndex;
+                        uavDescription.Texture3D.WSize = ArraySize;
+                        break;
+                    case TextureDimension.TextureCube:
+                        throw new NotSupportedException("TextureCube dimension is expecting an array size > 1");
+                }
+            }
+            
+            var descriptorHandle = GraphicsDevice.ShaderResourceViewAllocator.Allocate(1);
+            NativeDevice.CreateUnorderedAccessView(NativeResource, null, uavDescription, descriptorHandle);
+            return descriptorHandle;
+        }
+
         internal static ResourceFlags GetBindFlagsFromTextureFlags(TextureFlags flags)
         {
             var result = ResourceFlags.None;
@@ -648,6 +716,26 @@ namespace SiliconStudio.Xenko.Graphics
                     break;
                 default:
                     throw new NotSupportedException(String.Format("Unsupported depth format [{0}]", format));
+            }
+
+            return viewFormat;
+        }
+
+        internal static SharpDX.DXGI.Format ComputeUnorderedAccessViewFormatFromTextureFormat(PixelFormat format)
+        {
+            SharpDX.DXGI.Format viewFormat;
+
+            switch (format)
+            {
+                case PixelFormat.R8G8B8A8_SInt: viewFormat = SharpDX.DXGI.Format.R8G8B8A8_SInt; break;
+                case PixelFormat.R8G8B8A8_UInt: viewFormat = SharpDX.DXGI.Format.R8G8B8A8_UInt; break;
+                case PixelFormat.R8G8B8A8_SNorm: viewFormat = SharpDX.DXGI.Format.R8G8B8A8_SNorm; break;
+                case PixelFormat.R8G8B8A8_UNorm: viewFormat = SharpDX.DXGI.Format.R8G8B8A8_UNorm; break;
+
+                // TODO: finish this stuff
+
+                default:
+                    throw new NotSupportedException(String.Format("Unsupported unordered access format [{0}]", format));
             }
 
             return viewFormat;
