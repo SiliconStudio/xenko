@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SharpDX.Direct3D12;
+using SharpDX.Mathematics.Interop;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Graphics
@@ -78,6 +79,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (NativeDeviceChild == null)
             {
+                ClearValue? clearValue = GetClearValue();
+
                 ResourceDescription nativeDescription;
                 switch (Dimension)
                 {
@@ -117,7 +120,7 @@ namespace SiliconStudio.Xenko.Graphics
                     currentResourceState = ResourceStates.CopyDestination;
 
                 // TODO D3D12 move that to a global allocator in bigger committed resources
-                NativeDeviceChild = GraphicsDevice.NativeDevice.CreateCommittedResource(new HeapProperties(heapType), HeapFlags.None, nativeDescription, currentResourceState);
+                NativeDeviceChild = GraphicsDevice.NativeDevice.CreateCommittedResource(new HeapProperties(heapType), HeapFlags.None, nativeDescription, currentResourceState, clearValue);
                 GraphicsDevice.TextureMemory += (Depth*DepthStride) / (float)0x100000;
 
                 if (dataBoxes != null && dataBoxes.Length > 0)
@@ -665,6 +668,33 @@ namespace SiliconStudio.Xenko.Graphics
             return ResourceDescription.Texture2D(format, textureDescription.Width, textureDescription.Height, (short)textureDescription.ArraySize, (short)textureDescription.MipLevels, (short)textureDescription.MultisampleCount, 0, GetBindFlagsFromTextureFlags(flags));
         }
 
+        internal ClearValue? GetClearValue()
+        {
+            if (IsDepthStencil)
+            {
+                return new ClearValue
+                {
+                    Format = ComputeDepthViewFormatFromTextureFormat(ViewFormat),
+                    DepthStencil = new DepthStencilValue
+                    {
+                        Depth = 1.0f,
+                        Stencil = 0,
+                    }
+                };
+            }
+
+            if (IsRenderTarget)
+            {
+                return new ClearValue
+                {
+                    Format = (SharpDX.DXGI.Format)textureDescription.Format,
+                    Color = new RawVector4(0, 0, 0, 1),
+                };
+            }
+
+            return null;
+        }
+
         internal static PixelFormat ComputeShaderResourceFormatFromDepthFormat(PixelFormat format)
         {
             PixelFormat viewFormat;
@@ -723,22 +753,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal static SharpDX.DXGI.Format ComputeUnorderedAccessViewFormatFromTextureFormat(PixelFormat format)
         {
-            SharpDX.DXGI.Format viewFormat;
-
-            switch (format)
-            {
-                case PixelFormat.R8G8B8A8_SInt: viewFormat = SharpDX.DXGI.Format.R8G8B8A8_SInt; break;
-                case PixelFormat.R8G8B8A8_UInt: viewFormat = SharpDX.DXGI.Format.R8G8B8A8_UInt; break;
-                case PixelFormat.R8G8B8A8_SNorm: viewFormat = SharpDX.DXGI.Format.R8G8B8A8_SNorm; break;
-                case PixelFormat.R8G8B8A8_UNorm: viewFormat = SharpDX.DXGI.Format.R8G8B8A8_UNorm; break;
-
-                // TODO: finish this stuff
-
-                default:
-                    throw new NotSupportedException(String.Format("Unsupported unordered access format [{0}]", format));
-            }
-
-            return viewFormat;
+            return (SharpDX.DXGI.Format)format;
         }
 
         private ResourceDescription ConvertToNativeDescription3D()
