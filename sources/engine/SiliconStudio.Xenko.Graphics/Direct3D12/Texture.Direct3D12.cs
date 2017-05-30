@@ -183,7 +183,7 @@ namespace SiliconStudio.Xenko.Graphics
             NativeShaderResourceView = GetShaderResourceView(ViewType, ArraySlice, MipLevel);
             NativeRenderTargetView = GetRenderTargetView(ViewType, ArraySlice, MipLevel);
             NativeDepthStencilView = GetDepthStencilView(out HasStencil);
-            NativeUnorderedAccessView = GetUnorderedAccessView(ArraySlice, MipLevel);
+            NativeUnorderedAccessView = GetUnorderedAccessView(ViewType, ArraySlice, MipLevel);
         }
 
         protected internal override void OnDestroyed()
@@ -458,22 +458,22 @@ namespace SiliconStudio.Xenko.Graphics
             return descriptorHandle;
         }
 
-        private CpuDescriptorHandle GetUnorderedAccessView(int arrayOrDepthSlice, int mipIndex)
+        private CpuDescriptorHandle GetUnorderedAccessView(ViewType viewType, int arrayOrDepthSlice, int mipIndex)
         {
             if (!IsUnorderedAccess)
-            {
                 return new CpuDescriptorHandle();
-            }
 
-            // Check that the format is supported
-            var format = ComputeUnorderedAccessViewFormatFromTextureFormat(ViewFormat);
-            if (format == SharpDX.DXGI.Format.Unknown)
-                throw new NotSupportedException("Unordered Access format [{0}] not supported".ToFormat(ViewFormat));
+            if (IsMultisample)
+                throw new NotSupportedException("Multisampling is not supported for unordered access views");
+            
+            int arrayCount;
+            int mipCount;
+            GetViewSliceBounds(viewType, ref arrayOrDepthSlice, ref mipIndex, out arrayCount, out mipCount);
 
             // Create a Unordered Access view on this texture2D
             var uavDescription = new UnorderedAccessViewDescription
             {
-                Format = format,
+                Format = (SharpDX.DXGI.Format)ViewFormat
             };
 
             if (ArraySize > 1)
@@ -492,7 +492,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                 }
 
-                uavDescription.Texture2DArray.ArraySize = ArraySize;
+                uavDescription.Texture2DArray.ArraySize = arrayCount;
                 uavDescription.Texture2DArray.FirstArraySlice = arrayOrDepthSlice;
                 uavDescription.Texture2DArray.MipSlice = mipIndex;
             }
@@ -512,7 +512,7 @@ namespace SiliconStudio.Xenko.Graphics
                         uavDescription.Dimension = UnorderedAccessViewDimension.Texture3D;
                         uavDescription.Texture3D.FirstWSlice = arrayOrDepthSlice;
                         uavDescription.Texture3D.MipSlice = mipIndex;
-                        uavDescription.Texture3D.WSize = ArraySize;
+                        uavDescription.Texture3D.WSize = arrayCount;
                         break;
                     case TextureDimension.TextureCube:
                         throw new NotSupportedException("TextureCube dimension is expecting an array size > 1");
@@ -749,11 +749,6 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             return viewFormat;
-        }
-
-        internal static SharpDX.DXGI.Format ComputeUnorderedAccessViewFormatFromTextureFormat(PixelFormat format)
-        {
-            return (SharpDX.DXGI.Format)format;
         }
 
         private ResourceDescription ConvertToNativeDescription3D()
