@@ -29,6 +29,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         private RawRectangle[] nativeScissorRectangles = new RawRectangle[MaxViewportAndScissorRectangleCount];
 
+        private bool IsBoundedComputePipelineState => boundPipelineState != null && boundPipelineState.IsCompute;
+
         public static CommandList New(GraphicsDevice device)
         {
             return new CommandList(device);
@@ -266,7 +268,10 @@ namespace SiliconStudio.Xenko.Graphics
                 scissorsDirty |= (boundPipelineState?.HasScissorEnabled ?? false) != (pipelineState?.HasScissorEnabled ?? false);
 
                 currentCommandList.NativeCommandList.PipelineState = pipelineState.CompiledState;
-                currentCommandList.NativeCommandList.SetGraphicsRootSignature(pipelineState.RootSignature);
+                if(pipelineState.IsCompute)
+                    currentCommandList.NativeCommandList.SetComputeRootSignature(pipelineState.RootSignature);
+                else
+                    currentCommandList.NativeCommandList.SetGraphicsRootSignature(pipelineState.RootSignature);
                 boundPipelineState = pipelineState;
                 currentCommandList.NativeCommandList.PrimitiveTopology = pipelineState.PrimitiveTopology;
             }
@@ -346,8 +351,16 @@ namespace SiliconStudio.Xenko.Graphics
                     }
 
                     // Bind resource tables (note: once per using stage, until we solve how to choose shader registers effect-wide at compile time)
-                    for (int j = 0; j < srvBindCount; ++j)
-                        currentCommandList.NativeCommandList.SetGraphicsRootDescriptorTable(descriptorTableIndex++, gpuSrvStart);
+                    if (IsBoundedComputePipelineState)
+                    {
+                        for (int j = 0; j < srvBindCount; ++j)
+                            currentCommandList.NativeCommandList.SetComputeRootDescriptorTable(descriptorTableIndex++, gpuSrvStart);
+                    }
+                    else
+                    {
+                        for (int j = 0; j < srvBindCount; ++j)
+                            currentCommandList.NativeCommandList.SetGraphicsRootDescriptorTable(descriptorTableIndex++, gpuSrvStart);
+                    }
                 }
 
                 if (samplerBindCount > 0 && (IntPtr)descriptorSet.SamplerStart.Ptr != IntPtr.Zero)
@@ -378,8 +391,16 @@ namespace SiliconStudio.Xenko.Graphics
                     }
 
                     // Bind resource tables (note: once per using stage, until we solve how to choose shader registers effect-wide at compile time)
-                    for (int j = 0; j < samplerBindCount; ++j)
-                        currentCommandList.NativeCommandList.SetGraphicsRootDescriptorTable(descriptorTableIndex++, gpuSamplerStart);
+                    if (IsBoundedComputePipelineState)
+                    {
+                        for (int j = 0; j < samplerBindCount; ++j)
+                            currentCommandList.NativeCommandList.SetComputeRootDescriptorTable(descriptorTableIndex++, gpuSamplerStart);
+                    }
+                    else
+                    {
+                        for (int j = 0; j < samplerBindCount; ++j)
+                            currentCommandList.NativeCommandList.SetGraphicsRootDescriptorTable(descriptorTableIndex++, gpuSamplerStart);
+                    }
                 }
             }
         }
