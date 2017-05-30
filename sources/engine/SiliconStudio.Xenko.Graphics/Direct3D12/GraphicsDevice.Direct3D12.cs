@@ -277,8 +277,14 @@ namespace SiliconStudio.Xenko.Graphics
                     {
                         MessageId[] disabledMessages =
                         {
+                            // This happens when render target or depth stencil clear value is diffrent
+                            // than provided during resource allocation.
                             MessageId.CleardepthstencilviewMismatchingclearvalue,
                             MessageId.ClearrendertargetviewMismatchingclearvalue,
+
+                            // This occurs when there are uninitialized descriptors in a descriptor table,
+                            // even when a shader does not access the missing descriptors.
+                            MessageId.InvalidDescriptorHandle,
                         };
 
                         // Disable irrelevant debug layer warnings
