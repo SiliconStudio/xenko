@@ -18,6 +18,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal SharpDX.Direct3D12.RootSignature RootSignature;
         internal PrimitiveTopology PrimitiveTopology;
         internal bool HasScissorEnabled;
+        internal bool IsCompute;
         internal int[] SrvBindCounts;
         internal int[] SamplerBindCounts;
 
@@ -189,7 +190,8 @@ namespace SiliconStudio.Xenko.Graphics
 
                 // Check if it should use compute pipeline state
                 var computeShader = pipelineStateDescription.EffectBytecode.Stages.FirstOrDefault(e => e.Stage == ShaderStage.Compute);
-                if (computeShader != null)
+                IsCompute = computeShader != null;
+                if (IsCompute)
                 {
                     var nativePipelineStateDescription = new ComputePipelineStateDescription
                     {
