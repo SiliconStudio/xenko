@@ -224,7 +224,8 @@ namespace SiliconStudio.Xenko.Graphics
             // Command lists are thread-safe and execute deferred
             IsDeferred = true;
 
-            if ((deviceCreationFlags & DeviceCreationFlags.Debug) != 0)
+            bool isDebug = (deviceCreationFlags & DeviceCreationFlags.Debug) != 0;
+            if (isDebug)
             {
                 SharpDX.Direct3D12.DebugInterface.Get().EnableDebugLayer();
             }
@@ -265,6 +266,36 @@ namespace SiliconStudio.Xenko.Graphics
 
             SrvHandleIncrementSize = NativeDevice.GetDescriptorHandleIncrementSize(DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView);
             SamplerHandleIncrementSize = NativeDevice.GetDescriptorHandleIncrementSize(DescriptorHeapType.Sampler);
+
+            if (isDebug)
+            {
+                var debugDevice = nativeDevice.QueryInterfaceOrNull<DebugDevice>();
+                if (debugDevice != null)
+                {
+                    var infoQueue = debugDevice.QueryInterfaceOrNull<InfoQueue>();
+                    if (infoQueue != null)
+                    {
+                        MessageId[] disabledMessages =
+                        {
+                            MessageId.CleardepthstencilviewMismatchingclearvalue,
+                            MessageId.ClearrendertargetviewMismatchingclearvalue,
+                        };
+
+                        // Disable irrelevant debug layer warnings
+                        InfoQueueFilter filter = new InfoQueueFilter
+                        {
+                            DenyList = new InfoQueueFilterDescription
+                            {
+                                Ids = disabledMessages
+                            }
+                        };
+                        infoQueue.AddStorageFilterEntries(filter);
+
+                        infoQueue.Dispose();
+                    }
+                    debugDevice.Dispose();
+                }
+            }
 
             // Prepare pools
             CommandAllocators = new CommandAllocatorPool(this);
