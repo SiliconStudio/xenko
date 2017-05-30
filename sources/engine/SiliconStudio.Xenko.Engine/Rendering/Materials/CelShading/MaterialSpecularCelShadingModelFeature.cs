@@ -14,103 +14,39 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// </summary>
     [DataContract("MaterialSpecularCelShadingModelFeature")]
     [Display("Cel Shading")]
-    public class MaterialSpecularCelShadingModelFeature : MaterialFeature, IMaterialSpecularModelFeature, IEquatable<MaterialSpecularCelShadingModelFeature>
+    public class MaterialSpecularCelShadingModelFeature : MaterialSpecularMicrofacetModelFeature, IEquatable<MaterialSpecularCelShadingModelFeature>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialSpecularCelShadingModelFeature"/> class.
-        /// </summary>
-        public MaterialSpecularCelShadingModelFeature()
-        {
-            // Defaults
-            Fresnel = new MaterialSpecularMicrofacetFresnelSchlick();
-            Visibility = new MaterialSpecularMicrofacetVisibilitySmithSchlickGGX();
-            NormalDistribution = new MaterialSpecularMicrofacetNormalDistributionGGX();
-            Environment = new MaterialSpecularMicrofacetEnvironmentGGXPolynomial();
-        }
-
-        public bool IsLightDependent
-        {
-            get
-            {
-                return true;
-            }
-        }
-
-        [DataMember(10)]
+        [DataMember(5)]
         [Display("Ramp Function")]
         [NotNull]
         public IMaterialCelShadingLightFunction RampFunction { get; set; } = new MaterialCelShadingLightDefault();
 
-        /// <userdoc>Specify the function to use to calculate the Fresnel component of the micro-facet lighting equation. 
-        /// This defines the amount of the incoming light that is reflected.</userdoc>
-        [DataMember(20)]
-        [Display("Fresnel")]
-        [NotNull]
-        public IMaterialSpecularMicrofacetFresnelFunction Fresnel { get; set; }
-
-        /// <userdoc>Specify the function to use to calculate the visibility component of the micro-facet lighting equation.</userdoc>
-        [DataMember(30)]
-        [Display("Visibility")]
-        [NotNull]
-        public IMaterialSpecularMicrofacetVisibilityFunction Visibility { get; set; }
-
-        /// <userdoc>Specify the function to use to calculate the normal distribution in the micro-facet lighting equation. 
-        /// This defines how the normal is distributed.</userdoc>
-        [DataMember(40)]
-        [Display("Normal Distribution")]
-        [NotNull]
-        public IMaterialSpecularMicrofacetNormalDistributionFunction NormalDistribution { get; set; }
-
-        /// <userdoc>Specify the function to use to calculate the environment DFG term in the micro-facet lighting equation. 
-        /// This defines how the material reflects specular cubemaps.</userdoc>
-        [DataMember(50)]
-        [Display("Environment (DFG)")]
-        [NotNull]
-        public IMaterialSpecularMicrofacetEnvironmentFunction Environment { get; set; }
 
         public override void GenerateShader(MaterialGeneratorContext context)
         {
             var shaderSource = new ShaderMixinSource();
             shaderSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceShadingSpecularCelShading"));
 
-            if (RampFunction != null)
-            {
-                shaderSource.AddComposition("celLightFunction", RampFunction.Generate(context));
-            }
-
-            if (Fresnel != null)
-            {
-                shaderSource.AddComposition("fresnelFunction", Fresnel.Generate());
-            }
-
-            if (Visibility != null)
-            {
-                shaderSource.AddComposition("geometricShadowingFunction", Visibility.Generate());
-            }
-
-            if (NormalDistribution != null)
-            {
-                shaderSource.AddComposition("normalDistributionFunction", NormalDistribution.Generate());
-            }
-
-            if (Environment != null)
-            {
-                shaderSource.AddComposition("environmentFunction", Environment.Generate(context));
-            }
+            GenerateShaderCompositions(context, shaderSource);
 
             context.AddShading(this, shaderSource);
         }
 
-        public bool Equals(IMaterialShadingModelFeature other)
+        protected override void GenerateShaderCompositions(MaterialGeneratorContext context, ShaderMixinSource shaderSource)
         {
-            return Equals(other as MaterialSpecularCelShadingModelFeature);
+            base.GenerateShaderCompositions(context, shaderSource);
+
+            if (RampFunction != null)
+            {
+                shaderSource.AddComposition("celLightFunction", RampFunction.Generate(context));
+            }
         }
 
         public bool Equals(MaterialSpecularCelShadingModelFeature other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(Fresnel, other.Fresnel) && Equals(Visibility, other.Visibility) && Equals(NormalDistribution, other.NormalDistribution);
+            return base.Equals(other) && RampFunction.Equals(other.RampFunction);
         }
 
         public override bool Equals(object obj)
@@ -118,18 +54,14 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals(obj as MaterialSpecularCelShadingModelFeature);
+            return Equals((MaterialSpecularCelShadingModelFeature)obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                int hashCode = (Fresnel != null ? Fresnel.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (Visibility != null ? Visibility.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (NormalDistribution != null ? NormalDistribution.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (RampFunction != null ? RampFunction.GetHashCode() : 0);
-                return hashCode;
+                return (base.GetHashCode() * 397) ^ (RampFunction != null ? RampFunction.GetHashCode() : 0);
             }
         }
     }
