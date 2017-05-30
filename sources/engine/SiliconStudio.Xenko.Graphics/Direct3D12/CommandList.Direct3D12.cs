@@ -298,11 +298,11 @@ namespace SiliconStudio.Xenko.Graphics
             if (resource.ParentResource != null)
                 resource = resource.ParentResource;
 
-            var currentState = resource.NativeResourceState;
-            if (currentState != (ResourceStates)newState)
+            var targetState = (ResourceStates)newState;
+            if (resource.IsTransitionNeeded(targetState))
             {
-                resource.NativeResourceState = (ResourceStates)newState;
-                currentCommandList.NativeCommandList.ResourceBarrierTransition(resource.NativeResource, currentState, (ResourceStates)newState);
+                currentCommandList.NativeCommandList.ResourceBarrierTransition(resource.NativeResource, resource.NativeResourceState, targetState);
+                resource.NativeResourceState = targetState;
             }
         }
 
@@ -577,6 +577,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.InvalidOperationException"></exception>
         public void Clear(Texture depthStencilBuffer, DepthStencilClearOptions options, float depth = 1, byte stencil = 0)
         {
+            ResourceBarrierTransition(depthStencilBuffer, GraphicsResourceState.RenderTarget);
             currentCommandList.NativeCommandList.ClearDepthStencilView(depthStencilBuffer.NativeDepthStencilView, (ClearFlags)options, depth, stencil);
         }
 
@@ -588,6 +589,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.ArgumentNullException">renderTarget</exception>
         public unsafe void Clear(Texture renderTarget, Color4 color)
         {
+            ResourceBarrierTransition(renderTarget, GraphicsResourceState.RenderTarget);
             currentCommandList.NativeCommandList.ClearRenderTargetView(renderTarget.NativeRenderTargetView, *(RawColor4*)&color);
         }
 
@@ -703,10 +705,8 @@ namespace SiliconStudio.Xenko.Graphics
                 var sourceParent = sourceTexture.ParentTexture ?? sourceTexture;
                 var destinationParent = destinationTexture.ParentTexture ?? destinationTexture;
 
-                if (sourceParent.NativeResourceState != ResourceStates.CopySource)
-                    currentCommandList.NativeCommandList.ResourceBarrierTransition(sourceTexture.NativeResource, sourceParent.NativeResourceState, ResourceStates.CopySource);
-                if (destinationParent.NativeResourceState != ResourceStates.CopyDestination)
-                    currentCommandList.NativeCommandList.ResourceBarrierTransition(destinationTexture.NativeResource, destinationParent.NativeResourceState, ResourceStates.CopyDestination);
+                ResourceBarrierTransition(sourceTexture, GraphicsResourceState.CopySource);
+                ResourceBarrierTransition(destinationTexture, GraphicsResourceState.CopyDestination);
 
                 if (destinationTexture.Usage == GraphicsResourceUsage.Staging)
                 {
@@ -742,11 +742,6 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     currentCommandList.NativeCommandList.CopyResource(destinationTexture.NativeResource, sourceTexture.NativeResource);
                 }
-
-                if (sourceParent.NativeResourceState != ResourceStates.CopySource)
-                    currentCommandList.NativeCommandList.ResourceBarrierTransition(sourceTexture.NativeResource, ResourceStates.CopySource, sourceParent.NativeResourceState);
-                if (destinationParent.NativeResourceState != ResourceStates.CopyDestination)
-                    currentCommandList.NativeCommandList.ResourceBarrierTransition(destinationTexture.NativeResource, ResourceStates.CopyDestination, destinationParent.NativeResourceState);
             }
             else
             {
@@ -761,15 +756,18 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void CopyRegion(GraphicsResource source, int sourceSubresource, ResourceRegion? sourceRegion, GraphicsResource destination, int destinationSubResource, int dstX = 0, int dstY = 0, int dstZ = 0)
         {
-            if (source is Texture && destination is Texture)
+            if (source is Texture sourceTexture && destination is Texture destinationTexture)
             {
-                if (((Texture)source).Usage == GraphicsResourceUsage.Staging || ((Texture)destination).Usage == GraphicsResourceUsage.Staging)
+                if (sourceTexture.Usage == GraphicsResourceUsage.Staging || destinationTexture.Usage == GraphicsResourceUsage.Staging)
                 {
                     throw new NotImplementedException("Copy region of staging resources is not supported yet");
                 }
 
+                ResourceBarrierTransition(source, GraphicsResourceState.CopySource);
+                ResourceBarrierTransition(destination, GraphicsResourceState.CopyDestination);
+
                 currentCommandList.NativeCommandList.CopyTextureRegion(
-                    new TextureCopyLocation(destination.NativeResource, sourceSubresource),
+                    new TextureCopyLocation(destination.NativeResource, destinationSubResource),
                     dstX, dstY, dstZ,
                     new TextureCopyLocation(source.NativeResource, sourceSubresource),
                     sourceRegion.HasValue
@@ -786,8 +784,15 @@ namespace SiliconStudio.Xenko.Graphics
             }
             else if (source is Buffer && destination is Buffer)
             {
+                ResourceBarrierTransition(source, GraphicsResourceState.CopySource);
+                ResourceBarrierTransition(destination, GraphicsResourceState.CopyDestination);
+
                 currentCommandList.NativeCommandList.CopyBufferRegion(destination.NativeResource, dstX,
                     source.NativeResource, sourceRegion?.Left ?? 0, sourceRegion.HasValue ? sourceRegion.Value.Right - sourceRegion.Value.Left : ((Buffer)source).SizeInBytes);
+            }
+            else
+            {
+                throw new InvalidOperationException("Cannot copy data between buffer and texture.");
             }
         }
 
@@ -863,9 +868,8 @@ namespace SiliconStudio.Xenko.Graphics
                 var parentResource = resource.ParentResource ?? resource;
 
                 // Trigger copy
-                currentCommandList.NativeCommandList.ResourceBarrierTransition(resource.NativeResource, parentResource.NativeResourceState, ResourceStates.CopyDestination);
+                ResourceBarrierTransition(resource, GraphicsResourceState.CopyDestination);
                 currentCommandList.NativeCommandList.CopyTextureRegion(new TextureCopyLocation(resource.NativeResource, subResourceIndex), region.Left, region.Top, region.Front, new TextureCopyLocation(nativeUploadTexture, 0), null);
-                currentCommandList.NativeCommandList.ResourceBarrierTransition(resource.NativeResource, ResourceStates.CopyDestination, parentResource.NativeResourceState);
             }
             else
             {
@@ -879,9 +883,8 @@ namespace SiliconStudio.Xenko.Graphics
 
                     Utilities.CopyMemory(uploadMemory, databox.DataPointer, uploadSize);
 
-                    currentCommandList.NativeCommandList.ResourceBarrierTransition(resource.NativeResource, resource.NativeResourceState, ResourceStates.CopyDestination);
+                    ResourceBarrierTransition(resource, GraphicsResourceState.CopyDestination);
                     currentCommandList.NativeCommandList.CopyBufferRegion(resource.NativeResource, region.Left, uploadResource, uploadOffset, uploadSize);
-                    currentCommandList.NativeCommandList.ResourceBarrierTransition(resource.NativeResource, ResourceStates.CopyDestination, resource.NativeResourceState);
                 }
                 else
                 {
