@@ -170,6 +170,16 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             // We may be able to describe a dependency system here, but for now, assume 
             // that it won't change much so it is hardcoded
 
+            // If Specular has energy conservative, copy this to the diffuse lambertian model
+            // TODO: Should we apply it to any Diffuse Model?
+            var isEnergyConservative = (Specular as MaterialSpecularMapFeature)?.IsEnergyConservative ?? false;
+
+            var lambert = DiffuseModel as IEnergyConservativeDiffuseModelFeature;
+            if (lambert != null)
+            {
+                lambert.IsEnergyConservative = isEnergyConservative;
+            }
+
             // Diffuse - these 2 features are always used as a pair
             if (Diffuse != null && DiffuseModel != null)
             {
@@ -182,16 +192,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             context.Visit(Displacement);
             context.Visit(Surface);
             context.Visit(MicroSurface);
-
-            // If Specular has energy conservative, copy this to the diffuse lambertian model
-            // TODO: Should we apply it to any Diffuse Model?
-            bool isEnergyConservative = (Specular is MaterialSpecularMapFeature && ((MaterialSpecularMapFeature)Specular).IsEnergyConservative);
-
-            var lambert = DiffuseModel as MaterialDiffuseLambertModelFeature;
-            if (lambert != null)
-            {
-                lambert.IsEnergyConservative = isEnergyConservative;
-            }
 
             // Specular - these 2 features are always used as a pair
             if (Specular != null && SpecularModel != null)
