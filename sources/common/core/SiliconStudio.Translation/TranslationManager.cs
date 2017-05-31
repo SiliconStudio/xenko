@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
-using System.Threading;
 using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Translation
@@ -28,13 +27,13 @@ namespace SiliconStudio.Translation
             /// <inheritdoc />
             public CultureInfo CurrentLanguage
             {
-                get => Thread.CurrentThread.CurrentUICulture;
+                get => CultureInfo.CurrentUICulture;
                 set
                 {
-                    if (Equals(Thread.CurrentThread.CurrentUICulture, value))
+                    if (Equals(CultureInfo.CurrentUICulture, value))
                         return;
 
-                    Thread.CurrentThread.CurrentUICulture = value;
+                    CultureInfo.CurrentUICulture = CultureInfo.DefaultThreadCurrentUICulture = value;
                     OnLanguageChanged();
                 }
             }
