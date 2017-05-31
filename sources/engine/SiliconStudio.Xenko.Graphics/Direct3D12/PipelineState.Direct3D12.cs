@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D12;
+using SharpDX.DXGI;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Shaders;
@@ -227,6 +228,10 @@ namespace SiliconStudio.Xenko.Graphics
                         // TODO D3D12 hardcoded
                         SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0),
                     };
+
+                    // Disable depth buffer if no format specified
+                    if (nativePipelineStateDescription.DepthStencilFormat == Format.Unknown)
+                        nativePipelineStateDescription.DepthStencilState.IsDepthEnabled = false;
 
                     fixed (PixelFormat* renderTargetFormats = &pipelineStateDescription.Output.RenderTargetFormat0)
                     {
