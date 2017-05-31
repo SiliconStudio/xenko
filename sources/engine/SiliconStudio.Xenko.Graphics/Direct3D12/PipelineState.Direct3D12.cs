@@ -71,8 +71,7 @@ namespace SiliconStudio.Xenko.Graphics
                             {
                                 if (item.ImmutableSampler != null)
                                 {
-                                    var shaderVisibility = binding.Stage != ShaderStage.Compute ? (ShaderVisibility)binding.Stage : ShaderVisibility.All;
-                                    immutableSamplers.Add(new StaticSamplerDescription(shaderVisibility, binding.SlotStart, 0)
+                                    immutableSamplers.Add(new StaticSamplerDescription(ShaderStage2ShaderVisibility(binding.Stage), binding.SlotStart, 0)
                                     {
                                         // TODO D3D12 ImmutableSampler should only be a state description instead of a GPU object?
                                         Filter = (Filter)item.ImmutableSampler.Description.Filter,
