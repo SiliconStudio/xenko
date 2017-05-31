@@ -129,13 +129,19 @@ namespace SiliconStudio.Xenko.Graphics
 
                     foreach (var stage in srvDescriptorRanges)
                     {
-                        rootSignatureParameters.Add(new RootParameter(ShaderStage2ShaderVisibility(stage.Key), stage.Value.ToArray()));
-                        SrvBindCounts[layoutIndex]++;
+                        if (stage.Value.Count > 0)
+                        {
+                            rootSignatureParameters.Add(new RootParameter(ShaderStage2ShaderVisibility(stage.Key), stage.Value.ToArray()));
+                            SrvBindCounts[layoutIndex]++;
+                        }
                     }
                     foreach (var stage in samplerDescriptorRanges)
                     {
-                        rootSignatureParameters.Add(new RootParameter(ShaderStage2ShaderVisibility(stage.Key), stage.Value.ToArray()));
-                        SamplerBindCounts[layoutIndex]++;
+                        if (stage.Value.Count > 0)
+                        {
+                            rootSignatureParameters.Add(new RootParameter(ShaderStage2ShaderVisibility(stage.Key), stage.Value.ToArray()));
+                            SamplerBindCounts[layoutIndex]++;
+                        }
                     }
                 }
                 var rootSignatureDesc = new RootSignatureDescription(RootSignatureFlags.AllowInputAssemblerInputLayout, rootSignatureParameters.ToArray(), immutableSamplers.ToArray());
