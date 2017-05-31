@@ -45,6 +45,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal DescriptorAllocator SamplerAllocator;
         internal DescriptorAllocator ShaderResourceViewAllocator;
+        internal DescriptorAllocator UnorderedAccessViewAllocator => ShaderResourceViewAllocator;
         internal DescriptorAllocator DepthStencilViewAllocator;
         internal DescriptorAllocator RenderTargetViewAllocator;
 

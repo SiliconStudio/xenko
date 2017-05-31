@@ -92,7 +92,6 @@ namespace SiliconStudio.Xenko.Graphics
 
             if ((bufferFlags & BufferFlags.StructuredBuffer) != 0)
             {
-                throw new NotImplementedException();
                 if (bufferDescription.StructureByteStride == 0)
                     throw new ArgumentException("Element size cannot be set to 0 for structured buffer");
             }
@@ -150,7 +149,8 @@ namespace SiliconStudio.Xenko.Graphics
                 }
             }
 
-            this.NativeShaderResourceView = GetShaderResourceView(ViewFormat);
+            NativeShaderResourceView = GetShaderResourceView(ViewFormat);
+            NativeUnorderedAccessView = GetUnorderedAccessView(ViewFormat);
         }
 
         /// <summary>
@@ -190,6 +190,34 @@ namespace SiliconStudio.Xenko.Graphics
             return srv;
         }
 
+        internal CpuDescriptorHandle GetUnorderedAccessView(PixelFormat viewFormat)
+        {
+            var uav = new CpuDescriptorHandle();
+            if ((ViewFlags & BufferFlags.UnorderedAccess) != 0)
+            {
+                var description = new UnorderedAccessViewDescription
+                {
+                    Format = (SharpDX.DXGI.Format)viewFormat,
+                    Dimension = SharpDX.Direct3D12.UnorderedAccessViewDimension.Buffer,
+                    Buffer =
+                    {
+                        ElementCount = this.ElementCount,
+                        FirstElement = 0,
+                        Flags = BufferUnorderedAccessViewFlags.None,
+                        StructureByteStride = StructureByteStride,
+                        CounterOffsetInBytes = 0,
+                    }
+                };
+
+                if (((ViewFlags & BufferFlags.RawBuffer) == BufferFlags.RawBuffer))
+                    description.Buffer.Flags |= BufferUnorderedAccessViewFlags.Raw;
+
+                uav = GraphicsDevice.UnorderedAccessViewAllocator.Allocate(1);
+                NativeDevice.CreateUnorderedAccessView(NativeResource, null, description, uav);
+            }
+            return uav;
+        }
+
         private void InitCountAndViewFormat(out int count, ref PixelFormat viewFormat)
         {
             if (Description.StructureByteStride == 0)
@@ -218,12 +246,16 @@ namespace SiliconStudio.Xenko.Graphics
 
         private static SharpDX.Direct3D12.ResourceDescription ConvertToNativeDescription(GraphicsDevice graphicsDevice, BufferDescription bufferDescription)
         {
+            var flags = ResourceFlags.None;
             var size = bufferDescription.SizeInBytes;
 
             // TODO D3D12 for now, ensure size is multiple of ConstantBufferDataPlacementAlignment (for cbuffer views)
             size = (size + graphicsDevice.ConstantBufferDataPlacementAlignment - 1) / graphicsDevice.ConstantBufferDataPlacementAlignment * graphicsDevice.ConstantBufferDataPlacementAlignment;
 
-            return SharpDX.Direct3D12.ResourceDescription.Buffer(size);
+            if ((bufferDescription.BufferFlags & BufferFlags.UnorderedAccess) != 0)
+                flags |= ResourceFlags.AllowUnorderedAccess;
+
+            return SharpDX.Direct3D12.ResourceDescription.Buffer(size, flags);
         }
     }
 } 
