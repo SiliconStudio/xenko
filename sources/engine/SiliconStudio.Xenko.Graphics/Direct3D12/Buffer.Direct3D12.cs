@@ -84,8 +84,8 @@ namespace SiliconStudio.Xenko.Graphics
             if ((bufferFlags & BufferFlags.VertexBuffer) != 0)
                 NativeResourceState |= ResourceStates.VertexAndConstantBuffer;
 
-            if ((bufferFlags & BufferFlags.ShaderResource) != 0)
-                NativeResourceState |= ResourceStates.PixelShaderResource | ResourceStates.NonPixelShaderResource;
+            //if ((bufferFlags & BufferFlags.ShaderResource) != 0)
+            //    NativeResourceState |= ResourceStates.PixelShaderResource | ResourceStates.NonPixelShaderResource;
 
             if ((bufferFlags & BufferFlags.UnorderedAccess) != 0)
                 NativeResourceState |= ResourceStates.UnorderedAccess;
