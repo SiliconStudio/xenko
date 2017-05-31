@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// </summary>
     [DataContract("MaterialDiffuseLambertModelFeature")]
     [Display("Lambert")]
-    public class MaterialDiffuseLambertModelFeature : MaterialFeature, IMaterialDiffuseModelFeature
+    public class MaterialDiffuseLambertModelFeature : MaterialFeature, IMaterialDiffuseModelFeature, IEnergyConservativeDiffuseModelFeature
     {
         public bool IsLightDependent
         {
@@ -23,7 +23,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
 
         [DataMemberIgnore]
-        internal bool IsEnergyConservative { get; set; }
+        bool IEnergyConservativeDiffuseModelFeature.IsEnergyConservative { get; set; }
+
+        private bool IsEnergyConservative => ((IEnergyConservativeDiffuseModelFeature)this).IsEnergyConservative;
 
         public override void VisitFeature(MaterialGeneratorContext context)
         {

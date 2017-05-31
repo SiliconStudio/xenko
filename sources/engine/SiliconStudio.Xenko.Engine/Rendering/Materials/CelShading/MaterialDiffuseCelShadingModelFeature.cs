@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// </summary>
     [DataContract("MaterialDiffuseCelShadingModelFeature")]
     [Display("Cel Shading")]
-    public class MaterialDiffuseCelShadingModelFeature : MaterialFeature, IMaterialDiffuseModelFeature, IEquatable<MaterialDiffuseCelShadingModelFeature>
+    public class MaterialDiffuseCelShadingModelFeature : MaterialFeature, IMaterialDiffuseModelFeature, IEquatable<MaterialDiffuseCelShadingModelFeature>, IEnergyConservativeDiffuseModelFeature
     {
         public bool IsLightDependent
         {
@@ -24,7 +24,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         }
 
         [DataMemberIgnore]
-        internal bool IsEnergyConservative { get; set; }
+        bool IEnergyConservativeDiffuseModelFeature.IsEnergyConservative { get; set; }
+
+        private bool IsEnergyConservative => ((IEnergyConservativeDiffuseModelFeature)this).IsEnergyConservative;
 
         /// <summary>
         /// When positive, the dot product between N and L will be modified to account for light intensity with the specified value as a factor
