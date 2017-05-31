@@ -297,6 +297,9 @@ namespace SiliconStudio.Xenko.Graphics
                         };
                         infoQueue.AddStorageFilterEntries(filter);
 
+                        //infoQueue.SetBreakOnSeverity(MessageSeverity.Error, true);
+                        //infoQueue.SetBreakOnSeverity(MessageSeverity.Warning, true);
+
                         infoQueue.Dispose();
                     }
                     debugDevice.Dispose();
