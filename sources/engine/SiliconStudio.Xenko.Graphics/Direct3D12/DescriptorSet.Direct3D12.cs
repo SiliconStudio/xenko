@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
 using System;
+using SharpDX;
 using SharpDX.Direct3D12;
 using SiliconStudio.Xenko.Shaders;
 
@@ -117,6 +118,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="unorderedAccessView">The unordered access view.</param>
         public void SetUnorderedAccessView(int slot, GraphicsResource unorderedAccessView)
         {
+            if (unorderedAccessView.NativeUnorderedAccessView.Ptr == PointerSize.Zero)
+                throw new ArgumentException($"Resource \'{unorderedAccessView}\' has missing Unordered Access View.");
             Device.NativeDevice.CopyDescriptorsSimple(1, SrvStart + BindingOffsets[slot], unorderedAccessView.NativeUnorderedAccessView, DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView);
         }
     }
