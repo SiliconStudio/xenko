@@ -16,6 +16,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal long? StagingFenceValue;
         internal CommandList StagingBuilder;
         internal CpuDescriptorHandle NativeShaderResourceView;
+        internal CpuDescriptorHandle NativeUnorderedAccessView;
         internal ResourceStates NativeResourceState;
 
         protected bool IsDebugMode => GraphicsDevice != null && GraphicsDevice.IsDebugMode;

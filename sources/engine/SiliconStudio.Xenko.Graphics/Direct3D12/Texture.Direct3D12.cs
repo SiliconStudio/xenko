@@ -34,7 +34,6 @@ namespace SiliconStudio.Xenko.Graphics
     {
         internal CpuDescriptorHandle NativeRenderTargetView;
         internal CpuDescriptorHandle NativeDepthStencilView;
-        internal CpuDescriptorHandle NativeUnorderedAccessView;
         public bool HasStencil;
 
         private int TexturePixelSize => Format.SizeInBytes();
@@ -519,7 +518,7 @@ namespace SiliconStudio.Xenko.Graphics
                 }
             }
             
-            var descriptorHandle = GraphicsDevice.ShaderResourceViewAllocator.Allocate(1);
+            var descriptorHandle = GraphicsDevice.UnorderedAccessViewAllocator.Allocate(1);
             NativeDevice.CreateUnorderedAccessView(NativeResource, null, uavDescription, descriptorHandle);
             return descriptorHandle;
         }
