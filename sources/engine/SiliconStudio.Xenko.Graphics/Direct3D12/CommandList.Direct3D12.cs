@@ -3,6 +3,7 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
 using System;
 using System.Collections.Generic;
+using SharpDX;
 using SharpDX.Direct3D12;
 using SharpDX.Mathematics.Interop;
 using SiliconStudio.Core.Mathematics;
@@ -620,14 +621,14 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="value">The value.</param>
         /// <exception cref="System.ArgumentNullException">buffer</exception>
         /// <exception cref="System.ArgumentException">Expecting buffer supporting UAV;buffer</exception>
-        public void ClearReadWrite(Buffer buffer, Vector4 value)
+        public unsafe void ClearReadWrite(Buffer buffer, Vector4 value)
         {
-            throw new NotImplementedException();
+            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
+            if (buffer.NativeUnorderedAccessView.Ptr == PointerSize.Zero) throw new ArgumentException("Expecting buffer supporting UAV", nameof(buffer));
 
-            /*if (buffer == null) throw new ArgumentNullException(nameof(buffer));
-            if (buffer.NativeUnorderedAccessView == null) throw new ArgumentException("Expecting buffer supporting UAV", nameof(buffer));
-
-            currentCommandList.NativeCommandList.ClearUnorderedAccessViewFloat(buffer., *(RawVector4*)&value);*/
+            var cpuHandle = buffer.NativeUnorderedAccessView;
+            var gpuHandle = GetGpuDescriptorHandle(cpuHandle);
+            currentCommandList.NativeCommandList.ClearUnorderedAccessViewFloat(gpuHandle, cpuHandle, buffer.NativeResource, *(RawVector4*)&value, 0, null);
         }
 
         /// <summary>
@@ -637,14 +638,14 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="value">The value.</param>
         /// <exception cref="System.ArgumentNullException">buffer</exception>
         /// <exception cref="System.ArgumentException">Expecting buffer supporting UAV;buffer</exception>
-        public void ClearReadWrite(Buffer buffer, Int4 value)
+        public unsafe void ClearReadWrite(Buffer buffer, Int4 value)
         {
-            throw new NotImplementedException();
+            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
+            if (buffer.NativeUnorderedAccessView.Ptr == PointerSize.Zero) throw new ArgumentException("Expecting buffer supporting UAV", nameof(buffer));
 
-            /*if (buffer == null) throw new ArgumentNullException("buffer");
-            if (buffer.NativeUnorderedAccessView == null) throw new ArgumentException("Expecting buffer supporting UAV", "buffer");
-
-            currentCommandList.NativeCommandList.ClearUnorderedAccessViewUint(buffer.NativeUnorderedAccessView, *(RawInt4*)&value);*/
+            var cpuHandle = buffer.NativeUnorderedAccessView;
+            var gpuHandle = GetGpuDescriptorHandle(cpuHandle);
+            currentCommandList.NativeCommandList.ClearUnorderedAccessViewUint(gpuHandle, cpuHandle, buffer.NativeResource, *(RawInt4*)&value, 0, null);
         }
 
         /// <summary>
@@ -654,14 +655,14 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="value">The value.</param>
         /// <exception cref="System.ArgumentNullException">buffer</exception>
         /// <exception cref="System.ArgumentException">Expecting buffer supporting UAV;buffer</exception>
-        public void ClearReadWrite(Buffer buffer, UInt4 value)
+        public unsafe void ClearReadWrite(Buffer buffer, UInt4 value)
         {
-            throw new NotImplementedException();
+            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
+            if (buffer.NativeUnorderedAccessView.Ptr == PointerSize.Zero) throw new ArgumentException("Expecting buffer supporting UAV", nameof(buffer));
 
-            /*if (buffer == null) throw new ArgumentNullException("buffer");
-            if (buffer.NativeUnorderedAccessView == null) throw new ArgumentException("Expecting buffer supporting UAV", "buffer");
-
-            currentCommandList.NativeCommandList.ClearUnorderedAccessViewUint(buffer.NativeUnorderedAccessView, *(RawInt4*)&value);*/
+            var cpuHandle = buffer.NativeUnorderedAccessView;
+            var gpuHandle = GetGpuDescriptorHandle(cpuHandle);
+            currentCommandList.NativeCommandList.ClearUnorderedAccessViewUint(gpuHandle, cpuHandle, buffer.NativeResource, *(RawInt4*)&value, 0, null);
         }
 
         /// <summary>
@@ -670,15 +671,15 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="texture">The texture.</param>
         /// <param name="value">The value.</param>
         /// <exception cref="System.ArgumentNullException">texture</exception>
-        /// <exception cref="System.ArgumentException">Expecting buffer supporting UAV;texture</exception>
-        public void ClearReadWrite(Texture texture, Vector4 value)
+        /// <exception cref="System.ArgumentException">Expecting texture supporting UAV;texture</exception>
+        public unsafe void ClearReadWrite(Texture texture, Vector4 value)
         {
-            throw new NotImplementedException();
+            if (texture == null) throw new ArgumentNullException(nameof(texture));
+            if (texture.NativeUnorderedAccessView.Ptr == PointerSize.Zero) throw new ArgumentException("Expecting texture supporting UAV", nameof(texture));
 
-            /*if (texture == null) throw new ArgumentNullException(nameof(texture));
-            if (texture.IsUnorderedAccess == false) throw new ArgumentException("Expecting texture supporting UAV", nameof(texture));
-
-            currentCommandList.NativeCommandList.ClearUnorderedAccessViewFloat(texture.ParentResource, texture.NativeUnorderedAccessView, *(RawVector4*)&value);*/
+            var cpuHandle = texture.NativeUnorderedAccessView;
+            var gpuHandle = GetGpuDescriptorHandle(cpuHandle);
+            currentCommandList.NativeCommandList.ClearUnorderedAccessViewFloat(gpuHandle, cpuHandle, texture.NativeResource, *(RawVector4*)&value, 0, null);
         }
 
         /// <summary>
@@ -687,15 +688,15 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="texture">The texture.</param>
         /// <param name="value">The value.</param>
         /// <exception cref="System.ArgumentNullException">texture</exception>
-        /// <exception cref="System.ArgumentException">Expecting buffer supporting UAV;texture</exception>
-        public void ClearReadWrite(Texture texture, Int4 value)
+        /// <exception cref="System.ArgumentException">Expecting texture supporting UAV;texture</exception>
+        public unsafe void ClearReadWrite(Texture texture, Int4 value)
         {
-            throw new NotImplementedException();
+            if (texture == null) throw new ArgumentNullException(nameof(texture));
+            if (texture.NativeUnorderedAccessView.Ptr == PointerSize.Zero) throw new ArgumentException("Expecting texture supporting UAV", nameof(texture));
 
-            /*if (texture == null) throw new ArgumentNullException(nameof(texture));
-            if (texture.IsUnorderedAccess == false) throw new ArgumentException("Expecting texture supporting UAV", nameof(texture));
-
-            currentCommandList.NativeCommandList.ClearUnorderedAccessViewUint(texture.NativeUnorderedAccessView, *(RawInt4*)&value);*/
+            var cpuHandle = texture.NativeUnorderedAccessView;
+            var gpuHandle = GetGpuDescriptorHandle(cpuHandle);
+            currentCommandList.NativeCommandList.ClearUnorderedAccessViewUint(gpuHandle, cpuHandle, texture.NativeResource, *(RawInt4*)&value, 0, null);
         }
 
         /// <summary>
@@ -704,15 +705,42 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="texture">The texture.</param>
         /// <param name="value">The value.</param>
         /// <exception cref="System.ArgumentNullException">texture</exception>
-        /// <exception cref="System.ArgumentException">Expecting buffer supporting UAV;texture</exception>
-        public void ClearReadWrite(Texture texture, UInt4 value)
+        /// <exception cref="System.ArgumentException">Expecting texture supporting UAV;texture</exception>
+        public unsafe void ClearReadWrite(Texture texture, UInt4 value)
         {
-            throw new NotImplementedException();
+            if (texture == null) throw new ArgumentNullException(nameof(texture));
+            if (texture.NativeUnorderedAccessView.Ptr == PointerSize.Zero) throw new ArgumentException("Expecting texture supporting UAV", nameof(texture));
 
-            /*if (texture == null) throw new ArgumentNullException(nameof(texture));
-            if (texture.IsUnorderedAccess == false) throw new ArgumentException("Expecting texture supporting UAV", nameof(texture));
+            var cpuHandle = texture.NativeUnorderedAccessView;
+            var gpuHandle = GetGpuDescriptorHandle(cpuHandle);
+            currentCommandList.NativeCommandList.ClearUnorderedAccessViewUint(gpuHandle, cpuHandle, texture.NativeResource, *(RawInt4*)&value, 0, null);
+        }
 
-            currentCommandList.NativeCommandList.ClearUnorderedAccessViewUint(texture.NativeUnorderedAccessView, *(RawInt4*)&value);*/
+        private GpuDescriptorHandle GetGpuDescriptorHandle(CpuDescriptorHandle cpuHandle)
+        {
+            GpuDescriptorHandle result;
+            if (!srvMapping.TryGetValue(cpuHandle.Ptr, out result))
+            {
+                var srvCount = 1;
+
+                // Make sure heap is big enough
+                if (srvHeapOffset + srvCount > GraphicsDevice.SrvHeapSize)
+                {
+                    ResetSrvHeap(true);
+                    currentCommandList.NativeCommandList.SetDescriptorHeaps(2, descriptorHeaps);
+                }
+
+                // Copy
+                NativeDevice.CopyDescriptorsSimple(srvCount, srvHeap.CPUDescriptorHandleForHeapStart + srvHeapOffset * GraphicsDevice.SrvHandleIncrementSize, cpuHandle, DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView);
+
+                // Store mapping
+                srvMapping.Add(cpuHandle.Ptr, result = srvHeap.GPUDescriptorHandleForHeapStart + srvHeapOffset * GraphicsDevice.SrvHandleIncrementSize);
+
+                // Bump
+                srvHeapOffset += srvCount;
+            }
+
+            return result;
         }
 
         public void Copy(GraphicsResource source, GraphicsResource destination)
