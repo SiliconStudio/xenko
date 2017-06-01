@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using SharpDX;
 using SharpDX.DXGI;
 using SharpDX.Direct3D12;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -96,13 +97,20 @@ namespace SiliconStudio.Xenko.Graphics
                     throw new ArgumentException("Element size cannot be less or equal 0 for structured buffer");
             }
 
+            if ((bufferFlags & BufferFlags.RawBuffer) == BufferFlags.RawBuffer)
+                throw new NotImplementedException();
+
             if ((bufferFlags & BufferFlags.ArgumentBuffer) == BufferFlags.ArgumentBuffer)
                 NativeResourceState |= ResourceStates.IndirectArgument;
 
             var heapType = HeapType.Default;
             if (Usage == GraphicsResourceUsage.Staging)
             {
-                throw new NotImplementedException();
+                if (dataPointer != IntPtr.Zero)
+                    throw new NotImplementedException("D3D12: Staging buffers can't be created with initial data.");
+
+                heapType = HeapType.Readback;
+                NativeResourceState = ResourceStates.CopyDestination;
             }
             else if (Usage == GraphicsResourceUsage.Dynamic)
             {
@@ -247,7 +255,7 @@ namespace SiliconStudio.Xenko.Graphics
             var size = bufferDescription.SizeInBytes;
 
             // TODO D3D12 for now, ensure size is multiple of ConstantBufferDataPlacementAlignment (for cbuffer views)
-            size = (size + graphicsDevice.ConstantBufferDataPlacementAlignment - 1) / graphicsDevice.ConstantBufferDataPlacementAlignment * graphicsDevice.ConstantBufferDataPlacementAlignment;
+            size = MathUtil.AlignUp(size, graphicsDevice.ConstantBufferDataPlacementAlignment);
 
             if ((bufferDescription.BufferFlags & BufferFlags.UnorderedAccess) != 0)
                 flags |= ResourceFlags.AllowUnorderedAccess;

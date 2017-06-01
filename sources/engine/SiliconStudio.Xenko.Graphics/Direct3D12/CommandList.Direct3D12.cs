@@ -745,10 +745,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void Copy(GraphicsResource source, GraphicsResource destination)
         {
-            var sourceTexture = source as Texture;
-            var destinationTexture = destination as Texture;
-
-            if (sourceTexture != null && destinationTexture != null)
+            // Copy texture -> texture
+            if (source is Texture sourceTexture && destination is Texture destinationTexture)
             {
                 var sourceParent = sourceTexture.ParentTexture ?? sourceTexture;
                 var destinationParent = destinationTexture.ParentTexture ?? destinationTexture;
@@ -789,6 +787,22 @@ namespace SiliconStudio.Xenko.Graphics
                 else
                 {
                     currentCommandList.NativeCommandList.CopyResource(destinationTexture.NativeResource, sourceTexture.NativeResource);
+                }
+            }
+            // Copy buffer -> buffer
+            else if (source is Buffer sourceBuffer && destination is Buffer destinationBuffer)
+            {
+                ResourceBarrierTransition(sourceBuffer, GraphicsResourceState.CopySource);
+                ResourceBarrierTransition(destinationBuffer, GraphicsResourceState.CopyDestination);
+
+                currentCommandList.NativeCommandList.CopyResource(destinationBuffer.NativeResource, sourceBuffer.NativeResource);
+
+                if (destinationBuffer.Usage == GraphicsResourceUsage.Staging)
+                {
+                    // Fence for host access
+                    destinationBuffer.StagingFenceValue = null;
+                    destinationBuffer.StagingBuilder = this;
+                    currentCommandList.StagingResources.Add(destinationBuffer);
                 }
             }
             else
