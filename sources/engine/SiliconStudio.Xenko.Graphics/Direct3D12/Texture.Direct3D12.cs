@@ -70,6 +70,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         private void InitializeFromImpl(DataBox[] dataBoxes = null)
         {
+            bool hasInitData = dataBoxes != null && dataBoxes.Length > 0;
+
             if (ParentTexture != null)
             {
                 ParentResource = ParentTexture;
@@ -103,30 +105,28 @@ namespace SiliconStudio.Xenko.Graphics
                 var currentResourceState = initialResourceState;
                 if (Usage == GraphicsResourceUsage.Staging)
                 {
-                    if (dataBoxes != null)
-                        throw new NotImplementedException();
+                    if (hasInitData)
+                        throw new NotImplementedException("D3D12: Staging textures can't be created with initial data.");
 
                     heapType = HeapType.Readback;
-                    initialResourceState = ResourceStates.CopyDestination;
-                    currentResourceState = ResourceStates.CopyDestination;
+                    NativeResourceState = ResourceStates.CopyDestination;
                     nativeDescription = ResourceDescription.Buffer(ComputeBufferTotalSize());
 
-                    // TODO: Alloc in readback heap as a buffer
-                    //return;
+                    // Staging textures on DirectX 12 use buffer internally
+                    NativeDeviceChild = GraphicsDevice.NativeDevice.CreateCommittedResource(new HeapProperties(heapType), HeapFlags.None, nativeDescription, NativeResourceState);
+
+                    return;
                 }
 
-                if (dataBoxes != null && dataBoxes.Length > 0)
+                if (hasInitData)
                     currentResourceState = ResourceStates.CopyDestination;
 
                 // TODO D3D12 move that to a global allocator in bigger committed resources
                 NativeDeviceChild = GraphicsDevice.NativeDevice.CreateCommittedResource(new HeapProperties(heapType), HeapFlags.None, nativeDescription, currentResourceState, clearValue);
                 GraphicsDevice.TextureMemory += (Depth*DepthStride) / (float)0x100000;
 
-                if (dataBoxes != null && dataBoxes.Length > 0)
+                if (hasInitData)
                 {
-                    if (Usage == GraphicsResourceUsage.Staging)
-                        throw new NotImplementedException("D3D12: Staging textures can't be created with initial data");
-
                     // Trigger copy
                     var commandList = GraphicsDevice.NativeCopyCommandList;
                     commandList.Reset(GraphicsDevice.NativeCopyCommandAllocator, null);

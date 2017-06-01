@@ -925,14 +925,11 @@ namespace SiliconStudio.Xenko.Graphics
                 var nativeUploadTexture = NativeDevice.CreateCommittedResource(new HeapProperties(CpuPageProperty.WriteBack, MemoryPool.L0), HeapFlags.None,
                     resourceDescription,
                     ResourceStates.GenericRead);
-
-
+                
                 GraphicsDevice.TemporaryResources.Enqueue(new KeyValuePair<long, object>(GraphicsDevice.NextFenceValue, nativeUploadTexture));
 
                 nativeUploadTexture.WriteToSubresource(0, null, databox.DataPointer, databox.RowPitch, databox.SlicePitch);
-
-                var parentResource = resource.ParentResource ?? resource;
-
+                
                 // Trigger copy
                 ResourceBarrierTransition(resource, GraphicsResourceState.CopyDestination);
                 currentCommandList.NativeCommandList.CopyTextureRegion(new TextureCopyLocation(resource.NativeResource, subResourceIndex), region.Left, region.Top, region.Front, new TextureCopyLocation(nativeUploadTexture, 0), null);
