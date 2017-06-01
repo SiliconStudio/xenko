@@ -172,14 +172,14 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="depthStencilBuffer">The depth stencil buffer.</param>
         /// <param name="renderTargets">The render targets.</param>
         /// <exception cref="System.ArgumentNullException">renderTargetViews</exception>
-        private unsafe void SetRenderTargetsImpl(Texture depthStencilBuffer, int renderTargetCount, Texture[] renderTargets)
+        private void SetRenderTargetsImpl(Texture depthStencilBuffer, int renderTargetCount, Texture[] renderTargets)
         {
-            var renderTargetHandles = stackalloc CpuDescriptorHandle[renderTargetCount];
-            for (int i = 0; i < renderTargetCount; ++i)
+            var renderTargetHandles = new CpuDescriptorHandle[renderTargetCount];
+            for (int i = 0; i < renderTargetHandles.Length; ++i)
             {
                 renderTargetHandles[i] = renderTargets[i].NativeRenderTargetView;
             }
-            currentCommandList.NativeCommandList.SetRenderTargets(*renderTargetHandles, depthStencilBuffer?.NativeDepthStencilView);
+            currentCommandList.NativeCommandList.SetRenderTargets(renderTargetHandles, depthStencilBuffer?.NativeDepthStencilView);
         }
 
         /// <summary>
@@ -238,7 +238,6 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         public void UnsetRenderTargets()
         {
-            currentCommandList.NativeCommandList.SetRenderTargets((CpuDescriptorHandle?)null, null);
         }
 
         /// <summary>
