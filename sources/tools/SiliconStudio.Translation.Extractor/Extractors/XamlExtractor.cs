@@ -56,6 +56,13 @@ namespace SiliconStudio.Translation.Extractor
                         var member = reader.Member;
                         switch (member.Name)
                         {
+                            case nameof(LocalizeExtension.Text):
+                                if (reader.Read() && reader.NodeType == XamlNodeType.Value)
+                                {
+                                    message.Text = reader.Value?.ToString();
+                                }
+                                break;
+
                             case nameof(LocalizeExtension.Plural):
                                 if (reader.Read() && reader.NodeType == XamlNodeType.Value)
                                 {
@@ -71,7 +78,7 @@ namespace SiliconStudio.Translation.Extractor
                                 break;
 
                             case nameof(LocalizeExtension.Count):
-                            case nameof(LocalizeExtension.Text):
+                            case nameof(LocalizeExtension.IsStringFormat):
                                 // Ignore
                                 break;
 
