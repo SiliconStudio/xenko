@@ -138,7 +138,6 @@ namespace SiliconStudio.Xenko.Assets.Models
               
                 IEnumerable<ObjectUrl> InputFilesGetter()
                 {
-                    yield return new ObjectUrl(UrlType.File, GetAbsolutePath(assetItem, asset.Source));
                     yield return new ObjectUrl(UrlType.File, GetAbsolutePath(assetItem, diffAnimationAsset.BaseSource));
                 }
 
