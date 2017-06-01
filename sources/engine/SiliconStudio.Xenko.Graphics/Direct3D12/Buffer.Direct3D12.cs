@@ -97,9 +97,6 @@ namespace SiliconStudio.Xenko.Graphics
                     throw new ArgumentException("Element size cannot be less or equal 0 for structured buffer");
             }
 
-            if ((bufferFlags & BufferFlags.RawBuffer) == BufferFlags.RawBuffer)
-                throw new NotImplementedException();
-
             if ((bufferFlags & BufferFlags.ArgumentBuffer) == BufferFlags.ArgumentBuffer)
                 NativeResourceState |= ResourceStates.IndirectArgument;
 
@@ -214,8 +211,11 @@ namespace SiliconStudio.Xenko.Graphics
                     }
                 };
 
-                if (((ViewFlags & BufferFlags.RawBuffer) == BufferFlags.RawBuffer))
+                if ((ViewFlags & BufferFlags.RawBuffer) == BufferFlags.RawBuffer)
+                {
                     description.Buffer.Flags |= BufferUnorderedAccessViewFlags.Raw;
+                    description.Format = Format.R32_Typeless;
+                }
 
                 uav = GraphicsDevice.UnorderedAccessViewAllocator.Allocate(1);
                 NativeDevice.CreateUnorderedAccessView(NativeResource, null, description, uav);
