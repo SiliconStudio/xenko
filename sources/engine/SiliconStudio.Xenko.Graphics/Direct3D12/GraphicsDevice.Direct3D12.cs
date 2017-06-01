@@ -286,6 +286,10 @@ namespace SiliconStudio.Xenko.Graphics
                             // This occurs when there are uninitialized descriptors in a descriptor table,
                             // even when a shader does not access the missing descriptors.
                             MessageId.InvalidDescriptorHandle,
+                            
+                            // These happen when capturing with VS diagnostics
+                            MessageId.MapInvalidNullRange,
+                            MessageId.UnmapInvalidNullRange,
                         };
 
                         // Disable irrelevant debug layer warnings
