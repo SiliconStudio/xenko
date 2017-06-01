@@ -8,14 +8,14 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
 {
     public class NodeViewModelValueChangedArgs : EventArgs
     {
-        public NodeViewModelValueChangedArgs(GraphViewModel viewModel, string nodePath)
+        public NodeViewModelValueChangedArgs(GraphViewModel viewModel, NodeViewModel node)
         {
             ViewModel = viewModel;
-            NodePath = nodePath;
+            Node = node;
         }
 
         public GraphViewModel ViewModel { get; private set; }
 
-        public string NodePath { get; private set; }
+        public NodeViewModel Node { get; private set; }
     }
 }

@@ -104,26 +104,9 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// </summary>
         public event EventHandler<NodeViewModelValueChangedArgs> NodeValueChanged;
 
-        [Pure]
-        public NodeViewModel ResolveNode(string path)
+        internal void NotifyNodeChanged(NodeViewModel node)
         {
-            var members = path.Split('.');
-            if (members[0] != RootNode.Name)
-                return null;
-
-            var currentNode = RootNode;
-            foreach (var member in members.Skip(1))
-            {
-                currentNode = currentNode.Children.FirstOrDefault(x => x.Name == member);
-                if (currentNode == null)
-                    return null;
-            }
-            return currentNode;
-        }
-
-        internal void NotifyNodeChanged(string nodePath)
-        {
-            NodeValueChanged?.Invoke(this, new NodeViewModelValueChangedArgs(this, nodePath));
+            NodeValueChanged?.Invoke(this, new NodeViewModelValueChangedArgs(this, node));
         }
     }
 }
