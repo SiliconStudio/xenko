@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private const GraphicsPlatform GraphicPlatform = GraphicsPlatform.Direct3D12;
 
-        internal readonly ConcurrentPool<List<Texture>> StagingResourceLists = new ConcurrentPool<List<Texture>>(() => new List<Texture>());
+        internal readonly ConcurrentPool<List<GraphicsResource>> StagingResourceLists = new ConcurrentPool<List<GraphicsResource>>(() => new List<GraphicsResource>());
         internal readonly ConcurrentPool<List<DescriptorHeap>> DescriptorHeapLists = new ConcurrentPool<List<DescriptorHeap>>(() => new List<DescriptorHeap>());
 
         private bool simulateReset = false;
