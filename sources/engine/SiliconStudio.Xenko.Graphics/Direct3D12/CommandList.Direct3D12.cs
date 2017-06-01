@@ -27,9 +27,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal readonly Queue<GraphicsCommandList> NativeCommandLists = new Queue<GraphicsCommandList>();
 
         private CompiledCommandList currentCommandList;
-
-        private RawRectangle[] nativeScissorRectangles = new RawRectangle[MaxViewportAndScissorRectangleCount];
-
+        
         private bool IsBoundedComputePipelineState => boundPipelineState != null && boundPipelineState.IsCompute;
 
         public static CommandList New(GraphicsDevice device)
@@ -266,7 +264,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (boundPipelineState != pipelineState && pipelineState?.CompiledState != null)
             {
                 // If scissor state changed, force a refresh
-                scissorsDirty |= (boundPipelineState?.HasScissorEnabled ?? false) != (pipelineState?.HasScissorEnabled ?? false);
+                scissorsDirty |= (boundPipelineState?.HasScissorEnabled ?? false) != pipelineState.HasScissorEnabled;
 
                 currentCommandList.NativeCommandList.PipelineState = pipelineState.CompiledState;
                 if(pipelineState.IsCompute)
@@ -288,12 +286,12 @@ namespace SiliconStudio.Xenko.Graphics
             });
         }
 
-        public void SetIndexBuffer(Buffer buffer, int offset, bool is32bits)
+        public void SetIndexBuffer(Buffer buffer, int offset, bool is32Bits)
         {
             currentCommandList.NativeCommandList.SetIndexBuffer(buffer != null ? (IndexBufferView?)new IndexBufferView
             {
                 BufferLocation = buffer.NativeResource.GPUVirtualAddress + offset,
-                Format = is32bits ? SharpDX.DXGI.Format.R32_UInt : SharpDX.DXGI.Format.R16_UInt,
+                Format = is32Bits ? SharpDX.DXGI.Format.R32_UInt : SharpDX.DXGI.Format.R16_UInt,
                 SizeInBytes = buffer.SizeInBytes - offset
             } : null);
         }
@@ -481,11 +479,8 @@ namespace SiliconStudio.Xenko.Graphics
         public void DrawAuto()
         {
             PrepareDraw();
-
-            //NativeDeviceContext.DrawAuto();
+            
             throw new NotImplementedException();
-
-            GraphicsDevice.FrameDrawCalls++;
         }
 
         /// <summary>
@@ -939,7 +934,7 @@ namespace SiliconStudio.Xenko.Graphics
                 var buffer = resource as Buffer;
                 if (buffer != null)
                 {
-                    SharpDX.Direct3D12.Resource uploadResource;
+                    Resource uploadResource;
                     int uploadOffset;
                     var uploadSize = region.Right - region.Left;
                     var uploadMemory = GraphicsDevice.AllocateUploadBuffer(region.Right - region.Left, out uploadResource, out uploadOffset);
