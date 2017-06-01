@@ -74,19 +74,12 @@ namespace SiliconStudio.Xenko.Rendering.BRDF
             return FresnelSchlick(f0, 1.0f, lOrVDotH);
         }
 
-        // Note: it does the same as pow(x, 5) except it does not fail with NAN in some cases (safer)
-        float3 Pow5(float3 x)
-        {
-	        float3 xx = x * x;
-	        return xx * xx * x;
-        }
-
         /// <summary>
         /// Calculate a Schlick approximation to Fresnel with f0, f90
         /// </summary>
         float3 FresnelSchlick(float3 f0, float3 f90, float lOrVDotH)
         {
-            return f0 + (f90 - f0) * Pow5(1 - lOrVDotH);
+            return f0 + (f90 - f0) * pow((1-lOrVDotH), 5);
         }
 
         // -------------------------------------------------
