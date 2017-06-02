@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             streams.NdotL = max(dot(streams.normalWS, streams.lightDirectionWS), 0.0001f);
 
             // Computes the shadowColor
-            streams.shadowColor = ComputeShadow(streams.PositionWS, lightIndex);
+            streams.shadowColor = ComputeShadow(streams.PositionWS.xyz, lightIndex);
 
             // Compute the final color with NdotL
             streams.lightColorNdotL = streams.lightColor * streams.shadowColor * streams.NdotL * streams.lightDirectAmbientOcclusion;
