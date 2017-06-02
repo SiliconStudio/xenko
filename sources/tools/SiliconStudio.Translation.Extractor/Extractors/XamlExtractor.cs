@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xaml;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
@@ -18,8 +19,21 @@ namespace SiliconStudio.Translation.Extractor
 
         protected override IEnumerable<Message> ExtractMessagesFromFile(UFile file)
         {
-            // Read all content
-            var reader = new XamlXmlReader(file.ToWindowsPath(), new XamlXmlReaderSettings { ProvideLineInfo = true });
+            try
+            {
+                // Read all content
+                var reader = new XamlXmlReader(file.ToWindowsPath(), new XamlXmlReaderSettings { ProvideLineInfo = true });
+                return DoExtractMessagesFromFile(file, reader);
+            }
+            catch (XamlException ex)
+            {
+                Console.Error.WriteLine($"{file.ToWindowsPath()}: {ex.Message}");
+                return Enumerable.Empty<Message>();
+            }
+        }
+
+        private IEnumerable<Message> DoExtractMessagesFromFile([NotNull] UFile file, [NotNull] XamlXmlReader reader)
+        {
             while (reader.Read())
             {
                 if (reader.NodeType != XamlNodeType.StartObject)
