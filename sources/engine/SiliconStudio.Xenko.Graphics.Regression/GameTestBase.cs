@@ -218,7 +218,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         {
             await base.LoadContent();
 
-            InitializeSimulatedInputSource();
+            if(!ForceInteractiveMode)
+                InitializeSimulatedInputSource();
 
 #if !SILICONSTUDIO_XENKO_UI_SDL
             // Disabled for SDL as a position of (0,0) actually means that the client area of the
