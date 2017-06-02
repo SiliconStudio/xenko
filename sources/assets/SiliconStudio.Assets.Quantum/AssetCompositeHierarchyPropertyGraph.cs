@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
@@ -140,7 +140,7 @@ namespace SiliconStudio.Assets.Quantum
                 var node = Container.NodeContainer.GetNode(part);
                 node[nameof(IAssetPartDesign<IIdentifiable>.Base)].Update(null);
                 // We must refresh the base to stop further update from the base asset to the instance parts
-                RefreshBase(node, null);
+                RefreshBase((IAssetNode)node, null);
             }
         }
 
@@ -307,13 +307,13 @@ namespace SiliconStudio.Assets.Quantum
                 clonerFlags |= AssetClonerFlags.ClearExternalReferences;
 
             var clonedHierarchy = AssetCloner.Clone(subTreeHierarchy, clonerFlags, externalReferences, out idRemapping);
-          
+
             // Now that we have fixed overrides (if needed), we can replace the initial hierarchy by the cloned one.
             rootNode[nameof(AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>.Hierarchy)].Update(clonedHierarchy);
             if ((flags & SubHierarchyCloneFlags.RemoveOverrides) == 0)
             {
                 // And we can apply overrides if needed, with proper (fixed) YamlAssetPath.
-                ApplyOverrides(rootNode, overrides);
+                ApplyOverrides((IAssetNode)rootNode, overrides);
             }
 
             return clonedHierarchy;
