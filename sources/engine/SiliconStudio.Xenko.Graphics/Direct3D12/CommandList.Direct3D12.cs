@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private CompiledCommandList currentCommandList;
         
-        private bool IsBoundedComputePipelineState => boundPipelineState != null && boundPipelineState.IsCompute;
+        private bool IsComputePipelineStateBound => boundPipelineState != null && boundPipelineState.IsCompute;
 
         public static CommandList New(GraphicsDevice device)
         {
@@ -369,7 +369,7 @@ namespace SiliconStudio.Xenko.Graphics
                     }
 
                     // Bind resource tables (note: once per using stage, until we solve how to choose shader registers effect-wide at compile time)
-                    if (IsBoundedComputePipelineState)
+                    if (IsComputePipelineStateBound)
                     {
                         for (int j = 0; j < srvBindCount; ++j)
                             currentCommandList.NativeCommandList.SetComputeRootDescriptorTable(descriptorTableIndex++, gpuSrvStart);
@@ -409,7 +409,7 @@ namespace SiliconStudio.Xenko.Graphics
                     }
 
                     // Bind resource tables (note: once per using stage, until we solve how to choose shader registers effect-wide at compile time)
-                    if (IsBoundedComputePipelineState)
+                    if (IsComputePipelineStateBound)
                     {
                         for (int j = 0; j < samplerBindCount; ++j)
                             currentCommandList.NativeCommandList.SetComputeRootDescriptorTable(descriptorTableIndex++, gpuSamplerStart);
