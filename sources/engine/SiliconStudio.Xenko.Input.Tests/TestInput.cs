@@ -312,7 +312,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             // Test putting both gamepads on the same index
             gamePad1.Index = 0;
             Assert.AreEqual(2, Input.GetGamePadsByIndex(0).Count());
-            Assert.IsEmpty(Input.GetGamePadsByIndex(1));
+            Assert.AreEqual(0, Input.GetGamePadsByIndex(1).Count());
 
             // Test reassign suggestions
             gamePad1.Index = Input.GetFreeGamePadIndex(gamePad1);

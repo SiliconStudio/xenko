@@ -53,7 +53,9 @@ namespace SiliconStudio.Xenko.Input
 
         private Dictionary<IInputSource, EventHandler<TrackingCollectionChangedEventArgs>> devicesCollectionChangedActions = new Dictionary<IInputSource, EventHandler<TrackingCollectionChangedEventArgs>>();
 
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
         private bool rawInputEnabled = false;
+#endif
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InputManager"/> class.

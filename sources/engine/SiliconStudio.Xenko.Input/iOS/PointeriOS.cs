@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Input
                 foreach (var item in touchesSet)
                 {
                     var uitouch = (UITouch)item;
-                    var pointerEvent = new PointerInputEvent();
+                    var pointerEvent = new PointerDeviceState.InputEvent();
                     var touchId = uitouch.Handle.ToInt32();
 
                     pointerEvent.Position = Normalize(CGPointToVector2(uitouch.LocationInView(uiControl.GameView)));
