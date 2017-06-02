@@ -105,8 +105,8 @@ namespace SiliconStudio.Xenko.Streaming
 
         private void GetMipSize(bool isBlockCompressed, int mipIndex, out int width, out int height)
         {
-            width = TotalWidth >> mipIndex;
-            height = TotalHeight >> mipIndex;
+            width = Math.Max(1, TotalWidth >> mipIndex);
+            height = Math.Max(1, TotalHeight >> mipIndex);
 
             if (isBlockCompressed && ((width % 4) != 0 || (height % 4) != 0))
             {
@@ -114,7 +114,7 @@ namespace SiliconStudio.Xenko.Streaming
                 height = unchecked((int)(((uint)(height + 3)) & ~(uint)3));
             }
         }
-        
+
         private void StreamingTask(int residency)
         {
             if (_cancellationToken.IsCancellationRequested)

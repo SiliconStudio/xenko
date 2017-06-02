@@ -247,8 +247,7 @@ namespace SiliconStudio.Xenko.Graphics.Data
                     ContentStorageHeader.Read(stream, out storageHeader);
 
                     // Deserialize whole texture to image without streaming feature
-                    var services = stream.Context.Tags.Get(ServiceRegistry.ServiceRegistryKey);
-                    DeserializeImage(services, textureData, ref imageDescription, ref storageHeader);
+                    DeserializeImage(textureData, ref imageDescription, ref storageHeader);
                 }
             }
             else
@@ -262,7 +261,7 @@ namespace SiliconStudio.Xenko.Graphics.Data
             return new Image();
         }
 
-        private static void DeserializeImage(IServiceRegistry services, Image obj, ref ImageDescription imageDescription, ref ContentStorageHeader storageHeader)
+        private static void DeserializeImage(Image obj, ref ImageDescription imageDescription, ref ContentStorageHeader storageHeader)
         {
             using (var content = new ContentStreamingService())
             {
@@ -282,8 +281,8 @@ namespace SiliconStudio.Xenko.Graphics.Data
                 int size = 0;
                 for (int mipIndex = 0; mipIndex < imageDescription.MipLevels; mipIndex++)
                 {
-                    int mipWidth = imageDescription.Width >> mipIndex;
-                    int mipHeight = imageDescription.Height >> mipIndex;
+                    int mipWidth = Math.Max(1, imageDescription.Width >> mipIndex);
+                    int mipHeight = Math.Max(1, imageDescription.Height >> mipIndex);
                     if (isBlockCompressed && ((mipWidth % 4) != 0 || (mipHeight % 4) != 0))
                     {
                         mipWidth = unchecked((int)(((uint)(mipWidth + 3)) & ~(uint)3));
@@ -299,6 +298,10 @@ namespace SiliconStudio.Xenko.Graphics.Data
                 }
                 size *= imageDescription.ArraySize;
 
+                // Preload chunks
+                for (int mipIndex = 0; mipIndex < imageDescription.MipLevels; mipIndex++)
+                    storage.GetChunk(mipIndex)?.GetData(fileProvider);
+
                 // Allocate buffer for image data
                 var buffer = Utilities.AllocateMemory(size);
 
@@ -312,8 +315,8 @@ namespace SiliconStudio.Xenko.Graphics.Data
                         {
                             for (int mipIndex = 0; mipIndex < imageDescription.MipLevels; mipIndex++)
                             {
-                                int mipWidth = imageDescription.Width >> mipIndex;
-                                int mipHeight = imageDescription.Height >> mipIndex;
+                                int mipWidth = Math.Max(1, imageDescription.Width >> mipIndex);
+                                int mipHeight = Math.Max(1, imageDescription.Height >> mipIndex);
                                 if (isBlockCompressed && ((mipWidth % 4) != 0 || (mipHeight % 4) != 0))
                                 {
                                     mipWidth = unchecked((int)(((uint)(mipWidth + 3)) & ~(uint)3));
@@ -324,7 +327,6 @@ namespace SiliconStudio.Xenko.Graphics.Data
                                 int widthPacked;
                                 int heightPacked;
                                 Image.ComputePitch(format, mipWidth, mipHeight, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
-
                                 var chunk = storage.GetChunk(mipIndex);
                                 if (chunk == null || chunk.Size != slicePitch * imageDescription.ArraySize)
                                     throw new ContentStreamingException("Data chunk is missing or has invalid size.", storage);
