@@ -435,9 +435,6 @@ namespace SiliconStudio.Xenko.Graphics.SDL
                     break;
 
                 case SDL.SDL_EventType.SDL_MOUSEWHEEL:
-                    // To match the Windows behavior we multiply the value by 120
-                    e.wheel.x *= 120;
-                    e.wheel.y *= 120;
                     MouseWheelActions?.Invoke(e.wheel);
                     break;
 
