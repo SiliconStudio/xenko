@@ -83,6 +83,7 @@ namespace SiliconStudio.Xenko.Input
                 if (forceCenter)
                 {
                     capturedPosition = uiControl.PointToScreen(new Point(uiControl.ClientSize.Width/2, uiControl.ClientSize.Height/2));
+                    Cursor.Position = capturedPosition;
                 }
                 isPositionLocked = true;
             }
