@@ -20,6 +20,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private PipelineState boundPipelineState;
         private readonly DescriptorHeap[] descriptorHeaps = new DescriptorHeap[2];
+        private readonly List<ResourceBarrier> resourceBarriers = new List<ResourceBarrier>(16);
 
         private readonly Dictionary<long, GpuDescriptorHandle> srvMapping = new Dictionary<long, GpuDescriptorHandle>();
         private readonly Dictionary<long, GpuDescriptorHandle> samplerMapping = new Dictionary<long, GpuDescriptorHandle>();
@@ -89,6 +90,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (currentCommandList.Builder != null)
                 return;
 
+            FlushResourceBarriers();
             ResetSrvHeap(true);
             ResetSamplerHeap(true);
 
@@ -114,6 +116,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns>The executable command list.</returns>
         public CompiledCommandList Close()
         {
+            FlushResourceBarriers();
+
             currentCommandList.NativeCommandList.Close();
 
             // Staging resources not updated anymore
@@ -246,6 +250,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.InvalidOperationException">Cannot GraphicsDevice.Draw*() without an effect being previously applied with Effect.Apply() method</exception>
         private void PrepareDraw()
         {
+            FlushResourceBarriers();
             SetViewportImpl();
         }
 
@@ -305,9 +310,23 @@ namespace SiliconStudio.Xenko.Graphics
             var targetState = (ResourceStates)newState;
             if (resource.IsTransitionNeeded(targetState))
             {
-                currentCommandList.NativeCommandList.ResourceBarrierTransition(resource.NativeResource, resource.NativeResourceState, targetState);
+                resourceBarriers.Add(new ResourceTransitionBarrier(resource.NativeResource, -1, resource.NativeResourceState, targetState));
                 resource.NativeResourceState = targetState;
             }
+        }
+        
+        private unsafe void FlushResourceBarriers()
+        {
+            int count = resourceBarriers.Count;
+            if (count == 0)
+                return;
+
+            var barriers = stackalloc ResourceBarrier[count];
+            for (int i = 0; i < count; i++)
+                barriers[i] = resourceBarriers[i];
+            resourceBarriers.Clear();
+
+            currentCommandList.NativeCommandList.ResourceBarrier(*barriers);
         }
 
         public void SetDescriptorSets(int index, DescriptorSet[] descriptorSets)
@@ -606,6 +625,7 @@ namespace SiliconStudio.Xenko.Graphics
         public unsafe void Clear(Texture renderTarget, Color4 color)
         {
             ResourceBarrierTransition(renderTarget, GraphicsResourceState.RenderTarget);
+            FlushResourceBarriers();
             currentCommandList.NativeCommandList.ClearRenderTargetView(renderTarget.NativeRenderTargetView, *(RawColor4*)&color);
         }
 
@@ -748,6 +768,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                 ResourceBarrierTransition(sourceTexture, GraphicsResourceState.CopySource);
                 ResourceBarrierTransition(destinationTexture, GraphicsResourceState.CopyDestination);
+                FlushResourceBarriers();
 
                 if (destinationTexture.Usage == GraphicsResourceUsage.Staging)
                 {
@@ -789,6 +810,7 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 ResourceBarrierTransition(sourceBuffer, GraphicsResourceState.CopySource);
                 ResourceBarrierTransition(destinationBuffer, GraphicsResourceState.CopyDestination);
+                FlushResourceBarriers();
 
                 currentCommandList.NativeCommandList.CopyResource(destinationBuffer.NativeResource, sourceBuffer.NativeResource);
 
@@ -826,6 +848,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                 ResourceBarrierTransition(source, GraphicsResourceState.CopySource);
                 ResourceBarrierTransition(destination, GraphicsResourceState.CopyDestination);
+                FlushResourceBarriers();
 
                 currentCommandList.NativeCommandList.CopyTextureRegion(
                     new TextureCopyLocation(destination.NativeResource, destinationSubResource),
@@ -847,6 +870,7 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 ResourceBarrierTransition(source, GraphicsResourceState.CopySource);
                 ResourceBarrierTransition(destination, GraphicsResourceState.CopyDestination);
+                FlushResourceBarriers();
 
                 currentCommandList.NativeCommandList.CopyBufferRegion(destination.NativeResource, dstX,
                     source.NativeResource, sourceRegion?.Left ?? 0, sourceRegion.HasValue ? sourceRegion.Value.Right - sourceRegion.Value.Left : ((Buffer)source).SizeInBytes);
@@ -927,6 +951,7 @@ namespace SiliconStudio.Xenko.Graphics
                 
                 // Trigger copy
                 ResourceBarrierTransition(resource, GraphicsResourceState.CopyDestination);
+                FlushResourceBarriers();
                 currentCommandList.NativeCommandList.CopyTextureRegion(new TextureCopyLocation(resource.NativeResource, subResourceIndex), region.Left, region.Top, region.Front, new TextureCopyLocation(nativeUploadTexture, 0), null);
             }
             else
@@ -942,6 +967,7 @@ namespace SiliconStudio.Xenko.Graphics
                     Utilities.CopyMemory(uploadMemory, databox.DataPointer, uploadSize);
 
                     ResourceBarrierTransition(resource, GraphicsResourceState.CopyDestination);
+                    FlushResourceBarriers();
                     currentCommandList.NativeCommandList.CopyBufferRegion(resource.NativeResource, region.Left, uploadResource, uploadOffset, uploadSize);
                 }
                 else
