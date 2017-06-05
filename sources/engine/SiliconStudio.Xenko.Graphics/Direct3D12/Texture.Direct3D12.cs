@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SharpDX.Direct3D12;
+using SharpDX.Mathematics.Interop;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Graphics
@@ -69,6 +70,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         private void InitializeFromImpl(DataBox[] dataBoxes = null)
         {
+            bool hasInitData = dataBoxes != null && dataBoxes.Length > 0;
+
             if (ParentTexture != null)
             {
                 ParentResource = ParentTexture;
@@ -77,6 +80,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (NativeDeviceChild == null)
             {
+                ClearValue? clearValue = GetClearValue();
+
                 ResourceDescription nativeDescription;
                 switch (Dimension)
                 {
@@ -100,30 +105,28 @@ namespace SiliconStudio.Xenko.Graphics
                 var currentResourceState = initialResourceState;
                 if (Usage == GraphicsResourceUsage.Staging)
                 {
-                    if (dataBoxes != null)
-                        throw new NotImplementedException();
+                    if (hasInitData)
+                        throw new NotImplementedException("D3D12: Staging textures can't be created with initial data.");
 
                     heapType = HeapType.Readback;
-                    initialResourceState = ResourceStates.CopyDestination;
-                    currentResourceState = ResourceStates.CopyDestination;
+                    NativeResourceState = ResourceStates.CopyDestination;
                     nativeDescription = ResourceDescription.Buffer(ComputeBufferTotalSize());
 
-                    // TODO: Alloc in readback heap as a buffer
-                    //return;
+                    // Staging textures on DirectX 12 use buffer internally
+                    NativeDeviceChild = GraphicsDevice.NativeDevice.CreateCommittedResource(new HeapProperties(heapType), HeapFlags.None, nativeDescription, NativeResourceState);
+
+                    return;
                 }
 
-                if (dataBoxes != null && dataBoxes.Length > 0)
+                if (hasInitData)
                     currentResourceState = ResourceStates.CopyDestination;
 
                 // TODO D3D12 move that to a global allocator in bigger committed resources
-                NativeDeviceChild = GraphicsDevice.NativeDevice.CreateCommittedResource(new HeapProperties(heapType), HeapFlags.None, nativeDescription, currentResourceState);
+                NativeDeviceChild = GraphicsDevice.NativeDevice.CreateCommittedResource(new HeapProperties(heapType), HeapFlags.None, nativeDescription, currentResourceState, clearValue);
                 GraphicsDevice.TextureMemory += (Depth*DepthStride) / (float)0x100000;
 
-                if (dataBoxes != null && dataBoxes.Length > 0)
+                if (hasInitData)
                 {
-                    if (Usage == GraphicsResourceUsage.Staging)
-                        throw new NotImplementedException("D3D12: Staging textures can't be created with initial data");
-
                     // Trigger copy
                     var commandList = GraphicsDevice.NativeCopyCommandList;
                     commandList.Reset(GraphicsDevice.NativeCopyCommandAllocator, null);
@@ -179,6 +182,7 @@ namespace SiliconStudio.Xenko.Graphics
             NativeShaderResourceView = GetShaderResourceView(ViewType, ArraySlice, MipLevel);
             NativeRenderTargetView = GetRenderTargetView(ViewType, ArraySlice, MipLevel);
             NativeDepthStencilView = GetDepthStencilView(out HasStencil);
+            NativeUnorderedAccessView = GetUnorderedAccessView(ViewType, ArraySlice, MipLevel);
         }
 
         protected internal override void OnDestroyed()
@@ -453,6 +457,72 @@ namespace SiliconStudio.Xenko.Graphics
             return descriptorHandle;
         }
 
+        private CpuDescriptorHandle GetUnorderedAccessView(ViewType viewType, int arrayOrDepthSlice, int mipIndex)
+        {
+            if (!IsUnorderedAccess)
+                return new CpuDescriptorHandle();
+
+            if (IsMultisample)
+                throw new NotSupportedException("Multisampling is not supported for unordered access views");
+            
+            int arrayCount;
+            int mipCount;
+            GetViewSliceBounds(viewType, ref arrayOrDepthSlice, ref mipIndex, out arrayCount, out mipCount);
+
+            // Create a Unordered Access view on this texture2D
+            var uavDescription = new UnorderedAccessViewDescription
+            {
+                Format = (SharpDX.DXGI.Format)ViewFormat
+            };
+
+            if (ArraySize > 1)
+            {
+                switch (Dimension)
+                {
+                    case TextureDimension.Texture1D:
+                        uavDescription.Dimension = UnorderedAccessViewDimension.Texture1DArray;
+                        break;
+                    case TextureDimension.TextureCube:
+                    case TextureDimension.Texture2D:
+                        uavDescription.Dimension = UnorderedAccessViewDimension.Texture2DArray;
+                        break;
+                    case TextureDimension.Texture3D:
+                        throw new NotSupportedException("Texture 3D is not supported for Texture Arrays");
+
+                }
+
+                uavDescription.Texture2DArray.ArraySize = arrayCount;
+                uavDescription.Texture2DArray.FirstArraySlice = arrayOrDepthSlice;
+                uavDescription.Texture2DArray.MipSlice = mipIndex;
+            }
+            else
+            {
+                switch (Dimension)
+                {
+                    case TextureDimension.Texture1D:
+                        uavDescription.Dimension = UnorderedAccessViewDimension.Texture1D;
+                        uavDescription.Texture1D.MipSlice = mipIndex;
+                        break;
+                    case TextureDimension.Texture2D:
+                        uavDescription.Dimension = UnorderedAccessViewDimension.Texture2D;
+                        uavDescription.Texture2D.MipSlice = mipIndex;
+                        break;
+                    case TextureDimension.Texture3D:
+                        uavDescription.Dimension = UnorderedAccessViewDimension.Texture3D;
+                        uavDescription.Texture3D.FirstWSlice = arrayOrDepthSlice;
+                        uavDescription.Texture3D.MipSlice = mipIndex;
+                        uavDescription.Texture3D.WSize = arrayCount;
+                        break;
+                    case TextureDimension.TextureCube:
+                        throw new NotSupportedException("TextureCube dimension is expecting an array size > 1");
+                }
+            }
+            
+            var descriptorHandle = GraphicsDevice.UnorderedAccessViewAllocator.Allocate(1);
+            NativeDevice.CreateUnorderedAccessView(NativeResource, null, uavDescription, descriptorHandle);
+            return descriptorHandle;
+        }
+
         internal static ResourceFlags GetBindFlagsFromTextureFlags(TextureFlags flags)
         {
             var result = ResourceFlags.None;
@@ -595,6 +665,33 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             return ResourceDescription.Texture2D(format, textureDescription.Width, textureDescription.Height, (short)textureDescription.ArraySize, (short)textureDescription.MipLevels, (short)textureDescription.MultisampleCount, 0, GetBindFlagsFromTextureFlags(flags));
+        }
+
+        internal ClearValue? GetClearValue()
+        {
+            if (IsDepthStencil)
+            {
+                return new ClearValue
+                {
+                    Format = ComputeDepthViewFormatFromTextureFormat(ViewFormat),
+                    DepthStencil = new DepthStencilValue
+                    {
+                        Depth = 1.0f,
+                        Stencil = 0,
+                    }
+                };
+            }
+
+            if (IsRenderTarget)
+            {
+                return new ClearValue
+                {
+                    Format = (SharpDX.DXGI.Format)textureDescription.Format,
+                    Color = new RawVector4(0, 0, 0, 1),
+                };
+            }
+
+            return null;
         }
 
         internal static PixelFormat ComputeShaderResourceFormatFromDepthFormat(PixelFormat format)

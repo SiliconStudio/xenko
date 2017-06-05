@@ -205,7 +205,6 @@ namespace SiliconStudio.Xenko.Engine.Tests
             IgnoreGraphicPlatform(GraphicsPlatform.OpenGL);
             IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
             IgnoreGraphicPlatform(GraphicsPlatform.Vulkan);
-            IgnoreGraphicPlatform(GraphicsPlatform.Direct3D12);
 
             RunGameTest(new TesselationTest());
         }

@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private const GraphicsPlatform GraphicPlatform = GraphicsPlatform.Direct3D12;
 
-        internal readonly ConcurrentPool<List<Texture>> StagingResourceLists = new ConcurrentPool<List<Texture>>(() => new List<Texture>());
+        internal readonly ConcurrentPool<List<GraphicsResource>> StagingResourceLists = new ConcurrentPool<List<GraphicsResource>>(() => new List<GraphicsResource>());
         internal readonly ConcurrentPool<List<DescriptorHeap>> DescriptorHeapLists = new ConcurrentPool<List<DescriptorHeap>>(() => new List<DescriptorHeap>());
 
         private bool simulateReset = false;
@@ -45,6 +45,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal DescriptorAllocator SamplerAllocator;
         internal DescriptorAllocator ShaderResourceViewAllocator;
+        internal DescriptorAllocator UnorderedAccessViewAllocator => ShaderResourceViewAllocator;
         internal DescriptorAllocator DepthStencilViewAllocator;
         internal DescriptorAllocator RenderTargetViewAllocator;
 
@@ -224,7 +225,8 @@ namespace SiliconStudio.Xenko.Graphics
             // Command lists are thread-safe and execute deferred
             IsDeferred = true;
 
-            if ((deviceCreationFlags & DeviceCreationFlags.Debug) != 0)
+            bool isDebug = (deviceCreationFlags & DeviceCreationFlags.Debug) != 0;
+            if (isDebug)
             {
                 SharpDX.Direct3D12.DebugInterface.Get().EnableDebugLayer();
             }
@@ -265,6 +267,49 @@ namespace SiliconStudio.Xenko.Graphics
 
             SrvHandleIncrementSize = NativeDevice.GetDescriptorHandleIncrementSize(DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView);
             SamplerHandleIncrementSize = NativeDevice.GetDescriptorHandleIncrementSize(DescriptorHeapType.Sampler);
+
+            if (isDebug)
+            {
+                var debugDevice = nativeDevice.QueryInterfaceOrNull<DebugDevice>();
+                if (debugDevice != null)
+                {
+                    var infoQueue = debugDevice.QueryInterfaceOrNull<InfoQueue>();
+                    if (infoQueue != null)
+                    {
+                        MessageId[] disabledMessages =
+                        {
+                            // This happens when render target or depth stencil clear value is diffrent
+                            // than provided during resource allocation.
+                            MessageId.CleardepthstencilviewMismatchingclearvalue,
+                            MessageId.ClearrendertargetviewMismatchingclearvalue,
+
+                            // This occurs when there are uninitialized descriptors in a descriptor table,
+                            // even when a shader does not access the missing descriptors.
+                            MessageId.InvalidDescriptorHandle,
+                            
+                            // These happen when capturing with VS diagnostics
+                            MessageId.MapInvalidNullRange,
+                            MessageId.UnmapInvalidNullRange,
+                        };
+
+                        // Disable irrelevant debug layer warnings
+                        InfoQueueFilter filter = new InfoQueueFilter
+                        {
+                            DenyList = new InfoQueueFilterDescription
+                            {
+                                Ids = disabledMessages
+                            }
+                        };
+                        infoQueue.AddStorageFilterEntries(filter);
+
+                        //infoQueue.SetBreakOnSeverity(MessageSeverity.Error, true);
+                        //infoQueue.SetBreakOnSeverity(MessageSeverity.Warning, true);
+
+                        infoQueue.Dispose();
+                    }
+                    debugDevice.Dispose();
+                }
+            }
 
             // Prepare pools
             CommandAllocators = new CommandAllocatorPool(this);
