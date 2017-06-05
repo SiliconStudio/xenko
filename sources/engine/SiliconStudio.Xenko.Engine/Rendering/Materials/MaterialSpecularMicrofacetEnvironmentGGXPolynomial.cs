@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     [Display("GGX+Schlick+ShclickGGX (Polynomial)")]
     public class MaterialSpecularMicrofacetEnvironmentGGXPolynomial : IMaterialSpecularMicrofacetEnvironmentFunction
     {
-        public ShaderSource Generate()
+        public ShaderSource Generate(MaterialGeneratorContext context)
         {
             return new ShaderClassSource("MaterialSpecularMicrofacetEnvironmentGGXPolynomial");
         }
