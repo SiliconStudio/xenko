@@ -13,15 +13,15 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     [Display("Flat Tessellation")]
     public class MaterialTessellationFlatFeature : MaterialTessellationBaseFeature
     {
-        public override void VisitFeature(MaterialGeneratorContext context)
+        public override void GenerateShader(MaterialGeneratorContext context)
         {
-            base.VisitFeature(context);
+            base.GenerateShader(context);
 
             if (HasAlreadyTessellationFeature)
                 return;
 
             // set the tessellation method used enumeration
-            context.Material.TessellationMethod |= XenkoTessellationMethod.Flat;
+            context.MaterialPass.TessellationMethod |= XenkoTessellationMethod.Flat;
 
             // create and affect the shader source
             var tessellationShader = new ShaderMixinSource();

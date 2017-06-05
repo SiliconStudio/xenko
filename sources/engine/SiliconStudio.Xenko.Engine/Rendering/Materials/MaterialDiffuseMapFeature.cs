@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [DataMemberCustomSerializer]
         public IComputeColor DiffuseMap { get; set; }
 
-        public override void VisitFeature(MaterialGeneratorContext context)
+        public override void GenerateShader(MaterialGeneratorContext context)
         {
             if (DiffuseMap != null)
             {
