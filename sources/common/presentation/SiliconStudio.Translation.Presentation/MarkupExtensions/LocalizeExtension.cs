@@ -127,7 +127,7 @@ namespace SiliconStudio.Translation.Presentation.MarkupExtensions
                 var count = ConverterHelper.ConvertToInt32(value, culture);
                 var result = string.IsNullOrEmpty(context)
                     ? TranslationManager.Instance.GetPluralString(text, plural, count, assembly)
-                    : TranslationManager.Instance.GetParticularPluralString(text, plural, count, context, assembly);
+                    : TranslationManager.Instance.GetParticularPluralString(text, context, plural, count, assembly);
                 return isStringFormat? string.Format(result, count) : result;
             }
 

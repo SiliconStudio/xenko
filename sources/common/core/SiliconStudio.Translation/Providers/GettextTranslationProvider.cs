@@ -65,7 +65,7 @@ namespace SiliconStudio.Translation.Providers
 
         /// <inheritdoc />
         /// <seealso cref="GettextResourceManager.GetParticularPluralString(string,string,string,long)"/>
-        public string GetParticularPluralString(string text, [NotNull] string textPlural, long count, [NotNull] string context)
+        public string GetParticularPluralString(string text, [NotNull] string context, [NotNull] string textPlural, long count)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
             if (textPlural == null) throw new ArgumentNullException(nameof(textPlural));
