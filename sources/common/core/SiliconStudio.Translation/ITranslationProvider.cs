@@ -42,11 +42,11 @@ namespace SiliconStudio.Translation
         /// choosing the right plural form depending on the <paramref name="count"/>.
         /// </summary>
         /// <param name="text">The text to translate.</param>
+        /// <param name="context">The particular context for the translation.</param>
         /// <param name="textPlural">The plural version of the text to translate.</param>
         /// <param name="count">The count used to determine the right plural form</param>
-        /// <param name="context">The particular context for the translation.</param>
         /// <returns>The translation of <paramref name="text"/> in the current culture; or <paramref name="text"/> if no translation is found.</returns>
         [NotNull]
-        string GetParticularPluralString([NotNull] string text, string textPlural, long count, string context);
+        string GetParticularPluralString([NotNull] string text, string context, string textPlural, long count);
     }
 }

@@ -84,16 +84,16 @@ namespace SiliconStudio.Translation
             }
 
             /// <inheritdoc />
-            public string GetParticularPluralString(string text, string textPlural, long count, string context)
+            public string GetParticularPluralString(string text, string context, string textPlural, long count)
             {
-                return GetParticularPluralString(text, textPlural, count, context, Assembly.GetCallingAssembly());
+                return GetParticularPluralString(text, context, textPlural, count, Assembly.GetCallingAssembly());
             }
 
             /// <inheritdoc />
-            public string GetParticularPluralString(string text, string textPlural, long count, string context, [NotNull] Assembly assembly)
+            public string GetParticularPluralString(string text, string context, string textPlural, long count, [NotNull] Assembly assembly)
             {
                 if (assembly == null) throw new ArgumentNullException(nameof(assembly));
-                return GetProvider(assembly)?.GetParticularPluralString(text, textPlural, count, context) ?? text;
+                return GetProvider(assembly)?.GetParticularPluralString(text, context, textPlural, count) ?? text;
             }
 
             /// <inheritdoc />

@@ -73,7 +73,7 @@ namespace SiliconStudio.Translation.Providers
         /// or <paramref name="textPlural"/> using the English rule for plurals (<paramref name="count"/> &gt; 1).
         /// The context is ignored.
         /// </remarks>
-        public string GetParticularPluralString(string text, string textPlural, long count, string context)
+        public string GetParticularPluralString(string text, string context, string textPlural, long count)
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
             // Note: context and plurals not supported by ResourceManager, fallback to the text or textPlural using English rule for plurals
