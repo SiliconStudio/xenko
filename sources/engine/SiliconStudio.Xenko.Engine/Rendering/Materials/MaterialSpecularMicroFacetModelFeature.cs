@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [DataMember(30)]
         [Display("Environment (DFG)")]
         [NotNull]
-        public IMaterialSpecularMicrofacetEnvironmentFunction Environment { get; set; } = new MaterialSpecularMicrofacetEnvironmentGGXPolynomial();
+        public IMaterialSpecularMicrofacetEnvironmentFunction Environment { get; set; } = new MaterialSpecularMicrofacetEnvironmentGGXLUT();
 
         public override void GenerateShader(MaterialGeneratorContext context)
         {
