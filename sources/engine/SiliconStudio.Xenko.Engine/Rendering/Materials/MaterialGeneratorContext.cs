@@ -63,6 +63,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         }
 
         /// <summary>
+        /// The graphics profile this material will be compatiable with.
+        /// </summary>
+        public GraphicsProfile GraphicsProfile { get; set; } = GraphicsProfile.Level_10_0;
+
+        /// <summary>
         /// Gets the compiled <see cref="Material"/>.
         /// </summary>
         public Material Material { get; }

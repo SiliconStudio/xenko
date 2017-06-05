@@ -48,8 +48,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public LightingTests()
         {
-            // 16 = Changed cubemap shadows to 1/z depth
-            CurrentVersion = 17; // Combination of light shaft and tessellation changes
+            CurrentVersion = 18; // Environment lighting GGX LUT
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
         }
 
