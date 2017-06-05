@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [DataMember(30)]
         [Display("Environment (DFG)")]
         [NotNull]
-        public IMaterialSpecularMicrofacetEnvironmentFunction Environment { get; set; } = new MaterialSpecularMicrofacetEnvironmentGGXPolynomial();
+        public IMaterialSpecularMicrofacetEnvironmentFunction Environment { get; set; } = new MaterialSpecularMicrofacetEnvironmentGGXLUT();
 
         public override void GenerateShader(MaterialGeneratorContext context)
         {
@@ -58,22 +58,22 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         {
             if (Fresnel != null)
             {
-                shaderSource.AddComposition("fresnelFunction", Fresnel.Generate());
+                shaderSource.AddComposition("fresnelFunction", Fresnel.Generate(context));
             }
 
             if (Visibility != null)
             {
-                shaderSource.AddComposition("geometricShadowingFunction", Visibility.Generate());
+                shaderSource.AddComposition("geometricShadowingFunction", Visibility.Generate(context));
             }
 
             if (NormalDistribution != null)
             {
-                shaderSource.AddComposition("normalDistributionFunction", NormalDistribution.Generate());
+                shaderSource.AddComposition("normalDistributionFunction", NormalDistribution.Generate(context));
             }
 
             if (Environment != null)
             {
-                shaderSource.AddComposition("environmentFunction", Environment.Generate());
+                shaderSource.AddComposition("environmentFunction", Environment.Generate(context));
             }
         }
 

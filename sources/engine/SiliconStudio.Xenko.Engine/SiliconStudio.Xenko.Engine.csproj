@@ -272,12 +272,19 @@
     <Compile Include="Rendering\MaterialPass.cs" />
     <Compile Include="Rendering\MaterialPassCollection.cs" />
     <Compile Include="Rendering\Materials\IMaterialSpecularMicrofacetEnvironmentFunction.cs" />
+    <Compile Include="Rendering\Materials\MaterialSpecularMicrofacetEnvironmentGGXLUT.cs" />
     <Compile Include="Rendering\Materials\MaterialSpecularMicrofacetEnvironmentThinGlass.cs" />
     <Compile Include="Rendering\Materials\MaterialSpecularThinGlassModelFeature.cs" />
     <Compile Include="Rendering\Materials\MaterialSpecularMicrofacetEnvironmentGGXPolynomial.cs" />
     <Compile Include="Rendering\Materials\MaterialSpecularMicrofacetFresnelThinGlass.cs" />
     <Compile Include="Rendering\Materials\Shaders\IMaterialSpecularMicrofacetEnvironmentFunction.cs">
       <DependentUpon>IMaterialSpecularMicrofacetEnvironmentFunction.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Materials\Shaders\MaterialSpecularMicrofacetEnvironmentGGXLUT.cs">
+      <DependentUpon>MaterialSpecularMicrofacetEnvironmentGGXLUT.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -791,6 +798,10 @@
     <None Include="Rendering\Materials\Shaders\IMaterialSpecularMicrofacetEnvironmentFunction.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>IMaterialSpecularMicrofacetEnvironmentFunction.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\Shaders\MaterialSpecularMicrofacetEnvironmentGGXLUT.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSpecularMicrofacetEnvironmentGGXLUT.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Materials\Shaders\MaterialSpecularMicrofacetEnvironmentThinGlass.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>

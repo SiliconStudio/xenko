@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private MaterialTests(Func<MaterialTests, Material> createMaterial)
         {
-            CurrentVersion = 7; // IsEnergyConservative
+            CurrentVersion = 8; // Environment lighting GGX LUT
             this.createMaterial = createMaterial;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
         }

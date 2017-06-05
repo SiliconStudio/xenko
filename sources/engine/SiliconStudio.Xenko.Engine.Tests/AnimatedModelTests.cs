@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
         public AnimatedModelTests()
         {
-            CurrentVersion = 15; // IsEnergyConservative
+            CurrentVersion = 16; // Environment lighting GGX LUT
 
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_3 };

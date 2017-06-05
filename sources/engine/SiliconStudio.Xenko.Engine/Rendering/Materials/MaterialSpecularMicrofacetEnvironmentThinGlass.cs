@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     [Display("Thin Glass")]
     public class MaterialSpecularMicrofacetEnvironmentThinGlass : IMaterialSpecularMicrofacetEnvironmentFunction
     {
-        public ShaderSource Generate()
+        public ShaderSource Generate(MaterialGeneratorContext context)
         {
             return new ShaderClassSource("MaterialSpecularMicrofacetEnvironmentThinGlass");
         }
