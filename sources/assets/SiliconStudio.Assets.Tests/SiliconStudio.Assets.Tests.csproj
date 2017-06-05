@@ -7,6 +7,7 @@
     <RootNamespace>SiliconStudio.Assets.Tests</RootNamespace>
     <AssemblyName>SiliconStudio.Assets.Tests</AssemblyName>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
     <SiliconStudioXenkoOutputFolder>Tests\$(AssemblyName)</SiliconStudioXenkoOutputFolder>
@@ -52,6 +53,7 @@
     <Compile Include="TestAssetReferenceCollection.cs" />
     <Compile Include="TestAssetUpgrade.cs" />
     <Compile Include="TestBase.cs" />
+    <Compile Include="TestCompiler.cs" />
     <Compile Include="TestDependencyManager.cs" />
     <Compile Include="TestDerivedAssets.cs" />
     <Compile Include="TestDynamicYaml.cs" />
