@@ -149,8 +149,7 @@ namespace SiliconStudio.Assets.Analysis
 
         private class RuntimeDependenciesCollector : AssetVisitorBase
         {
-            private bool writeReferences;
-            private object stopperObject;
+            private object visitedRuntimeObject;
             private readonly HashSet<IReference> references = new HashSet<IReference>();
             private readonly HashSet<Type> types;
 
@@ -167,14 +166,14 @@ namespace SiliconStudio.Assets.Analysis
 
             public override void VisitObject(object obj, ObjectDescriptor descriptor, bool visitMembers)
             {
-                if (obj != null && types.Any(x => x.IsInstanceOfType(obj)))
+                var enteringRuntimeObject = visitedRuntimeObject == null && types.Any(x => x.IsInstanceOfType(obj));
+                if (enteringRuntimeObject)
                 {
                     //from now on we want store references
-                    writeReferences = true;
-                    stopperObject = obj;
+                    visitedRuntimeObject = obj;
                 }
 
-                if (!writeReferences)
+                if (visitedRuntimeObject == null)
                 {
                     base.VisitObject(obj, descriptor, visitMembers);
                 }
@@ -200,11 +199,10 @@ namespace SiliconStudio.Assets.Analysis
                     }
                 }
 
-                if (stopperObject != null && stopperObject == obj)
+                if (enteringRuntimeObject)
                 {
                     //from now on we stop storing references
-                    writeReferences = true;
-                    stopperObject = null;
+                    visitedRuntimeObject = null;
                 }
             }
         }
