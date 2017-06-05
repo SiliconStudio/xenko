@@ -55,7 +55,10 @@ namespace SiliconStudio.Xenko.Rendering
         public static Material New(GraphicsDevice device, MaterialDescriptor descriptor)
         {
             if (descriptor == null) throw new ArgumentNullException("descriptor");
-            var context = new MaterialGeneratorContext(new Material());
+            var context = new MaterialGeneratorContext(new Material())
+            {
+                GraphicsProfile = device.Features.RequestedProfile,
+            };
             var result = MaterialGenerator.Generate(descriptor, context, string.Format("{0}:RuntimeMaterial", descriptor.MaterialId));
 
             if (result.HasErrors)

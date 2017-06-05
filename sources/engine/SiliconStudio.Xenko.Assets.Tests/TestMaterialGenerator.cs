@@ -323,7 +323,7 @@ Compositions:
                                                     -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                                 Compositions:
                                                     environmentFunction: !ShaderClassSource
-                                                        ClassName: MaterialSpecularMicrofacetEnvironmentGGXPolynomial
+                                                        ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                                     fresnelFunction: !ShaderClassSource
                                                         ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                                     geometricShadowingFunction: !ShaderClassSource
@@ -476,7 +476,7 @@ Compositions:
                                                     -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                                 Compositions:
                                                     environmentFunction: !ShaderClassSource
-                                                        ClassName: MaterialSpecularMicrofacetEnvironmentGGXPolynomial
+                                                        ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                                     fresnelFunction: !ShaderClassSource
                                                         ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                                     geometricShadowingFunction: !ShaderClassSource
@@ -690,7 +690,7 @@ Compositions:
                                                     -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                                 Compositions:
                                                     environmentFunction: !ShaderClassSource
-                                                        ClassName: MaterialSpecularMicrofacetEnvironmentGGXPolynomial
+                                                        ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                                     fresnelFunction: !ShaderClassSource
                                                         ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                                     geometricShadowingFunction: !ShaderClassSource
@@ -814,7 +814,7 @@ Compositions:
                                                     -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                                 Compositions:
                                                     environmentFunction: !ShaderClassSource
-                                                        ClassName: MaterialSpecularMicrofacetEnvironmentGGXPolynomial
+                                                        ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                                     fresnelFunction: !ShaderClassSource
                                                         ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                                     geometricShadowingFunction: !ShaderClassSource
