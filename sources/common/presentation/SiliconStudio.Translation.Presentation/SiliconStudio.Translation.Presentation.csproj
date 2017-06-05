@@ -48,11 +48,6 @@
       <Name>SiliconStudio.Translation</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Presentation\SiliconStudio.Presentation.csproj">
-      <Project>{47afcc2e-e9f0-47d6-9d75-9e646546a92b}</Project>
-      <Name>SiliconStudio.Presentation</Name>
-      <Private>False</Private>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
