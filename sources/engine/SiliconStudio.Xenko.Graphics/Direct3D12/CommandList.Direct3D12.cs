@@ -613,6 +613,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.InvalidOperationException"></exception>
         public void Clear(Texture depthStencilBuffer, DepthStencilClearOptions options, float depth = 1, byte stencil = 0)
         {
+            ResourceBarrierTransition(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsResourceState.DepthWrite);
+            FlushResourceBarriers();
             currentCommandList.NativeCommandList.ClearDepthStencilView(depthStencilBuffer.NativeDepthStencilView, (ClearFlags)options, depth, stencil);
         }
 
