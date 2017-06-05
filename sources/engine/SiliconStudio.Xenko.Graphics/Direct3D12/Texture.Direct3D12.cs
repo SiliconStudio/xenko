@@ -105,15 +105,55 @@ namespace SiliconStudio.Xenko.Graphics
                 var currentResourceState = initialResourceState;
                 if (Usage == GraphicsResourceUsage.Staging)
                 {
-                    if (hasInitData)
-                        throw new NotImplementedException("D3D12: Staging textures can't be created with initial data.");
-
                     heapType = HeapType.Readback;
                     NativeResourceState = ResourceStates.CopyDestination;
-                    nativeDescription = ResourceDescription.Buffer(ComputeBufferTotalSize());
+                    int totalSize = ComputeBufferTotalSize();
+                    nativeDescription = ResourceDescription.Buffer(totalSize);
 
                     // Staging textures on DirectX 12 use buffer internally
                     NativeDeviceChild = GraphicsDevice.NativeDevice.CreateCommittedResource(new HeapProperties(heapType), HeapFlags.None, nativeDescription, NativeResourceState);
+
+                    if (hasInitData)
+                    {
+                        var commandList = GraphicsDevice.NativeCopyCommandList;
+                        commandList.Reset(GraphicsDevice.NativeCopyCommandAllocator, null);
+                        
+                        Resource uploadResource;
+                        int uploadOffset;
+                        var uploadMemory = GraphicsDevice.AllocateUploadBuffer(totalSize, out uploadResource, out uploadOffset, TextureSubresourceAlignment);
+                        
+                        // Copy data to the upload buffer
+                        int dataBoxIndex = 0;
+                        var uploadMemoryMipStart = uploadMemory;
+                        for (int arraySlice = 0; arraySlice < ArraySize; arraySlice++)
+                        {
+                            for (int mipLevel = 0; mipLevel < MipLevels; mipLevel++)
+                            {
+                                var databox = dataBoxes[dataBoxIndex++];
+                                var mipHeight = CalculateMipSize(Width, mipLevel);
+                                var mipRowPitch = ComputeRowPitch(mipLevel);
+
+                                var uploadMemoryCurrent = uploadMemoryMipStart;
+                                var dataPointerCurrent = databox.DataPointer;
+                                for (int rowIndex = 0; rowIndex < mipHeight; rowIndex++)
+                                {
+                                    Utilities.CopyMemory(uploadMemoryCurrent, dataPointerCurrent, mipRowPitch);
+                                    uploadMemoryCurrent += mipRowPitch;
+                                    dataPointerCurrent += databox.RowPitch;
+                                }
+
+                                uploadMemoryMipStart += ComputeSubresourceSize(mipLevel);
+                            }
+                        }
+                        
+                        // Copy from upload heap to actual resource
+                        commandList.CopyBufferRegion(NativeResource, 0, uploadResource, uploadOffset, totalSize);
+                        
+                        commandList.Close();
+
+                        StagingFenceValue = 0;
+                        GraphicsDevice.WaitCopyQueue();
+                    }
 
                     return;
                 }
