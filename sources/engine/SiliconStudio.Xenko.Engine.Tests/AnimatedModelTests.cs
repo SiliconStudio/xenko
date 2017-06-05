@@ -30,18 +30,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
         public AnimatedModelTests()
         {
-            // CurrentVersion = 3;
-            //CurrentVersion = 4; // Changed FBX importer to allow ByEdge mapping
-            //CurrentVersion = 5; // Fix normal maps
-            //CurrentVersion = 6; // Fix normal maps again
-            //CurrentVersion = 7; // Noise due to changing normals from signed to unsigned
-            //CurrentVersion = 8; // Changes in FBX importer (Use GetMeshEdgeIndexForPolygon() instead of GetMeshEdgeIndex() )
-            //CurrentVersion = 9; // MSBUild tests
-            //CurrentVersion = 10; // Build machine changed
-            //CurrentVersion = 11; // Additive animation samples added
-            //CurrentVersion = 12; // Delta time is fixed, animation times are manually set
-            //CurrentVersion = 13; // Changed the scale of the models to reduce aliasing problems in tests
-            CurrentVersion = 14;    // Disabling the additive animation until a less noisy model/animation is found
+            CurrentVersion = 15; // IsEnergyConservative
 
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_3 };

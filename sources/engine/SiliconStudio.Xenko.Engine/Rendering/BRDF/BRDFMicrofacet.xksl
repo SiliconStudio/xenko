@@ -191,7 +191,7 @@ namespace SiliconStudio.Xenko.Rendering.BRDF
             return VisibilityhSchlickGGX(alphaR, nDotL) * VisibilityhSchlickGGX(alphaR, nDotV) / (nDotL * nDotV);
         }
 
-        float3 EnvironmentLightingDFG_GGX_Fresnel_SmithSchlickGGX( float3 specularColor, float alphaR, float nDotV )
+        float3 EnvironmentLightingDFG_GGX_Schlick_SmithSchlickGGX( float3 specularColor, float alphaR, float nDotV )
         {
             float x = 1 - alphaR;
             float y = nDotV;

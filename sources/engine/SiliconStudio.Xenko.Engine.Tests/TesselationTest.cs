@@ -127,7 +127,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
                 return;
 
             spriteBatch.Begin(GraphicsContext);
-            spriteBatch.DrawString(font, "Desired triangle size: {0}".ToFormat(currentMaterial.Parameters.Get(TessellationKeys.DesiredTriangleSize)), new Vector2(0), Color.Black);
+            spriteBatch.DrawString(font, "Desired triangle size: {0}".ToFormat(currentMaterial.Passes[0].Parameters.Get(TessellationKeys.DesiredTriangleSize)), new Vector2(0), Color.Black);
             spriteBatch.DrawString(font, "FPS: {0}".ToFormat(DrawTime.FramePerSecond), new Vector2(0, 20), Color.Black);
             spriteBatch.End();
         }
@@ -160,8 +160,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
             if(currentMaterial == null)
                 return;
 
-            var oldValue = currentMaterial.Parameters.Get(TessellationKeys.DesiredTriangleSize);
-            currentMaterial.Parameters.Set(TessellationKeys.DesiredTriangleSize, oldValue + f);
+            var oldValue = currentMaterial.Passes[0].Parameters.Get(TessellationKeys.DesiredTriangleSize);
+            currentMaterial.Passes[0].Parameters.Set(TessellationKeys.DesiredTriangleSize, oldValue + f);
         }
 
         private void ChangeModel(int offset)
