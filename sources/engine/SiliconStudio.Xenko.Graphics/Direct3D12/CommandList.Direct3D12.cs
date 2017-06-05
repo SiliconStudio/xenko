@@ -767,33 +767,48 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 var sourceParent = sourceTexture.ParentTexture ?? sourceTexture;
                 var destinationParent = destinationTexture.ParentTexture ?? destinationTexture;
-
-                ResourceBarrierTransition(sourceTexture, GraphicsResourceState.CopySource);
-                ResourceBarrierTransition(destinationTexture, GraphicsResourceState.CopyDestination);
-                FlushResourceBarriers();
-
+                
                 if (destinationTexture.Usage == GraphicsResourceUsage.Staging)
                 {
-                    int copyOffset = 0;
-                    for (int arraySlice = 0; arraySlice < sourceParent.ArraySize; ++arraySlice)
+                    // Copy staging texture -> staging texture
+                    if (sourceTexture.Usage == GraphicsResourceUsage.Staging)
                     {
-                        for (int mipLevel = 0; mipLevel < sourceParent.MipLevels; ++mipLevel)
-                        {
-                            currentCommandList.NativeCommandList.CopyTextureRegion(new TextureCopyLocation(destinationTexture.NativeResource,
-                                new PlacedSubResourceFootprint
-                                {
-                                    Footprint =
-                                    {
-                                        Width = Texture.CalculateMipSize(destinationTexture.Width, mipLevel),
-                                        Height = Texture.CalculateMipSize(destinationTexture.Height, mipLevel),
-                                        Depth = Texture.CalculateMipSize(destinationTexture.Depth, mipLevel),
-                                        Format = (SharpDX.DXGI.Format)destinationTexture.Format,
-                                        RowPitch = destinationTexture.ComputeRowPitch(mipLevel),
-                                    },
-                                    Offset = copyOffset,
-                                }), 0, 0, 0, new TextureCopyLocation(sourceTexture.NativeResource, arraySlice * sourceParent.MipLevels + mipLevel), null);
+                        var size = destinationTexture.ComputeBufferTotalSize();
+                        var destinationMapped = destinationTexture.NativeResource.Map(0);
+                        var sourceMapped = sourceTexture.NativeResource.Map(0, new Range { Begin = 0, End = size });
 
-                            copyOffset += destinationTexture.ComputeSubresourceSize(mipLevel);
+                        Utilities.CopyMemory(destinationMapped, sourceMapped, size);
+
+                        sourceTexture.NativeResource.Unmap(0);
+                        destinationTexture.NativeResource.Unmap(0);
+                    }
+                    else
+                    {
+                        ResourceBarrierTransition(sourceTexture, GraphicsResourceState.CopySource);
+                        ResourceBarrierTransition(destinationTexture, GraphicsResourceState.CopyDestination);
+                        FlushResourceBarriers();
+
+                        int copyOffset = 0;
+                        for (int arraySlice = 0; arraySlice < sourceParent.ArraySize; ++arraySlice)
+                        {
+                            for (int mipLevel = 0; mipLevel < sourceParent.MipLevels; ++mipLevel)
+                            {
+                                currentCommandList.NativeCommandList.CopyTextureRegion(new TextureCopyLocation(destinationTexture.NativeResource,
+                                    new PlacedSubResourceFootprint
+                                    {
+                                        Footprint =
+                                        {
+                                            Width = Texture.CalculateMipSize(destinationTexture.Width, mipLevel),
+                                            Height = Texture.CalculateMipSize(destinationTexture.Height, mipLevel),
+                                            Depth = Texture.CalculateMipSize(destinationTexture.Depth, mipLevel),
+                                            Format = (SharpDX.DXGI.Format)destinationTexture.Format,
+                                            RowPitch = destinationTexture.ComputeRowPitch(mipLevel),
+                                        },
+                                        Offset = copyOffset,
+                                    }), 0, 0, 0, new TextureCopyLocation(sourceTexture.NativeResource, arraySlice * sourceParent.MipLevels + mipLevel), null);
+
+                                copyOffset += destinationTexture.ComputeSubresourceSize(mipLevel);
+                            }
                         }
                     }
 
@@ -804,6 +819,10 @@ namespace SiliconStudio.Xenko.Graphics
                 }
                 else
                 {
+                    ResourceBarrierTransition(sourceTexture, GraphicsResourceState.CopySource);
+                    ResourceBarrierTransition(destinationTexture, GraphicsResourceState.CopyDestination);
+                    FlushResourceBarriers();
+
                     currentCommandList.NativeCommandList.CopyResource(destinationTexture.NativeResource, sourceTexture.NativeResource);
                 }
             }
