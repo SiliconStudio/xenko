@@ -85,11 +85,6 @@ namespace SiliconStudio.BuildEngine
                 if(buildStep.Processed)
                     continue;
 
-                if (buildStep is WaitBuildStep)
-                {
-                    throw new InvalidOperationException("WaitBuildStep are not supported as direct child of DynamicBuildStep");
-                }
-
                 // Schedule build step
                 executeContext.ScheduleBuildStep(buildStep);
                 buildStepsToWait.Add(buildStep);
