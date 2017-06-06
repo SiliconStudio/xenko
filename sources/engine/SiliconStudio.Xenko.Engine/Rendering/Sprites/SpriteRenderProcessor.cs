@@ -14,6 +14,8 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
     /// </summary>
     internal class SpriteRenderProcessor : EntityProcessor<SpriteComponent, SpriteRenderProcessor.SpriteInfo>, IEntityComponentRenderProcessor
     {
+        private StreamingManager streamingManager;
+
         public VisibilityGroup VisibilityGroup { get; set; }
 
         /// <summary>
@@ -24,10 +26,24 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         {
         }
 
+        /// <inheritdoc />
+        protected internal override void OnSystemAdd()
+        {
+            base.OnSystemAdd();
+
+            streamingManager = Services.GetServiceAs<StreamingManager>();
+        }
+
+        /// <inheritdoc />
+        protected internal override void OnSystemRemove()
+        {
+            streamingManager = null;
+
+            base.OnSystemRemove();
+        }
+
         public override void Draw(RenderContext gameTime)
         {
-            var streamingManager = Services.GetServiceAs<StreamingManager>();
-
             foreach (var spriteStateKeyPair in ComponentDatas)
             {
                 var renderSprite = spriteStateKeyPair.Value.RenderSprite;
