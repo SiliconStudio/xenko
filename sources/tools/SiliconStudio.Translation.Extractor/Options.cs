@@ -6,6 +6,8 @@ namespace SiliconStudio.Translation.Extractor
 {
     internal class Options
     {
+        public bool Backup { get; set; }
+
         public List<string> InputDirs { get; } = new List<string>();
 
         public List<string> InputFiles { get; } = new List<string>();

@@ -37,13 +37,23 @@ namespace SiliconStudio.Translation.Extractor
 
         public void Save()
         {
-            if (File.Exists(Options.OutputFile))
+            if (Options.Backup && File.Exists(Options.OutputFile))
             {
                 var bakFileName = Options.OutputFile + ".bak";
                 File.Copy(Options.OutputFile, bakFileName, true);
                 File.Delete(Options.OutputFile);
+                Log($"Created backup file '{bakFileName}'.");
             }
             Catalog.Save(Options.OutputFile);
+            Log($"Exported messages to '{Options.OutputFile}'.");
+        }
+
+        private void Log(string message)
+        {
+            if (!Options.Verbose)
+                return;
+
+            Console.WriteLine(message);
         }
 
         private void MergeMessage([NotNull] Message message)

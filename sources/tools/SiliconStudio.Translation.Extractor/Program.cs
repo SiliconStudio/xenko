@@ -18,12 +18,13 @@ namespace SiliconStudio.Translation.Extractor
             new LongOpt("directory", Argument.Required, null, 'D'),
             new LongOpt("recursive", Argument.No, null, 'r'),
             new LongOpt("merge", Argument.No, null, 'm'),
-            new LongOpt("default-domain", Argument.Required, null, 'd'),
+            new LongOpt("domain-name", Argument.Required, null, 'd'),
+            new LongOpt("backup", Argument.No, null, 'b'),
             new LongOpt("output", Argument.Required, null, 'o'),
             new LongOpt("help", Argument.No, null, 'h'),
             new LongOpt("verbose", Argument.No, null, 'v'),
         };
-        private static readonly string SOpts = "-:D:rmd:o:hv";
+        private static readonly string SOpts = "-:D:rmd:bo:hv";
 
         private static int Main([NotNull] string[] args)
         {
@@ -152,6 +153,10 @@ namespace SiliconStudio.Translation.Extractor
                             options.OutputFile = $"{getopt.Optarg}.pot";
                             break;
 
+                        case 'b':
+                            options.Backup = true;
+                            break;
+
                         case 'm':
                             options.Overwrite = false;
                             break;
@@ -209,6 +214,7 @@ namespace SiliconStudio.Translation.Extractor
                 $"                                          Use multiples options to specify more directories{newLine}{newLine}" +
                 $"   -r, --recursive                        Process all subdirectories{newLine}{newLine}" +
                 $"   -d, --domain-name=name                 Use name.pot for output (instead of messages.pot){newLine}{newLine}" +
+                $"   -b, --backup                           Create a backup file (.bak) in case of an existing file{newLine}{newLine}" +
                 $"   -o file, --output=file                 Write output to specified file (instead of name.po or messages.po) {newLine}{newLine}" +
                 $"   -m, --merge                            Merge with existing file instead of overwriting it{newLine}{newLine}" +
                 $"   -v, --verbose                          Verbose output{newLine}{newLine}" +
