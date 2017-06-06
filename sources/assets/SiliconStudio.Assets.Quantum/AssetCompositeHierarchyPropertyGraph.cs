@@ -312,6 +312,8 @@ namespace SiliconStudio.Assets.Quantum
             rootNode[nameof(AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>.Hierarchy)].Update(clonedHierarchy);
             if ((flags & SubHierarchyCloneFlags.RemoveOverrides) == 0)
             {
+                // Remap indices of parts in Hierarchy.Part
+                AssetCloningHelper.RemapIdentifiablePaths(overrides, idRemapping);
                 // And we can apply overrides if needed, with proper (fixed) YamlAssetPath.
                 ApplyOverrides((IAssetNode)rootNode, overrides);
             }

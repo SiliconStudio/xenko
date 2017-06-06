@@ -13,7 +13,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <summary>
         /// Generates the shader class source used for the shader composition.
         /// </summary>
+        /// <param name="context"></param>
         /// <returns>ShaderSource.</returns>
-        ShaderSource Generate();
+        ShaderSource Generate(MaterialGeneratorContext context);
     }
 }
