@@ -14,11 +14,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     {
         [DataMember(-20)]
         [DefaultValue(true)]
-        public bool Enabled { get; set; }
+        public bool Enabled { get; set; } = true;
 
         protected MaterialFeature()
         {
-            Enabled = true;
         }
 
         public void Visit(MaterialGeneratorContext context)
@@ -26,13 +25,29 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             if (!Enabled)
                 return;
 
-            VisitFeature(context);
+            switch (context.Step)
+            {
+                case MaterialGeneratorStep.PassesEvaluation:
+                    MultipassGeneration(context);
+                    break;
+                case MaterialGeneratorStep.GenerateShader:
+                    GenerateShader(context);
+                    break;
+            }
         }
 
         /// <summary>
-        /// Generates the for the feature shader.
+        /// Called during prepass, used to enumerate extra passes.
         /// </summary>
         /// <param name="context">The context.</param>
-        public abstract void VisitFeature(MaterialGeneratorContext context);
+        public virtual void MultipassGeneration(MaterialGeneratorContext context)
+        {
+        }
+
+        /// <summary>
+        /// Generates the shader for the feature.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        public abstract void GenerateShader(MaterialGeneratorContext context);
     }
 }

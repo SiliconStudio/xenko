@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     [Display("Implicit")]
     public class MaterialSpecularMicrofacetVisibilityImplicit : IMaterialSpecularMicrofacetVisibilityFunction
     {
-        public ShaderSource Generate()
+        public ShaderSource Generate(MaterialGeneratorContext context)
         {
             return new ShaderClassSource("MaterialSpecularMicrofacetVisibilityImplicit");
         }

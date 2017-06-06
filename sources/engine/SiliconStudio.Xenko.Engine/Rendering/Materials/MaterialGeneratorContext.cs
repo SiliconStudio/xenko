@@ -3,28 +3,46 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
+    public enum MaterialGeneratorStep
+    {
+        /// <summary>
+        /// Generates multipass materials.
+        /// </summary>
+        PassesEvaluation,
+
+        /// <summary>
+        /// Generates shader.
+        /// </summary>
+        GenerateShader,
+    }
+
     /// <summary>
     /// Main entry point class for generating shaders from a <see cref="MaterialDescriptor"/>
     /// </summary>
     public class MaterialGeneratorContext : ShaderGeneratorContext
     {
+        public const int DefaultFinalCallbackOrder = 0;
+
         public delegate void MaterialGeneratorCallback(MaterialShaderStage stage, MaterialGeneratorContext context);
 
         private readonly Dictionary<string, ShaderSource> registeredStreamBlend = new Dictionary<string, ShaderSource>();
 
         private readonly Dictionary<KeyValuePair<MaterialShaderStage, Type>, ShaderSource> finalInputStreamModifiers = new Dictionary<KeyValuePair<MaterialShaderStage, Type>, ShaderSource>();
 
-        private readonly Dictionary<MaterialShaderStage, List<MaterialGeneratorCallback>> finalCallbacks = new Dictionary<MaterialShaderStage, List<MaterialGeneratorCallback>>();
+        private readonly Dictionary<MaterialShaderStage, List<(int Order, MaterialGeneratorCallback Callback)>> finalCallbacks = new Dictionary<MaterialShaderStage, List<(int, MaterialGeneratorCallback)>>();
 
         private readonly Stack<IMaterialDescriptor> materialStack = new Stack<IMaterialDescriptor>();
 
         private MaterialBlendLayerContext currentLayerContext;
+
+        private string multipassModule;
 
         /// <summary>
         /// Initializes a new instance of <see cref="MaterialGeneratorContext"/>.
@@ -33,11 +51,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         public MaterialGeneratorContext(Material material = null)
         {
             this.Material = material ?? new Material();
-            Parameters = this.Material.Parameters;
 
             foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
             {
-                finalCallbacks[stage] = new List<MaterialGeneratorCallback>();
+                finalCallbacks[stage] = new List<(int, MaterialGeneratorCallback)>();
             }
 
             // By default return the asset
@@ -46,17 +63,63 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         }
 
         /// <summary>
-        /// Gets the compiled Material
+        /// The graphics profile this material will be compatiable with.
+        /// </summary>
+        public GraphicsProfile GraphicsProfile { get; set; } = GraphicsProfile.Level_10_0;
+
+        /// <summary>
+        /// Gets the compiled <see cref="Material"/>.
         /// </summary>
         public Material Material { get; }
 
-        public void AddFinalCallback(MaterialShaderStage stage, MaterialGeneratorCallback callback)
+        /// <summary>
+        /// Gets the compiled <see cref="MaterialPass"/>. Only valid during <see cref="MaterialGeneratorStep.GenerateShader"/>.
+        /// </summary>
+        public MaterialPass MaterialPass { get; set; }
+
+        /// <summary>
+        /// The current step of material generation.
+        /// </summary>
+        public MaterialGeneratorStep Step { get; set; }
+
+        /// <summary>
+        /// The current pass (used by multipass materials). Only valid during <see cref="MaterialGeneratorStep.GenerateShader"/>.
+        /// </summary>
+        public int PassIndex { get; set; }
+
+        /// <summary>
+        /// In case of multi pass materials, this describe the number of passes.
+        /// </summary>
+        public int PassCount { get; private set; } = 1;
+
+        /// <summary>
+        /// Register this material with multiple passes. This is only possible once.
+        /// </summary>
+        /// <param name="module">The module</param>
+        /// <param name="passCount"></param>
+        public void SetMultiplePasses(string module, int passCount)
         {
-            finalCallbacks[stage].Add(callback);
+            EnsureStep(MaterialGeneratorStep.PassesEvaluation);
+            if (multipassModule != null)
+            {
+                // Note: we could implement and allow this later, but this will likely add complexity (probably need to go combinatorial i.e. 3 and 3 results in 9 passes; also priority order needs to be defined)
+                Log.Error($"Two different material settings try to register multipass rendering: {module} and {multipassModule}. Please make sure to not use exclusive features.");
+                return;
+            }
+
+            multipassModule = module;
+            PassCount = passCount;
+        }
+
+        public void AddFinalCallback(MaterialShaderStage stage, MaterialGeneratorCallback callback, int order = DefaultFinalCallbackOrder)
+        {
+            EnsureStep(MaterialGeneratorStep.GenerateShader);
+            finalCallbacks[stage].Add((order, callback));
         }
 
         public void SetStreamFinalModifier<T>(MaterialShaderStage stage, ShaderSource shaderSource)
         {
+            EnsureStep(MaterialGeneratorStep.GenerateShader);
             if (shaderSource == null)
                 return;
 
@@ -66,9 +129,30 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         public ShaderSource GetStreamFinalModifier<T>(MaterialShaderStage stage)
         {
+            EnsureStep(MaterialGeneratorStep.GenerateShader);
             ShaderSource shaderSource = null;
             finalInputStreamModifiers.TryGetValue(new KeyValuePair<MaterialShaderStage, Type>(stage, typeof(T)), out shaderSource);
             return shaderSource;
+        }
+
+        public MaterialPass PushPass()
+        {
+            var materialPass = new MaterialPass { PassIndex = PassIndex };
+            Material.Passes.Add(materialPass);
+
+            MaterialPass = materialPass;
+            Parameters = materialPass.Parameters;
+
+            return materialPass;
+        }
+
+        public void PopPass()
+        {
+            PassIndex++;
+
+            MaterialPass = null;
+            Parameters = null;
+            currentLayerContext = null;
         }
 
         /// <summary>
@@ -114,6 +198,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <param name="blendMap">The blend map used by this layer.</param>
         public void PushLayer(IComputeScalar blendMap)
         {
+            if (Step != MaterialGeneratorStep.GenerateShader)
+                return;
+
             // We require a blend layer expect for the top level one.
             if (currentLayerContext != null && blendMap == null)
             {
@@ -133,6 +220,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// </summary>
         public void PopLayer()
         {
+            if (Step != MaterialGeneratorStep.GenerateShader)
+                return;
+
             if (currentLayerContext == null)
             {
                 throw new InvalidOperationException("Cannot PopLayer when no balancing PushLayer was called");
@@ -148,8 +238,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 currentLayerContext = currentLayerContext.Parent;
             }
         }
+
         public void AddShaderSource(MaterialShaderStage stage, ShaderSource shaderSource)
         {
+            EnsureStep(MaterialGeneratorStep.GenerateShader);
             if (shaderSource == null) throw new ArgumentNullException(nameof(shaderSource));
             currentLayerContext.GetContextPerStage(stage).ShaderSources.Add(shaderSource);
         }
@@ -162,27 +254,32 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         public bool HasShaderSources(MaterialShaderStage stage)
         {
+            EnsureStep(MaterialGeneratorStep.GenerateShader);
             return currentLayerContext.GetContextPerStage(stage).ShaderSources.Count > 0;
         }
 
         public ShaderSource ComputeShaderSource(MaterialShaderStage stage)
         {
+            EnsureStep(MaterialGeneratorStep.GenerateShader);
             return currentLayerContext.ComputeShaderSource(stage);
         }
 
         public ShaderSource GenerateStreamInitializers(MaterialShaderStage stage)
         {
+            EnsureStep(MaterialGeneratorStep.GenerateShader);
             return currentLayerContext.GenerateStreamInitializers(stage);
         }
 
         public void UseStream(MaterialShaderStage stage, string stream)
         {
+            EnsureStep(MaterialGeneratorStep.GenerateShader);
             if (stream == null) throw new ArgumentNullException(nameof(stream));
             currentLayerContext.GetContextPerStage(stage).Streams.Add(stream);
         }
 
         public ShaderSource GetStreamBlendShaderSource(string stream)
         {
+            EnsureStep(MaterialGeneratorStep.GenerateShader);
             ShaderSource shaderSource;
             registeredStreamBlend.TryGetValue(stream, out shaderSource);
             return shaderSource ?? new ShaderClassSource("MaterialStreamLinearBlend", stream);
@@ -190,6 +287,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         public void UseStreamWithCustomBlend(MaterialShaderStage stage, string stream, ShaderSource blendStream)
         {
+            EnsureStep(MaterialGeneratorStep.GenerateShader);
             if (stream == null) throw new ArgumentNullException(nameof(stream));
             UseStream(stage, stream);
             registeredStreamBlend[stream] = blendStream;
@@ -197,27 +295,38 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         public void AddStreamInitializer(MaterialShaderStage stage, string streamInitilizerSource)
         {
+            EnsureStep(MaterialGeneratorStep.GenerateShader);
             currentLayerContext.GetContextPerStage(stage).StreamInitializers.Add(streamInitilizerSource);
         }
 
         public void SetStream(MaterialShaderStage stage, string stream, IComputeNode computeNode, ObjectParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey, Color? defaultTextureValue = null)
         {
+            EnsureStep(MaterialGeneratorStep.GenerateShader);
             currentLayerContext.SetStream(stage, stream, computeNode, defaultTexturingKey, defaultValueKey, defaultTextureValue);
         }
 
         public void SetStream(MaterialShaderStage stage, string stream, MaterialStreamType streamType, ShaderSource shaderSource)
         {
+            EnsureStep(MaterialGeneratorStep.GenerateShader);
             currentLayerContext.SetStream(stage, stream, streamType, shaderSource);
         }
 
         public void SetStream(string stream, IComputeNode computeNode, ObjectParameterKey<Texture> defaultTexturingKey, ParameterKey defaultValueKey, Color? defaultTextureValue = null)
         {
+            EnsureStep(MaterialGeneratorStep.GenerateShader);
             SetStream(MaterialShaderStage.Pixel, stream, computeNode, defaultTexturingKey, defaultValueKey, defaultTextureValue);
         }
 
-        public void AddShading<T>(T shadingModel, ShaderSource shaderSource) where T : class, IMaterialShadingModelFeature
+        public ShadingModelShaderBuilder AddShading<T>(T shadingModel) where T : class, IMaterialShadingModelFeature
         {
-            currentLayerContext.ShadingModels.Add(shadingModel, shaderSource);
+            EnsureStep(MaterialGeneratorStep.GenerateShader);
+            return currentLayerContext.ShadingModels.Add(shadingModel);
+        }
+
+        public ShadingModelShaderBuilder GetShading<T>(T shadingModel) where T : class, IMaterialShadingModelFeature
+        {
+            EnsureStep(MaterialGeneratorStep.GenerateShader);
+            return currentLayerContext.ShadingModels[shadingModel.GetType()].ShaderBuilder;
         }
 
         private void ProcessLayer(MaterialBlendLayerContext layer, bool isLastLayer)
@@ -450,9 +559,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             {
                 var stage = callbackKeyPair.Key;
                 var callbacks = callbackKeyPair.Value;
-                foreach (var callback in callbacks)
+                foreach (var callback in callbacks.OrderBy(x => x.Order))
                 {
-                    callback(stage, this);
+                    callback.Callback(stage, this);
                 }
                 callbacks.Clear();
             }
@@ -495,6 +604,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 // Squash the shader sources
                 stageContext.ShaderSources.Add(shaderMixinSource);
             }
+        }
+
+        private void EnsureStep(MaterialGeneratorStep step)
+        {
+            if (Step != step)
+                throw new InvalidOperationException($"This method can only be called during step [{step}]");
         }
     }
 }

@@ -1228,10 +1228,10 @@ namespace SiliconStudio.Xenko.Graphics
 
             for (int i = 0; i < Description.MipLevels; ++i)
             {
-                result += Description.ArraySize * ComputeSubresourceSize(i);
+                result += ComputeSubresourceSize(i);
             }
 
-            return result;
+            return result * Description.ArraySize;
         }
 
         private static int CountMips(int width)
