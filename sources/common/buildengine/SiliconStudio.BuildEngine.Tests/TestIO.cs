@@ -223,14 +223,12 @@ namespace SiliconStudio.BuildEngine.Tests
 
             var builder1 = Utils.CreateBuilder(false);
             CommandBuildStep step = builder1.Root.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.File, Utils.GetSourcePath("input1")), OutputUrl = "/db/url1" });
-            builder1.Root.Add(new WaitBuildStep());
             CommandBuildStep childStep = builder1.Root.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.ContentLink, "/db/url1"), OutputUrl = "/db/url2" });
             BuildStep.LinkBuildSteps(step, childStep);
             builder1.Run(Builder.Mode.Build);
 
             var builder2 = Utils.CreateBuilder(true);
             step = builder2.Root.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.File, Utils.GetSourcePath("input1")), OutputUrl = "/db/url1" });
-            builder2.Root.Add(new WaitBuildStep());
             childStep = builder2.Root.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.ContentLink, "/db/url1"), OutputUrl = "/db/url2" });
             BuildStep.LinkBuildSteps(step, childStep);
             builder2.Run(Builder.Mode.Build);
@@ -314,7 +312,6 @@ namespace SiliconStudio.BuildEngine.Tests
 
             var builder = Utils.CreateBuilder(false);
             CommandBuildStep step = builder.Root.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.File, Utils.GetSourcePath("input1")), OutputUrl = "/db/url1", InputDependencies = { inputDep } });
-            builder.Root.Add(new WaitBuildStep());
             CommandBuildStep concurrencyStep1 = builder.Root.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.ContentLink, "/db/url1"), OutputUrl = "/db/url1", InputDependencies = { inputDep } });
             CommandBuildStep concurrencyStep2 = builder.Root.Add(new InputOutputTestCommand { Delay = 150, Source = new ObjectUrl(UrlType.ContentLink, "/db/url1"), OutputUrl = "/db/url2", InputDependencies = { inputDep } });
             BuildStep.LinkBuildSteps(step, concurrencyStep1);

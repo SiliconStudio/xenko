@@ -12,7 +12,6 @@ namespace SiliconStudio.BuildEngine
     /// <summary>
     /// A <see cref="BuildStep"/> that can spawn multiple <see cref="BuildStep"/>.
     /// Input and output tracking and merging will be performed.
-    /// Various input/output and output/output conflicts are detected, if <see cref="WaitBuildStep"/> is not used properly.
     /// </summary>
     public abstract class EnumerableBuildStep : BuildStep
     {
@@ -53,16 +52,8 @@ namespace SiliconStudio.BuildEngine
 
             foreach (var child in Steps)
             {
-                // Wait for all the tasks before the WaitBuildStep to be finished
-                if (child is WaitBuildStep)
-                {
-                    await CompleteCommands(executeContext, buildStepsToWait);
-                }
-                else
-                {
-                    executeContext.ScheduleBuildStep(child);
-                    buildStepsToWait.Add(child);
-                }
+                executeContext.ScheduleBuildStep(child);
+                buildStepsToWait.Add(child);
 
                 executedSteps.Add(child);
             }

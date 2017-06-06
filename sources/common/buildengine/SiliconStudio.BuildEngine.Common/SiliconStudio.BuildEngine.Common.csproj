@@ -77,7 +77,6 @@
     <Compile Include="BuildStepEventArgs.cs" />
     <Compile Include="TagSymbol.cs" />
     <Compile Include="UseXenkoDataContractSerializerAttribute.cs" />
-    <Compile Include="WaitBuildStep.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
