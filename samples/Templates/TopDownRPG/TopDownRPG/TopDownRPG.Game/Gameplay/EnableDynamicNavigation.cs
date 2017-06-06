@@ -16,8 +16,10 @@ namespace Gameplay
             var dynamicNavigationMeshSystem = Game.GameSystems.OfType<DynamicNavigationMeshSystem>().FirstOrDefault();
 
             // Wait for the dynamic navigation to be registered
-            if(dynamicNavigationMeshSystem == null)
+            if (dynamicNavigationMeshSystem == null)
                 Game.GameSystems.CollectionChanged += GameSystemsOnCollectionChanged;
+            else
+                dynamicNavigationMeshSystem.Enabled = true;
         }
 
         public override void Cancel()
