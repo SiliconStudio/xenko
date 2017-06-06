@@ -10,7 +10,7 @@ namespace SiliconStudio.Assets.Compiler
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
     [BaseTypeRequired(typeof(IAssetCompiler))]
-    public class AssetCompilerAttribute : CompilerAttribute
+    public class AssetCompilerAttribute : DynamicTypeAttributeBase
     {
         public Type CompilationContext { get; private set; }
 
