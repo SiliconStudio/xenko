@@ -1,7 +1,6 @@
-using System;
-using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using NUnit.Framework;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
@@ -9,13 +8,13 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 
-namespace SiliconStudio.Assets.Tests
+namespace SiliconStudio.Assets.Tests.Compilers
 {
     [TestFixture]
-    public class TestCompiler
+    public class TestCompilerVisitRuntimeType : CompilerTestBase
     {
         [Test]
-        public void TestCompilerVisitRuntimeType()
+        public void CompilerVisitRuntimeType()
         {
             var package = new Package();
             // ReSharper disable once UnusedVariable - we need a package session to compile
@@ -73,95 +72,53 @@ namespace SiliconStudio.Assets.Tests
         {
             var result = new MyRuntimeType
             {
-                Before = AttachedReferenceManager.CreateProxyObject<MyContentType>(beforeReference.Id, beforeReference.Location),
-                Middle = AttachedReferenceManager.CreateProxyObject<MyContentType>(middleReference.Id, middleReference.Location),
-                Zafter = AttachedReferenceManager.CreateProxyObject<MyContentType>(afterReference.Id, afterReference.Location),
+                Before = CreateRef<MyContentType>(beforeReference),
+                Middle = CreateRef<MyContentType>(middleReference),
+                Zafter = CreateRef<MyContentType>(afterReference),
             };
             return result;
         }
-    }
 
-    [DataContract]
-    [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<MyContentType>), Profile = "Content")]
-    public class MyContentType
-    {
-        public int Var;
-    }
-
-    [DataContract]
-    public class MyRuntimeType
-    {
-        public MyContentType Before;
-        public MyRuntimeType A;
-        public MyContentType Middle;
-        public MyRuntimeType B;
-        public MyContentType Zafter;
-    }
-
-    [DataContract]
-    [AssetDescription(FileExtension)]
-    [AssetContentType(typeof(MyContentType))]
-    public class MyAssetContentType : Asset
-    {
-        public const string FileExtension = ".xkmact";
-        public int Var;
-        public MyAssetContentType(int i) { Var = i; }
-        public MyAssetContentType() { }
-    }
-
-    [DataContract]
-    [AssetDescription(".xkmytest")]
-    public class MyAsset1 : Asset
-    {
-        public MyContentType Before;
-        public List<MyRuntimeType> RuntimeTypes = new List<MyRuntimeType>();
-        public MyContentType Zafter;
-    }
-
-    public class MyTestCompilerCompiler<T> : IAssetCompiler where T : Asset
-    {
-        private class EmptyCommand : AssetCommand<T>
+        [DataContract, ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<MyContentType>), Profile = "Content")]
+        public class MyContentType
         {
-            public EmptyCommand(string url, T parameters, Package package)
-                : base(url, parameters, package)
-            {
-            }
-
-            protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
-            {
-                return Task.FromResult(ResultStatus.Successful);
-            }
+            public int Var;
         }
 
-        public AssetCompilerResult Prepare(AssetCompilerContext context, AssetItem assetItem)
+        [DataContract]
+        public class MyRuntimeType
         {
-            return new AssetCompilerResult(GetType().Name)
-            {
-                BuildSteps = new AssetBuildStep(assetItem) { new EmptyCommand(assetItem.Location, (T)assetItem.Asset, assetItem.Package) }
-            };
+            public MyContentType Before;
+            public MyRuntimeType A;
+            public MyContentType Middle;
+            public MyRuntimeType B;
+            public MyContentType Zafter;
         }
 
-        public IEnumerable<Type> GetRuntimeTypes(AssetCompilerContext context, AssetItem assetItem)
+        [DataContract]
+        [AssetDescription(FileExtension)]
+        [AssetContentType(typeof(MyContentType))]
+        public class MyAssetContentType : Asset
         {
-            yield return typeof(MyRuntimeType);
+            public const string FileExtension = ".xkmact";
+            public int Var;
+            public MyAssetContentType(int i) { Var = i; }
+            public MyAssetContentType() { }
         }
 
-        public IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem) { yield break; }
+        [DataContract]
+        [AssetDescription(".xkmytest")]
+        public class MyAsset1 : Asset
+        {
+            public MyContentType Before;
+            public List<MyRuntimeType> RuntimeTypes = new List<MyRuntimeType>();
+            public MyContentType Zafter;
+        }
 
-        public IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem) { yield break; }
+        [AssetCompiler(typeof(MyAsset1), typeof(AssetCompilationContext))]
+        public class MyAsset1Compiler : TestAssertCompiler<MyAsset1> { }
 
-        public IEnumerable<Type> GetInputTypesToExclude(AssetCompilerContext context, AssetItem assetItem) { yield break; }
-
-        public bool AlwaysCheckRuntimeTypes { get; } = false;
-    }
-
-    [AssetCompiler(typeof(MyAsset1), typeof(AssetCompilationContext))]
-    public class MyAsset1Compiler : MyTestCompilerCompiler<MyAsset1>
-    {
-    }
-
-    [AssetCompiler(typeof(MyAssetContentType), typeof(AssetCompilationContext))]
-    public class MyAssetContentTypeCompiler : MyTestCompilerCompiler<MyAssetContentType>
-    {
+        [AssetCompiler(typeof(MyAssetContentType), typeof(AssetCompilationContext))]
+        public class MyAssetContentTypeCompiler : TestAssertCompiler<MyAssetContentType> { }
     }
 }

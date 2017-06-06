@@ -39,6 +39,10 @@
     <Compile Include="..\..\common\core\SiliconStudio.Core.Design.Tests\TestMemberPathBase.cs">
       <Link>TestMemberPathBase.cs</Link>
     </Compile>
+    <Compile Include="Compilers\CompilerTestBase.cs" />
+    <Compile Include="Compilers\TestAssertCompiler.cs" />
+    <Compile Include="Compilers\TestBuildDependencyManager.cs" />
+    <Compile Include="Compilers\TestCompilerBase.cs" />
     <Compile Include="CustomParameterCollection.cs" />
     <Compile Include="Helpers\GuidGenerator.cs" />
     <Compile Include="Helpers\IdentifierGenerator.cs" />
@@ -53,7 +57,7 @@
     <Compile Include="TestAssetReferenceCollection.cs" />
     <Compile Include="TestAssetUpgrade.cs" />
     <Compile Include="TestBase.cs" />
-    <Compile Include="TestCompiler.cs" />
+    <Compile Include="Compilers\TestCompilerVisitRuntimeType.cs" />
     <Compile Include="TestDependencyManager.cs" />
     <Compile Include="TestDerivedAssets.cs" />
     <Compile Include="TestDynamicYaml.cs" />
