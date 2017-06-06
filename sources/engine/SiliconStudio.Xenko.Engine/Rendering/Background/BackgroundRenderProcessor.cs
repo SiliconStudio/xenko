@@ -15,6 +15,8 @@ namespace SiliconStudio.Xenko.Rendering.Background
     /// </summary>
     public class BackgroundRenderProcessor : EntityProcessor<BackgroundComponent, RenderBackground>, IEntityComponentRenderProcessor
     {
+        private StreamingManager streamingManager;
+
         public VisibilityGroup VisibilityGroup { get; set; }
 
         /// <summary>
@@ -23,10 +25,15 @@ namespace SiliconStudio.Xenko.Rendering.Background
         /// <value>The active background.</value>
         public RenderBackground ActiveBackground { get; private set; }
 
+        /// <inheritdoc />
         protected internal override void OnSystemAdd()
         {
+            base.OnSystemAdd();
+
+            streamingManager = Services.GetServiceAs<StreamingManager>();
         }
 
+        /// <inheritdoc />
         protected internal override void OnSystemRemove()
         {
             if (ActiveBackground != null)
@@ -34,6 +41,10 @@ namespace SiliconStudio.Xenko.Rendering.Background
                 VisibilityGroup.RenderObjects.Remove(ActiveBackground);
                 ActiveBackground = null;
             }
+
+            streamingManager = null;
+
+            base.OnSystemRemove();
         }
 
         protected override RenderBackground GenerateComponentData(Entity entity, BackgroundComponent component)
@@ -60,7 +71,7 @@ namespace SiliconStudio.Xenko.Rendering.Background
                     renderBackground.Rotation = Quaternion.RotationMatrix(backgroundComponent.Entity.Transform.WorldMatrix);
 
                     // Register texture usage
-                    Services.GetServiceAs<StreamingManager>()?.StreamResources(renderBackground.Texture);
+                    streamingManager?.StreamResourcesFully(renderBackground.Texture);
 
                     ActiveBackground = renderBackground;
                     break;

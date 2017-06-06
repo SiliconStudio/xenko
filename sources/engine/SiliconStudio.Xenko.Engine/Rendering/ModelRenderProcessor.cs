@@ -18,6 +18,7 @@ namespace SiliconStudio.Xenko.Rendering
     public class ModelRenderProcessor : EntityProcessor<ModelComponent, RenderModel>, IEntityComponentRenderProcessor
     {
         private Material fallbackMaterial;
+        private StreamingManager streamingManager;
 
         public Dictionary<ModelComponent, RenderModel> RenderModels => ComponentDatas;
 
@@ -32,6 +33,7 @@ namespace SiliconStudio.Xenko.Rendering
             base.OnSystemAdd();
 
             var graphicsDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
+            streamingManager = Services.GetServiceAs<StreamingManager>();
 
             fallbackMaterial = Material.New(graphicsDevice, new MaterialDescriptor
             {
@@ -41,6 +43,14 @@ namespace SiliconStudio.Xenko.Rendering
                     DiffuseModel = new MaterialDiffuseLambertModelFeature()
                 }
             });
+        }
+
+        /// <inheritdoc/>
+        protected internal override void OnSystemRemove()
+        {
+            streamingManager = null;
+
+            base.OnSystemRemove();
         }
 
         protected override RenderModel GenerateComponentData(Entity entity, ModelComponent component)
@@ -114,7 +124,7 @@ namespace SiliconStudio.Xenko.Rendering
                         renderMesh.BlendMatrices = meshInfo.BlendMatrices;
 
                         // Register resources usage
-                        Services.GetServiceAs<StreamingManager>()?.StreamResources(renderMesh);
+                        streamingManager?.StreamResources(renderMesh);
                     }
                 }
             }
