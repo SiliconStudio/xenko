@@ -11,6 +11,7 @@ namespace SiliconStudio.Assets.Tracking
     public class SourceFilesCollector : AssetVisitorBase
     {
         private Dictionary<UFile, bool> sourceFiles;
+        private HashSet<UFile> compilationInputFiles;
         private Dictionary<MemberPath, UFile> sourceMembers;
 
         public Dictionary<UFile, bool> GetSourceFiles(Asset asset)
@@ -19,6 +20,15 @@ namespace SiliconStudio.Assets.Tracking
             Visit(asset);
             var result = sourceFiles;
             sourceFiles = null;
+            return result;
+        }
+
+        public HashSet<UFile> GetCompilationInputFiles(Asset asset)
+        {
+            compilationInputFiles = new HashSet<UFile>();
+            Visit(asset);
+            var result = compilationInputFiles;
+            compilationInputFiles = null;
             return result;
         }
 
@@ -52,6 +62,26 @@ namespace SiliconStudio.Assets.Tracking
                                 // If the file has already been collected, just update whether it should update the asset when changed
                                 sourceFiles[file] = true;
                             }
+
+                            if (!attribute.Optional)
+                            {
+                                compilationInputFiles.Add(file);
+                            }
+                        }
+                    }
+                }
+            }
+            if (compilationInputFiles != null)
+            {
+                if (member.Type == typeof(UFile) && value != null)
+                {
+                    var file = (UFile)value;
+                    if (!string.IsNullOrWhiteSpace(file.ToString()))
+                    {
+                        var attribute = member.GetCustomAttributes<SourceFileMemberAttribute>(true).SingleOrDefault();
+                        if (attribute != null && !attribute.Optional)
+                        {
+                            compilationInputFiles.Add(file);
                         }
                     }
                 }

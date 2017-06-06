@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Serializers;
+using SiliconStudio.Assets.Tracking;
 using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -22,6 +23,7 @@ namespace SiliconStudio.Assets
         private UFile location;
         private Asset asset;
         private bool isDirty;
+        private HashSet<UFile> sourceFiles;
 
         /// <summary>
         /// The default comparer use only the id of an assetitem to match assets.
@@ -254,6 +256,7 @@ namespace SiliconStudio.Assets
                 }
 
                 Interlocked.Increment(ref version);
+                sourceFiles.Clear();
 
                 var oldValue = isDirty;
                 isDirty = value;
@@ -300,6 +303,16 @@ namespace SiliconStudio.Assets
             Package.UpdateSourceFolders(new[] { this });
         }
 
+        public ISet<UFile> RetrieveCompilationInputFiles()
+        {
+            if (sourceFiles == null)
+            {
+                var collector = new SourceFilesCollector();
+                sourceFiles = collector.GetCompilationInputFiles(Asset);
+            }
+
+            return sourceFiles;
+        }
         private class AssetItemComparerById : IEqualityComparer<AssetItem>
         {
             public bool Equals(AssetItem x, AssetItem y)
