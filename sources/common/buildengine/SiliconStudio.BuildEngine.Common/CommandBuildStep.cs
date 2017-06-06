@@ -10,6 +10,7 @@ using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.IO;
 using System.Diagnostics;
 using System.ServiceModel;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.VisualStudio;
 
@@ -32,12 +33,6 @@ namespace SiliconStudio.BuildEngine
         /// Command Result, set only after step completion. Not thread safe, should not be modified
         /// </summary>
         public CommandResultEntry Result;
-
-        /// <summary>
-        /// When the command is executed by another local process, a thread of the master builder will be blocked to save CPU for the slave one.
-        /// However, the slave process may spawn another command on the master, in which case we would like to unblock the thread and await for the spawned command.
-        /// </summary>
-        private readonly List<Task> spawnedCommandsToWait = new List<Task>();
 
         public CommandBuildStep(Command command)
         {
@@ -95,10 +90,6 @@ namespace SiliconStudio.BuildEngine
                                 break;
                         }
                     }
-                }
-                foreach (CommandBuildStep spawnedStep in matchingResult.SpawnedCommands.Select(spawnedCommand => new CommandBuildStep(spawnedCommand)))
-                {
-                    spawnedStep.Clean(executeContext, builderContext, deleteOutput);
                 }
             }
 
@@ -185,26 +176,11 @@ namespace SiliconStudio.BuildEngine
             {
                 using (commandResultEntries)
                 {
-                    // Replicate triggered builds
-                    Debug.Assert(SpawnedStepsList.Count == 0);
-
-                    foreach (Command spawnedCommand in matchingResult.SpawnedCommands)
-                    {
-                        var spawnedStep = new CommandBuildStep(spawnedCommand);
-                        SpawnedStepsList.Add(spawnedStep);
-                        executeContext.ScheduleBuildStep(spawnedStep);
-                    }
-
                     // Re-output command log messages
                     foreach (var message in matchingResult.LogMessages)
                     {
                         executeContext.Logger.Log(message);
                     }
-
-                    // Wait for all build steps to complete.
-                    // TODO: Ideally, we should store and replicate the behavior of the command that spawned it
-                    // (wait if it used ScheduleAndExecute, don't wait if it used RegisterSpawnedCommandWithoutScheduling)
-                    await Task.WhenAll(SpawnedSteps.Select(x => x.ExecutedAsync()));
 
                     status = ResultStatus.NotTriggeredWasSuccessful;
                     RegisterCommandResult(commandResultEntries, matchingResult, status);
@@ -212,17 +188,6 @@ namespace SiliconStudio.BuildEngine
             }
 
             return status;
-        }
-
-        internal async Task<ResultStatus> SpawnCommand(Command command, IExecuteContext executeContext)
-        {
-            var spawnedStep = new CommandBuildStep(command);
-            SpawnedStepsList.Add(spawnedStep);
-
-            executeContext.ScheduleBuildStep(spawnedStep);
-            var resultStatus = (await spawnedStep.ExecutedAsync()).Status;
-
-            return resultStatus;
         }
 
         private void RegisterCommandResult(ListStore<CommandResultEntry> commandResultEntries, CommandResultEntry result, ResultStatus status)
@@ -377,26 +342,8 @@ namespace SiliconStudio.BuildEngine
                     //    }
                     //}
 
-                    Task[] tasksToWait = null;
+                    await process.WaitForExitAsync();
 
-                    while (!process.HasExited)
-                    {
-                        Thread.Sleep(1);
-                        lock (spawnedCommandsToWait)
-                        {
-                            if (spawnedCommandsToWait.Count > 0)
-                            {
-                                tasksToWait = spawnedCommandsToWait.ToArray();
-                                spawnedCommandsToWait.Clear();
-                            }
-                        }
-
-                        if (tasksToWait != null)
-                        {
-                            await Task.WhenAll(tasksToWait);
-                            tasksToWait = null;
-                        }
-                    }
                     host.Close();
 
                     builderContext.NotifyParallelProcessEnded();
@@ -494,14 +441,6 @@ namespace SiliconStudio.BuildEngine
                 {
                     output.Add(args.Data);
                 }
-            }
-        }
-
-        public void AwaitSpawnedCommand(Task<ResultStatus> task)
-        {
-            lock (spawnedCommandsToWait)
-            {
-                spawnedCommandsToWait.Add(task);
             }
         }
     }

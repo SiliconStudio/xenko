@@ -30,12 +30,6 @@ namespace SiliconStudio.BuildEngine
             return Step.GetOutputObjectsGroups();
         }
 
-        protected override async Task<ResultStatus> ScheduleAndExecuteCommandInternal(Command command)
-        {
-            var resultStatus = await Step.SpawnCommand(command, executeContext);
-            return resultStatus;
-        }
-
         internal protected override ObjectId ComputeInputHash(UrlType type, string filePath)
         {
             return executeContext.ComputeInputHash(type, filePath);
