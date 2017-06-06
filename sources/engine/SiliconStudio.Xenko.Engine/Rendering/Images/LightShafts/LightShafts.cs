@@ -23,13 +23,19 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// The number of times the resolution is lowered for the light buffer
         /// </summary>
-        [DataMemberRange(1, 32)]
+        /// <userdoc>
+        /// Lower values produce more precise volume buffer areas, but use more GPU
+        /// </userdoc>
+        [DataMemberRange(1, 64, 1, 1, 0)]
         public int LightBufferDownsampleLevel { get; set; } = 2;
 
         /// <summary>
         /// The amount of time the resolution is lowered for the bounding volume buffer
         /// </summary>
-        [DataMemberRange(1, 32)]
+        /// <userdoc>
+        /// Lower values produce sharper light shafts, but use more GPU
+        /// </userdoc>
+        [DataMemberRange(1, 64, 1, 1, 0)]
         public int BoundingVolumeBufferDownsampleLevel { get; set; } = 8;
         
         /// <summary>
@@ -134,14 +140,16 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var depthInput = GetSafeInput(0);
 
             // Create a min/max buffer generated from scene bounding volumes
-            var boundingBoxBuffer = NewScopedRenderTarget2D(depthInput.Width / BoundingVolumeBufferDownsampleLevel, depthInput.Height / BoundingVolumeBufferDownsampleLevel, PixelFormat.R32G32_Float);
+            var targetBoundingBoxBufferSize = new Size2(Math.Max(1, depthInput.Width / BoundingVolumeBufferDownsampleLevel), Math.Max(1, depthInput.Height / BoundingVolumeBufferDownsampleLevel));
+            var boundingBoxBuffer = NewScopedRenderTarget2D(targetBoundingBoxBufferSize.Width, targetBoundingBoxBufferSize.Height, PixelFormat.R32G32_Float);
 
             // Buffer that holds the minimum distance in case of being inside the bounding box
             var backSideRaycastBuffer = NewScopedRenderTarget2D(1, 1, PixelFormat.R32G32_Float);
 
             // Create a single channel light buffer
             PixelFormat lightBufferPixelFormat = needsColorLightBuffer ? PixelFormat.R16G16B16A16_Float : PixelFormat.R16_Float;
-            var lightBuffer = NewScopedRenderTarget2D(depthInput.Width / LightBufferDownsampleLevel, depthInput.Height / LightBufferDownsampleLevel, lightBufferPixelFormat);
+            var targetLightBufferSize = new Size2(Math.Max(1, depthInput.Width / LightBufferDownsampleLevel), Math.Max(1, depthInput.Height / LightBufferDownsampleLevel));
+            var lightBuffer = NewScopedRenderTarget2D(targetLightBufferSize.Width, targetLightBufferSize.Height, lightBufferPixelFormat);
             lightShaftsEffectShader.SetOutput(lightBuffer);
             var lightShaftsParameters = lightShaftsEffectShader.Parameters;
             lightShaftsParameters.Set(DepthBaseKeys.DepthStencil, depthInput); // Bind scene depth
