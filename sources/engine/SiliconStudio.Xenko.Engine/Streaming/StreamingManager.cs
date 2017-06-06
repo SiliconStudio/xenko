@@ -347,7 +347,7 @@ namespace SiliconStudio.Xenko.Streaming
             var currentResidency = resource.CurrentResidency;
             var allocatedResidency = resource.AllocatedResidency;
             //var targetResidency = handler.CalculateResidency(resource, targetQuality);
-            var targetResidency = (int)((resource as StreamingTexture).Description.MipLevels * targetQuality); // TODO: remove hardoded value for textures, use steraming groups/handlers
+            var targetResidency = MathUtil.IsZero(targetQuality) ? 0 : Math.Max(1, (int)((resource as StreamingTexture).Description.MipLevels * targetQuality)); // TODO: remove hardoded value for textures, use steraming groups/handlers
 
             // Compressed formats have aligment restrictions on the dimensions of the texture
             // TODO: remove hardcoded textures part to specilized object
@@ -412,9 +412,9 @@ namespace SiliconStudio.Xenko.Streaming
         /// <param name="renderMesh">The render mesh.</param>
         public void StreamResources(RenderMesh renderMesh)
         {
-            if (renderMesh.Material != null)
+            if (renderMesh.MaterialPass != null)
             {
-                StreamResources(renderMesh.Material.Parameters);
+                StreamResources(renderMesh.MaterialPass.Parameters);
             }
 
             StreamResources(renderMesh.RenderModel.Model);
@@ -464,6 +464,70 @@ namespace SiliconStudio.Xenko.Streaming
         /// </summary>
         /// <param name="model">The model.</param>
         public void StreamResources(Model model)
+        {
+            // TODO: register model streaming
+        }
+
+        /// <summary>
+        /// Called when render mesh is submited to rendering. Registers referenced resources to stream them up to the maximum quality level.
+        /// </summary>
+        /// <param name="renderMesh">The render mesh.</param>
+        public void StreamResourcesFully(RenderMesh renderMesh)
+        {
+            if (renderMesh.MaterialPass != null)
+            {
+                StreamResourcesFully(renderMesh.MaterialPass.Parameters);
+            }
+
+            StreamResourcesFully(renderMesh.RenderModel.Model);
+        }
+
+        /// <summary>
+        /// Called when material parameters are submited to rendering. Registers referenced resources to stream them up to the maximum quality level.
+        /// </summary>
+        /// <param name="parameters">The material parameters.</param>
+        public void StreamResourcesFully(ParameterCollection parameters)
+        {
+            if (parameters.ObjectValues == null)
+                return;
+
+            // Register all binded textures
+            foreach (var e in parameters.ObjectValues)
+            {
+                if (e is Texture t)
+                {
+                    var resource = Get<StreamingTexture>(t);
+                    if (resource != null)
+                    {
+                        resource.ForceFullyLoaded = true;
+                        resource.LastTimeUsed = frameIndex;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called when texture is submited to be used during rendering. Registers referenced resources to stream them up to the maximum quality level.
+        /// </summary>
+        /// <param name="texture">The texture.</param>
+        public void StreamResourcesFully(Texture texture)
+        {
+            if (texture == null)
+                return;
+
+            var resource = Get<StreamingTexture>(texture);
+            if (resource != null)
+            {
+                resource.ForceFullyLoaded = true;
+                resource.LastTimeUsed = frameIndex;
+            }
+        }
+
+        /// <summary>
+        /// Called when model is submited to be used during rendering. Registers referenced resources to stream them up to the maximum quality level.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        public void StreamResourcesFully(Model model)
         {
             // TODO: register model streaming
         }
