@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -116,7 +117,13 @@ namespace SiliconStudio.Assets.Tests.Compilers
         }
 
         [AssetCompiler(typeof(MyAsset1), typeof(AssetCompilationContext))]
-        public class MyAsset1Compiler : TestAssertCompiler<MyAsset1> { }
+        public class MyAsset1Compiler : TestAssertCompiler<MyAsset1>
+        {
+            public override IEnumerable<Type> GetRuntimeTypes(AssetCompilerContext context, AssetItem assetItem)
+            {
+                yield return typeof(MyRuntimeType);
+            }
+        }
 
         [AssetCompiler(typeof(MyAssetContentType), typeof(AssetCompilationContext))]
         public class MyAssetContentTypeCompiler : TestAssertCompiler<MyAssetContentType> { }
