@@ -215,7 +215,6 @@
     <Compile Include="IO\FileExtensionCollection.cs" />
     <Compile Include="AssetMigration.cs" />
     <Compile Include="OverrideUpgraderHint.cs" />
-    <Compile Include="Compiler\CompilerAttribute.cs" />
     <Compile Include="Compiler\CompilerContext.cs" />
     <Compile Include="Compiler\AssetCompilerResult.cs" />
     <Compile Include="Compiler\IAssetCompiler.cs" />
