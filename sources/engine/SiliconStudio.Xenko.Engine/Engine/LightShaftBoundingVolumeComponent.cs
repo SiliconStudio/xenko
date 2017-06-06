@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Engine
     /// <summary>
     /// A bounding volume for light shafts to be rendered in, can take any <see cref="Model"/> as a volume
     /// </summary>
-    [Display("Light shaft bounding volume", Expand = ExpandRule.Always)]
+    [Display("Light Shaft Bounding Volume", Expand = ExpandRule.Always)]
     [DataContract("LightShaftBoundingVolumeComponent")]
     [DefaultEntityComponentProcessor(typeof(LightShaftBoundingVolumeProcessor))]
     public class LightShaftBoundingVolumeComponent : ActivableEntityComponent

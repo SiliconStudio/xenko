@@ -361,8 +361,8 @@ namespace SiliconStudio.Xenko.Assets.Models
                         var modelAsset = contentManager.Load<Model>(AttachedReferenceManager.GetUrl(modelComponent.Model), loadSettings);
                         if (modelAsset == null ||
                             modelAsset.Meshes.Any(x => x.Draw.PrimitiveType != PrimitiveType.TriangleList || x.Draw.VertexBuffers == null || x.Draw.VertexBuffers.Length != 1) ||
-                            modelAsset.Materials.Any(x => x.Material != null && x.Material.HasTransparency) ||
-                            modelComponent.Materials.Values.Any(x => x.HasTransparency)) //For now we limit only to TriangleList types and interleaved vertex buffers, also we skip transparent
+                            modelAsset.Materials.Any(x => x.Material != null && x.Material.Passes.Any(pass => pass.HasTransparency)) ||
+                            modelComponent.Materials.Values.Any(x => x.Passes.Any(pass => pass.HasTransparency))) //For now we limit only to TriangleList types and interleaved vertex buffers, also we skip transparent
                         {
                             commandContext.Logger.Info($"Skipped entity {subEntity.Name} since it's not compatible with PrefabModel.");
                             continue;

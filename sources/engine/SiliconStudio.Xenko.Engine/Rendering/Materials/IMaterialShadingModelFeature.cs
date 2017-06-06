@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 
 using System;
+using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
@@ -10,9 +11,5 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// </summary>
     public interface IMaterialShadingModelFeature : IMaterialFeature, IEquatable<IMaterialShadingModelFeature>
     {
-        /// <summary>
-        /// A boolean indicating whether this material depends on the lighting.
-        /// </summary>
-        bool IsLightDependent { get; }
     }
 }
