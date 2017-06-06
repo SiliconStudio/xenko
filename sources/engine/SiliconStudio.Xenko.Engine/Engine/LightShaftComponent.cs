@@ -23,15 +23,16 @@ namespace SiliconStudio.Xenko.Engine
         /// Density of the light shaft fog
         /// </summary>
         /// <userdoc>
-        /// Density of the light shaft fog
+        /// The higher the density factor, the brighter the light shafts
         /// </userdoc>
+        [Display("Density")]
         public float DensityFactor { get; set; } = 0.002f;
-        
+
         /// <summary>
         /// Number of samples taken per pixel
         /// </summary>
         /// <userdoc>
-        /// Number of samples taken per pixel
+        /// Higher sample counts produce better light shafts but use more GPU
         /// </userdoc>
         [DataMemberRange(1, 0)]
         public int SampleCount { get; set; } = 16;
@@ -43,6 +44,10 @@ namespace SiliconStudio.Xenko.Engine
         /// If this is off, the light shafts might be lower in quality if the bounding volumes overlap (in the same pixel). 
         /// If this is on, and the bounding volumes overlap (in space), the light shafts inside the overlapping area will become twice as bright.
         /// </remarks>
+        /// <userdoc>
+        /// This preserves light shaft quality when seen through separate bounding boxes, but uses more GPU
+        /// </userdoc>
+        [Display("Process bounding volumes separately")]
         public bool SeparateBoundingVolumes { get; set; } = true;
     }
 }
