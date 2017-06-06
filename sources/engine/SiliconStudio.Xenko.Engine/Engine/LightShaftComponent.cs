@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Engine
         /// Density of the light shaft fog
         /// </summary>
         /// <userdoc>
-        /// The higher the density factor, the brighter the light shafts
+        /// Higher values produce brighter light shafts
         /// </userdoc>
         [Display("Density")]
         public float DensityFactor { get; set; } = 0.002f;
