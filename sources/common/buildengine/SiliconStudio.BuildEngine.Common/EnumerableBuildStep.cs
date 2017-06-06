@@ -159,9 +159,6 @@ namespace SiliconStudio.BuildEngine
             // Wait for steps to be finished
             if (buildStepsToWait.Count > 0)
                 await Task.WhenAll(buildStepsToWait.Select(x => x.ExecutedAsync()));
-
-            // Wait for spawned steps to be finished
-            await Task.WhenAll(buildStepsToWait.SelectMany(EnumerateSpawnedBuildSteps).Select(x => x.ExecutedAsync()));
         }
 
         /// <summary>
@@ -203,13 +200,6 @@ namespace SiliconStudio.BuildEngine
 
             // Forward logs
             buildStep.Logger.CopyTo(Logger);
-
-            // Process recursively
-            // TODO: Wait for completion of spawned step in case Task didn't wait for them
-            foreach (var spawnedStep in buildStep.SpawnedSteps)
-            {
-                ProcessCommandBuildStepResult(executeContext, spawnedStep);
-            }
 
             if (buildStep.Result != null)
             {
@@ -315,18 +305,6 @@ namespace SiliconStudio.BuildEngine
             outputObject.Command = command;
 
             return outputObject;
-        }
-
-        private static IEnumerable<BuildStep> EnumerateSpawnedBuildSteps(BuildStep buildStep)
-        {
-            foreach (var spawnedStep in buildStep.SpawnedSteps)
-            {
-                yield return spawnedStep;
-                foreach (var childSpawnedStep in EnumerateSpawnedBuildSteps(spawnedStep))
-                {
-                    yield return childSpawnedStep;
-                }
-            }
         }
 
         protected struct InputObject

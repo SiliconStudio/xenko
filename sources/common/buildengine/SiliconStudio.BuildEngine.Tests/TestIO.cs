@@ -151,8 +151,6 @@ namespace SiliconStudio.BuildEngine.Tests
             builder.Run(Builder.Mode.Build);
             builder.WriteIndexFile(false);
 
-            Assert.That(step.SpawnedSteps.Count(), Is.EqualTo(1));
-
             var indexMap = ContentIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
             indexMap.UseTransaction = true;
             indexMap.LoadNewValues();
@@ -160,33 +158,6 @@ namespace SiliconStudio.BuildEngine.Tests
             ObjectId outputId;
             bool objectIdFound = indexMap.TryGetValue("/db/url2", out outputId);
             Assert.IsTrue(objectIdFound);
-            Assert.That(step.SpawnedSteps.First().Result.OutputObjects[new ObjectUrl(UrlType.ContentLink, "/db/url2")], Is.EqualTo(outputId));
-        }
-
-        [Test, Ignore("Need check")]
-        public void TestRemoteSpawnCommandOutput()
-        {
-            Utils.CleanContext();
-            Utils.GenerateSourceFile("input1", "{BB42A922-ED1B-4837-98D2-189EFAF6BF42}");
-            Utils.GenerateSourceFile("input2", "{8B212FA9-5F0D-4D29-A68B-01D87FF04AF4}");
-
-            var builder = Utils.CreateBuilder(false);
-            var command = new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.File, Utils.GetSourcePath("input1")), OutputUrl = "/db/url1", ExecuteRemotely = true };
-            command.CommandsToSpawn.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.File, Utils.GetSourcePath("input2")), OutputUrl = "/db/url2" });
-            CommandBuildStep step = builder.Root.Add(command);
-            builder.Run(Builder.Mode.Build);
-            builder.WriteIndexFile(false);
-
-            Assert.That(step.SpawnedSteps.Count(), Is.EqualTo(1));
-
-            var indexMap = ContentIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
-            indexMap.UseTransaction = true;
-            indexMap.LoadNewValues();
-
-            ObjectId outputId;
-            bool objectIdFound = indexMap.TryGetValue("/db/url2", out outputId);
-            Assert.IsTrue(objectIdFound);
-            Assert.That(step.SpawnedSteps.First().Result.OutputObjects[new ObjectUrl(UrlType.ContentLink, "/db/url2")], Is.EqualTo(outputId));
         }
 
         [Test]
