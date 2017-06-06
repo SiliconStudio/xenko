@@ -89,7 +89,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         public IComputeScalar SpecularCavity { get; set; }
 
 
-        public override void VisitFeature(MaterialGeneratorContext context)
+        public override void GenerateShader(MaterialGeneratorContext context)
         {
             // Exclude ambient occlusion from uv-scale overrides
             var revertOverrides = new MaterialOverrides();

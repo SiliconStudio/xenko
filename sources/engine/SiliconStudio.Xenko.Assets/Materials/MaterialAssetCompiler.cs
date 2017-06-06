@@ -27,6 +27,13 @@ namespace SiliconStudio.Xenko.Assets.Materials
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(GameSettingsAsset), BuildDependencyType.CompileAsset);
         }
 
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
+        {
+            // Note: might not be needed in all cases, but let's not bother for now (they are only 9kb)
+            yield return new ObjectUrl(UrlType.Content, "XenkoEnvironmentLightingDFGLUT16");
+            yield return new ObjectUrl(UrlType.Content, "XenkoEnvironmentLightingDFGLUT8");
+        }
+
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (MaterialAsset)assetItem.Asset;
@@ -40,6 +47,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
         {
             private readonly AssetItem assetItem;
 
+            private readonly GraphicsProfile graphicsProfile;
             private readonly ColorSpace colorSpace;
 
             private UFile assetUrl;
@@ -47,9 +55,12 @@ namespace SiliconStudio.Xenko.Assets.Materials
             public MaterialCompileCommand(string url, AssetItem assetItem, MaterialAsset value, AssetCompilerContext context)
                 : base(url, value, assetItem.Package)
             {
+                Version = 3;
                 this.assetItem = assetItem;
                 colorSpace = context.GetColorSpace();
                 assetUrl = new UFile(url);
+
+                graphicsProfile = context.GetGameSettingsAsset().GetOrCreate<RenderingSettings>(context.Platform).DefaultGraphicsProfile;
             }
 
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
@@ -58,7 +69,8 @@ namespace SiliconStudio.Xenko.Assets.Materials
 
                 writer.Serialize(ref assetUrl, ArchiveMode.Serialize);
 
-                // Write the 
+                // Write graphics profile and color space
+                writer.Write(graphicsProfile);
                 writer.Write(colorSpace);
 
                 foreach (var compileTimeDependency in ((MaterialAsset)assetItem.Asset).FindMaterialReferences())
@@ -104,6 +116,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
                 var assetManager = new ContentManager();
                 var materialContext = new MaterialGeneratorContext
                 {
+                    GraphicsProfile = graphicsProfile,
                     Content = assetManager,
                     ColorSpace = colorSpace
                 };

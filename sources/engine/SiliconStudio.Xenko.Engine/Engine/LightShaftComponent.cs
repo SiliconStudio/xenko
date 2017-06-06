@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Engine.Processors;
@@ -32,6 +33,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <userdoc>
         /// Number of samples taken per pixel
         /// </userdoc>
+        [DataMemberRange(1, 0)]
         public int SampleCount { get; set; } = 16;
 
         /// <summary>

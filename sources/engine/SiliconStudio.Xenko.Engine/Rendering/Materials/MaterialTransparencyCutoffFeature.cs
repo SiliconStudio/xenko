@@ -40,11 +40,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
         public IComputeScalar Alpha { get; set; }
 
-        public override void VisitFeature(MaterialGeneratorContext context)
+        public override void GenerateShader(MaterialGeneratorContext context)
         {
             var alpha = Alpha ?? new ComputeFloat(DefaultAlpha);
             alpha.ClampFloat(0, 1);
             context.SetStream(AlphaDiscardStream.Stream, alpha, MaterialKeys.AlphaDiscardMap, MaterialKeys.AlphaDiscardValue, new Color(DefaultAlpha));
+            context.MaterialPass.HasTransparency = true;
 
             if (!context.Tags.Get(HasFinalCallback))
             {
