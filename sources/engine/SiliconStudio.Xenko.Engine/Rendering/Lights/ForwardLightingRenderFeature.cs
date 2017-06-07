@@ -154,6 +154,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             drawLightingKey = ((RootEffectRenderFeature)RootRenderFeature).CreateDrawLogicalGroup("Lighting");
         }
 
+        protected override void Destroy()
+        {
+            prepareThreadLocals.Dispose();
+
+            base.Destroy();
+        }
+
         public override void Unload()
         {
             // Unload light renderers

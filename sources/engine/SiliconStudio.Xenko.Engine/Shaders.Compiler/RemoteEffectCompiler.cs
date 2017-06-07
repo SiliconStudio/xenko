@@ -31,6 +31,13 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             this.remoteEffectCompilerClient = remoteEffectCompilerClient;
         }
 
+        protected override void Destroy()
+        {
+            remoteEffectCompilerClient.Dispose();
+
+            base.Destroy();
+        }
+
         /// <inheritdoc/>
         public override ObjectId GetShaderSourceHash(string type)
         {

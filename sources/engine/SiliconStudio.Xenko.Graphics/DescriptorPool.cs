@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11 || SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL || (SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN && SILICONSTUDIO_XENKO_GRAPHICS_NO_DESCRIPTOR_COPIES)
-        internal readonly DescriptorSetEntry[] Entries;
+        internal DescriptorSetEntry[] Entries;
         private int descriptorAllocationOffset;
 
         private DescriptorPool(GraphicsDevice graphicsDevice, DescriptorTypeCount[] counts)
@@ -28,6 +28,12 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             Entries = new DescriptorSetEntry[totalCount];
+        }
+
+        protected override void Destroy()
+        {
+            Entries = null;
+            base.Destroy();
         }
 
         public void Reset()

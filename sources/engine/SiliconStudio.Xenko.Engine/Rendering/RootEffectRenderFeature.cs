@@ -1014,6 +1014,8 @@ namespace SiliconStudio.Xenko.Rendering
                 effectReflection.PerFrameLayout?.DescriptorSetLayout.Dispose();
             }
 
+            prepareThreadContext.Dispose();
+
             base.Destroy();
         }
 
