@@ -27,7 +27,6 @@ namespace SiliconStudio.Xenko.Input
 
         // My input devices
         private GameContext<Control> gameContext;
-        private GameBase game;
         private Control uiControl;
         private InputManager input;
 
@@ -40,7 +39,6 @@ namespace SiliconStudio.Xenko.Input
         {
             input = inputManager;
             gameContext = inputManager.Game.Context as GameContext<Control>;
-            game = inputManager.Game;
             uiControl = gameContext.Control;
             uiControl.LostFocus += UIControlOnLostFocus;
 
