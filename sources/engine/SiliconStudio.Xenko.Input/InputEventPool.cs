@@ -49,6 +49,7 @@ namespace SiliconStudio.Xenko.Input
         public static void Enqueue(TEventType item)
         {
             eventPool.Remove(item);
+            item.Device = null;
         }
     }
 }
