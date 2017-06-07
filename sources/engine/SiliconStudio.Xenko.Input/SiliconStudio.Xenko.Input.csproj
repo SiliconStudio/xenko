@@ -50,11 +50,11 @@
       <ItemGroup>
         <Reference Include="SharpDX">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.dll</HintPath>
         </Reference>
         <Reference Include="SharpDX.RawInput">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.RawInput.dll</HintPath>
+          <HintPath>$(SharpDXSdkBinDir)\SharpDX.RawInput.dll</HintPath>
         </Reference>
         <Reference Include="SharpDX.XInput">
           <SpecificVersion>False</SpecificVersion>
