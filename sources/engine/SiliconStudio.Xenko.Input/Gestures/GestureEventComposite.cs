@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         public Vector2 TotalTranslation { get; internal set; }
 
-        internal GestureEventComposite(GestureState state, TimeSpan deltaTime, TimeSpan totalTime, float deltaAngle, float totalAngle, 
+        internal void Set(GestureState state, TimeSpan deltaTime, TimeSpan totalTime, float deltaAngle, float totalAngle, 
             float deltaScale, float totalScale, Vector2 firstCenter, Vector2 lastCenter, Vector2 currentCenter)
         {
             Type = GestureType.Composite;

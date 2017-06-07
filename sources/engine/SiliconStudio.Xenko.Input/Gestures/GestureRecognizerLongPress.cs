@@ -9,16 +9,21 @@ namespace SiliconStudio.Xenko.Input
 {
     internal sealed class GestureRecognizerLongPress : GestureRecognizer
     {
-        private GestureConfigLongPress ConfigLongPress { get { return (GestureConfigLongPress)Config; } }
+        public GestureRecognizerLongPress(GestureConfigLongPress config, float screenRatio)
+            :base(config, screenRatio)
+        {
+        }
 
         protected override int NbOfFingerOnScreen
         {
             get { return FingerIdToBeginPositions.Count; }
         }
 
-        public GestureRecognizerLongPress(GestureConfigLongPress config, float screenRatio)
-            :base(config, screenRatio)
+        private GestureConfigLongPress ConfigLongPress { get { return (GestureConfigLongPress)Config; } }
+        
+        protected override GestureEvent NewEventFactory()
         {
+            return new GestureEventLongPress();
         }
 
         protected override void ProcessPointerEventsImpl(TimeSpan deltaTime, List<PointerEvent> events)
@@ -28,7 +33,8 @@ namespace SiliconStudio.Xenko.Input
             if (HasGestureStarted && ElapsedSinceBeginning >= ConfigLongPress.RequiredPressTime)
             {
                 var avgPosition = ComputeMeanPosition(FingerIdToBeginPositions.Values);
-                CurrentGestureEvents.Add(new GestureEventLongPress(ConfigLongPress.RequiredNumberOfFingers, ElapsedSinceBeginning, NormalizeVector(avgPosition)));
+                var evt = CurrentGestureEvents.Add() as GestureEventLongPress;
+                evt.Set(ConfigLongPress.RequiredNumberOfFingers, ElapsedSinceBeginning, NormalizeVector(avgPosition));
                 HasGestureStarted = false;
             }
         }

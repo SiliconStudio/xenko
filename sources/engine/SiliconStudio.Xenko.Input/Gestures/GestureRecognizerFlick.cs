@@ -9,11 +9,16 @@ namespace SiliconStudio.Xenko.Input
 {
     internal sealed class GestureRecognizerFlick : GestureRecognizer
     {
-        private GestureConfigFlick ConfigFlick { get { return (GestureConfigFlick)Config; } }
-
         public GestureRecognizerFlick(GestureConfigFlick config, float screenRatio)
             : base(config, screenRatio)
         {
+        }
+
+        private GestureConfigFlick ConfigFlick { get { return (GestureConfigFlick)Config; } }
+
+        protected override GestureEvent NewEventFactory()
+        {
+            return new GestureEventFlick();
         }
 
         protected override void ProcessDownEventPointer(int id, Vector2 pos)
@@ -52,7 +57,8 @@ namespace SiliconStudio.Xenko.Input
                 var translDist = (currPos - startPos).Length();
                 if (translDist > ConfigFlick.MinimumFlickLength && translDist / ElapsedSinceBeginning.TotalSeconds > ConfigFlick.MinimumAverageSpeed)
                 {
-                    CurrentGestureEvents.Add(new GestureEventFlick(ConfigFlick.RequiredNumberOfFingers, ElapsedSinceBeginning, ConfigFlick.FlickShape, NormalizeVector(startPos), NormalizeVector(currPos)));
+                    var evt = CurrentGestureEvents.Add() as GestureEventFlick;
+                    evt.Set(ConfigFlick.RequiredNumberOfFingers, ElapsedSinceBeginning, ConfigFlick.FlickShape, NormalizeVector(startPos), NormalizeVector(currPos));
                     HasGestureStarted = false;
                 }
             }

@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         public Vector2 Position { get; internal set; }
 
-        internal GestureEventLongPress(int numberOfFinger, TimeSpan time, Vector2 position)
+        internal void Set(int numberOfFinger, TimeSpan time, Vector2 position)
         {
             State = GestureState.Occurred;
             Type = GestureType.LongPress;

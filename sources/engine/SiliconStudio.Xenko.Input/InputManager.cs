@@ -894,7 +894,9 @@ namespace SiliconStudio.Xenko.Input
             currentGestureEvents.Clear();
 
             foreach (var gestureRecognizer in gestureConfigToRecognizer.Values)
-                currentGestureEvents.AddRange(gestureRecognizer.ProcessPointerEvents(elapsedGameTime, pointerEvents));
+            {
+                gestureRecognizer.ProcessPointerEvents(elapsedGameTime, pointerEvents, currentGestureEvents);
+            }
         }
 
         private void UpdateVirtualButtonValues()

@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Input
         /// Gets the delta position of the pointer since the previous frame.
         /// </summary>
         /// <value>The delta position.</value>
-        public Vector2 DeltaPosition { get; set; }
+        public Vector2 DeltaPosition { get; internal set; }
 
         /// <summary>
         /// Gets the amount of time since the previous state.

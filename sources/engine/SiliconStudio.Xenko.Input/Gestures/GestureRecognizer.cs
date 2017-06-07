@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
@@ -11,21 +12,31 @@ namespace SiliconStudio.Xenko.Input
     internal abstract class GestureRecognizer
     {
         private static readonly ThreadLocal<List<int>> FingerIdsCache = new ThreadLocal<List<int>>(() => new List<int>());
-
-        protected List<GestureEvent> CurrentGestureEvents = new List<GestureEvent>();
-
+        
         protected readonly Dictionary<int, Vector2> FingerIdToBeginPositions = new Dictionary<int, Vector2>();
 
         protected readonly Dictionary<int, Vector2> FingerIdsToLastPos = new Dictionary<int, Vector2>();
 
+        protected PoolListStruct<GestureEvent> CurrentGestureEvents;
         protected TimeSpan ElapsedSinceBeginning;
         protected TimeSpan ElapsedSinceLast;
 
         // avoid reallocation of the dictionary at each update call
         private readonly Dictionary<int, Vector2> fingerIdsToLastMovePos = new Dictionary<int, Vector2>();
 
-        protected virtual GestureConfig Config { get; private set; }
+        private bool hasGestureStarted;
         
+        protected GestureRecognizer(GestureConfig config, float screenRatio)
+        {
+            CurrentGestureEvents = new PoolListStruct<GestureEvent>(8, NewEventFactory);
+            Config = config;
+            ScreenRatio = screenRatio;
+        }
+        
+        internal float ScreenRatio { get; set; }
+
+        protected virtual GestureConfig Config { get; }
+
         protected bool HasGestureStarted
         {
             get { return hasGestureStarted; }
@@ -40,30 +51,23 @@ namespace SiliconStudio.Xenko.Input
                 hasGestureStarted = value;
             }
         }
-
-        private bool hasGestureStarted;
-
+        
         protected virtual int NbOfFingerOnScreen => FingerIdsToLastPos.Count;
-
-        internal float ScreenRatio { get; set; }
-
-        protected GestureRecognizer(GestureConfig config, float screenRatio)
+        
+        public void ProcessPointerEvents(TimeSpan deltaTime, List<PointerEvent> events, List<GestureEvent> outputEvents)
         {
-            Config = config;
-            ScreenRatio = screenRatio;
-        }
-
-        public List<GestureEvent> ProcessPointerEvents(TimeSpan deltaTime, List<PointerEvent> events)
-        {
-            CurrentGestureEvents.Clear();
-
             ElapsedSinceBeginning += deltaTime;
             ElapsedSinceLast += deltaTime;
 
+            CurrentGestureEvents.Clear();
             ProcessPointerEventsImpl(deltaTime, events);
-
-            return CurrentGestureEvents;
+            for (int i = 0; i < CurrentGestureEvents.Count; i++)
+            {
+                outputEvents.Add(CurrentGestureEvents[i]);
+            }
         }
+
+        protected abstract GestureEvent NewEventFactory();
 
         protected virtual void ProcessPointerEventsImpl(TimeSpan deltaTime, List<PointerEvent> events)
         {

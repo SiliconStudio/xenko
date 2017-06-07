@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         public Vector2 AverageSpeed { get; internal set; }
 
-        internal GestureEventTranslation(GestureType type, GestureState state, int numberOfFingers, TimeSpan deltaTime, TimeSpan totalTime, 
+        internal void Set(GestureType type, GestureState state, int numberOfFingers, TimeSpan deltaTime, TimeSpan totalTime, 
                                           GestureShape shape, Vector2 startPos, Vector2 currPos, Vector2 deltaTrans)
         {
             Type = type;
