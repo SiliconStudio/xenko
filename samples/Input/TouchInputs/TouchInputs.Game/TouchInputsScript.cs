@@ -71,11 +71,11 @@ namespace TouchInputs
             // activate the gesture recognitions
             if (!IsLiveReloading) // Live Scripting: do it only on first launch
             {
-                Input.ActivatedGestures.Add(new GestureConfigDrag());
-                Input.ActivatedGestures.Add(new GestureConfigFlick());
-                Input.ActivatedGestures.Add(new GestureConfigLongPress());
-                Input.ActivatedGestures.Add(new GestureConfigComposite());
-                Input.ActivatedGestures.Add(new GestureConfigTap());
+                Input.Gestures.Add(new GestureConfigDrag());
+                Input.Gestures.Add(new GestureConfigFlick());
+                Input.Gestures.Add(new GestureConfigLongPress());
+                Input.Gestures.Add(new GestureConfigComposite());
+                Input.Gestures.Add(new GestureConfigTap());
             }
         }
 
@@ -101,7 +101,7 @@ namespace TouchInputs
                 foreach (var keyEvent in Input.KeyEvents)
                     keyEvents += keyEvent + ", ";
 
-                foreach (var key in Input.KeyDown)
+                foreach (var key in Input.DownKeys)
                     keyDown += key + ", ";
             }
 
@@ -126,19 +126,18 @@ namespace TouchInputs
             {
                 foreach (var pointerEvent in Input.PointerEvents)
                 {
-                    switch (pointerEvent.State)
+                    switch (pointerEvent.EventType)
                     {
-                        case PointerState.Down:
+                        case PointerEventType.Pressed:
                             pointerPressed.Enqueue(Tuple.Create(pointerEvent.Position, currentTime));
                             break;
-                        case PointerState.Move:
+                        case PointerEventType.Moved:
                             pointerMoved.Enqueue(Tuple.Create(pointerEvent.Position, currentTime));
                             break;
-                        case PointerState.Up:
+                        case PointerEventType.Released:
                             pointerReleased.Enqueue(Tuple.Create(pointerEvent.Position, currentTime));
                             break;
-                        case PointerState.Out:
-                        case PointerState.Cancel:
+                        case PointerEventType.Canceled:
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -182,7 +181,7 @@ namespace TouchInputs
             {
                 for (int i = 0; i < Input.GamePadCount; i++)
                 {
-                    var gamePadState = Input.GetGamePad(i);
+                    var gamePadState = Input.GetGamePadByIndex(i);
                     gamePadText += "\n[" + i + "] " + gamePadState;
                 }
             }

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Core;
+using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.UI.Events;
 
 namespace SiliconStudio.Xenko.UI
@@ -44,7 +45,10 @@ namespace SiliconStudio.Xenko.UI
             EventManager.RegisterRoutedEvent<KeyEventArgs>("KeyDown", RoutingStrategy.Bubble, typeof(UIElement));
 
         private static readonly RoutedEvent<KeyEventArgs> KeyReleasedEvent =
-            EventManager.RegisterRoutedEvent<KeyEventArgs>("KeyReleased", RoutingStrategy.Bubble,typeof(UIElement));
+            EventManager.RegisterRoutedEvent<KeyEventArgs>("KeyReleased", RoutingStrategy.Bubble, typeof(UIElement));
+
+        private static readonly RoutedEvent<TextEventArgs> TextInputEvent =
+            EventManager.RegisterRoutedEvent<TextEventArgs>("TextInput", RoutingStrategy.Bubble, typeof(UIElement));
 
         #endregion
 
@@ -64,6 +68,7 @@ namespace SiliconStudio.Xenko.UI
             EventManager.RegisterClassHandler(typeof(UIElement), KeyPressedEvent, KeyPressedClassHandler);
             EventManager.RegisterClassHandler(typeof(UIElement), KeyDownEvent, KeyDownClassHandler);
             EventManager.RegisterClassHandler(typeof(UIElement), KeyReleasedEvent, KeyReleasedClassHandler);
+            EventManager.RegisterClassHandler(typeof(UIElement), TextInputEvent, TextInputClassHandler);
         }
 
         /// <summary>
@@ -92,7 +97,7 @@ namespace SiliconStudio.Xenko.UI
                 MouseOverStateChanged?.Invoke(this, new PropertyChangedArgs<MouseOverState> { NewValue = value, OldValue = oldValue });
             }
         }
-      
+
         internal void PropagateRoutedEvent(RoutedEventArgs e)
         {
             var routedEvent = e.RoutedEvent;
@@ -151,10 +156,10 @@ namespace SiliconStudio.Xenko.UI
 
             if (!e.RoutedEvent.HandlerSecondArgumentType.GetTypeInfo().IsAssignableFrom(e.GetType().GetTypeInfo()))
                 throw new InvalidOperationException("The type of second parameter of the handler (" + e.RoutedEvent.HandlerSecondArgumentType
-                                                        + ") is not assignable from the parameter 'e' type (" + e.GetType() + ").");
+                                                    + ") is not assignable from the parameter 'e' type (" + e.GetType() + ").");
 
             var sourceWasNull = e.Source == null;
-            if (sourceWasNull)  // set the source to default if needed
+            if (sourceWasNull) // set the source to default if needed
                 e.Source = this;
 
             e.StartEventRouting();
@@ -328,6 +333,15 @@ namespace SiliconStudio.Xenko.UI
             remove { RemoveHandler(KeyReleasedEvent, value); }
         }
 
+        /// <summary>
+        /// Occurs when the element has the focus and the user inputs text on a text input device (keyboard)
+        /// </summary>
+        internal event EventHandler<TextEventArgs> Input
+        {
+            add { AddHandler(TextInputEvent, value); }
+            remove { RemoveHandler(TextInputEvent, value); }
+        }
+
         #endregion
 
         #region Internal Event Raiser
@@ -387,6 +401,12 @@ namespace SiliconStudio.Xenko.UI
         {
             keyEventArgs.RoutedEvent = KeyReleasedEvent;
             RaiseEvent(keyEventArgs);
+        }
+
+        internal void RaiseTextInputEvent(TextEventArgs textInputEventArgs)
+        {
+            textInputEventArgs.RoutedEvent = TextInputEvent;
+            RaiseEvent(textInputEventArgs);
         }
 
         #endregion
@@ -546,6 +566,22 @@ namespace SiliconStudio.Xenko.UI
             var uiElementSender = (UIElement)sender;
             if (uiElementSender.IsHierarchyEnabled)
                 uiElementSender.OnKeyDown(args);
+        }
+
+        /// <summary>
+        /// The class handler of the event <see cref="Input"/>.
+        /// This method can be overridden in inherited classes to perform actions common to all instances of a class.
+        /// </summary>
+        /// <param name="args">The arguments of the event</param>
+        internal virtual void OnTextInput(TextEventArgs args)
+        {
+        }
+
+        private static void TextInputClassHandler(object sender, TextEventArgs args)
+        {
+            var uiElementSender = (UIElement)sender;
+            if (uiElementSender.IsHierarchyEnabled)
+                uiElementSender.OnTextInput(args);
         }
 
         /// <summary>

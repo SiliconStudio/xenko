@@ -1,23 +1,19 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
 {
-    /// <summary>
-    /// This class represents a sensor of type Gyroscope. It measures the rotation speed of device along the x/y/z axis.
-    /// </summary>
-    public class GyroscopeSensor : SensorBase
+    internal class GyroscopeSensor : Sensor, IGyroscopeSensor
     {
-        /// <summary>
-        /// Gets the current rotation speed of the device along x/y/z axis.
-        /// </summary>
         public Vector3 RotationRate { get; internal set; }
 
-        internal override void ResetData()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GyroscopeSensor"/> class.
+        /// </summary>
+        public GyroscopeSensor(IInputSource source, string systemName) : base(source, systemName, "Gyroscope")
         {
-            RotationRate = Vector3.Zero;
         }
     }
 }
