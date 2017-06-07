@@ -11,9 +11,9 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public sealed class GestureEventFlick : GestureEventTranslation
     {
-        internal GestureEventFlick( int numberOfFingers, TimeSpan time, GestureShape shape, Vector2 startPos, Vector2 currPos)
-            :base(GestureType.Flick, GestureState.Occurred, numberOfFingers, time, time, shape, startPos, currPos, currPos-startPos)
+        internal void Set( int numberOfFingers, TimeSpan time, GestureShape shape, Vector2 startPos, Vector2 currPos)
         {
+            base.Set(GestureType.Flick, GestureState.Occurred, numberOfFingers, time, time, shape, startPos, currPos, currPos - startPos);
         }
     }
 }

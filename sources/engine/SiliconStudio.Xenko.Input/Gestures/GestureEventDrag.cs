@@ -12,10 +12,10 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public sealed class GestureEventDrag : GestureEventTranslation
     {
-        internal GestureEventDrag(GestureState state, int numberOfFingers, TimeSpan deltaTime, TimeSpan totalTime,
+        internal void Set(GestureState state, int numberOfFingers, TimeSpan deltaTime, TimeSpan totalTime,
                                     GestureShape shape, Vector2 startPos, Vector2 currPos, Vector2 deltaTrans)
-            :base(GestureType.Drag, state, numberOfFingers, deltaTime,totalTime,shape,startPos,currPos,deltaTrans)
         {
+            base.Set(GestureType.Drag, state, numberOfFingers, deltaTime, totalTime, shape, startPos, currPos, deltaTrans);
         }
     }
 }

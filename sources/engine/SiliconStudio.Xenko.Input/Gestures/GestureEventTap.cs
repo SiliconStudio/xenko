@@ -20,9 +20,8 @@ namespace SiliconStudio.Xenko.Input
         /// The position of the tap.
         /// </summary>
         public Vector2 TapPosition { get; internal set; }
-
-
-        internal GestureEventTap(TimeSpan takenTime, int numberOfFingers, int numberOfTaps, Vector2 position)
+        
+        internal void Set(TimeSpan takenTime, int numberOfFingers, int numberOfTaps, Vector2 position)
         {
             Type = GestureType.Tap;
             State = GestureState.Occurred;

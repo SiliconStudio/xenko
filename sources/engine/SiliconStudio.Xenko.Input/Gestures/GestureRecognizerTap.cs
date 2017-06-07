@@ -9,8 +9,6 @@ namespace SiliconStudio.Xenko.Input
 {
     internal sealed class GestureRecognizerTap : GestureRecognizer
     {
-        private GestureConfigTap ConfigTap { get { return (GestureConfigTap)Config; } }
-
         private int currentNumberOfTaps;
 
         private TimeSpan elapsedSinceTakeOff;
@@ -24,6 +22,13 @@ namespace SiliconStudio.Xenko.Input
         public GestureRecognizerTap(GestureConfigTap configuration, float screenRatio)
             :base(configuration, screenRatio)
         {
+        }
+
+        private GestureConfigTap ConfigTap { get { return (GestureConfigTap)Config; } }
+
+        protected override GestureEvent NewEventFactory()
+        {
+            return new GestureEventTap();
         }
 
         protected override void ProcessPointerEventsImpl(TimeSpan deltaTime, List<PointerEvent> events)
@@ -132,7 +137,8 @@ namespace SiliconStudio.Xenko.Input
             if (currentNumberOfTaps == ConfigTap.RequiredNumberOfTaps)
             {
                 var tapMeanPosition = ComputeMeanPosition(FingerIdToBeginPositions.Values);
-                CurrentGestureEvents.Add(new GestureEventTap(ElapsedSinceBeginning, ConfigTap.RequiredNumberOfFingers, currentNumberOfTaps, NormalizeVector(tapMeanPosition)));
+                var evt = CurrentGestureEvents.Add() as GestureEventTap;
+                evt.Set(ElapsedSinceBeginning, ConfigTap.RequiredNumberOfFingers, currentNumberOfTaps, NormalizeVector(tapMeanPosition));
             }
 
             currentNumberOfTaps = 0;

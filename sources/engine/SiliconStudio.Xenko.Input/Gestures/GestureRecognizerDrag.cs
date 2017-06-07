@@ -9,8 +9,6 @@ namespace SiliconStudio.Xenko.Input
 {
     internal sealed class GestureRecognizerDrag : GestureRecognizerContMotion
     {
-        private GestureConfigDrag ConfigDrag { get { return (GestureConfigDrag)Config; } }
-
         private Dictionary<int, Vector2> fingerIdsToLowFilteredPos = new Dictionary<int, Vector2>();
 
         private Vector2 startPosition;
@@ -23,7 +21,14 @@ namespace SiliconStudio.Xenko.Input
             : base(config, screenRatio)
         {
         }
+
+        private GestureConfigDrag ConfigDrag => (GestureConfigDrag)Config;
         
+        protected override GestureEvent NewEventFactory()
+        {
+            return new GestureEventDrag();
+        }
+
         protected override void InitializeGestureVariables()
         {
             startPosition = ComputeMeanPosition(FingerIdsToLastPos.Values);
@@ -59,8 +64,9 @@ namespace SiliconStudio.Xenko.Input
         protected override void AddGestureEventToCurrentList(GestureState state)
         {
             var deltaTrans = currPosition - lastPosition;
-            CurrentGestureEvents.Add(new GestureEventDrag(state, ConfigDrag.RequiredNumberOfFingers, ElapsedSinceLast, ElapsedSinceBeginning, ConfigDrag.DragShape,
-                                                          NormalizeVector(startPosition), NormalizeVector(currPosition), NormalizeVector(deltaTrans)));
+            var evt = CurrentGestureEvents.Add() as GestureEventDrag;
+            evt.Set(state, ConfigDrag.RequiredNumberOfFingers, ElapsedSinceLast, ElapsedSinceBeginning, ConfigDrag.DragShape,
+                                                          NormalizeVector(startPosition), NormalizeVector(currPosition), NormalizeVector(deltaTrans));
 
             lastPosition = currPosition;
 

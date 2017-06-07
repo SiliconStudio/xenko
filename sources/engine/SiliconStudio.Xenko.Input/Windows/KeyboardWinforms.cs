@@ -56,7 +56,8 @@ namespace SiliconStudio.Xenko.Input
         {
             base.Update(inputEvents);
 
-            inputEvents.AddRange(textEvents);
+            for(int i = 0; i < textEvents.Count; i++)
+                inputEvents.Add(textEvents[i]);
             textEvents.Clear();
         }
 

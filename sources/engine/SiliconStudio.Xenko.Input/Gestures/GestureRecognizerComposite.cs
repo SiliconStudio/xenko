@@ -8,8 +8,6 @@ namespace SiliconStudio.Xenko.Input
 {
     internal sealed class GestureRecognizerComposite : GestureRecognizerContMotion
     {
-        private GestureConfigComposite ConfigComposite { get { return (GestureConfigComposite)Config; } }
-        
         private int firstFingerId;
         private int secondFingerId;
 
@@ -34,6 +32,13 @@ namespace SiliconStudio.Xenko.Input
         public GestureRecognizerComposite(GestureConfigComposite config, float screenRatio)
             : base(config, screenRatio)
         {
+        }
+
+        private GestureConfigComposite ConfigComposite => (GestureConfigComposite)Config;
+
+        protected override GestureEvent NewEventFactory()
+        {
+            return new GestureEventComposite();
         }
 
         protected override void InitializeGestureVariables()
@@ -80,8 +85,9 @@ namespace SiliconStudio.Xenko.Input
         {
             var deltaRotation = currentRotation - lastRotation;
             var deltaScale = currentScale - lastScale;
-            CurrentGestureEvents.Add(new GestureEventComposite(state, ElapsedSinceLast, ElapsedSinceBeginning, deltaRotation, currentRotation, deltaScale, currentScale,
-                                                               NormalizeVector(beginCenter), NormalizeVector(lastCenter), NormalizeVector(currentCenter)));
+            var evt = CurrentGestureEvents.Add() as GestureEventComposite;
+            evt.Set(state, ElapsedSinceLast, ElapsedSinceBeginning, deltaRotation, currentRotation, deltaScale, currentScale,
+                                                               NormalizeVector(beginCenter), NormalizeVector(lastCenter), NormalizeVector(currentCenter));
 
             lastRotation = currentRotation;
             lastScale = currentScale;
