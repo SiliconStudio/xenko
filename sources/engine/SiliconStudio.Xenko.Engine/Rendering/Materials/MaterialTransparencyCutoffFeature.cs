@@ -45,7 +45,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             var alpha = Alpha ?? new ComputeFloat(DefaultAlpha);
             alpha.ClampFloat(0, 1);
             context.SetStream(AlphaDiscardStream.Stream, alpha, MaterialKeys.AlphaDiscardMap, MaterialKeys.AlphaDiscardValue, new Color(DefaultAlpha));
-            context.MaterialPass.HasTransparency = true;
 
             if (!context.Tags.Get(HasFinalCallback))
             {
