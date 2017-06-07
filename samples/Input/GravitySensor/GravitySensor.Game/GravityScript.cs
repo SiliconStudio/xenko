@@ -19,7 +19,7 @@ namespace GravitySensor
             simulation = this.GetSimulation();
             simulation.Gravity = new Vector3(0, 0, 0);
 
-            if (Input.Gravity.IsSupported) // enables the orientation sensor.
+            if (Input.Gravity != null) // enables the orientation sensor.
                 Input.Gravity.IsEnabled = true;
         }
 
@@ -29,7 +29,7 @@ namespace GravitySensor
             var gravity = new Vector3(0, 0, 0);
 
             // Get the gravity vector from the sensor
-            if (Input.Gravity.IsEnabled)
+            if (Input.Gravity?.IsEnabled ?? false)
             {
                 var originalVector = Input.Gravity.Vector;
                 gravity = new Vector3(originalVector.Z, originalVector.X, -originalVector.Y); // this rotation includes: (1) rotation of the scene (up = Z axis), (2) rotation of the display (Landscape)

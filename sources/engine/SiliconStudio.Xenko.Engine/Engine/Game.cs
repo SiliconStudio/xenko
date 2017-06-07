@@ -323,17 +323,19 @@ namespace SiliconStudio.Xenko.Engine
 
         protected override void Initialize()
         {
-            base.Initialize();
-
             // ---------------------------------------------------------
             // Add common GameSystems - Adding order is important
             // (Unless overriden by gameSystem.UpdateOrder)
             // ---------------------------------------------------------
 
             // Add the input manager
-            Input = InputManagerFactory.NewInputManager(Services, Context);
+            // Add it first so that it can obtained by the UI system
+            Input = new InputManager(Services);
             Services.AddService(typeof(InputManager), Input);
             GameSystems.Add(Input);
+
+            // Initialize the systems
+            base.Initialize();
 
             // Add the scheduler system
             // - Must be after Input, so that scripts are able to get latest input
@@ -371,9 +373,6 @@ namespace SiliconStudio.Xenko.Engine
 
             // TODO: data-driven?
             Content.Serializer.RegisterSerializer(new ImageSerializer());
-
-            // enable multi-touch by default
-            Input.MultiTouchEnabled = true;
 
             OnGameStarted(this);
         }

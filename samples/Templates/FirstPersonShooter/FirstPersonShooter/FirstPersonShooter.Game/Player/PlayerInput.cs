@@ -106,7 +106,7 @@ namespace FirstPersonShooter.Player
                 // Mouse: Left button, Tap events
                 var didShoot = Input.GetRightTriggerAny(0.2f) > 0.2f;   // This will allow for continuous shooting
 
-                if (Input.PointerEvents.Any(x => x.State == PointerState.Down))
+                if (Input.PointerEvents.Any(x => x.EventType == PointerEventType.Pressed))
                     didShoot = true;
                     
                 if (Input.HasMouse && Input.IsMouseButtonDown(MouseButton.Left))                  // This will allow for continuous shooting

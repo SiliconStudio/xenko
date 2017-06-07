@@ -22,6 +22,4 @@ using System.Runtime.InteropServices;
 #pragma warning disable 436 // SiliconStudio.PublicKeys is defined in multiple assemblies
 
 [assembly: InternalsVisibleTo("SiliconStudio.Xenko.Engine" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Input.Serializers" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Xenko.UI.Tests" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudioXenkoUITests" + SiliconStudio.PublicKeys.Default)] // iOS removes dot
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.UI" + SiliconStudio.PublicKeys.Default)]
