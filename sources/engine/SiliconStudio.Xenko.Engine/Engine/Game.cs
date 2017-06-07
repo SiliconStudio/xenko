@@ -45,6 +45,8 @@ namespace SiliconStudio.Xenko.Engine
 
         private readonly LogListener logListener;
 
+        private DatabaseFileProvider databaseFileProvider;
+
         /// <summary>
         /// Readonly game settings as defined in the GameSettings asset
         /// Please note that it will be populated during initialization
@@ -230,6 +232,8 @@ namespace SiliconStudio.Xenko.Engine
         {
             OnGameDestroyed(this);
 
+            DestroyAssetDatabase();
+
             base.Destroy();
             
             if (logListener != null)
@@ -244,7 +248,7 @@ namespace SiliconStudio.Xenko.Engine
             // Init assets
             if (Context.InitializeDatabase)
             {
-                InitializeAssetDatabase();
+                databaseFileProvider = InitializeAssetDatabase();
 
                 var renderingSettings = new RenderingSettings();
                 if (Content.Exists(GameSettings.AssetUrl))
@@ -377,7 +381,7 @@ namespace SiliconStudio.Xenko.Engine
             OnGameStarted(this);
         }
 
-        internal static void InitializeAssetDatabase()
+        internal static DatabaseFileProvider InitializeAssetDatabase()
         {
             using (Profiler.Begin(GameProfilingKeys.ObjectDatabaseInitialize))
             {
@@ -386,9 +390,21 @@ namespace SiliconStudio.Xenko.Engine
                 
                 // Only set a mount path if not mounted already
                 var mountPath = VirtualFileSystem.ResolveProviderUnsafe("/asset", true).Provider == null ? "/asset" : null;
-                var databaseFileProvider = new DatabaseFileProvider(objDatabase, mountPath);
+                var result = new DatabaseFileProvider(objDatabase, mountPath);
 
-                ContentManager.GetFileProvider = () => databaseFileProvider;
+                ContentManager.GetFileProvider = () => result;
+
+                return result;
+            }
+        }
+
+        private void DestroyAssetDatabase()
+        {
+            if (databaseFileProvider != null)
+            {
+                ContentManager.GetFileProvider = null;
+                databaseFileProvider.Dispose();
+                databaseFileProvider = null;
             }
         }
 

@@ -120,6 +120,9 @@ namespace SiliconStudio.Xenko.Rendering
             }
 #endif
 
+            Compiler?.Dispose();
+            Compiler = null;
+
             base.Destroy();
         }
 
@@ -460,6 +463,11 @@ namespace SiliconStudio.Xenko.Rendering
                 {
                     // Create a remote compiler
                     compiler = new RemoteEffectCompiler(shaderCompilerTarget);
+                }
+                else
+                {
+                    // Otherwise, EffectSystem takes ownership of shaderCompilerTarget
+                    shaderCompilerTarget.DisposeBy(effectSystem);
                 }
             }
 
