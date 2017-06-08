@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Xenko.Input
@@ -13,12 +14,18 @@ namespace SiliconStudio.Xenko.Input
     /// <typeparam name="TEventType">The type of event to pool</typeparam>
     public static class InputEventPool<TEventType> where TEventType : InputEvent, new()
     {
-        [ThreadStatic] private static PoolListStruct<TEventType> eventPool = new PoolListStruct<TEventType>(8, CreateEvent);
+        private static ThreadLocal<Pool> pool;
+
+        static InputEventPool()
+        {
+            pool = new ThreadLocal<Pool>(
+                () => new Pool());
+        }
 
         /// <summary>
         /// The number of events in circulation, if this number keeps increasing, Enqueue is possible not called somewhere
         /// </summary>
-        public static int ActiveObjects => eventPool.Count;
+        public static int ActiveObjects => pool.Value.ActiveObjects;
 
         private static TEventType CreateEvent()
         {
@@ -32,9 +39,7 @@ namespace SiliconStudio.Xenko.Input
         /// <returns>An event</returns>
         public static TEventType GetOrCreate(IInputDevice device)
         {
-            TEventType item = eventPool.Add();
-            item.Device = device;
-            return item;
+            return pool.Value.GetOrCreate(device);
         }
         
         /// <summary>
@@ -43,8 +48,30 @@ namespace SiliconStudio.Xenko.Input
         /// <param name="item">The event to reuse</param>
         public static void Enqueue(TEventType item)
         {
-            eventPool.Remove(item);
-            item.Device = null;
+            pool.Value.Enqueue(item);
+        }
+
+        /// <summary>
+        /// Pool class, since <see cref="PoolListStruct{T}"/> can not be placed inside <see cref="ThreadLocal{T}"/>
+        /// </summary>
+        private class Pool
+        {
+            private PoolListStruct<TEventType> pool = new PoolListStruct<TEventType>(8, CreateEvent);
+
+            public int ActiveObjects => pool.Count;
+
+            public TEventType GetOrCreate(IInputDevice device)
+            {
+                TEventType item = pool.Add();
+                item.Device = device;
+                return item;
+            }
+            
+            public void Enqueue(TEventType item)
+            {
+                item.Device = null;
+                pool.Remove(item);
+            }
         }
     }
 }
