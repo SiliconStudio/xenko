@@ -318,11 +318,6 @@ namespace SiliconStudio.Xenko.Streaming
         {
             Debug.Assert(resource != null && resource.CanBeUpdated);
 
-            // Pick group and handler dedicated for that resource
-            // TODO: finish resource groups and streaming handlers implementation
-            //var group = resource.Group;
-            //var handler = group.Handler;
-
             // Calculate target quality for that asset
             StreamingQuality targetQuality = StreamingQuality.Mininum;
             if (resource.ForceFullyLoaded)
@@ -345,7 +340,7 @@ namespace SiliconStudio.Xenko.Streaming
             // Calculate target residency level (discrete value)
             var currentResidency = resource.CurrentResidency;
             var allocatedResidency = resource.AllocatedResidency;
-            var targetResidency = resource.CalculateResidency(targetQuality);
+            var targetResidency = resource.CalculateTargetResidency(targetQuality);
             Debug.Assert(allocatedResidency >= currentResidency && allocatedResidency >= 0);
 
             // Update target residency smoothing
@@ -367,27 +362,11 @@ namespace SiliconStudio.Xenko.Streaming
             // Check if need to change resource current residency
             if (targetResidency != currentResidency)
             {
-                // Check if need to increase it's residency
-                if (targetResidency > currentResidency)
-                {
-                    // Calculate residency level to stream in (resources may want to incease/decrease it's quality in steps rather than at once)
-                    //var requestedResidency = handler.CalculateRequestedResidency(resource, targetResidency);// TODO: use resource groups and handlers
-                    var requestedResidency = Math.Min(targetResidency, Math.Max(currentResidency + 1, 4)); // Stream target quality in steps but lower mips at once
-                    //var requestedResidency = currentResidency + 1; // Stream target quality in steps
-                    //var requestedResidency = targetResidency; // Stream target quality at once
+                // Calculate residency level to stream in (resources may want to incease/decrease it's quality in steps rather than at once)
+                var requestedResidency = resource.CalculateRequestedResidency(targetResidency);
 
-                    // Create streaming task (resource type specific)
-                    resource.StreamAsync(requestedResidency).Start();
-                }
-                else
-                {
-                    // Calculate residency level to stream in (resources may want to incease/decrease it's quality in steps rather than at once)
-                    //var requestedResidency = handler.CalculateRequestedResidency(resource, targetResidency);// TODO: use resource groups and handlers
-                    var requestedResidency = targetResidency; // Stream target quality at once
-
-                    // Spawn streaming task (resource type specific)
-                    resource.StreamAsync(requestedResidency).Start();
-                }
+                // Create streaming task (resource type specific)
+                resource.StreamAsync(requestedResidency).Start();
             }
         }
 
