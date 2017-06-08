@@ -62,11 +62,6 @@ namespace SiliconStudio.Assets.Tracking
                                 // If the file has already been collected, just update whether it should update the asset when changed
                                 sourceFiles[file] = true;
                             }
-
-                            if (!attribute.Optional)
-                            {
-                                compilationInputFiles.Add(file);
-                            }
                         }
                     }
                 }
