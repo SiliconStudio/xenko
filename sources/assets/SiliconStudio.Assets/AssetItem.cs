@@ -256,7 +256,7 @@ namespace SiliconStudio.Assets
                 }
 
                 Interlocked.Increment(ref version);
-                sourceFiles.Clear();
+                sourceFiles?.Clear();
 
                 var oldValue = isDirty;
                 isDirty = value;
