@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Streaming;
 using SiliconStudio.Xenko.Graphics;
 
@@ -92,6 +93,21 @@ namespace SiliconStudio.Xenko.Streaming
 
         /// <inheritdoc />
         internal override bool CanBeUpdated => _streamingTask == null || _streamingTask.IsCompleted;
+
+        /// <inheritdoc />
+        public override int CalculateResidency(StreamingQuality quality)
+        {
+            if (MathUtil.IsZero(quality))
+                return 0;
+
+            var result = Math.Max(1, (int)(TotalMipLevels * quality));
+
+            // Compressed formats have aligment restrictions on the dimensions of the texture (minimum size must be 4)
+            if (Format.IsCompressed() && TotalMipLevels >= 3)
+                result = MathUtil.Clamp(result, 3, TotalMipLevels);
+
+            return result;
+        }
 
         internal void Init([NotNull] ContentStorage storage, ref ImageDescription imageDescription)
         {

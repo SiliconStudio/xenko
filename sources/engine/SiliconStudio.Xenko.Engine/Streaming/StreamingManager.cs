@@ -8,15 +8,12 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Streaming;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Data;
-using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Sprites;
 
 namespace SiliconStudio.Xenko.Streaming
 {
@@ -35,11 +32,9 @@ namespace SiliconStudio.Xenko.Streaming
         private int frameIndex;
 
         // Configuration
-        public TimeSpan ManagerUpdatesInterval = TimeSpan.FromMilliseconds(10);
-
+        public TimeSpan ManagerUpdatesInterval = TimeSpan.FromMilliseconds(33);
         public TimeSpan ResourceUpdatesInterval = TimeSpan.FromMilliseconds(200);
         public const int MaxResourcesPerUpdate = 30;
-        private static int testQuality = 50; // temp for testing
 
         /// <summary>
         /// Gets the content streaming service.
@@ -261,14 +256,14 @@ namespace SiliconStudio.Xenko.Streaming
                 }*/
 
                 // temp code for testing quality changing using K/L keys
-                if (((Game)Game).Input.IsKeyPressed(Keys.K))
+                /*if (((Game)Game).Input.IsKeyPressed(Keys.K))
                 {
                     testQuality = Math.Min(testQuality + 5, 100);
                 }
                 if (((Game)Game).Input.IsKeyPressed(Keys.L))
                 {
                     testQuality = Math.Max(testQuality - 5, 0);
-                }
+                }*/
 
                 // Update resources
                 lock (resources)
@@ -336,24 +331,21 @@ namespace SiliconStudio.Xenko.Streaming
             }
             else if (resource.LastTimeUsed > 0)
             {
-                //targetQuality = handler.CalculateTargetQuality(resource, now);
-                targetQuality = (testQuality / 100.0f); // apply quality scale for testing
-                // TODO: here we should apply resources group master scale (based on game settings quality level and memory level)
-                targetQuality.Normalize();
+                var lastUsageTimespan = new TimeSpan((frameIndex - resource.LastTimeUsed) * ManagerUpdatesInterval.Ticks);
+                if (lastUsageTimespan < TimeSpan.FromSeconds(5))
+                {
+                    //targetQuality = handler.CalculateTargetQuality(resource, now);
+                    //targetQuality = (testQuality / 100.0f); // apply quality scale for testing
+                    targetQuality = StreamingQuality.Maximum;
+                    // TODO: here we should apply resources group master scale (based on game settings quality level and memory level)
+                }
             }
-            // TODO: if resource hasn't been used for a while decrease quality
+            targetQuality.Normalize();
 
             // Calculate target residency level (discrete value)
             var currentResidency = resource.CurrentResidency;
             var allocatedResidency = resource.AllocatedResidency;
-            //var targetResidency = handler.CalculateResidency(resource, targetQuality);
-            var targetResidency = MathUtil.IsZero(targetQuality) ? 0 : Math.Max(1, (int)((resource as StreamingTexture).Description.MipLevels * targetQuality)); // TODO: remove hardoded value for textures, use steraming groups/handlers
-
-            // Compressed formats have aligment restrictions on the dimensions of the texture
-            // TODO: remove hardcoded textures part to specilized object
-            if (targetResidency > 0 && (resource as StreamingTexture).Format.IsCompressed() && (resource as StreamingTexture).Description.MipLevels >= 3)
-                targetResidency = MathUtil.Clamp(targetResidency, 3, (resource as StreamingTexture).Description.MipLevels);
-
+            var targetResidency = resource.CalculateResidency(targetQuality);
             Debug.Assert(allocatedResidency >= currentResidency && allocatedResidency >= 0);
 
             // Update target residency smoothing
@@ -362,7 +354,6 @@ namespace SiliconStudio.Xenko.Streaming
             //targetResidency = resource.QualitySamples.Maximum();
 
             // Assign last update time
-            var updateTimeDelta = now - resource.LastUpdate;
             resource.LastUpdate = now;
 
             // Check if a target residency level has been changed
@@ -397,12 +388,6 @@ namespace SiliconStudio.Xenko.Streaming
                     // Spawn streaming task (resource type specific)
                     resource.StreamAsync(requestedResidency).Start();
                 }
-            }
-            else
-            {
-                // TODO: Check if target residency is stable (no changes for a while)
-
-                // TODO: deallocate or decrease memory usage after timout? (timeout should be smaller on low mem)
             }
         }
 
