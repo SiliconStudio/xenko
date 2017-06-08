@@ -95,7 +95,7 @@ namespace SiliconStudio.Xenko.Streaming
         internal override bool CanBeUpdated => _streamingTask == null || _streamingTask.IsCompleted;
 
         /// <inheritdoc />
-        public override int CalculateResidency(StreamingQuality quality)
+        public override int CalculateTargetResidency(StreamingQuality quality)
         {
             if (MathUtil.IsZero(quality))
                 return 0;
@@ -107,6 +107,35 @@ namespace SiliconStudio.Xenko.Streaming
                 result = MathUtil.Clamp(result, 3, TotalMipLevels);
 
             return result;
+        }
+
+        /// <inheritdoc />
+        public override int CalculateRequestedResidency(int targetResidency)
+        {
+            int requestedResidency;
+
+            // Check if need to increase it's residency or decrease
+            if (targetResidency > CurrentResidency)
+            {
+                // Stream target quality in steps but lower mips at once
+                requestedResidency = Math.Min(targetResidency, Math.Max(CurrentResidency + 1, 4)); 
+
+                // Stream target quality in steps
+                //requestedResidency = currentResidency + 1; 
+
+                // Stream target quality at once
+                //requestedResidency = targetResidency;
+            }
+            else
+            {
+                // Stream target quality in steps
+                //requestedResidency = currentResidency - 1; 
+
+                // Stream target quality at once
+                requestedResidency = targetResidency;
+            }
+
+            return requestedResidency;
         }
 
         internal void Init([NotNull] ContentStorage storage, ref ImageDescription imageDescription)

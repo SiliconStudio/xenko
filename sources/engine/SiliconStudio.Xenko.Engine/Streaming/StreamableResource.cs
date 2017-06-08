@@ -107,11 +107,20 @@ namespace SiliconStudio.Xenko.Streaming
         }
 
         /// <summary>
-        /// Calculates the residency level for this resource based on a given uniform quality.
+        /// Calculates the target residency level for this resource based on a given uniform quality.
         /// </summary>
         /// <param name="quality">The quality.</param>
-        /// <returns>Residency.</returns>
-        public abstract int CalculateResidency(StreamingQuality quality);
+        /// <returns>Target residency.</returns>
+        public abstract int CalculateTargetResidency(StreamingQuality quality);
+
+        /// <summary>
+        /// Calculates the requested residency level for this resource based on a given target residency.
+        /// Resource can control how to change it's residency up/down and if do it at once or in steps, etc..
+        /// This gives more control over per resource streaming.
+        /// </summary>
+        /// <param name="targetResidency">The target residency.</param>
+        /// <returns>Requested residency.</returns>
+        public abstract int CalculateRequestedResidency(int targetResidency);
 
         /// <summary>
         /// Stream resource to the target residency level.
