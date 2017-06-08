@@ -2,10 +2,11 @@
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using GNU.Getopt;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
@@ -17,6 +18,7 @@ namespace SiliconStudio.Translation.Extractor
         private static readonly LongOpt[] LOpts = {
             new LongOpt("directory", Argument.Required, null, 'D'),
             new LongOpt("recursive", Argument.No, null, 'r'),
+            new LongOpt("exclude", Argument.Required, null, 'x'),
             new LongOpt("merge", Argument.No, null, 'm'),
             new LongOpt("domain-name", Argument.Required, null, 'd'),
             new LongOpt("backup", Argument.No, null, 'b'),
@@ -24,7 +26,7 @@ namespace SiliconStudio.Translation.Extractor
             new LongOpt("help", Argument.No, null, 'h'),
             new LongOpt("verbose", Argument.No, null, 'v'),
         };
-        private static readonly string SOpts = "-:D:rmd:bo:hv";
+        private static readonly string SOpts = "-:D:rx:md:bo:hv";
 
         private static int Main([NotNull] string[] args)
         {
@@ -60,11 +62,13 @@ namespace SiliconStudio.Translation.Extractor
             {
                 // Compute the list of input files
                 ISet<UFile> inputFiles = new HashSet<UFile>();
+                var re = options.Excludes.Count > 0 ? new Regex(string.Join("|", options.Excludes.Select(x => Regex.Escape(x).Replace(@"\*", @".*")))) : null;
                 foreach (var path in options.InputDirs)
                 {
                     foreach (var searchPattern in options.InputFiles)
                     {
-                        var files = Directory.GetFiles(path, searchPattern, options.Recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+                        var files = Directory.EnumerateFiles(path, searchPattern, options.Recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
+                            .Where(f => !re?.IsMatch(f) ?? true);
                         foreach (var fileName in files)
                         {
                             inputFiles.Add(new UFile(fileName));
@@ -75,7 +79,8 @@ namespace SiliconStudio.Translation.Extractor
                 var messages = new List<Message>();
                 messages.AddRange(new CSharpExtractor(inputFiles).ExtractMessages());
                 messages.AddRange(new XamlExtractor(inputFiles).ExtractMessages());
-                Debug.WriteLine($"Found {messages.Count} messages."); // only show in verbose
+                if (options.Verbose)
+                    Console.WriteLine($"Found {messages.Count} messages.");
                 // Export/merge messages
                 var exporter = new POExporter(options);
                 exporter.Merge(messages);
@@ -149,6 +154,10 @@ namespace SiliconStudio.Translation.Extractor
                             options.Recursive = true;
                             break;
 
+                        case 'x':
+                            options.Excludes.Add(getopt.Optarg);
+                            break;
+
                         case 'd':
                             options.OutputFile = $"{getopt.Optarg}.pot";
                             break;
@@ -213,6 +222,7 @@ namespace SiliconStudio.Translation.Extractor
                 $"   -D directory, --directory=directory    Add directory to the list of directories. Source files are searched relative to this list of directories{newLine}" +
                 $"                                          Use multiples options to specify more directories{newLine}{newLine}" +
                 $"   -r, --recursive                        Process all subdirectories{newLine}{newLine}" +
+                $"   -x, --exclude=filemask                 Exclude a filemask from the list of input{newLine}{newLine}" +
                 $"   -d, --domain-name=name                 Use name.pot for output (instead of messages.pot){newLine}{newLine}" +
                 $"   -b, --backup                           Create a backup file (.bak) in case of an existing file{newLine}{newLine}" +
                 $"   -o file, --output=file                 Write output to specified file (instead of name.po or messages.po) {newLine}{newLine}" +
