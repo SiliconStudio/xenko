@@ -88,7 +88,7 @@ namespace SiliconStudio.Translation.Presentation.MarkupExtensions
             }
             return string.IsNullOrEmpty(Context)
                 ? TranslationManager.Instance.GetString(Text, assembly)
-                : TranslationManager.Instance.GetParticularString(Text, Context, assembly);
+                : TranslationManager.Instance.GetParticularString(Context, Text, assembly);
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace SiliconStudio.Translation.Presentation.MarkupExtensions
                 var count = value != DependencyProperty.UnsetValue ? System.Convert.ToInt32(value, culture) : default(int);
                 var result = string.IsNullOrEmpty(context)
                     ? TranslationManager.Instance.GetPluralString(text, plural, count, assembly)
-                    : TranslationManager.Instance.GetParticularPluralString(text, context, plural, count, assembly);
+                    : TranslationManager.Instance.GetParticularPluralString(context, text, plural, count, assembly);
                 return isStringFormat? string.Format(result, count) : result;
             }
 

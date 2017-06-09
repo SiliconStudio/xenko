@@ -28,7 +28,7 @@ namespace SiliconStudio.Presentation.Windows
         [NotNull]
         public static Task<CheckedMessageBoxResult> CheckedMessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, bool? isChecked, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None)
         {
-            return dispatcher.InvokeTask(() => Windows.CheckedMessageBox.Show(message, caption, button, image, TranslationManager.Instance.GetString("Don't ask me again"), isChecked));
+            return dispatcher.InvokeTask(() => Windows.CheckedMessageBox.Show(message, caption, button, image, Tr._("Don't ask me again"), isChecked));
         }
 
         [NotNull]

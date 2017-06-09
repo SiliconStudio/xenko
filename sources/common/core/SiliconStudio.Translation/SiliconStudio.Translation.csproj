@@ -39,6 +39,7 @@
     <Compile Include="Providers\GettextTranslationProvider.cs" />
     <Compile Include="Providers\ResxTranslationProvider.cs" />
     <Compile Include="Annotations\TranslationAttribute.cs" />
+    <Compile Include="Tr.cs" />
     <Compile Include="TranslationManager.cs" />
   </ItemGroup>
   <ItemGroup>
