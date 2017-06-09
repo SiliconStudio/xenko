@@ -24,7 +24,7 @@ namespace SiliconStudio.Translation.Presentation.ValueConverters
 
             return string.IsNullOrEmpty(Context)
                 ? TranslationManager.Instance.GetString(text)
-                : TranslationManager.Instance.GetParticularString(text, Context);
+                : TranslationManager.Instance.GetParticularString(Context, text);
         }
 
         /// <inheritdoc/>

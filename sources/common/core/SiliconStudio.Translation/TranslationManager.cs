@@ -71,29 +71,29 @@ namespace SiliconStudio.Translation
             }
 
             /// <inheritdoc />
-            public string GetParticularString(string text, string context)
+            public string GetParticularString(string context, string text)
             {
-                return GetParticularString(text, context, Assembly.GetCallingAssembly());
+                return GetParticularString(context, text, Assembly.GetCallingAssembly());
             }
 
             /// <inheritdoc />
-            public string GetParticularString(string text, string context, [NotNull] Assembly assembly)
+            public string GetParticularString(string context, string text, [NotNull] Assembly assembly)
             {
                 if (assembly == null) throw new ArgumentNullException(nameof(assembly));
-                return GetProvider(assembly)?.GetParticularString(text, context) ?? text;
+                return GetProvider(assembly)?.GetParticularString(context, text) ?? text;
             }
 
             /// <inheritdoc />
-            public string GetParticularPluralString(string text, string context, string textPlural, long count)
+            public string GetParticularPluralString(string context, string text, string textPlural, long count)
             {
-                return GetParticularPluralString(text, context, textPlural, count, Assembly.GetCallingAssembly());
+                return GetParticularPluralString(context, text, textPlural, count, Assembly.GetCallingAssembly());
             }
 
             /// <inheritdoc />
-            public string GetParticularPluralString(string text, string context, string textPlural, long count, [NotNull] Assembly assembly)
+            public string GetParticularPluralString(string context, string text, string textPlural, long count, [NotNull] Assembly assembly)
             {
                 if (assembly == null) throw new ArgumentNullException(nameof(assembly));
-                return GetProvider(assembly)?.GetParticularPluralString(text, context, textPlural, count) ?? text;
+                return GetProvider(assembly)?.GetParticularPluralString(context, text, textPlural, count) ?? text;
             }
 
             /// <inheritdoc />

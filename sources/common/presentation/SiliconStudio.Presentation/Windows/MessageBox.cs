@@ -67,7 +67,7 @@ namespace SiliconStudio.Presentation.Windows
         {
             Result = (int)MessageBoxResult.No,
             Content = "No",
-            Key = TranslationManager.Instance.GetParticularString("N", "KeyGesture"),
+            Key = TranslationManager.Instance.GetParticularString("KeyGesture", "N"),
         };
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace SiliconStudio.Presentation.Windows
             IsDefault = true,
             Result = (int)MessageBoxResult.Yes,
             Content = "Yes",
-            Key = TranslationManager.Instance.GetParticularString("Y", "KeyGesture"),
+            Key = TranslationManager.Instance.GetParticularString("KeyGesture", "Y"),
         };
 
         [NotNull]

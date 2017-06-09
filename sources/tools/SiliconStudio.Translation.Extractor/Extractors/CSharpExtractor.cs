@@ -127,8 +127,8 @@ namespace SiliconStudio.Translation.Extractor
                         if (groups.Count < 3)
                             // TODO: report error
                             continue;
-                        message.Text = Unescape(groups[1].Value);
-                        message.Context = Unescape(groups[2].Value);
+                        message.Context = Unescape(groups[1].Value);
+                        message.Text = Unescape(groups[2].Value);
 
                         break;
 
@@ -144,8 +144,8 @@ namespace SiliconStudio.Translation.Extractor
                         if (groups.Count < 4)
                             // TODO: report error
                             continue;
-                        message.Text = Unescape(groups[1].Value);
-                        message.Context = Unescape(groups[2].Value);
+                        message.Context = Unescape(groups[1].Value);
+                        message.Text = Unescape(groups[2].Value);
                         message.PluralText = Unescape(groups[3].Value);
                         break;
 
