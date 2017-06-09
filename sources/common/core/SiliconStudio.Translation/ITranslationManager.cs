@@ -24,7 +24,7 @@ namespace SiliconStudio.Translation
         /// <param name="assembly">The main assembly to lookup the translation.</param>
         /// <returns>The translation of <paramref name="text"/> in the current culture; or <paramref name="text"/> if no translation is found.</returns>
         [NotNull]
-        string GetString([NotNull] string text, Assembly assembly);
+        string GetString([NotNull] string text, [NotNull] Assembly assembly);
 
         /// <summary>
         /// Gets the translation of <paramref name="text"/> and/or <paramref name="textPlural"/> in the current culture,
@@ -36,7 +36,7 @@ namespace SiliconStudio.Translation
         /// <param name="assembly">The main assembly to lookup the translation.</param>
         /// <returns>The translation of <paramref name="text"/> in the current culture; or <paramref name="text"/> if no translation is found.</returns>
         [NotNull]
-        string GetPluralString([NotNull] string text, string textPlural, long count, Assembly assembly);
+        string GetPluralString([NotNull] string text, string textPlural, long count, [NotNull] Assembly assembly);
 
         /// <summary>
         /// Gets the translation of <paramref name="text"/> in the provided <paramref name="context"/> in the current culture.
@@ -46,7 +46,7 @@ namespace SiliconStudio.Translation
         /// <param name="assembly">The main assembly to lookup the translation.</param>
         /// <returns>The translation of <paramref name="text"/> in the current culture; or <paramref name="text"/> if no translation is found.</returns>
         [NotNull]
-        string GetParticularString(string context, [NotNull] string text, Assembly assembly);
+        string GetParticularString(string context, [NotNull] string text, [NotNull] Assembly assembly);
 
         /// <summary>
         /// Gets the translation of <paramref name="text"/> and/or <paramref name="textPlural"/> in the provided <paramref name="context"/> in the current culture,
@@ -59,7 +59,7 @@ namespace SiliconStudio.Translation
         /// <param name="assembly">The main assembly to lookup the translation.</param>
         /// <returns>The translation of <paramref name="text"/> in the current culture; or <paramref name="text"/> if no translation is found.</returns>
         [NotNull]
-        string GetParticularPluralString(string context, [NotNull] string text, string textPlural, long count, Assembly assembly);
+        string GetParticularPluralString(string context, [NotNull] string text, string textPlural, long count, [NotNull] Assembly assembly);
 
         void RegisterProvider([NotNull] ITranslationProvider provider);
     }

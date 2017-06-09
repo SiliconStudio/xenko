@@ -51,7 +51,7 @@ namespace SiliconStudio.Translation
             }
 
             /// <inheritdoc />
-            public string GetString(string text, [NotNull] Assembly assembly)
+            public string GetString(string text, Assembly assembly)
             {
                 if (assembly == null) throw new ArgumentNullException(nameof(assembly));
                 return GetProvider(assembly)?.GetString(text) ?? text;
@@ -64,7 +64,7 @@ namespace SiliconStudio.Translation
             }
 
             /// <inheritdoc />
-            public string GetPluralString(string text, string textPlural, long count, [NotNull] Assembly assembly)
+            public string GetPluralString(string text, string textPlural, long count, Assembly assembly)
             {
                 if (assembly == null) throw new ArgumentNullException(nameof(assembly));
                 return GetProvider(assembly)?.GetPluralString(text, textPlural, count) ?? text;
@@ -77,7 +77,7 @@ namespace SiliconStudio.Translation
             }
 
             /// <inheritdoc />
-            public string GetParticularString(string context, string text, [NotNull] Assembly assembly)
+            public string GetParticularString(string context, string text, Assembly assembly)
             {
                 if (assembly == null) throw new ArgumentNullException(nameof(assembly));
                 return GetProvider(assembly)?.GetParticularString(context, text) ?? text;
@@ -90,7 +90,7 @@ namespace SiliconStudio.Translation
             }
 
             /// <inheritdoc />
-            public string GetParticularPluralString(string context, string text, string textPlural, long count, [NotNull] Assembly assembly)
+            public string GetParticularPluralString(string context, string text, string textPlural, long count, Assembly assembly)
             {
                 if (assembly == null) throw new ArgumentNullException(nameof(assembly));
                 return GetProvider(assembly)?.GetParticularPluralString(context, text, textPlural, count) ?? text;
