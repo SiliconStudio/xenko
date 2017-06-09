@@ -126,7 +126,7 @@ namespace SiliconStudio.BuildEngine
 
             // wait for completion of all its spawned and dependent steps
             // (probably instant most of the time, but it would be good to have a better ExecutedAsync to check that together as well)
-            await EnumerableBuildStep.WaitCommands(new List<BuildStep> { completeBuildStep });
+            await ListBuildStep.WaitCommands(new List<BuildStep> { completeBuildStep });
 
             // Remove from list of build step to wait
             buildStepsToWait.Remove(completeBuildStep);

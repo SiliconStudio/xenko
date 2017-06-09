@@ -52,7 +52,6 @@
     <Compile Include="TimeInterval.cs" />
     <Compile Include="TransactionAssetIndexMap.cs" />
     <Compile Include="CommandIOMonitor.cs" />
-    <Compile Include="EnumerableBuildStep.cs" />
     <Compile Include="Builder.cs" />
     <Compile Include="BuilderContext.cs" />
     <Compile Include="BuildStep.cs" />
