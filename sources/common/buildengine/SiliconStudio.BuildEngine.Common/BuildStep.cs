@@ -205,7 +205,7 @@ namespace SiliconStudio.BuildEngine
             var currentBuildStep = this;
             while (currentBuildStep != null)
             {
-                var enumBuildStep = currentBuildStep as EnumerableBuildStep;
+                var enumBuildStep = currentBuildStep as ListBuildStep;
                 if (enumBuildStep != null)
                     yield return enumBuildStep.OutputObjects;
 
