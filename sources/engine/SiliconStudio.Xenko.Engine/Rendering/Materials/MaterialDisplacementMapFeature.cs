@@ -84,7 +84,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [Display("Shader Stage")]
         public DisplacementMapStage Stage { get; set; }
 
-        public override void VisitFeature(MaterialGeneratorContext context)
+        public override void GenerateShader(MaterialGeneratorContext context)
         {
             if (DisplacementMap == null)
                 return;

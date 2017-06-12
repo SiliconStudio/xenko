@@ -157,23 +157,6 @@ SharedRenderers:
     ee80a20a9bd99f2d70711114e15fe7ca: !SiliconStudio.Xenko.Rendering.Compositing.DebugRenderer,SiliconStudio.Xenko.Engine
         Id: b5eb0a6e-c14a-4f57-a43c-bee7660a793a
         DebugRenderStages: {}
-    487b4e14d437f49beed5474c5a2ed0b1*: !PostProcessingEffects
-        Id: 23025507-163f-4270-b68d-84be15e534a4
-        AmbientOcclusion: {}
-        DepthOfField:
-            DOFAreas: {X: 0.5, Y: 6.0, Z: 50.0, W: 200.0}
-        BrightFilter:
-            Color: {R: 1.0, G: 1.0, B: 1.0}
-        Bloom:
-            Distortion: {X: 1.0, Y: 1.0}
-            Afterimage:
-                Enabled: false
-        LightStreak:
-            Attenuation: 0.7
-        LensFlare: {}
-        ColorTransforms:
-            Transforms: {}
-        Antialiasing: !FXAAEffect {}
     34ecb9b2633eacfc439ba8744fe05102: ~(Deleted)
 Game: !SiliconStudio.Xenko.Rendering.Compositing.SceneCameraRenderer,SiliconStudio.Xenko.Engine
     Id: 76fe87cf-f574-4ad6-85b8-e9a9586be0e2
@@ -185,4 +168,3 @@ Game: !SiliconStudio.Xenko.Rendering.Compositing.SceneCameraRenderer,SiliconStud
             01d338078e9b21121ead0868932613dd: !SiliconStudio.Xenko.Rendering.Compositing.DebugRenderer,SiliconStudio.Xenko.Engine ref!! b5eb0a6e-c14a-4f57-a43c-bee7660a793a
 SingleView: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! ffcd1028-8426-48d6-a288-b39b3a369d00
 Editor: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
-BlockPositions: {}

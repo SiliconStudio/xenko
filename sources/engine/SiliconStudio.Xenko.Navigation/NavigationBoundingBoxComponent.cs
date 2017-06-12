@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Navigation
     /// </summary>
     [DataContract]
     [DefaultEntityComponentProcessor(typeof(BoundingBoxProcessor), ExecutionMode = ExecutionMode.All)]
-    [Display("Navigation bounding box")]
+    [Display("Navigation Bounding Box")]
     public class NavigationBoundingBoxComponent : EntityComponent
     {
         /// <summary>

@@ -85,7 +85,7 @@ namespace SpaceEscape
         {
             // Configure Gestures for controlling the agent
             if (!IsLiveReloading) // Live scripting: add the gesture only once (on first load).
-                Input.ActivatedGestures.Add(new GestureConfigDrag(GestureShape.Free) { MinimumDragDistance = 0.02f, RequiredNumberOfFingers = 1 });
+                Input.Gestures.Add(new GestureConfigDrag(GestureShape.Free) { MinimumDragDistance = 0.02f, RequiredNumberOfFingers = 1 });
 
             // Setup Normal pose BoundingBox with that of obtained by ModelComponent.
             boundingBoxes[BoundingBoxKeys.Normal] = Entity.Get<ModelComponent>().Model.BoundingBox;

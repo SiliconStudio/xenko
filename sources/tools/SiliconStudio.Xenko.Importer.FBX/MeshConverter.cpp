@@ -530,8 +530,13 @@ public:
 					{
 						int normalIndex = GetGroupIndexForLayerElementTemplate(normalElement, controlPointIndex, vertexIndex, edgeIndex, i, meshName, layerIndexFirstTimeError);
 						auto src_normal = normalElement->GetDirectArray().GetAt(normalIndex);
+						auto normalPointer = ((Vector3*)(vbPointer + normalOffset));
 						Vector3 normal = sceneMapping->ConvertNormalFromFbx(src_normal);
-						*(Vector3*)(vbPointer + normalOffset) = normal;
+						if (isnan(normal.X) || isnan(normal.Y) || isnan(normal.Z))
+							*normalPointer = Vector3(1, 0, 0);
+						else
+							*normalPointer = normal;
+						normalPointer->Normalize();
 					}
 
 					// UV
@@ -1807,7 +1812,7 @@ private:
 				}
 				else
 				{
-					logger->Warning(String::Format("Mesh {0} do not have a material. It might not be displayed.", meshParams->MeshName), (CallerInfo^)nullptr);
+					logger->Warning(String::Format("Mesh {0} does not have a material. It might not be displayed.", meshParams->MeshName), (CallerInfo^)nullptr);
 				}
 
 				models->Add(meshParams);

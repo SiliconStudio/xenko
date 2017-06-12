@@ -11,6 +11,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Input;
 
 namespace SiliconStudio.Xenko.Graphics.Regression
 {

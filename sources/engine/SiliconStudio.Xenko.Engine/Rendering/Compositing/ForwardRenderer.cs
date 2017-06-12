@@ -130,9 +130,18 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 if (VRSettings.Enabled)
                 {
                     var requiredDescs = VRSettings.RequiredApis.ToArray();
-                    vrSystem.PreferredApis = requiredDescs.Select(x => x.Api).ToArray();
-                    vrSystem.PreferredScalings = requiredDescs.ToDictionary(x => x.Api, x => x.ResolutionScale);
-                    vrSystem.RequireMirror = true;
+                    vrSystem.PreferredApis = requiredDescs.Select(x => x.Api).Distinct().ToArray();
+
+                    // remove VR API duplicates and keep first desired config only
+                    var preferredScalings  = new Dictionary<VRApi, float>();
+                    foreach (var desc in requiredDescs)  
+                    {
+                        if (!preferredScalings.ContainsKey(desc.Api)) 
+                            preferredScalings[desc.Api] = desc.ResolutionScale;
+                    }
+                    vrSystem.PreferredScalings = preferredScalings;
+
+                    vrSystem.RequireMirror = VRSettings.CopyMirror;
                     vrSystem.MirrorWidth = GraphicsDevice.Presenter.BackBuffer.Width;
                     vrSystem.MirrorHeight = GraphicsDevice.Presenter.BackBuffer.Height;
 
@@ -590,7 +599,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                                     // Clear render target and depth stencil
                                     Clear?.Draw(drawContext);
 
-                                    ViewIndex = 0;
+                                    ViewIndex = i;
 
                                     DrawView(context, drawContext);
                                     drawContext.CommandList.CopyRegion(ViewOutputTarget, 0, null, vrFullSurface, 0, VRSettings.VRDevice.ActualRenderFrameSize.Width / 2 * i);
@@ -613,15 +622,18 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     }
 
                     //draw mirror to backbuffer (if size is matching and full viewport)
-                    if (VRSettings.VRDevice.MirrorTexture.Size != drawContext.CommandList.RenderTarget.Size)
+                    if (VRSettings.CopyMirror)
                     {
-                        VRSettings.MirrorScaler.SetInput(0, VRSettings.VRDevice.MirrorTexture);
-                        VRSettings.MirrorScaler.SetOutput(drawContext.CommandList.RenderTarget);
-                        VRSettings.MirrorScaler.Draw(drawContext);
-                    }
-                    else
-                    {
-                        drawContext.CommandList.Copy(VRSettings.VRDevice.MirrorTexture, drawContext.CommandList.RenderTarget);
+                        if (VRSettings.VRDevice.MirrorTexture.Size != drawContext.CommandList.RenderTarget.Size)
+                        {
+                            VRSettings.MirrorScaler.SetInput(0, VRSettings.VRDevice.MirrorTexture);
+                            VRSettings.MirrorScaler.SetOutput(drawContext.CommandList.RenderTarget);
+                            VRSettings.MirrorScaler.Draw(drawContext);
+                        }
+                        else
+                        {
+                            drawContext.CommandList.Copy(VRSettings.VRDevice.MirrorTexture, drawContext.CommandList.RenderTarget);
+                        }
                     }
                 }
                 else

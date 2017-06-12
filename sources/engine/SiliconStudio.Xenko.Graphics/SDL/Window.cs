@@ -384,6 +384,7 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         public delegate void TextInputDelegate(SDL.SDL_TextInputEvent e);
         public delegate void WindowEventDelegate(SDL.SDL_WindowEvent e);
         public delegate void KeyDelegate(SDL.SDL_KeyboardEvent e);
+        public delegate void JoystickDeviceChangedDelegate(int which);
         public delegate void NotificationDelegate();
 
         public event MouseButtonDelegate PointerButtonPressActions;
@@ -395,6 +396,8 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         public event TextEditingDelegate TextEditingActions;
         public event TextInputDelegate TextInputActions;
         public event NotificationDelegate CloseActions;
+        public event JoystickDeviceChangedDelegate JoystickDeviceAdded;
+        public event JoystickDeviceChangedDelegate JoystickDeviceRemoved;
         public event WindowEventDelegate ResizeBeginActions;
         public event WindowEventDelegate ResizeEndActions;
         public event WindowEventDelegate ActivateActions;
@@ -432,9 +435,6 @@ namespace SiliconStudio.Xenko.Graphics.SDL
                     break;
 
                 case SDL.SDL_EventType.SDL_MOUSEWHEEL:
-                    // To match the Windows behavior we multiply the value by 120
-                    e.wheel.x *= 120;
-                    e.wheel.y *= 120;
                     MouseWheelActions?.Invoke(e.wheel);
                     break;
 
@@ -452,6 +452,14 @@ namespace SiliconStudio.Xenko.Graphics.SDL
 
                 case SDL.SDL_EventType.SDL_TEXTINPUT:
                     TextInputActions?.Invoke(e.text);
+                    break;
+
+                case SDL.SDL_EventType.SDL_JOYDEVICEADDED:
+                    JoystickDeviceAdded?.Invoke(e.jdevice.which);
+                    break;
+
+                case SDL.SDL_EventType.SDL_JOYDEVICEREMOVED:
+                    JoystickDeviceRemoved?.Invoke(e.jdevice.which);
                     break;
 
                 case SDL.SDL_EventType.SDL_WINDOWEVENT:

@@ -3,35 +3,20 @@
 
 namespace SiliconStudio.Xenko.Rendering.Shadows
 {
-    shader ShadowMapCasterCubeMapProjection : ShaderBase, PositionStream4, Texturing
+    shader ShadowMapCasterCubeMapProjection : TransformationBase, PositionStream4, Texturing
     {
-        cbuffer PerView.ShadowCaster
+        stage override void PostTransformPosition()
         {
-            // x = Near; y = 1/(Far-Near)
-            float2 DepthParameters;
+            streams.ShadingPosition = ComputeShadingPosition(streams.PositionWS);
         }
 
-        // Used to write the distance from an object to the light to the depth buffer
-        stage stream float PixelDepth : SV_DEPTH;
-        
-        stage override void VSMain()
-        {
-            // Project into light view space
-            float3 lightPosition = Transformation.ViewInverse[3].xyz;
-            float4 lightSpace = mul(streams.Position, Transformation.WorldView);
+		stage override float4 ComputeShadingPosition(float4 world)
+		{
+			return mul(world, Transformation.ViewProjection);
+		}
 
-            // Store length and normalize
-            float distanceToLight = length(lightSpace.xyz);
-
-            // Send depth to pixel shader
-            streams.DepthVS = (distanceToLight-DepthParameters.x) * DepthParameters.y;
-
-            streams.ShadingPosition = mul(lightSpace, Transformation.Projection);
-        }
-        
         stage override void PSMain()
         {
-            streams.PixelDepth = streams.DepthVS;
         }
     };
 }

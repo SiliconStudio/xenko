@@ -11,11 +11,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         {
             float k = BRDFBlinnPhong.Compute(streams.lightDirectionWS, streams.normalWS, streams.viewWS, streams.matSpecularPower);
 
-            var specularColor = streams.matSpecular * streams.matCavity * streams.matCavitySpecular;
+            var specularColor = streams.matSpecular * (streams.matCavity * streams.matCavitySpecular);
 
             // TODO: integrate AO/Cavity...etc.
             // TODO: Check if we need to divide by PI
-            return specularColor * k * streams.lightColorNdotL * streams.matDiffuseSpecularAlphaBlend.y;
+            return specularColor * (k * streams.lightColorNdotL * streams.matDiffuseSpecularAlphaBlend.y);
         }
     };
 }

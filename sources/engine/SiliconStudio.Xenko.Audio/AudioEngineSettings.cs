@@ -7,11 +7,15 @@ using SiliconStudio.Xenko.Data;
 namespace SiliconStudio.Xenko.Audio
 {
     [DataContract]
-    [Display("Audio Settings")]
+    [Display("Audio")]
     public class AudioEngineSettings : Configuration
     {
+        
+        /// <userdoc>
+        /// Enables HRTF audio. Note that only audio emitters with HRTF enabled produce HRTF audio
+        /// </userdoc>
         [DataMember(10)]
-        [Display("HRTF Support (If Available)")]
+        [Display("HRTF (if available)")]
         public bool HrtfSupport { get; set; }
     }
 }

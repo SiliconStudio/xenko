@@ -78,8 +78,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
             if (!Platform.IsWindowsDesktop)
             {
-                Input.ActivatedGestures.Add(new GestureConfigDrag());
-                Input.ActivatedGestures.Add(new GestureConfigTap { RequiredNumberOfTaps = 2 });
+                Input.Gestures.Add(new GestureConfigDrag());
+                Input.Gestures.Add(new GestureConfigTap { RequiredNumberOfTaps = 2 });
             }
 
             while (true)

@@ -11,24 +11,17 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// </summary>
     [DataContract("MaterialDiffuseLambertModelFeature")]
     [Display("Lambert")]
-    public class MaterialDiffuseLambertModelFeature : MaterialFeature, IMaterialDiffuseModelFeature
+    public class MaterialDiffuseLambertModelFeature : MaterialFeature, IMaterialDiffuseModelFeature, IEnergyConservativeDiffuseModelFeature
     {
-        public bool IsLightDependent
-        {
-            get
-            {
-                return true;
-            }
-        }
-
-
         [DataMemberIgnore]
-        internal bool IsEnergyConservative { get; set; }
+        bool IEnergyConservativeDiffuseModelFeature.IsEnergyConservative { get; set; }
 
-        public override void VisitFeature(MaterialGeneratorContext context)
+        private bool IsEnergyConservative => ((IEnergyConservativeDiffuseModelFeature)this).IsEnergyConservative;
+
+        public override void GenerateShader(MaterialGeneratorContext context)
         {
-            var shaderSource = new ShaderClassSource("MaterialSurfaceShadingDiffuseLambert", IsEnergyConservative);
-            context.AddShading(this, shaderSource);
+            var shaderBuilder = context.AddShading(this);
+            shaderBuilder.LightDependentSurface = new ShaderClassSource("MaterialSurfaceShadingDiffuseLambert", IsEnergyConservative);
         }
 
         public bool Equals(MaterialDiffuseLambertModelFeature other)

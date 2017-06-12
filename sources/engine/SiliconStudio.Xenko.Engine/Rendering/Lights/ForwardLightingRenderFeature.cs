@@ -278,7 +278,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             {
                 var renderMesh = (RenderMesh)renderObject;
 
-                if (!renderMesh.Material.IsLightDependent)
+                if (!renderMesh.MaterialPass.IsLightDependent)
                     return;
 
                 var staticObjectNode = renderMesh.StaticObjectNode;

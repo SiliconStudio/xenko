@@ -375,6 +375,10 @@ private:
 				auto normalPointer = ((Vector3*)(vbPointer + normalOffset));
 				*normalPointer = aiVector3ToVector3(mesh->mNormals[i]);
 				Vector3::TransformNormal(*normalPointer, rootTransform, *normalPointer);
+				if (isnan(normalPointer->X) || isnan(normalPointer->Y) || isnan(normalPointer->Z))
+					*normalPointer = Vector3(1, 0, 0);
+				else
+					normalPointer->Normalize();
 			}
 
 			for (unsigned int uvChannel = 0; uvChannel < mesh->GetNumUVChannels(); ++uvChannel)
@@ -391,8 +395,26 @@ private:
 
 			if (mesh->HasTangentsAndBitangents())
 			{
-				*((Vector3*)(vbPointer + tangentOffset)) = aiVector3ToVector3(mesh->mTangents[i]);
-				*((Vector3*)(vbPointer + bitangentOffset)) = aiVector3ToVector3(mesh->mBitangents[i]);
+				auto tangentPointer = ((Vector3*)(vbPointer + tangentOffset));
+				auto bitangentPointer = ((Vector3*)(vbPointer + bitangentOffset));
+				*tangentPointer = aiVector3ToVector3(mesh->mTangents[i]);
+				*bitangentPointer = aiVector3ToVector3(mesh->mBitangents[i]);
+				if (isnan(tangentPointer->X) || isnan(tangentPointer->Y) || isnan(tangentPointer->Z) ||
+					isnan(bitangentPointer->X) || isnan(bitangentPointer->Y) || isnan(bitangentPointer->Z))
+				{
+					//assert(mesh->HasNormals());
+					auto normalPointer = ((Vector3*)(vbPointer + normalOffset));
+					Vector3 c1 = Vector3::Cross(*normalPointer, Vector3(0.0, 0.0, 1.0));
+					Vector3 c2 = Vector3::Cross(*normalPointer, Vector3(0.0, 1.0, 0.0));
+
+					if (c1.LengthSquared() > c2.LengthSquared())
+						*tangentPointer = c1;
+					else
+						*tangentPointer = c2;
+					*bitangentPointer = Vector3::Cross(*normalPointer, *tangentPointer);
+				}
+				tangentPointer->Normalize();
+				bitangentPointer->Normalize();
 			}
 
 			if (vertexIndexToBoneIdWeight.size() > 0)
