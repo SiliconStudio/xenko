@@ -79,6 +79,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             public MaterialInfo(MaterialPass materialPass)
             {
                 MaterialPass = materialPass;
+                CullMode = materialPass.CullMode;
             }
         }
 

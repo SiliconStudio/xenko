@@ -164,7 +164,6 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 // TODO: it may have more variables like this one.
             }
 
-
             var shaderStreamsUsage = new List<StreamStageUsage>();
             
             // store these methods to prevent their renaming
@@ -456,6 +455,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
                 // NOTE: from this point, nextStreamUsage.OutStreamList is correct.
 
+                List<IDeclaration> stageExclusiveInputStreams = new List<IDeclaration>();
+
                 // add necessary variables to output and input of previous stage
                 foreach (var variable in nextStreamUsage.InStreamList)
                 {
@@ -557,9 +558,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 PropagateStreamsParameter(entryPoint, inStreamStruct, intermediateStreamStruct, outStreamStruct, visitedMethods, methodsWithStreams);
                 
                 CheckCrossStageMethodCall(streamStageUsage.ShaderStage, methodsWithStreams);
-
-                if (prevOuputStructure == null)
-                    shader.Members.Insert(0, inStreamStruct);
+                
+                shader.Members.Insert(0, inStreamStruct);
                 if (outStreamStruct.Fields.Count != 0)
                     shader.Members.Insert(0, outStreamStruct);
                 shader.Members.Insert(0, intermediateStreamStruct);
@@ -611,9 +611,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 PropagateStreamsParameter(entryPoint, inStreamStruct, intermediateStreamStruct, outStreamStruct, streamsVisitedMethods, methodsWithStreams);
 
                 CheckCrossStageMethodCall(streamStageUsage.ShaderStage, methodsWithStreams);
-
-                if (prevOuputStructure == null)
-                    shader.Members.Insert(0, inStreamStruct);
+                
+                shader.Members.Insert(0, inStreamStruct);
                 shader.Members.Insert(0, outStreamStruct);
                 shader.Members.Insert(0, intermediateStreamStruct);
 
@@ -654,7 +653,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             {
                 // same behavior as geometry shader
                 var outStreamStruct = GenerateStreamsWithSpecialDataInput(entryPoint, streamStageUsage, stageName, prevOuputStructure);
-                var inStreamStruct = prevOuputStructure ?? shader.Members.OfType<StructType>().FirstOrDefault(x => x.Name.Text == stageName + "_INPUT");
+                var inStreamStruct = shader.Members.OfType<StructType>().FirstOrDefault(x => x.Name.Text == stageName + "_INPUT");
                 var intermediateStreamStruct = shader.Members.OfType<StructType>().FirstOrDefault(x => x.Name.Text == stageName + "_STREAMS");
 
                 if (inStreamStruct == null)
