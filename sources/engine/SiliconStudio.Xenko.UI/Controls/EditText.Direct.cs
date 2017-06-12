@@ -196,7 +196,8 @@ namespace SiliconStudio.Xenko.UI.Controls
             if (key == Keys.Left && (input.IsKeyDown(Keys.LeftShift) || input.IsKeyDown(Keys.RightShift)))
             {
                 if (caretAtStart || selectionStart == selectionStop)
-                    Select(selectionStart - 1, SelectionLength + 1, true);
+                    if(selectionStart > 0)
+                        Select(selectionStart - 1, SelectionLength + 1, true);
                 else
                     Select(selectionStart, SelectionLength - 1);
 
