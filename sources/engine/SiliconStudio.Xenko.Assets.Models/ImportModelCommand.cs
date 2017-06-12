@@ -40,6 +40,8 @@ namespace SiliconStudio.Xenko.Assets.Models
             Mode = ExportMode.Model;
             AnimationRepeatMode = AnimationRepeatMode.LoopInfinite;
             ScaleImport = 1.0f;
+
+            Version = 1;
         }
 
         private string ContextAsString => $"model [{Location}] from import [{SourcePath}]";
