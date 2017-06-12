@@ -130,8 +130,17 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 if (VRSettings.Enabled)
                 {
                     var requiredDescs = VRSettings.RequiredApis.ToArray();
-                    vrSystem.PreferredApis = requiredDescs.Select(x => x.Api).ToArray();
-                    vrSystem.PreferredScalings = requiredDescs.ToDictionary(x => x.Api, x => x.ResolutionScale);
+                    vrSystem.PreferredApis = requiredDescs.Select(x => x.Api).Distinct().ToArray();
+
+                    // remove VR API duplicates and keep first desired config only
+                    var preferredScalings  = new Dictionary<VRApi, float>();
+                    foreach (var desc in requiredDescs)  
+                    {
+                        if (!preferredScalings.ContainsKey(desc.Api)) 
+                            preferredScalings[desc.Api] = desc.ResolutionScale;
+                    }
+                    vrSystem.PreferredScalings = preferredScalings;
+
                     vrSystem.RequireMirror = VRSettings.CopyMirror;
                     vrSystem.MirrorWidth = GraphicsDevice.Presenter.BackBuffer.Width;
                     vrSystem.MirrorHeight = GraphicsDevice.Presenter.BackBuffer.Height;

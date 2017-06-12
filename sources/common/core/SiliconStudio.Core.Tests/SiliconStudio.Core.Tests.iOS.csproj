@@ -40,6 +40,9 @@
     </Compile>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="TestObjectIdBuilder.cs" />
     <Compile Include="TestPriorityLinkedQueue.cs" />
     <Compile Include="MemoryFileProvider.cs" />

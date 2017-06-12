@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using SiliconStudio.Core.Diagnostics;
@@ -25,12 +26,10 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
     {
         protected readonly Logger Logger = GlobalLogger.GetLogger("Test Game");
         
-        private Vector2 lastTouchPosition;
-
         protected Scene Scene;
         protected Entity Camera;
         protected Entity UIRoot;
-
+        
         protected UIComponent UIComponent => UIRoot.Get<UIComponent>();
 
         /// <summary>
@@ -246,16 +245,15 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 Exit();
         }
 
-        protected PointerEvent CreatePointerEvent(PointerState state, Vector2 position)
+        protected void ClearPointerEvents()
         {
-            if (state == PointerState.Down)
-                lastTouchPosition = position;
+            AddPointerEvent(PointerEventType.Released, Vector2.Zero);
+            Input.Update(new GameTime());
+        }
 
-            var pointerEvent = new PointerEvent(0, position, position - lastTouchPosition, new TimeSpan(), state, PointerType.Touch, true);
-
-            lastTouchPosition = position;
-
-            return pointerEvent;
+        protected void AddPointerEvent(PointerEventType eventType, Vector2 position)
+        {
+            MouseSimulated.SimulatePointer(eventType, position);
         }
     }
 }

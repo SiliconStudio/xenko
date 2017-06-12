@@ -46,8 +46,8 @@ namespace ThirdPersonPlatformer
             // Configure touch input
             if (!Platform.IsWindowsDesktop)
             {
-                Input.ActivatedGestures.Add(new GestureConfigDrag());
-                Input.ActivatedGestures.Add(new GestureConfigComposite());
+                Input.Gestures.Add(new GestureConfigDrag());
+                Input.Gestures.Add(new GestureConfigComposite());
             }
         }
 

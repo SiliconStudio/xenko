@@ -88,7 +88,10 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             }
 
             // add the skybox command itself.
-            result.BuildSteps.Add(new SkyboxCompileCommand(targetUrlInStorage, asset, assetItem.Package));
+            result.BuildSteps.Add(new SkyboxCompileCommand(targetUrlInStorage, asset, assetItem.Package)
+            {
+                InputFilesGetter = () => GetInputFiles(context, assetItem)
+            });
         }
 
         private class SkyboxCompileCommand : AssetCommand<SkyboxAsset>

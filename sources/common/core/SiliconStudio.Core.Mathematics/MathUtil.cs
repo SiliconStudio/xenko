@@ -28,6 +28,8 @@
 */
 
 using System;
+using System.Runtime.CompilerServices;
+
 namespace SiliconStudio.Core.Mathematics
 {
     /// <summary>
@@ -512,6 +514,44 @@ namespace SiliconStudio.Core.Mathematics
         public static float PreviousPowerOfTwo(float size)
         {
             return (float)Math.Pow(2, Math.Floor(Math.Log(size, 2)));
+        }
+
+        /// <summary>
+        /// Alignes value up to match desire alignment.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="alignment">The alignment.</param>
+        /// <returns>Aligned value (multiple of alignment).</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int AlignUp(int value, int alignment)
+        {
+            int mask = alignment - 1;
+            return (value + mask) & ~mask;
+        }
+
+        /// <summary>
+        /// Alignes value down to match desire alignment.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="alignment">The alignment.</param>
+        /// <returns>Aligned value (multiple of alignment).</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int AlignDown(int value, int alignment)
+        {
+            int mask = alignment - 1;
+            return value & ~mask;
+        }
+
+        /// <summary>
+        /// Determines whether the specified value is aligned.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="alignment">The alignment.</param>
+        /// <returns><c>true</c> if the specified value is aligned; otherwise, <c>false</c>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsAligned(int value, int alignment)
+        {
+            return 0 == (value & (alignment - 1));
         }
 
         /// <summary>

@@ -183,7 +183,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         [Test]
         public void TestTexture2DUnorderedAccess()
         {
-            IgnoreGraphicPlatform(GraphicsPlatform.Direct3D12);
             IgnoreGraphicPlatform(GraphicsPlatform.OpenGL);
             IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
 

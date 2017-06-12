@@ -3,6 +3,7 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
 using System;
 using System.Collections.Generic;
+using SharpDX;
 using SharpDX.Direct3D12;
 using SharpDX.Mathematics.Interop;
 using SiliconStudio.Core.Mathematics;
@@ -19,6 +20,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private PipelineState boundPipelineState;
         private readonly DescriptorHeap[] descriptorHeaps = new DescriptorHeap[2];
+        private readonly List<ResourceBarrier> resourceBarriers = new List<ResourceBarrier>(16);
 
         private readonly Dictionary<long, GpuDescriptorHandle> srvMapping = new Dictionary<long, GpuDescriptorHandle>();
         private readonly Dictionary<long, GpuDescriptorHandle> samplerMapping = new Dictionary<long, GpuDescriptorHandle>();
@@ -26,8 +28,8 @@ namespace SiliconStudio.Xenko.Graphics
         internal readonly Queue<GraphicsCommandList> NativeCommandLists = new Queue<GraphicsCommandList>();
 
         private CompiledCommandList currentCommandList;
-
-        private RawRectangle[] nativeScissorRectangles = new RawRectangle[MaxViewportAndScissorRectangleCount];
+        
+        private bool IsComputePipelineStateBound => boundPipelineState != null && boundPipelineState.IsCompute;
 
         public static CommandList New(GraphicsDevice device)
         {
@@ -88,6 +90,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (currentCommandList.Builder != null)
                 return;
 
+            FlushResourceBarriers();
             ResetSrvHeap(true);
             ResetSamplerHeap(true);
 
@@ -113,6 +116,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns>The executable command list.</returns>
         public CompiledCommandList Close()
         {
+            FlushResourceBarriers();
+
             currentCommandList.NativeCommandList.Close();
 
             // Staging resources not updated anymore
@@ -245,6 +250,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.InvalidOperationException">Cannot GraphicsDevice.Draw*() without an effect being previously applied with Effect.Apply() method</exception>
         private void PrepareDraw()
         {
+            FlushResourceBarriers();
             SetViewportImpl();
         }
 
@@ -263,10 +269,13 @@ namespace SiliconStudio.Xenko.Graphics
             if (boundPipelineState != pipelineState && pipelineState?.CompiledState != null)
             {
                 // If scissor state changed, force a refresh
-                scissorsDirty |= (boundPipelineState?.HasScissorEnabled ?? false) != (pipelineState?.HasScissorEnabled ?? false);
+                scissorsDirty |= (boundPipelineState?.HasScissorEnabled ?? false) != pipelineState.HasScissorEnabled;
 
                 currentCommandList.NativeCommandList.PipelineState = pipelineState.CompiledState;
-                currentCommandList.NativeCommandList.SetGraphicsRootSignature(pipelineState.RootSignature);
+                if(pipelineState.IsCompute)
+                    currentCommandList.NativeCommandList.SetComputeRootSignature(pipelineState.RootSignature);
+                else
+                    currentCommandList.NativeCommandList.SetGraphicsRootSignature(pipelineState.RootSignature);
                 boundPipelineState = pipelineState;
                 currentCommandList.NativeCommandList.PrimitiveTopology = pipelineState.PrimitiveTopology;
             }
@@ -282,12 +291,12 @@ namespace SiliconStudio.Xenko.Graphics
             });
         }
 
-        public void SetIndexBuffer(Buffer buffer, int offset, bool is32bits)
+        public void SetIndexBuffer(Buffer buffer, int offset, bool is32Bits)
         {
             currentCommandList.NativeCommandList.SetIndexBuffer(buffer != null ? (IndexBufferView?)new IndexBufferView
             {
                 BufferLocation = buffer.NativeResource.GPUVirtualAddress + offset,
-                Format = is32bits ? SharpDX.DXGI.Format.R32_UInt : SharpDX.DXGI.Format.R16_UInt,
+                Format = is32Bits ? SharpDX.DXGI.Format.R32_UInt : SharpDX.DXGI.Format.R16_UInt,
                 SizeInBytes = buffer.SizeInBytes - offset
             } : null);
         }
@@ -298,12 +307,26 @@ namespace SiliconStudio.Xenko.Graphics
             if (resource.ParentResource != null)
                 resource = resource.ParentResource;
 
-            var currentState = resource.NativeResourceState;
-            if (currentState != (ResourceStates)newState)
+            var targetState = (ResourceStates)newState;
+            if (resource.IsTransitionNeeded(targetState))
             {
-                resource.NativeResourceState = (ResourceStates)newState;
-                currentCommandList.NativeCommandList.ResourceBarrierTransition(resource.NativeResource, currentState, (ResourceStates)newState);
+                resourceBarriers.Add(new ResourceTransitionBarrier(resource.NativeResource, -1, resource.NativeResourceState, targetState));
+                resource.NativeResourceState = targetState;
             }
+        }
+        
+        private unsafe void FlushResourceBarriers()
+        {
+            int count = resourceBarriers.Count;
+            if (count == 0)
+                return;
+
+            var barriers = stackalloc ResourceBarrier[count];
+            for (int i = 0; i < count; i++)
+                barriers[i] = resourceBarriers[i];
+            resourceBarriers.Clear();
+
+            currentCommandList.NativeCommandList.ResourceBarrier(*barriers);
         }
 
         public void SetDescriptorSets(int index, DescriptorSet[] descriptorSets)
@@ -346,8 +369,16 @@ namespace SiliconStudio.Xenko.Graphics
                     }
 
                     // Bind resource tables (note: once per using stage, until we solve how to choose shader registers effect-wide at compile time)
-                    for (int j = 0; j < srvBindCount; ++j)
-                        currentCommandList.NativeCommandList.SetGraphicsRootDescriptorTable(descriptorTableIndex++, gpuSrvStart);
+                    if (IsComputePipelineStateBound)
+                    {
+                        for (int j = 0; j < srvBindCount; ++j)
+                            currentCommandList.NativeCommandList.SetComputeRootDescriptorTable(descriptorTableIndex++, gpuSrvStart);
+                    }
+                    else
+                    {
+                        for (int j = 0; j < srvBindCount; ++j)
+                            currentCommandList.NativeCommandList.SetGraphicsRootDescriptorTable(descriptorTableIndex++, gpuSrvStart);
+                    }
                 }
 
                 if (samplerBindCount > 0 && (IntPtr)descriptorSet.SamplerStart.Ptr != IntPtr.Zero)
@@ -378,8 +409,16 @@ namespace SiliconStudio.Xenko.Graphics
                     }
 
                     // Bind resource tables (note: once per using stage, until we solve how to choose shader registers effect-wide at compile time)
-                    for (int j = 0; j < samplerBindCount; ++j)
-                        currentCommandList.NativeCommandList.SetGraphicsRootDescriptorTable(descriptorTableIndex++, gpuSamplerStart);
+                    if (IsComputePipelineStateBound)
+                    {
+                        for (int j = 0; j < samplerBindCount; ++j)
+                            currentCommandList.NativeCommandList.SetComputeRootDescriptorTable(descriptorTableIndex++, gpuSamplerStart);
+                    }
+                    else
+                    {
+                        for (int j = 0; j < samplerBindCount; ++j)
+                            currentCommandList.NativeCommandList.SetGraphicsRootDescriptorTable(descriptorTableIndex++, gpuSamplerStart);
+                    }
                 }
             }
         }
@@ -423,7 +462,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// <inheritdoc />
         public void Dispatch(int threadCountX, int threadCountY, int threadCountZ)
         {
-            throw new NotImplementedException();
+            PrepareDraw();
+
+            currentCommandList.NativeCommandList.Dispatch(threadCountX, threadCountY, threadCountZ);
         }
 
         /// <summary>
@@ -457,11 +498,8 @@ namespace SiliconStudio.Xenko.Graphics
         public void DrawAuto()
         {
             PrepareDraw();
-
-            //NativeDeviceContext.DrawAuto();
+            
             throw new NotImplementedException();
-
-            GraphicsDevice.FrameDrawCalls++;
         }
 
         /// <summary>
@@ -575,6 +613,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.InvalidOperationException"></exception>
         public void Clear(Texture depthStencilBuffer, DepthStencilClearOptions options, float depth = 1, byte stencil = 0)
         {
+            ResourceBarrierTransition(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsResourceState.DepthWrite);
+            FlushResourceBarriers();
             currentCommandList.NativeCommandList.ClearDepthStencilView(depthStencilBuffer.NativeDepthStencilView, (ClearFlags)options, depth, stencil);
         }
 
@@ -586,6 +626,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.ArgumentNullException">renderTarget</exception>
         public unsafe void Clear(Texture renderTarget, Color4 color)
         {
+            ResourceBarrierTransition(renderTarget, GraphicsResourceState.RenderTarget);
+            FlushResourceBarriers();
             currentCommandList.NativeCommandList.ClearRenderTargetView(renderTarget.NativeRenderTargetView, *(RawColor4*)&color);
         }
 
@@ -596,9 +638,14 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="value">The value.</param>
         /// <exception cref="System.ArgumentNullException">buffer</exception>
         /// <exception cref="System.ArgumentException">Expecting buffer supporting UAV;buffer</exception>
-        public void ClearReadWrite(Buffer buffer, Vector4 value)
+        public unsafe void ClearReadWrite(Buffer buffer, Vector4 value)
         {
-            throw new NotImplementedException();
+            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
+            if (buffer.NativeUnorderedAccessView.Ptr == PointerSize.Zero) throw new ArgumentException("Expecting buffer supporting UAV", nameof(buffer));
+
+            var cpuHandle = buffer.NativeUnorderedAccessView;
+            var gpuHandle = GetGpuDescriptorHandle(cpuHandle);
+            currentCommandList.NativeCommandList.ClearUnorderedAccessViewFloat(gpuHandle, cpuHandle, buffer.NativeResource, *(RawVector4*)&value, 0, null);
         }
 
         /// <summary>
@@ -608,9 +655,14 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="value">The value.</param>
         /// <exception cref="System.ArgumentNullException">buffer</exception>
         /// <exception cref="System.ArgumentException">Expecting buffer supporting UAV;buffer</exception>
-        public void ClearReadWrite(Buffer buffer, Int4 value)
+        public unsafe void ClearReadWrite(Buffer buffer, Int4 value)
         {
-            throw new NotImplementedException();
+            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
+            if (buffer.NativeUnorderedAccessView.Ptr == PointerSize.Zero) throw new ArgumentException("Expecting buffer supporting UAV", nameof(buffer));
+
+            var cpuHandle = buffer.NativeUnorderedAccessView;
+            var gpuHandle = GetGpuDescriptorHandle(cpuHandle);
+            currentCommandList.NativeCommandList.ClearUnorderedAccessViewUint(gpuHandle, cpuHandle, buffer.NativeResource, *(RawInt4*)&value, 0, null);
         }
 
         /// <summary>
@@ -620,9 +672,14 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="value">The value.</param>
         /// <exception cref="System.ArgumentNullException">buffer</exception>
         /// <exception cref="System.ArgumentException">Expecting buffer supporting UAV;buffer</exception>
-        public void ClearReadWrite(Buffer buffer, UInt4 value)
+        public unsafe void ClearReadWrite(Buffer buffer, UInt4 value)
         {
-            throw new NotImplementedException();
+            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
+            if (buffer.NativeUnorderedAccessView.Ptr == PointerSize.Zero) throw new ArgumentException("Expecting buffer supporting UAV", nameof(buffer));
+
+            var cpuHandle = buffer.NativeUnorderedAccessView;
+            var gpuHandle = GetGpuDescriptorHandle(cpuHandle);
+            currentCommandList.NativeCommandList.ClearUnorderedAccessViewUint(gpuHandle, cpuHandle, buffer.NativeResource, *(RawInt4*)&value, 0, null);
         }
 
         /// <summary>
@@ -631,10 +688,15 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="texture">The texture.</param>
         /// <param name="value">The value.</param>
         /// <exception cref="System.ArgumentNullException">texture</exception>
-        /// <exception cref="System.ArgumentException">Expecting buffer supporting UAV;texture</exception>
-        public void ClearReadWrite(Texture texture, Vector4 value)
+        /// <exception cref="System.ArgumentException">Expecting texture supporting UAV;texture</exception>
+        public unsafe void ClearReadWrite(Texture texture, Vector4 value)
         {
-            throw new NotImplementedException();
+            if (texture == null) throw new ArgumentNullException(nameof(texture));
+            if (texture.NativeUnorderedAccessView.Ptr == PointerSize.Zero) throw new ArgumentException("Expecting texture supporting UAV", nameof(texture));
+
+            var cpuHandle = texture.NativeUnorderedAccessView;
+            var gpuHandle = GetGpuDescriptorHandle(cpuHandle);
+            currentCommandList.NativeCommandList.ClearUnorderedAccessViewFloat(gpuHandle, cpuHandle, texture.NativeResource, *(RawVector4*)&value, 0, null);
         }
 
         /// <summary>
@@ -643,10 +705,15 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="texture">The texture.</param>
         /// <param name="value">The value.</param>
         /// <exception cref="System.ArgumentNullException">texture</exception>
-        /// <exception cref="System.ArgumentException">Expecting buffer supporting UAV;texture</exception>
-        public void ClearReadWrite(Texture texture, Int4 value)
+        /// <exception cref="System.ArgumentException">Expecting texture supporting UAV;texture</exception>
+        public unsafe void ClearReadWrite(Texture texture, Int4 value)
         {
-            throw new NotImplementedException();
+            if (texture == null) throw new ArgumentNullException(nameof(texture));
+            if (texture.NativeUnorderedAccessView.Ptr == PointerSize.Zero) throw new ArgumentException("Expecting texture supporting UAV", nameof(texture));
+
+            var cpuHandle = texture.NativeUnorderedAccessView;
+            var gpuHandle = GetGpuDescriptorHandle(cpuHandle);
+            currentCommandList.NativeCommandList.ClearUnorderedAccessViewUint(gpuHandle, cpuHandle, texture.NativeResource, *(RawInt4*)&value, 0, null);
         }
 
         /// <summary>
@@ -655,49 +722,93 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="texture">The texture.</param>
         /// <param name="value">The value.</param>
         /// <exception cref="System.ArgumentNullException">texture</exception>
-        /// <exception cref="System.ArgumentException">Expecting buffer supporting UAV;texture</exception>
-        public void ClearReadWrite(Texture texture, UInt4 value)
+        /// <exception cref="System.ArgumentException">Expecting texture supporting UAV;texture</exception>
+        public unsafe void ClearReadWrite(Texture texture, UInt4 value)
         {
-            throw new NotImplementedException();
+            if (texture == null) throw new ArgumentNullException(nameof(texture));
+            if (texture.NativeUnorderedAccessView.Ptr == PointerSize.Zero) throw new ArgumentException("Expecting texture supporting UAV", nameof(texture));
+
+            var cpuHandle = texture.NativeUnorderedAccessView;
+            var gpuHandle = GetGpuDescriptorHandle(cpuHandle);
+            currentCommandList.NativeCommandList.ClearUnorderedAccessViewUint(gpuHandle, cpuHandle, texture.NativeResource, *(RawInt4*)&value, 0, null);
+        }
+
+        private GpuDescriptorHandle GetGpuDescriptorHandle(CpuDescriptorHandle cpuHandle)
+        {
+            GpuDescriptorHandle result;
+            if (!srvMapping.TryGetValue(cpuHandle.Ptr, out result))
+            {
+                var srvCount = 1;
+
+                // Make sure heap is big enough
+                if (srvHeapOffset + srvCount > GraphicsDevice.SrvHeapSize)
+                {
+                    ResetSrvHeap(true);
+                    currentCommandList.NativeCommandList.SetDescriptorHeaps(2, descriptorHeaps);
+                }
+
+                // Copy
+                NativeDevice.CopyDescriptorsSimple(srvCount, srvHeap.CPUDescriptorHandleForHeapStart + srvHeapOffset * GraphicsDevice.SrvHandleIncrementSize, cpuHandle, DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView);
+
+                // Store mapping
+                srvMapping.Add(cpuHandle.Ptr, result = srvHeap.GPUDescriptorHandleForHeapStart + srvHeapOffset * GraphicsDevice.SrvHandleIncrementSize);
+
+                // Bump
+                srvHeapOffset += srvCount;
+            }
+
+            return result;
         }
 
         public void Copy(GraphicsResource source, GraphicsResource destination)
         {
-            var sourceTexture = source as Texture;
-            var destinationTexture = destination as Texture;
-
-            if (sourceTexture != null && destinationTexture != null)
+            // Copy texture -> texture
+            if (source is Texture sourceTexture && destination is Texture destinationTexture)
             {
                 var sourceParent = sourceTexture.ParentTexture ?? sourceTexture;
                 var destinationParent = destinationTexture.ParentTexture ?? destinationTexture;
-
-                if (sourceParent.NativeResourceState != ResourceStates.CopySource)
-                    currentCommandList.NativeCommandList.ResourceBarrierTransition(sourceTexture.NativeResource, sourceParent.NativeResourceState, ResourceStates.CopySource);
-                if (destinationParent.NativeResourceState != ResourceStates.CopyDestination)
-                    currentCommandList.NativeCommandList.ResourceBarrierTransition(destinationTexture.NativeResource, destinationParent.NativeResourceState, ResourceStates.CopyDestination);
-
+                
                 if (destinationTexture.Usage == GraphicsResourceUsage.Staging)
                 {
-                    int copyOffset = 0;
-                    for (int arraySlice = 0; arraySlice < sourceParent.ArraySize; ++arraySlice)
+                    // Copy staging texture -> staging texture
+                    if (sourceTexture.Usage == GraphicsResourceUsage.Staging)
                     {
-                        for (int mipLevel = 0; mipLevel < sourceParent.MipLevels; ++mipLevel)
-                        {
-                            currentCommandList.NativeCommandList.CopyTextureRegion(new TextureCopyLocation(destinationTexture.NativeResource,
-                                new PlacedSubResourceFootprint
-                                {
-                                    Footprint =
-                                    {
-                                        Width = Texture.CalculateMipSize(destinationTexture.Width, mipLevel),
-                                        Height = Texture.CalculateMipSize(destinationTexture.Height, mipLevel),
-                                        Depth = Texture.CalculateMipSize(destinationTexture.Depth, mipLevel),
-                                        Format = (SharpDX.DXGI.Format)destinationTexture.Format,
-                                        RowPitch = destinationTexture.ComputeRowPitch(mipLevel),
-                                    },
-                                    Offset = copyOffset,
-                                }), 0, 0, 0, new TextureCopyLocation(sourceTexture.NativeResource, arraySlice * sourceParent.MipLevels + mipLevel), null);
+                        var size = destinationTexture.ComputeBufferTotalSize();
+                        var destinationMapped = destinationTexture.NativeResource.Map(0);
+                        var sourceMapped = sourceTexture.NativeResource.Map(0, new Range { Begin = 0, End = size });
 
-                            copyOffset += destinationTexture.ComputeSubresourceSize(mipLevel);
+                        Utilities.CopyMemory(destinationMapped, sourceMapped, size);
+
+                        sourceTexture.NativeResource.Unmap(0);
+                        destinationTexture.NativeResource.Unmap(0);
+                    }
+                    else
+                    {
+                        ResourceBarrierTransition(sourceTexture, GraphicsResourceState.CopySource);
+                        ResourceBarrierTransition(destinationTexture, GraphicsResourceState.CopyDestination);
+                        FlushResourceBarriers();
+
+                        int copyOffset = 0;
+                        for (int arraySlice = 0; arraySlice < sourceParent.ArraySize; ++arraySlice)
+                        {
+                            for (int mipLevel = 0; mipLevel < sourceParent.MipLevels; ++mipLevel)
+                            {
+                                currentCommandList.NativeCommandList.CopyTextureRegion(new TextureCopyLocation(destinationTexture.NativeResource,
+                                    new PlacedSubResourceFootprint
+                                    {
+                                        Footprint =
+                                        {
+                                            Width = Texture.CalculateMipSize(destinationTexture.Width, mipLevel),
+                                            Height = Texture.CalculateMipSize(destinationTexture.Height, mipLevel),
+                                            Depth = Texture.CalculateMipSize(destinationTexture.Depth, mipLevel),
+                                            Format = (SharpDX.DXGI.Format)destinationTexture.Format,
+                                            RowPitch = destinationTexture.ComputeRowPitch(mipLevel),
+                                        },
+                                        Offset = copyOffset,
+                                    }), 0, 0, 0, new TextureCopyLocation(sourceTexture.NativeResource, arraySlice * sourceParent.MipLevels + mipLevel), null);
+
+                                copyOffset += destinationTexture.ComputeSubresourceSize(mipLevel);
+                            }
                         }
                     }
 
@@ -708,13 +819,29 @@ namespace SiliconStudio.Xenko.Graphics
                 }
                 else
                 {
+                    ResourceBarrierTransition(sourceTexture, GraphicsResourceState.CopySource);
+                    ResourceBarrierTransition(destinationTexture, GraphicsResourceState.CopyDestination);
+                    FlushResourceBarriers();
+
                     currentCommandList.NativeCommandList.CopyResource(destinationTexture.NativeResource, sourceTexture.NativeResource);
                 }
+            }
+            // Copy buffer -> buffer
+            else if (source is Buffer sourceBuffer && destination is Buffer destinationBuffer)
+            {
+                ResourceBarrierTransition(sourceBuffer, GraphicsResourceState.CopySource);
+                ResourceBarrierTransition(destinationBuffer, GraphicsResourceState.CopyDestination);
+                FlushResourceBarriers();
 
-                if (sourceParent.NativeResourceState != ResourceStates.CopySource)
-                    currentCommandList.NativeCommandList.ResourceBarrierTransition(sourceTexture.NativeResource, ResourceStates.CopySource, sourceParent.NativeResourceState);
-                if (destinationParent.NativeResourceState != ResourceStates.CopyDestination)
-                    currentCommandList.NativeCommandList.ResourceBarrierTransition(destinationTexture.NativeResource, ResourceStates.CopyDestination, destinationParent.NativeResourceState);
+                currentCommandList.NativeCommandList.CopyResource(destinationBuffer.NativeResource, sourceBuffer.NativeResource);
+
+                if (destinationBuffer.Usage == GraphicsResourceUsage.Staging)
+                {
+                    // Fence for host access
+                    destinationBuffer.StagingFenceValue = null;
+                    destinationBuffer.StagingBuilder = this;
+                    currentCommandList.StagingResources.Add(destinationBuffer);
+                }
             }
             else
             {
@@ -724,20 +851,28 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void CopyMultisample(Texture sourceMultisampleTexture, int sourceSubResource, Texture destTexture, int destSubResource, PixelFormat format = PixelFormat.None)
         {
-            throw new NotImplementedException();
+            if (sourceMultisampleTexture == null) throw new ArgumentNullException(nameof(sourceMultisampleTexture));
+            if (destTexture == null) throw new ArgumentNullException(nameof(destTexture));
+            if (!sourceMultisampleTexture.IsMultisample) throw new ArgumentOutOfRangeException(nameof(sourceMultisampleTexture), "Source texture is not a MSAA texture");
+
+            currentCommandList.NativeCommandList.ResolveSubresource(sourceMultisampleTexture.NativeResource, sourceSubResource, destTexture.NativeResource, destSubResource, (SharpDX.DXGI.Format)(format == PixelFormat.None ? destTexture.Format : format));
         }
 
         public void CopyRegion(GraphicsResource source, int sourceSubresource, ResourceRegion? sourceRegion, GraphicsResource destination, int destinationSubResource, int dstX = 0, int dstY = 0, int dstZ = 0)
         {
-            if (source is Texture && destination is Texture)
+            if (source is Texture sourceTexture && destination is Texture destinationTexture)
             {
-                if (((Texture)source).Usage == GraphicsResourceUsage.Staging || ((Texture)destination).Usage == GraphicsResourceUsage.Staging)
+                if (sourceTexture.Usage == GraphicsResourceUsage.Staging || destinationTexture.Usage == GraphicsResourceUsage.Staging)
                 {
                     throw new NotImplementedException("Copy region of staging resources is not supported yet");
                 }
 
+                ResourceBarrierTransition(source, GraphicsResourceState.CopySource);
+                ResourceBarrierTransition(destination, GraphicsResourceState.CopyDestination);
+                FlushResourceBarriers();
+
                 currentCommandList.NativeCommandList.CopyTextureRegion(
-                    new TextureCopyLocation(destination.NativeResource, sourceSubresource),
+                    new TextureCopyLocation(destination.NativeResource, destinationSubResource),
                     dstX, dstY, dstZ,
                     new TextureCopyLocation(source.NativeResource, sourceSubresource),
                     sourceRegion.HasValue
@@ -754,15 +889,26 @@ namespace SiliconStudio.Xenko.Graphics
             }
             else if (source is Buffer && destination is Buffer)
             {
+                ResourceBarrierTransition(source, GraphicsResourceState.CopySource);
+                ResourceBarrierTransition(destination, GraphicsResourceState.CopyDestination);
+                FlushResourceBarriers();
+
                 currentCommandList.NativeCommandList.CopyBufferRegion(destination.NativeResource, dstX,
                     source.NativeResource, sourceRegion?.Left ?? 0, sourceRegion.HasValue ? sourceRegion.Value.Right - sourceRegion.Value.Left : ((Buffer)source).SizeInBytes);
+            }
+            else
+            {
+                throw new InvalidOperationException("Cannot copy data between buffer and texture.");
             }
         }
 
         /// <inheritdoc />
         public void CopyCount(Buffer sourceBuffer, Buffer destBuffer, int offsetInBytes)
         {
-            throw new NotImplementedException();
+            if (sourceBuffer == null) throw new ArgumentNullException(nameof(sourceBuffer));
+            if (destBuffer == null) throw new ArgumentNullException(nameof(destBuffer));
+
+            currentCommandList.NativeCommandList.CopyBufferRegion(destBuffer.NativeResource, offsetInBytes, sourceBuffer.NativeResource, 0, 4);
         }
 
         internal void UpdateSubresource(GraphicsResource resource, int subResourceIndex, DataBox databox)
@@ -819,34 +965,31 @@ namespace SiliconStudio.Xenko.Graphics
                 var nativeUploadTexture = NativeDevice.CreateCommittedResource(new HeapProperties(CpuPageProperty.WriteBack, MemoryPool.L0), HeapFlags.None,
                     resourceDescription,
                     ResourceStates.GenericRead);
-
-
+                
                 GraphicsDevice.TemporaryResources.Enqueue(new KeyValuePair<long, object>(GraphicsDevice.NextFenceValue, nativeUploadTexture));
 
                 nativeUploadTexture.WriteToSubresource(0, null, databox.DataPointer, databox.RowPitch, databox.SlicePitch);
-
-                var parentResource = resource.ParentResource ?? resource;
-
+                
                 // Trigger copy
-                currentCommandList.NativeCommandList.ResourceBarrierTransition(resource.NativeResource, parentResource.NativeResourceState, ResourceStates.CopyDestination);
+                ResourceBarrierTransition(resource, GraphicsResourceState.CopyDestination);
+                FlushResourceBarriers();
                 currentCommandList.NativeCommandList.CopyTextureRegion(new TextureCopyLocation(resource.NativeResource, subResourceIndex), region.Left, region.Top, region.Front, new TextureCopyLocation(nativeUploadTexture, 0), null);
-                currentCommandList.NativeCommandList.ResourceBarrierTransition(resource.NativeResource, ResourceStates.CopyDestination, parentResource.NativeResourceState);
             }
             else
             {
                 var buffer = resource as Buffer;
                 if (buffer != null)
                 {
-                    SharpDX.Direct3D12.Resource uploadResource;
+                    Resource uploadResource;
                     int uploadOffset;
                     var uploadSize = region.Right - region.Left;
                     var uploadMemory = GraphicsDevice.AllocateUploadBuffer(region.Right - region.Left, out uploadResource, out uploadOffset);
 
                     Utilities.CopyMemory(uploadMemory, databox.DataPointer, uploadSize);
 
-                    currentCommandList.NativeCommandList.ResourceBarrierTransition(resource.NativeResource, resource.NativeResourceState, ResourceStates.CopyDestination);
+                    ResourceBarrierTransition(resource, GraphicsResourceState.CopyDestination);
+                    FlushResourceBarriers();
                     currentCommandList.NativeCommandList.CopyBufferRegion(resource.NativeResource, region.Left, uploadResource, uploadOffset, uploadSize);
-                    currentCommandList.NativeCommandList.ResourceBarrierTransition(resource.NativeResource, ResourceStates.CopyDestination, resource.NativeResourceState);
                 }
                 else
                 {

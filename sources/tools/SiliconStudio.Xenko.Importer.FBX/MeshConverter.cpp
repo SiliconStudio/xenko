@@ -1807,7 +1807,7 @@ private:
 				}
 				else
 				{
-					logger->Warning(String::Format("Mesh {0} do not have a material. It might not be displayed.", meshParams->MeshName), (CallerInfo^)nullptr);
+					logger->Warning(String::Format("Mesh {0} does not have a material. It might not be displayed.", meshParams->MeshName), (CallerInfo^)nullptr);
 				}
 
 				models->Add(meshParams);

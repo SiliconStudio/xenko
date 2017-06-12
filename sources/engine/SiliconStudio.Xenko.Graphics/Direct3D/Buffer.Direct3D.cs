@@ -230,8 +230,8 @@ namespace SiliconStudio.Xenko.Graphics
             if ((bufferFlags & BufferFlags.StructuredBuffer) != 0)
             {
                 desc.OptionFlags |= ResourceOptionFlags.BufferStructured;
-                if (bufferDescription.StructureByteStride == 0)
-                    throw new ArgumentException("Element size cannot be set to 0 for structured buffer");
+                if (bufferDescription.StructureByteStride <= 0)
+                    throw new ArgumentException("Element size cannot be less or equal 0 for structured buffer");
             }
 
             if ((bufferFlags & BufferFlags.RawBuffer) == BufferFlags.RawBuffer)

@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     [Display("Blinn-Phong")]
     public class MaterialSpecularMicrofacetNormalDistributionBlinnPhong : IMaterialSpecularMicrofacetNormalDistributionFunction
     {
-        public ShaderSource Generate()
+        public ShaderSource Generate(MaterialGeneratorContext context)
         {
             return new ShaderClassSource("MaterialSpecularMicrofacetNormalDistributionBlinnPhong");
         }

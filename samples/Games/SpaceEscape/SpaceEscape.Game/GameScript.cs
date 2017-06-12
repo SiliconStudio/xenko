@@ -34,9 +34,6 @@ namespace SpaceEscape
             // Enable visual of mouse in the game
             Game.Window.IsMouseVisible = true;
 
-            // Disable multi-touch input for the game, since there is no need
-            Input.MultiTouchEnabled = false;
-
             // Update the distance displayed in the UI
             BackgroundScript.DistanceUpdated += SetDistanceInUI;
 
