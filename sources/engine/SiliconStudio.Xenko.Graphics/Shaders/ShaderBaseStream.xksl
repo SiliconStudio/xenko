@@ -7,6 +7,9 @@ shader ShaderBaseStream
     // Default SV_POSITION output for VS/GS shaders
     stage stream float4 ShadingPosition : SV_Position;
 
+    // True if this face is a front face
+    stage stream bool IsFrontFace : SV_IsFrontFace;
+
     // Default COLOR outputs for PS shader
     stage stream float4 ColorTarget : SV_Target0;
     stage stream float4 ColorTarget1 : SV_Target1;

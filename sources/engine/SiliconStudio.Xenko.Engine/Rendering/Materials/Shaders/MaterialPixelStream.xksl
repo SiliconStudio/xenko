@@ -89,17 +89,18 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             streams.matAlphaDiscard = 0.0f;
         }
 
-        float GetFilterSquareRoughnessAdjustment(float3 averageNormal)
+        float GetFilterSquareRoughnessAdjustment()
         {
             // Normal/roughness specular anti-aliasing using vMF 
             // See http://blog.selfshadow.com/2011/07/22/specular-showdown/
             // See https://mynameismjp.wordpress.com/2013/07/28/siggraph-follow-up/
             // TODO: Make this part pluggable/modifiable via mixin
             float r = length(streams.matNormal);
-			float roughnessAdjust = 0.0f;
-			if (r < 1.0f) 
-			    roughnessAdjust = 0.5 * (1 - r*r) / (3 * r - r * r * r);
+            float roughnessAdjust = 0.0f;
+            if (r < 1.0f) 
+                roughnessAdjust = 0.5 * (1 - r*r) / (3 * r - r * r * r);
 
+            return 0;
             return roughnessAdjust;            
         }
 
@@ -118,7 +119,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             var roughness = 1.0f - streams.matGlossiness;
 
             // Calculate roughness adjustment based on normal average
-			float roughnessAdjust = GetFilterSquareRoughnessAdjustment(streams.matNormal);
+            float roughnessAdjust = GetFilterSquareRoughnessAdjustment();
 
             // Make sure alphaRoughness is not going below a certain value as it can generate Infinity with some specular model
             // roughness-burley = roughness^2 = (1 - glossy)^2
