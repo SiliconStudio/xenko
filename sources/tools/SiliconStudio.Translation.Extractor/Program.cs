@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using GNU.Getopt;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Translation.Providers;
 
 namespace SiliconStudio.Translation.Extractor
 {
@@ -60,6 +61,9 @@ namespace SiliconStudio.Translation.Extractor
 
             try
             {
+                // Initialize translation
+                TranslationManager.Instance.RegisterProvider(new GettextTranslationProvider());
+
                 // Compute the list of input files
                 ISet<UFile> inputFiles = new HashSet<UFile>();
                 var re = options.Excludes.Count > 0 ? new Regex(string.Join("|", options.Excludes.Select(x => Regex.Escape(x).Replace(@"\*", @".*")))) : null;
@@ -80,7 +84,7 @@ namespace SiliconStudio.Translation.Extractor
                 messages.AddRange(new CSharpExtractor(inputFiles).ExtractMessages());
                 messages.AddRange(new XamlExtractor(inputFiles).ExtractMessages());
                 if (options.Verbose)
-                    Console.WriteLine($"Found {messages.Count} messages.");
+                    Console.WriteLine(Tr._n("Found {0} message.", "Found {0} messages.", messages.Count), messages.Count);
                 // Export/merge messages
                 var exporter = new POExporter(options);
                 exporter.Merge(messages);
@@ -88,7 +92,7 @@ namespace SiliconStudio.Translation.Extractor
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error during execution: {ex.Message}");
+                Console.WriteLine(Tr._("Error during execution: {0}"), ex.Message);
                 return 1;
             }
 
@@ -115,7 +119,7 @@ namespace SiliconStudio.Translation.Extractor
                 {
                     if (!Directory.Exists(dir))
                     {
-                        message.AppendLine($"Input directory '{dir}' not found");
+                        message.AppendLine(string.Format(Tr._("Input directory '{0}' not found"), dir));
                         return false;
                     }
                 }
@@ -183,11 +187,11 @@ namespace SiliconStudio.Translation.Extractor
                             break;
 
                         case ':':
-                            message.AppendLine($"Option '{getopt.OptoptStr}' requires an argument");
+                            message.AppendLine(string.Format(Tr._("Option '{0}' requires an argument"), getopt.OptoptStr));
                             return false;
 
                         case '?':
-                            message.AppendLine($"Invalid option '{getopt.OptoptStr}'");
+                            message.AppendLine(string.Format(Tr._("Invalid option '{0}'"), getopt.OptoptStr));
                             return false;
 
                         default:
@@ -199,7 +203,7 @@ namespace SiliconStudio.Translation.Extractor
                 if (getopt.Opterr)
                 {
                     message.AppendLine();
-                    message.Append("Error in the command line options. Use -h to display the options usage.");
+                    message.Append(Tr._("Error in the command line options. Use -h to display the options usage."));
                     return false;
                 }
             }
