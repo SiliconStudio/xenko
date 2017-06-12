@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using GNU.Gettext;
 using GNU.Gettext.Utils;
 using SiliconStudio.Core.Annotations;
@@ -42,18 +43,19 @@ namespace SiliconStudio.Translation.Extractor
                 var bakFileName = Options.OutputFile + ".bak";
                 File.Copy(Options.OutputFile, bakFileName, true);
                 File.Delete(Options.OutputFile);
-                Log($"Created backup file '{bakFileName}'.");
+                Log(Tr._("Created backup file '{0}'."), bakFileName);
             }
             Catalog.Save(Options.OutputFile);
-            Log($"Exported messages to '{Options.OutputFile}'.");
+            Log(Tr._("Exported messages to '{0}'."), Options.OutputFile);
         }
 
-        private void Log(string message)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void Log(string message, params object[] arg)
         {
             if (!Options.Verbose)
                 return;
 
-            Console.WriteLine(message);
+            Console.WriteLine(message, arg);
         }
 
         private void MergeMessage([NotNull] Message message)
