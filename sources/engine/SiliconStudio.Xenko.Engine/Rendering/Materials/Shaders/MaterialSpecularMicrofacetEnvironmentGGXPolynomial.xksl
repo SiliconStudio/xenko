@@ -1,0 +1,15 @@
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+namespace SiliconStudio.Xenko.Rendering.Materials
+{
+    /// <summary>
+    /// Interface for a microfacet Fresnel function
+    /// </summary>
+    shader MaterialSpecularMicrofacetEnvironmentGGXPolynomial : IMaterialSpecularMicrofacetEnvironmentFunction
+    {
+        override float3 Compute(float3 specularColor, float alphaR, float nDotV)
+        {
+            return EnvironmentLightingDFG_GGX_Schlick_SmithSchlickGGX(specularColor, alphaR, nDotV);
+        }
+    };
+}

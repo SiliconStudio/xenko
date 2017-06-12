@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [Display("Is Energy Conservative?")]
         public bool IsEnergyConservative { get; set; }
 
-        public override void VisitFeature(MaterialGeneratorContext context)
+        public override void GenerateShader(MaterialGeneratorContext context)
         {
             Intensity.ClampFloat(0, 1);
 

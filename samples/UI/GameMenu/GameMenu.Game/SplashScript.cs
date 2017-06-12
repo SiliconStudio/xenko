@@ -16,7 +16,7 @@ namespace GameMenu
 
         protected override void UpdateScene()
         {
-            if (Input.PointerEvents.Any(e => e.State == PointerState.Down))
+            if (Input.PointerEvents.Any(e => e.EventType == PointerEventType.Pressed))
             {
                 // Next scene
                 SceneSystem.SceneInstance.RootScene = Content.Load<Scene>("MainScene");

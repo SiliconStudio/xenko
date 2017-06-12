@@ -108,4 +108,38 @@ namespace SiliconStudio.Xenko.Assets.Materials
             return Create();
         }
     }
+
+    public class GlassMaterialFactory : AssetFactory<MaterialAsset>
+    {
+        public static MaterialAsset Create()
+        {
+            var material = new MaterialAsset
+            {
+                Attributes =
+                {
+                    MicroSurface = new MaterialGlossinessMapFeature
+                    {
+                        GlossinessMap = new ComputeFloat(0.95f)
+                    },
+                    Diffuse = new MaterialDiffuseMapFeature
+                    {
+                        DiffuseMap = new ComputeColor(new Color4(0.8f, 0.8f, 0.8f, 1.0f))
+                    },
+                    DiffuseModel = null,
+                    Specular = new MaterialMetalnessMapFeature
+                    {
+                        MetalnessMap = new ComputeFloat(0.0f)
+                    },
+                    SpecularModel = new MaterialSpecularThinGlassModelFeature()
+                }
+            };
+
+            return material;
+        }
+
+        public override MaterialAsset New()
+        {
+            return Create();
+        }
+    }
 }
