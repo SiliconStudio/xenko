@@ -68,15 +68,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [DefaultValue(false)]
         public bool UseAlpha { get; set; }
 
-        public bool IsLightDependent
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        public override void VisitFeature(MaterialGeneratorContext context)
+        public override void GenerateShader(MaterialGeneratorContext context)
         {
             Vector4 emissiveMin = Vector4.Zero;
             Vector4 emissiveMax = new Vector4(float.MaxValue);
@@ -86,7 +78,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             context.SetStream(EmissiveStream.Stream, EmissiveMap, MaterialKeys.EmissiveMap, MaterialKeys.EmissiveValue);
             context.SetStream("matEmissiveIntensity", Intensity, MaterialKeys.EmissiveIntensityMap, MaterialKeys.EmissiveIntensity);
 
-            context.AddShading(this, new ShaderClassSource("MaterialSurfaceEmissiveShading", UseAlpha));
+            var shaderBuilder = context.AddShading(this);
+            shaderBuilder.ShaderSources.Add(new ShaderClassSource("MaterialSurfaceEmissiveShading", UseAlpha));
         }
 
         public bool Equals(IMaterialShadingModelFeature other)

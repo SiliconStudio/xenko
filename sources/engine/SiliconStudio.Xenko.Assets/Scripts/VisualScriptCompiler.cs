@@ -530,7 +530,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             // Process each function
             foreach (var method in visualScriptAsset.Methods)
             {
-                var functionStartBlock = method.Blocks.OfType<FunctionStartBlock>().FirstOrDefault();
+                var functionStartBlock = method.Blocks.Values.OfType<FunctionStartBlock>().FirstOrDefault();
                 if (functionStartBlock == null)
                     continue;
 

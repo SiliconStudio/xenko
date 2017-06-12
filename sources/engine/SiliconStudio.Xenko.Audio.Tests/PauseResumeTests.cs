@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
 
             foreach (var pointerEvent in Input.PointerEvents)
             {
-                if (pointerEvent.State == PointerState.Up)
+                if (pointerEvent.EventType == PointerEventType.Released)
                 {
                     music.Stop();
                     music.Play();

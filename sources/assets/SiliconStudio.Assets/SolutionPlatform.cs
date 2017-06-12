@@ -54,6 +54,12 @@ namespace SiliconStudio.Assets
         public bool IsAvailable { get; set; }
 
         /// <summary>
+        /// The list of templates. If empty, no choice will be given to user and default one will be created by concatening ProjectExecutable and <see cref="SolutionPlatformPart.Name"/>.
+        /// </summary>
+        [DataMember(60)]
+        public List<SolutionPlatformTemplate> Templates { get; } = new List<SolutionPlatformTemplate>();
+
+        /// <summary>
         /// Gets the all <see cref="SolutionPlatformPart"/>.
         /// </summary>
         /// <returns>IEnumerable&lt;SolutionPlatformPart&gt;.</returns>

@@ -20,6 +20,11 @@ namespace SiliconStudio.Xenko.Rendering.BRDF
         //    nDotH  = saturate(dot(n, h))
         // -------------------------------------------------
         // TODO Add GGX Anisotropic
+        
+        float ClampedPow(float x, float y)
+        {
+            return pow(max(x, 0.00001f), y);
+        }
 
         /// <summary>
         /// Calculate the NDF Blinn-Phong
@@ -27,7 +32,7 @@ namespace SiliconStudio.Xenko.Rendering.BRDF
         float NormalDistributionBlinnPhong(float alphaR, float nDotH) 
         {
             var alphaR2 =  max(alphaR * alphaR, 0.1);  // Cap the value to avoid high exponents. TODO: Find an acceptable limit with 16 bits floats targets
-            return pow(nDotH, 2/alphaR2 - 2) / (PI * alphaR2);
+            return ClampedPow(nDotH, 2 / alphaR2 - 2) / (PI * alphaR2);
         }
 
         /// <summary>
@@ -36,7 +41,7 @@ namespace SiliconStudio.Xenko.Rendering.BRDF
         float NormalDistributionBeckmann(float alphaR, float nDotH) 
         {
             var alphaR2 =  max(alphaR * alphaR, 0.1);  // Cap the value to avoid high exponents. TODO: Find an acceptable limit with 16 bits floats targets
-            var nDotH2 =  nDotH * nDotH;
+            var nDotH2 =  max(nDotH * nDotH, 0.0001);
             var nDotH4 =  nDotH2 * nDotH2;
             return exp((nDotH2 -1)/(alphaR2 * nDotH2))/(PI * alphaR2 * nDotH4);
         }
@@ -47,7 +52,8 @@ namespace SiliconStudio.Xenko.Rendering.BRDF
         float NormalDistributionGGX(float alphaR, float nDotH) 
         {
             var alphaR2 =  alphaR * alphaR;
-            return alphaR2 / (PI * pow(max(nDotH * nDotH * (alphaR2 - 1) + 1, 0.0001), 2.0f));
+            var d = max(nDotH * nDotH * (alphaR2 - 1) + 1, 0.0001);
+            return alphaR2 / (PI * d * d);
         }
 
         // -------------------------------------------------
@@ -191,7 +197,7 @@ namespace SiliconStudio.Xenko.Rendering.BRDF
             return VisibilityhSchlickGGX(alphaR, nDotL) * VisibilityhSchlickGGX(alphaR, nDotV) / (nDotL * nDotV);
         }
 
-        float3 EnvironmentLightingDFG_GGX_Fresnel_SmithSchlickGGX( float3 specularColor, float alphaR, float nDotV )
+        float3 EnvironmentLightingDFG_GGX_Schlick_SmithSchlickGGX( float3 specularColor, float alphaR, float nDotV )
         {
             float x = 1 - alphaR;
             float y = nDotV;

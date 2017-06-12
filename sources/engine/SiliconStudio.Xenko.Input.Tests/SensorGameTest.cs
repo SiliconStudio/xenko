@@ -20,7 +20,7 @@ using SiliconStudio.Xenko.UI.Panels;
 namespace SiliconStudio.Xenko.Input.Tests
 {
     /// <summary>
-    /// Game class for test on the Input sensors.
+    /// Interactive test that makes use of sensors
     /// </summary>
     class SensorGameTest : GameTestBase
     {
@@ -90,22 +90,22 @@ namespace SiliconStudio.Xenko.Input.Tests
             SceneSystem.SceneInstance.RootScene.Entities.Add(entity2);
             SceneSystem.SceneInstance.RootScene.Entities.Add(entity3);
 
-            if (Input.Accelerometer.IsSupported)
+            if (Input.Accelerometer != null)
                 Input.Accelerometer.IsEnabled = true;
 
-            if (Input.Compass.IsSupported)
+            if (Input.Compass != null)
                 Input.Compass.IsEnabled = true;
 
-            if (Input.Gyroscope.IsSupported)
+            if (Input.Gyroscope != null)
                 Input.Gyroscope.IsEnabled = true;
 
-            if (Input.UserAcceleration.IsSupported)
+            if (Input.UserAcceleration != null)
                 Input.UserAcceleration.IsEnabled = true;
 
-            if (Input.Gravity.IsSupported)
+            if (Input.Gravity != null)
                 Input.Gravity.IsEnabled = true;
 
-            if (Input.Orientation.IsSupported)
+            if (Input.Orientation != null)
                 Input.Orientation.IsEnabled = true;
 
             ChangeScene(0);
@@ -198,16 +198,20 @@ namespace SiliconStudio.Xenko.Input.Tests
                 case DebugScenes.Orientation:
                     break;
                 case DebugScenes.UserAccel:
-                    vector = Input.UserAcceleration.Acceleration;
+                    if(Input.UserAcceleration != null)
+                        vector = Input.UserAcceleration.Acceleration;
                     break;
                 case DebugScenes.Gravity:
-                    vector = Input.Gravity.Vector;
+                    if (Input.Gravity != null)
+                        vector = Input.Gravity.Vector;
                     break;
                 case DebugScenes.RawAccel:
-                    vector = Input.Accelerometer.Acceleration;
+                    if (Input.Accelerometer != null)
+                        vector = Input.Accelerometer.Acceleration;
                     break;
                 case DebugScenes.Gyroscope:
-                    vector = Input.Gyroscope.RotationRate;
+                    if (Input.Gyroscope != null)
+                        vector = Input.Gyroscope.RotationRate;
                     break;
                 case DebugScenes.Compass:
                     break;
@@ -218,9 +222,12 @@ namespace SiliconStudio.Xenko.Input.Tests
             switch (currentScene)
             {
                 case DebugScenes.Orientation:
-                    entity.Transform.Rotation = Quaternion.Invert(Input.Orientation.Quaternion);
-                    entity2.Transform.LocalMatrix = Matrix.Scaling(0.5f) * Matrix.Invert(Input.Orientation.RotationMatrix);
-                    entity3.Transform.Rotation = Quaternion.Invert(Quaternion.RotationYawPitchRoll(Input.Orientation.Yaw, Input.Orientation.Pitch, Input.Orientation.Roll));
+                    if (Input.Orientation != null)
+                    {
+                        entity.Transform.Rotation = Quaternion.Invert(Input.Orientation.Quaternion);
+                        entity2.Transform.LocalMatrix = Matrix.Scaling(0.5f)*Matrix.Invert(Input.Orientation.RotationMatrix);
+                        entity3.Transform.Rotation = Quaternion.Invert(Quaternion.RotationYawPitchRoll(Input.Orientation.Yaw, Input.Orientation.Pitch, Input.Orientation.Roll));
+                    }
                     break;
                 case DebugScenes.UserAccel:
                 case DebugScenes.Gravity:
@@ -239,11 +246,17 @@ namespace SiliconStudio.Xenko.Input.Tests
                     }
                     break;
                 case DebugScenes.Gyroscope:
-                    var rotation = Input.Gyroscope.RotationRate * (float)UpdateTime.Elapsed.TotalSeconds;
-                    entity.Transform.Rotation *= Quaternion.Invert(Quaternion.RotationYawPitchRoll(rotation.Y, rotation.X, rotation.Z));
+                    if (Input.Gyroscope != null)
+                    {
+                        var rotation = Input.Gyroscope.RotationRate*(float)UpdateTime.Elapsed.TotalSeconds;
+                        entity.Transform.Rotation *= Quaternion.Invert(Quaternion.RotationYawPitchRoll(rotation.Y, rotation.X, rotation.Z));
+                    }
                     break;
                 case DebugScenes.Compass:
-                    entity.Transform.RotationEulerXYZ = new Vector3(-MathUtil.PiOverTwo, Input.Compass.Heading, 0);
+                    if (Input.Compass != null)
+                    {
+                        entity.Transform.RotationEulerXYZ = new Vector3(-MathUtil.PiOverTwo, Input.Compass.Heading, 0);
+                    }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -257,12 +270,12 @@ namespace SiliconStudio.Xenko.Input.Tests
             // update the values only once every x frames in order to be able to read them.
             if ((gameTime.FrameCount % 20) == 0)
             {
-                currentAcceleration = Input.Accelerometer.Acceleration;
-                currentHeading = Input.Compass.Heading;
-                currentRotationRate = Input.Gyroscope.RotationRate;
-                currentUserAcceleration = Input.UserAcceleration.Acceleration;
-                currentGravity = Input.Gravity.Vector;
-                currentYawPitchRoww = new Vector3(Input.Orientation.Yaw, Input.Orientation.Pitch, Input.Orientation.Roll);
+                currentAcceleration = Input.Accelerometer?.Acceleration ?? Vector3.Zero;
+                currentHeading = Input.Compass?.Heading ?? 0.0f;
+                currentRotationRate = Input.Gyroscope?.RotationRate ?? Vector3.Zero;
+                currentUserAcceleration = Input.UserAcceleration?.Acceleration ?? Vector3.Zero;
+                currentGravity = Input.Gravity?.Vector ?? Vector3.Zero;
+                currentYawPitchRoww = Input.Orientation != null ? new Vector3(Input.Orientation.Yaw, Input.Orientation.Pitch, Input.Orientation.Roll) : Vector3.Zero;
             }
 
             GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
@@ -272,37 +285,37 @@ namespace SiliconStudio.Xenko.Input.Tests
             batch.Begin(GraphicsContext);
 
             var position = new Vector2(0.005f, 0.01f);
-            var text = "Acceleration[{0}]=({1:0.00})".ToFormat(Input.Accelerometer.IsEnabled ? "E" : "D", currentAcceleration);
+            var text = "Acceleration[{0}]=({1:0.00})".ToFormat((Input.Accelerometer?.IsEnabled ?? false) ? "E" : "D", currentAcceleration);
             var size = batch.MeasureString(font, text, targetSize);
 
             batch.DrawString(font, text, position, Color.White);
 
             position.Y += size.Y;
-            text = "Compass[{0}]=({1:0.00})".ToFormat(Input.Compass.IsEnabled ? "E" : "D", currentHeading);
+            text = "Compass[{0}]=({1:0.00})".ToFormat((Input.Compass?.IsEnabled ?? false) ? "E" : "D", currentHeading);
             size = batch.MeasureString(font, text, targetSize);
 
             batch.DrawString(font, text, position, Color.White);
 
             position.Y += size.Y;
-            text = "Gyro[{0}]=({1:0.00})".ToFormat(Input.Gyroscope.IsEnabled ? "E" : "D", currentRotationRate);
+            text = "Gyro[{0}]=({1:0.00})".ToFormat((Input.Gyroscope?.IsEnabled ?? false) ? "E" : "D", currentRotationRate);
             size = batch.MeasureString(font, text, targetSize);
 
             batch.DrawString(font, text, position, Color.White);
 
             position.Y += size.Y;
-            text = "UserAccel[{0}]=({1:0.00})".ToFormat(Input.UserAcceleration.IsEnabled ? "E" : "D", currentUserAcceleration);
+            text = "UserAccel[{0}]=({1:0.00})".ToFormat((Input.UserAcceleration?.IsEnabled ?? false) ? "E" : "D", currentUserAcceleration);
             size = batch.MeasureString(font, text, targetSize);
 
             batch.DrawString(font, text, position, Color.White);
 
             position.Y += size.Y;
-            text = "Gravity[{0}]=({1:0.00})".ToFormat(Input.Gravity.IsEnabled ? "E" : "D", currentGravity);
+            text = "Gravity[{0}]=({1:0.00})".ToFormat((Input.Gravity?.IsEnabled ?? false) ? "E" : "D", currentGravity);
             size = batch.MeasureString(font, text, targetSize);
 
             batch.DrawString(font, text, position, Color.White);
 
             position.Y += size.Y;
-            text = "Orientation[{0}]=({1:0.00})".ToFormat(Input.Orientation.IsEnabled ? "E" : "D", currentYawPitchRoww);
+            text = "Orientation[{0}]=({1:0.00})".ToFormat((Input.Orientation?.IsEnabled ?? false) ? "E" : "D", currentYawPitchRoww);
             size = batch.MeasureString(font, text, targetSize);
 
             batch.DrawString(font, text, position, Color.White);

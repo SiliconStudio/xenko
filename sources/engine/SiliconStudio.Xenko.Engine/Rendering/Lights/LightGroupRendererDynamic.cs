@@ -63,7 +63,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             // Start by filtering/sorting what can be processed
             shadowComparer.ShadowMapTexturesPerLight = parameters.ShadowMapTexturesPerLight;
-            parameters.LightCollection.Sort(0, parameters.LightCollection.Count, shadowComparer);
+            shadowComparer.Lights = parameters.LightCollection;
+            parameters.LightIndices.Sort(0, parameters.LightIndices.Count, shadowComparer);
 
             // Loop over the number of lights + 1 where the last iteration will always flush the last batch of lights
             for(int j = 0; j < parameters.LightIndices.Count+1;)
@@ -249,12 +250,16 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
-        class ShadowComparer : IComparer<LightComponent>
+        class ShadowComparer : IComparer<int>
         {
             public Dictionary<LightComponent, LightShadowMapTexture> ShadowMapTexturesPerLight;
+            public LightComponentCollection Lights;
 
-            public int Compare(LightComponent x, LightComponent y)
+            public int Compare(int a, int b)
             {
+                LightComponent x = Lights[a];
+                LightComponent y = Lights[b];
+
                 LightShadowMapTexture shadowX, shadowY;
 
                 ShadowMapTexturesPerLight.TryGetValue(x, out shadowX);

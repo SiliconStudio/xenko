@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Graphics
     }
 
     [DataContract]
-    [Display("Rendering Settings")]
+    [Display("Rendering")]
     public class RenderingSettings : Configuration
     {
         /// <summary>

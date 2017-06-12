@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             if (RampTexture == null)
                 return new ShaderClassSource("MaterialCelShadingLightDefault", false);
 
-            context.Material.Parameters.Set(MaterialCelShadingLightRampKeys.CelShaderRamp, RampTexture);
+            context.MaterialPass.Parameters.Set(MaterialCelShadingLightRampKeys.CelShaderRamp, RampTexture);
 
             return new ShaderClassSource("MaterialCelShadingLightRamp");
         }
