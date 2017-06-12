@@ -86,8 +86,9 @@ namespace SiliconStudio.Xenko.Extensions
                     // Transform normals
                     foreach (var vertexElement in vertexElementsToTransform2)
                     {
-                        var elementPointer = bufferPointer + vertexElement.Offset;
-                        Vector3.TransformNormal(ref *(Vector3*)elementPointer, ref inverseTransposeMatrix, out *(Vector3*)elementPointer);
+                        var elementPointer = (Vector3*)(bufferPointer + vertexElement.Offset);
+                        Vector3.TransformNormal(ref *elementPointer, ref inverseTransposeMatrix, out *elementPointer);
+                        elementPointer->Normalize();
                     }
 
                     // Correct handedness
