@@ -16,6 +16,9 @@ namespace SiliconStudio.Xenko.Input
         {
             // XInput device layout for any plaform that does not support xinput directly
             AddLayout(new GamePadLayoutXInput());
+
+            // Support for DualShock4 controllers
+            AddLayout(new GamePadLayoutDS4());
         }
 
         /// <summary>
