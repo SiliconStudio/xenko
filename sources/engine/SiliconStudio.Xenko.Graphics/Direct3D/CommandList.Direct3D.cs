@@ -41,6 +41,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal CommandList(GraphicsDevice device) : base(device)
         {
             nativeDeviceContext = device.NativeDeviceContext;
+            NativeDeviceChild = nativeDeviceContext;
             nativeDeviceContext1 = new SharpDX.Direct3D11.DeviceContext1(nativeDeviceContext.NativePointer);
             nativeDeviceProfiler = device.IsDebugMode ? SharpDX.ComObject.QueryInterfaceOrNull<SharpDX.Direct3D11.UserDefinedAnnotation>(nativeDeviceContext.NativePointer) : null;
             InitializeStages();
