@@ -20,14 +20,15 @@ namespace SiliconStudio.Translation.Extractor
             new LongOpt("directory", Argument.Required, null, 'D'),
             new LongOpt("recursive", Argument.No, null, 'r'),
             new LongOpt("exclude", Argument.Required, null, 'x'),
-            new LongOpt("merge", Argument.No, null, 'm'),
             new LongOpt("domain-name", Argument.Required, null, 'd'),
             new LongOpt("backup", Argument.No, null, 'b'),
             new LongOpt("output", Argument.Required, null, 'o'),
-            new LongOpt("help", Argument.No, null, 'h'),
+            new LongOpt("merge", Argument.No, null, 'm'),
+            new LongOpt("preserve-comments", Argument.No, null, 'C'),
             new LongOpt("verbose", Argument.No, null, 'v'),
+            new LongOpt("help", Argument.No, null, 'h'),
         };
-        private static readonly string SOpts = "-:D:rx:md:bo:hv";
+        private static readonly string SOpts = "-:D:rx:d:bo:mCvh";
 
         private static int Main([NotNull] string[] args)
         {
@@ -170,21 +171,25 @@ namespace SiliconStudio.Translation.Extractor
                             options.Backup = true;
                             break;
 
+                        case 'o':
+                            options.OutputFile = getopt.Optarg;
+                            break;
+
                         case 'm':
                             options.Overwrite = false;
                             break;
 
-                        case 'o':
-                            options.OutputFile = getopt.Optarg;
+                        case 'C':
+                            options.PreserveComments = true;
+                            break;
+
+                        case 'v':
+                            options.Verbose = true;
                             break;
 
                         case 'h':
                             options.ShowUsage = true;
                             return true;
-
-                        case 'v':
-                            options.Verbose = true;
-                            break;
 
                         case ':':
                             message.AppendLine(string.Format(Tr._("Option '{0}' requires an argument"), getopt.OptoptStr));
@@ -231,6 +236,7 @@ namespace SiliconStudio.Translation.Extractor
                 $"   -b, --backup                           Create a backup file (.bak) in case of an existing file{newLine}{newLine}" +
                 $"   -o file, --output=file                 Write output to specified file (instead of name.po or messages.po) {newLine}{newLine}" +
                 $"   -m, --merge                            Merge with existing file instead of overwriting it{newLine}{newLine}" +
+                $"   -C, --preserve-comments                Keep previous comments from existing file{newLine}{newLine}" +
                 $"   -v, --verbose                          Verbose output{newLine}{newLine}" +
                 $"   -h, --help                             Display this help and exit{newLine}"
             );

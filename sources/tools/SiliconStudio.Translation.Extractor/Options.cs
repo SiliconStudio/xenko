@@ -36,6 +36,11 @@ namespace SiliconStudio.Translation.Extractor
         /// </summary>
         public bool Overwrite { get; set; } = true;
 
+        /// <summary>
+        /// <c>true</c> if previous comments from an existing catalog should be preserved; otherwise, <c>false</c>.
+        /// </summary>
+        public bool PreserveComments { get; set; }
+
         public bool Recursive { get; set; }
 
         public bool ShowUsage { get; set; }

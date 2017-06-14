@@ -15,14 +15,24 @@ namespace SiliconStudio.Translation.Extractor
     // ReSharper disable once InconsistentNaming
     internal class POExporter
     {
+        private readonly Catalog previousCatalog;
+
         public POExporter([NotNull] Options options)
         {
             Options = options ?? throw new ArgumentNullException(nameof(options));
             Catalog = new Catalog();
-            if (!Options.Overwrite && File.Exists(Options.OutputFile))
+            if (File.Exists(Options.OutputFile))
             {
-                Catalog.Load(Options.OutputFile);
-                Catalog.ForEach(e => e.ClearReferences());
+                if (Options.Overwrite)
+                {
+                    previousCatalog = new Catalog();
+                    previousCatalog.Load(Options.OutputFile);
+                }
+                else
+                {
+                    Catalog.Load(Options.OutputFile);
+                    Catalog.ForEach(e => e.ClearReferences());
+                }
             }
         }
 
@@ -84,10 +94,28 @@ namespace SiliconStudio.Translation.Extractor
             {
                 entry.Context = message.Context;
             }
-            // Comments
+            // Auto comments
             if (!string.IsNullOrEmpty(message.Comment))
             {
-                entry.Comment = message.Comment;
+                entry.AddAutoComment(message.Comment, true);
+            }
+            // Preserve previous comments
+            if (newEntry && Options.PreserveComments)
+            {
+                var previousEntry = previousCatalog?.FindItem(entry);
+                if (previousEntry != null)
+                {
+                    // Simple comment
+                    if (previousEntry.HasComment && !entry.HasComment)
+                    {
+                        entry.Comment = previousEntry.Comment;
+                    }
+                    // Auto comments
+                    foreach (var comment in previousEntry.AutoComments)
+                    {
+                        entry.AddAutoComment(comment, true);
+                    }
+                }
             }
             // Add entry if it did not exist
             if (newEntry)
