@@ -3,7 +3,6 @@
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 using System;
-using SharpDX.Direct3D11;
 using SharpDX;
 using SharpDX.DXGI;
 
@@ -230,20 +229,6 @@ namespace SiliconStudio.Xenko.Graphics
             if (IsDebugMode)
             {
                 GraphicsResourceBase.SetDebugName(this, nativeDeviceContext, "ImmediateContext");
-
-                var debugDevice = NativeDevice.QueryInterfaceOrNull<SharpDX.Direct3D11.DeviceDebug>();
-                if (debugDevice != null)
-                {
-                    var infoQueue = debugDevice.QueryInterfaceOrNull<InfoQueue>();
-                    if (infoQueue != null)
-                    {
-                        infoQueue.SetBreakOnSeverity(MessageSeverity.Error, true);
-                        //infoQueue.SetBreakOnSeverity(MessageSeverity.Warning, true);
-
-                        infoQueue.Dispose();
-                    }
-                    debugDevice.Dispose();
-                }
             }
         }
 
