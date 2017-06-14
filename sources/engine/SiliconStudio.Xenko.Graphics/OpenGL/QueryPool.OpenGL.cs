@@ -17,19 +17,22 @@ namespace SiliconStudio.Xenko.Graphics
 
         public bool TryGetData(long[] dataArray)
         {
+#if SILICONSTUDIO_PLATFORM_IOS
+            return false;
+#endif
             for (var index = 0; index < NativeQueries.Length; index++)
             {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_IOS
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 GL.Ext.GetQueryObject(NativeQueries[index], GetQueryObjectParam.QueryResultAvailable, out long availability);
-#elif !SILICONSTUDIO_PLATFORM_IOS
+#else
                 GL.GetQueryObject(NativeQueries[index], GetQueryObjectParam.QueryResultAvailable, out long availability);
 #endif
                 if (availability == 0)
                     return false;
 
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_IOS
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 GL.Ext.GetQueryObject(NativeQueries[index], GetQueryObjectParam.QueryResult, out dataArray[index]);
-#elif !SILICONSTUDIO_PLATFORM_IOS
+#else
                 GL.GetQueryObject(NativeQueries[index], GetQueryObjectParam.QueryResult, out dataArray[index]);
 #endif
             }
