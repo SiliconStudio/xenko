@@ -42,11 +42,11 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         /// <param name="profileColor">The profile event color.</param>
         /// <param name="profilingKey">The <see cref="ProfilingKey"/></param>
-        public Scrope BeginProfile(Color4 profileColor, ProfilingKey profilingKey)
+        public Scope BeginProfile(Color4 profileColor, ProfilingKey profilingKey)
         {
             if (!Profiler.IsEnabled(profilingKey))
             {
-                return new Scrope(this, profilingKey);
+                return new Scope(this, profilingKey);
             }
 
             // Allocate two timestamp queries
@@ -76,7 +76,7 @@ namespace SiliconStudio.Xenko.Rendering
                 commandList.BeginProfile(profileColor, profilingKey.Name);
             }
 
-            return new Scrope(this, profilingKey);
+            return new Scope(this, profilingKey);
         }
 
         /// <summary>
@@ -165,12 +165,12 @@ namespace SiliconStudio.Xenko.Rendering
             currentQueryPool = null;
         }
 
-        public struct Scrope : IDisposable
+        public struct Scope : IDisposable
         {
             private readonly QueryManager queryManager;
             private readonly ProfilingKey profilingKey;
 
-            public Scrope(QueryManager queryManager, ProfilingKey profilingKey)
+            public Scope(QueryManager queryManager, ProfilingKey profilingKey)
             {
                 this.queryManager = queryManager;
                 this.profilingKey = profilingKey;
