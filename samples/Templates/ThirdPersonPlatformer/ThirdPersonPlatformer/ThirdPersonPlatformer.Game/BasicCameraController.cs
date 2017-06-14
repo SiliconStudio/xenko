@@ -120,6 +120,7 @@ namespace ThirdPersonPlatformer
             if (Input.IsMouseButtonDown(MouseButton.Right))
             {
                 Input.LockMousePosition();
+                Game.IsMouseVisible = false;
 
                 yaw = -Input.MouseDelta.X * MouseRotationSpeed.X;
                 pitch = -Input.MouseDelta.Y * MouseRotationSpeed.Y;
@@ -127,6 +128,7 @@ namespace ThirdPersonPlatformer
             else
             {
                 Input.UnlockMousePosition();
+                Game.IsMouseVisible = true;
             }
 
             // Handle gestures
@@ -134,21 +136,21 @@ namespace ThirdPersonPlatformer
             {
                 switch (gestureEvent.Type)
                 {
-                    // Rotate by dragging
-                    case GestureType.Drag:
-                        var drag = (GestureEventDrag)gestureEvent;
-                        var dragDistance = drag.DeltaTranslation;
-                        yaw = -dragDistance.X * TouchRotationSpeed.X;
-                        pitch = -dragDistance.Y * TouchRotationSpeed.Y;
-                        break;
+                // Rotate by dragging
+                case GestureType.Drag:
+                    var drag = (GestureEventDrag)gestureEvent;
+                    var dragDistance = drag.DeltaTranslation;
+                    yaw = -dragDistance.X * TouchRotationSpeed.X;
+                    pitch = -dragDistance.Y * TouchRotationSpeed.Y;
+                    break;
 
-                    // Move along z-axis by scaling and in xy-plane by multi-touch dragging
-                    case GestureType.Composite:
-                        var composite = (GestureEventComposite)gestureEvent;
-                        translation.X = -composite.DeltaTranslation.X * TouchMovementSpeed.X;
-                        translation.Y = -composite.DeltaTranslation.Y * TouchMovementSpeed.Y;
-                        translation.Z = -(float)Math.Log(composite.DeltaScale + 1) * TouchMovementSpeed.Z;
-                        break;
+                // Move along z-axis by scaling and in xy-plane by multi-touch dragging
+                case GestureType.Composite:
+                    var composite = (GestureEventComposite)gestureEvent;
+                    translation.X = -composite.DeltaTranslation.X * TouchMovementSpeed.X;
+                    translation.Y = -composite.DeltaTranslation.Y * TouchMovementSpeed.Y;
+                    translation.Z = -(float)Math.Log(composite.DeltaScale + 1) * TouchMovementSpeed.Z;
+                    break;
                 }
             }
         }
@@ -172,9 +174,6 @@ namespace ThirdPersonPlatformer
             right.Normalize();
             up.Normalize();
 
-            rotation.Right = right;
-            rotation.Up = up;
-
             // Adjust pitch. Prevent it from exceeding up and down facing. Stabilize edge cases.
             var currentPitch = MathUtil.PiOverTwo - (float)Math.Acos(Vector3.Dot(rotation.Forward, upVector));
             pitch = MathUtil.Clamp(currentPitch + pitch, -MaximumPitch, MaximumPitch) - currentPitch;
@@ -183,10 +182,7 @@ namespace ThirdPersonPlatformer
             Entity.Transform.Position += Vector3.TransformCoordinate(translation, rotation);
 
             // Yaw around global up-vector, pitch and roll in local space
-            Entity.Transform.Rotation =
-                Quaternion.RotationMatrix(rotation) *
-                Quaternion.RotationAxis(right, pitch) *
-                Quaternion.RotationAxis(upVector, yaw);
+            Entity.Transform.Rotation *= Quaternion.RotationAxis(right, pitch) * Quaternion.RotationAxis(upVector, yaw);
         }
     }
 }

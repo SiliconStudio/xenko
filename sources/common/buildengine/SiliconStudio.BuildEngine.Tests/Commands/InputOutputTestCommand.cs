@@ -104,9 +104,6 @@ namespace SiliconStudio.BuildEngine.Tests.Commands
 
             assetManager.Save(OutputUrl, result);
 
-            var tasksToWait = CommandsToSpawn.Select(commandContext.ScheduleAndExecuteCommand);
-            await Task.WhenAll(tasksToWait);
-
             foreach (ObjectUrl inputDep in InputDependencies)
             {
                 commandContext.RegisterInputDependency(inputDep);
