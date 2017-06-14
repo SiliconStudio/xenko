@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -205,8 +204,6 @@ namespace SiliconStudio.Core.Streaming
         /// <inheritdoc/>
         protected override void Destroy()
         {
-            Debug.Assert(locks == 0);
-
             Service.UnregisterStorage(this);
             ReleaseChunks();
 

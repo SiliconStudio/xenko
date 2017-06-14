@@ -116,6 +116,7 @@ namespace SiliconStudio.Xenko.Graphics.Data
                 var storage = content.GetStorage(ref storageHeader);
                 if (storage == null)
                     throw new ContentStreamingException("Missing content storage.");
+                storage.LockChunks();
 
                 // Cache data
                 var fileProvider = ContentManager.FileProvider;
@@ -164,6 +165,8 @@ namespace SiliconStudio.Xenko.Graphics.Data
 
                 // Initialize texture
                 texture.InitializeFrom(imageDescription, new TextureViewDescription(), dataBoxes);
+
+                storage.UnlockChunks();
             }
         }
     }
@@ -269,6 +272,7 @@ namespace SiliconStudio.Xenko.Graphics.Data
                 var storage = content.GetStorage(ref storageHeader);
                 if (storage == null)
                     throw new ContentStreamingException("Missing content storage.");
+                storage.LockChunks();
 
                 // Cache data
                 var fileProvider = ContentManager.FileProvider;
@@ -352,6 +356,8 @@ namespace SiliconStudio.Xenko.Graphics.Data
 
                     throw;
                 }
+
+                storage.UnlockChunks();
             }
         }
     }
