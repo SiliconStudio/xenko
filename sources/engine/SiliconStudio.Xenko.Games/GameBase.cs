@@ -756,12 +756,8 @@ namespace SiliconStudio.Xenko.Games
                     }
                 }
 
-                // Reset allocator
-                if (GraphicsContext != null)
-                {
-                    GraphicsContext.CommandList.Dispose();
-                    GraphicsContext = null;
-                }
+                // Reset graphics context
+                GraphicsContext = null;
 
                 var disposableGraphicsManager = graphicsDeviceManager as IDisposable;
                 if (disposableGraphicsManager != null)

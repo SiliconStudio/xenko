@@ -112,6 +112,17 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public RenderView RenderView { get; set; }
 
+        protected override void Destroy()
+        {
+            foreach (var renderDrawContext in threadContext.Values)
+            {
+                renderDrawContext.Dispose();
+            }
+            threadContext.Dispose();
+
+            base.Destroy();
+        }
+
         /// <summary>
         /// Gets a global shared context.
         /// </summary>

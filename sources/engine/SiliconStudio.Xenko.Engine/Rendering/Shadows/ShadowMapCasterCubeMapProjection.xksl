@@ -3,13 +3,17 @@
 
 namespace SiliconStudio.Xenko.Rendering.Shadows
 {
-    shader ShadowMapCasterCubeMapProjection : ShaderBase, PositionStream4, Texturing
+    shader ShadowMapCasterCubeMapProjection : TransformationBase, PositionStream4, Texturing
     {
-        stage override void VSMain()
+        stage override void PostTransformPosition()
         {
-            float4 lightSpace = mul(streams.Position, Transformation.WorldView);
-            streams.ShadingPosition = mul(lightSpace, Transformation.Projection);
+            streams.ShadingPosition = ComputeShadingPosition(streams.PositionWS);
         }
+
+		stage override float4 ComputeShadingPosition(float4 world)
+		{
+			return mul(world, Transformation.ViewProjection);
+		}
 
         stage override void PSMain()
         {

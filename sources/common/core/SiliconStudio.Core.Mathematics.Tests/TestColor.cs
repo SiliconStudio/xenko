@@ -8,7 +8,7 @@ namespace SiliconStudio.Core.Mathematics.Tests
     public class TestColor
     {
         [Test]
-        public void TestRGB2HSVConvertion()
+        public void TestRGB2HSVConversion()
         {
             Assert.AreEqual(new ColorHSV(312, 1, 1, 1), ColorHSV.FromColor(new Color4(1, 0, 0.8f, 1)));
             Assert.AreEqual(new ColorHSV(0, 0, 0, 1), ColorHSV.FromColor(Color.Black));
@@ -25,7 +25,7 @@ namespace SiliconStudio.Core.Mathematics.Tests
         }
 
         [Test]
-        public void TestHSV2RGBConvertion()
+        public void TestHSV2RGBConversion()
         {
             Assert.AreEqual(Color.Black.ToColor4(), ColorHSV.FromColor(Color.Black).ToColor());
             Assert.AreEqual(Color.White.ToColor4(), ColorHSV.FromColor(Color.White).ToColor());
@@ -34,6 +34,7 @@ namespace SiliconStudio.Core.Mathematics.Tests
             Assert.AreEqual(Color.Blue.ToColor4(), ColorHSV.FromColor(Color.Blue).ToColor());
             Assert.AreEqual(Color.Silver.ToColor4(), ColorHSV.FromColor(Color.Silver).ToColor());
             Assert.AreEqual(Color.Maroon.ToColor4(), ColorHSV.FromColor(Color.Maroon).ToColor());
+            Assert.AreEqual(new Color(184, 209, 219, 255).ToRgba(), ColorHSV.FromColor(new Color(184, 209, 219, 255)).ToColor().ToRgba());
         }
     }
 }

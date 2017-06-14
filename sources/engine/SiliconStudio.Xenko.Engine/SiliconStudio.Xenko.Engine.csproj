@@ -271,12 +271,64 @@
     </Compile>
     <Compile Include="Rendering\Compositing\RenderOutputValidator.cs" />
     <Compile Include="Rendering\LightProbes\LightProbeProcessor.cs" />
+    <Compile Include="Rendering\Materials\IEnergyConservativeDiffuseModelFeature.cs" />
+    <Compile Include="Rendering\MaterialPass.cs" />
+    <Compile Include="Rendering\MaterialPassCollection.cs" />
+    <Compile Include="Rendering\Materials\IMaterialSpecularMicrofacetEnvironmentFunction.cs" />
+    <Compile Include="Rendering\Materials\MaterialSpecularMicrofacetEnvironmentGGXLUT.cs" />
+    <Compile Include="Rendering\Materials\MaterialSpecularMicrofacetEnvironmentThinGlass.cs" />
+    <Compile Include="Rendering\Materials\MaterialSpecularThinGlassModelFeature.cs" />
+    <Compile Include="Rendering\Materials\MaterialSpecularMicrofacetEnvironmentGGXPolynomial.cs" />
+    <Compile Include="Rendering\Materials\MaterialSpecularMicrofacetFresnelThinGlass.cs" />
+    <Compile Include="Rendering\Materials\Shaders\IMaterialSpecularMicrofacetEnvironmentFunction.cs">
+      <DependentUpon>IMaterialSpecularMicrofacetEnvironmentFunction.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Materials\Shaders\MaterialSpecularMicrofacetEnvironmentGGXLUT.cs">
+      <DependentUpon>MaterialSpecularMicrofacetEnvironmentGGXLUT.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Materials\Shaders\MaterialSpecularMicrofacetEnvironmentThinGlass.cs">
+      <DependentUpon>MaterialSpecularMicrofacetEnvironmentThinGlass.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Materials\Shaders\MaterialSpecularMicrofacetFresnelThinGlass.cs">
+      <DependentUpon>MaterialSpecularMicrofacetFresnelThinGlass.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Materials\Shaders\MaterialSpecularMicrofacetEnvironmentGGXPolynomial.cs">
+      <DependentUpon>MaterialSpecularMicrofacetEnvironmentGGXPolynomial.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Materials\Shaders\MaterialTransmittanceReflectanceStream.cs">
+      <DependentUpon>MaterialTransmittanceReflectanceStream.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Materials\Shaders\MaterialSurfaceTransmittanceShading.cs">
+      <DependentUpon>MaterialSurfaceTransmittanceShading.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Rendering\Materials\Shaders\MaterialSurfaceNormalStreamShading.cs">
       <DependentUpon>MaterialSurfaceNormalStreamShading.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Rendering\Materials\ShadingModelShaderBuilder.cs" />
     <Compile Include="Rendering\RenderViewFlags.cs" />
     <Compile Include="Rendering\Skyboxes\CubemapSceneRenderer.cs" />
     <Compile Include="Rendering\Lights\LightPointShadowMap.cs" />
@@ -745,6 +797,34 @@
     <None Include="Rendering\LightProbes\ComputeSphericalHarmonics.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeSphericalHarmonics.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\Shaders\IMaterialSpecularMicrofacetEnvironmentFunction.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>IMaterialSpecularMicrofacetEnvironmentFunction.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\Shaders\MaterialSpecularMicrofacetEnvironmentGGXLUT.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSpecularMicrofacetEnvironmentGGXLUT.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\Shaders\MaterialSpecularMicrofacetEnvironmentThinGlass.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSpecularMicrofacetEnvironmentThinGlass.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\Shaders\MaterialSpecularMicrofacetFresnelThinGlass.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSpecularMicrofacetFresnelThinGlass.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\Shaders\MaterialSpecularMicrofacetEnvironmentGGXPolynomial.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSpecularMicrofacetEnvironmentGGXPolynomial.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\Shaders\MaterialTransmittanceReflectanceStream.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialTransmittanceReflectanceStream.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\Shaders\MaterialSurfaceTransmittanceShading.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSurfaceTransmittanceShading.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Materials\Shaders\MaterialSurfaceNormalStreamShading.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>

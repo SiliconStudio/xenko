@@ -95,7 +95,20 @@ namespace SiliconStudio.Core.VisualStudio
                             if (!File.Exists(vsixInstallerPath))
                                 vsixInstallerPath = null;
 
-                            var ideInfo = new IDEInfo { DisplayName = inst2.GetDisplayName(), Complete = inst2.IsComplete(), InstallationPath = inst2.GetInstallationPath(), DevenvPath = path, VsixInstallerVersion = VSIXInstallerVersion.VS2017AndFutureVersions, VsixInstallerPath = vsixInstallerPath };
+                            var displayName = inst2.GetDisplayName();
+
+                            // Try to append nickname (if any)
+                            try
+                            {
+                                var nickname = inst2.GetProperties().GetValue("nickname") as string;
+                                if (!string.IsNullOrEmpty(nickname))
+                                    displayName = $"{displayName} ({nickname})";
+                            }
+                            catch (COMException)
+                            {
+                            }
+
+                            var ideInfo = new IDEInfo { DisplayName = displayName, Complete = inst2.IsComplete(), InstallationPath = inst2.GetInstallationPath(), DevenvPath = path, VsixInstallerVersion = VSIXInstallerVersion.VS2017AndFutureVersions, VsixInstallerPath = vsixInstallerPath };
 
                             // Fill packages
                             foreach (var package in inst2.GetPackages())

@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     [Display("None")]
     public class MaterialSpecularMicrofacetFresnelNone : IMaterialSpecularMicrofacetFresnelFunction
     {
-        public ShaderSource Generate()
+        public ShaderSource Generate(MaterialGeneratorContext context)
         {
             return new ShaderClassSource("MaterialSpecularMicrofacetFresnelNone");
         }

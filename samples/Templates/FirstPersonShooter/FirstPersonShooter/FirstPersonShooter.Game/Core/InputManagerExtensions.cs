@@ -9,35 +9,39 @@ namespace FirstPersonShooter.Core
     {
         public static bool IsGamePadButtonDown(this InputManager input, GamePadButton button, int index)
         {
-            if (input.GamePadCount < index)
+            var gamepad = input.GetGamePadByIndex(index);
+            if (gamepad == null)
                 return false;
 
-            return (input.GetGamePad(index).Buttons & button) == button;
+            return (gamepad.State.Buttons & button) == button;
         }
 
         public static bool IsGamePadButtonDownAny(this InputManager input, GamePadButton button)
         {
-            for (int i = 0; i < input.GamePadCount; i++)
-            {
-                if ((input.GetGamePad(i).Buttons & button) == button)
+            foreach(var gamepad in input.GamePads)
+            { 
+                if ((gamepad.State.Buttons & button) == button)
                     return true;
             }
-
             return false;
         }
 
         public static Vector2 GetLeftThumb(this InputManager input, int index)
         {
-            return input.GamePadCount >= index ? input.GetGamePad(index).LeftThumb : Vector2.Zero;
+            var gamepad = input.GetGamePadByIndex(index);
+            if (gamepad == null)
+                return Vector2.Zero;
+
+            return gamepad.State.LeftThumb;
         }
 
         public static Vector2 GetLeftThumbAny(this InputManager input, float deadZone)
         {
             int totalCount = 0;
             Vector2 totalMovement = Vector2.Zero;
-            for (int i = 0; i < input.GamePadCount; i++)
+            foreach (var gamepad in input.GamePads)
             {
-                var leftVector = input.GetGamePad(i).LeftThumb;
+                var leftVector = gamepad.State.LeftThumb;
                 if (leftVector.Length() >= deadZone)
                 {
                     totalCount++;
@@ -50,16 +54,20 @@ namespace FirstPersonShooter.Core
 
         public static Vector2 GetRightThumb(this InputManager input, int index)
         {
-            return input.GamePadCount >= index ? input.GetGamePad(index).RightThumb : Vector2.Zero;
+            var gamepad = input.GetGamePadByIndex(index);
+            if (gamepad == null)
+                return Vector2.Zero;
+
+            return gamepad.State.RightThumb;
         }
 
         public static Vector2 GetRightThumbAny(this InputManager input, float deadZone)
         {
             int totalCount = 0;
             Vector2 totalMovement = Vector2.Zero;
-            for (int i = 0; i < input.GamePadCount; i++)
+            foreach (var gamepad in input.GamePads)
             {
-                var rightVector = input.GetGamePad(i).RightThumb;
+                var rightVector = gamepad.State.RightThumb;
                 if (rightVector.Length() >= deadZone)
                 {
                     totalCount++;
@@ -72,16 +80,20 @@ namespace FirstPersonShooter.Core
 
         public static float GetLeftTrigger(this InputManager input, int index)
         {
-            return input.GamePadCount >= index ? input.GetGamePad(index).LeftTrigger : 0.0f;
+            var gamepad = input.GetGamePadByIndex(index);
+            if (gamepad == null)
+                return 0.0f;
+
+            return gamepad.State.LeftTrigger;
         }
 
         public static float GetLeftTriggerAny(this InputManager input, float deadZone)
         {
             int totalCount = 0;
             float totalInput = 0;
-            for (int i = 0; i < input.GamePadCount; i++)
+            foreach (var gamepad in input.GamePads)
             {
-                float triggerValue = input.GetGamePad(i).LeftTrigger;
+                float triggerValue = gamepad.State.LeftTrigger;
                 if (triggerValue >= deadZone)
                 {
                     totalCount++;
@@ -94,16 +106,20 @@ namespace FirstPersonShooter.Core
 
         public static float GetRightTrigger(this InputManager input, int index)
         {
-            return input.GamePadCount >= index ? input.GetGamePad(index).RightTrigger : 0.0f;
+            var gamepad = input.GetGamePadByIndex(index);
+            if (gamepad == null)
+                return 0.0f;
+
+            return gamepad.State.RightTrigger;
         }
 
         public static float GetRightTriggerAny(this InputManager input, float deadZone)
         {
             int totalCount = 0;
             float totalInput = 0;
-            for (int i = 0; i < input.GamePadCount; i++)
+            foreach (var gamepad in input.GamePads)
             {
-                float triggerValue = input.GetGamePad(i).RightTrigger;
+                float triggerValue = gamepad.State.RightTrigger;
                 if (triggerValue >= deadZone)
                 {
                     totalCount++;

@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
         public IComputeScalar MetalnessMap { get; set; }
 
-        public override void VisitFeature(MaterialGeneratorContext context)
+        public override void GenerateShader(MaterialGeneratorContext context)
         {
             if (MetalnessMap != null)
             {

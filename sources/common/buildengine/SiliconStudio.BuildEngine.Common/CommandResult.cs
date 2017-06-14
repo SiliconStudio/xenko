@@ -30,17 +30,11 @@ namespace SiliconStudio.BuildEngine
         /// </summary>
         public List<KeyValuePair<ObjectUrl, string>> TagSymbols;
 
-        /// <summary>
-        /// Commands created during the execution of the current command.
-        /// </summary>
-        public List<Command> SpawnedCommands;
-
         public CommandResultEntry()
         {
             InputDependencyVersions = new Dictionary<ObjectUrl, ObjectId>();
             OutputObjects = new Dictionary<ObjectUrl, ObjectId>();
             LogMessages = new List<SerializableLogMessage>();
-            SpawnedCommands = new List<Command>();
             TagSymbols = new List<KeyValuePair<ObjectUrl, string>>();
         }
     }

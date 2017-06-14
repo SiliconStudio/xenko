@@ -175,6 +175,11 @@ namespace SiliconStudio.Xenko.Graphics.SDL
                     }
                     break;
                 }
+                case SDL.SDL_EventType.SDL_JOYDEVICEADDED:
+                case SDL.SDL_EventType.SDL_JOYDEVICEREMOVED:
+                    // Send these events to all the windows
+                    Windows.ForEach(x => x.ProcessEvent(e));
+                    break;
             }
             ctrl?.ProcessEvent(e);
         }

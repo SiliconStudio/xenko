@@ -31,11 +31,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private MaterialTests(Func<MaterialTests, Material> createMaterial)
         {
-            //CurrentVersion = 2;
-            //CurrentVersion = 3; // Fix normal maps
-            //CurrentVersion = 4; // Fix normal maps again
-            //CurrentVersion = 5; // Noise due to changing normals from signed to unsigned
-            CurrentVersion = 6; // MSBUild tests
+            CurrentVersion = 8; // Environment lighting GGX LUT
             this.createMaterial = createMaterial;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
         }

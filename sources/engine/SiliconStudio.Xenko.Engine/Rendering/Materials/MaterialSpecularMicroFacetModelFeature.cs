@@ -16,71 +16,70 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     [Display("Microfacet")]
     public class MaterialSpecularMicrofacetModelFeature : MaterialFeature, IMaterialSpecularModelFeature, IEquatable<MaterialSpecularMicrofacetModelFeature>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialSpecularMicrofacetModelFeature"/> class.
-        /// </summary>
-        public MaterialSpecularMicrofacetModelFeature()
-        {
-            // Defaults
-            Fresnel = new MaterialSpecularMicrofacetFresnelSchlick();
-            Visibility = new MaterialSpecularMicrofacetVisibilitySmithSchlickGGX();
-            NormalDistribution = new MaterialSpecularMicrofacetNormalDistributionGGX();
-        }
-
-        public bool IsLightDependent
-        {
-            get
-            {
-                return true;
-            }
-        }
-
         /// <userdoc>Specify the function to use to calculate the Fresnel component of the micro-facet lighting equation. 
         /// This defines the amount of the incoming light that is reflected.</userdoc>
         [DataMember(10)]
         [Display("Fresnel")]
         [NotNull]
-        public IMaterialSpecularMicrofacetFresnelFunction Fresnel { get; set; }
+        public IMaterialSpecularMicrofacetFresnelFunction Fresnel { get; set; } = new MaterialSpecularMicrofacetFresnelSchlick();
 
         /// <userdoc>Specify the function to use to calculate the visibility component of the micro-facet lighting equation.</userdoc>
         [DataMember(20)]
         [Display("Visibility")]
         [NotNull]
-        public IMaterialSpecularMicrofacetVisibilityFunction Visibility { get; set; }
+        public IMaterialSpecularMicrofacetVisibilityFunction Visibility { get; set; } = new MaterialSpecularMicrofacetVisibilitySmithSchlickGGX();
 
         /// <userdoc>Specify the function to use to calculate the normal distribution in the micro-facet lighting equation. 
         /// This defines how the normal is distributed.</userdoc>
         [DataMember(30)]
         [Display("Normal Distribution")]
         [NotNull]
-        public IMaterialSpecularMicrofacetNormalDistributionFunction NormalDistribution { get; set; }
+        public IMaterialSpecularMicrofacetNormalDistributionFunction NormalDistribution { get; set; } = new MaterialSpecularMicrofacetNormalDistributionGGX();
 
-        public override void VisitFeature(MaterialGeneratorContext context)
+        /// <userdoc>Specify the function to use to calculate the environment DFG term in the micro-facet lighting equation. 
+        /// This defines how the material reflects specular cubemaps.</userdoc>
+        [DataMember(30)]
+        [Display("Environment (DFG)")]
+        [NotNull]
+        public IMaterialSpecularMicrofacetEnvironmentFunction Environment { get; set; } = new MaterialSpecularMicrofacetEnvironmentGGXLUT();
+
+        public override void GenerateShader(MaterialGeneratorContext context)
         {
             var shaderSource = new ShaderMixinSource();
             shaderSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceShadingSpecularMicrofacet"));
-            
+
+            GenerateShaderCompositions(context, shaderSource);
+
+            var shaderBuilder = context.AddShading(this);
+            shaderBuilder.LightDependentSurface = shaderSource;
+        }
+
+        protected virtual void GenerateShaderCompositions(MaterialGeneratorContext context, ShaderMixinSource shaderSource)
+        {
             if (Fresnel != null)
             {
-                shaderSource.AddComposition("fresnelFunction", Fresnel.Generate());
+                shaderSource.AddComposition("fresnelFunction", Fresnel.Generate(context));
             }
 
             if (Visibility != null)
             {
-                shaderSource.AddComposition("geometricShadowingFunction", Visibility.Generate());
+                shaderSource.AddComposition("geometricShadowingFunction", Visibility.Generate(context));
             }
 
             if (NormalDistribution != null)
             {
-                shaderSource.AddComposition("normalDistributionFunction", NormalDistribution.Generate());
+                shaderSource.AddComposition("normalDistributionFunction", NormalDistribution.Generate(context));
             }
 
-            context.AddShading(this, shaderSource);
+            if (Environment != null)
+            {
+                shaderSource.AddComposition("environmentFunction", Environment.Generate(context));
+            }
         }
 
         public bool Equals(IMaterialShadingModelFeature other)
         {
-            return Equals(other as MaterialSpecularMicrofacetModelFeature);
+            return Equals((object)other);
         }
 
         public bool Equals(MaterialSpecularMicrofacetModelFeature other)

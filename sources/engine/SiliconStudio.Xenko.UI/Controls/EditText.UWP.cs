@@ -157,6 +157,14 @@ namespace SiliconStudio.Xenko.UI.Controls
             editText.Select(selectionStart, selectionStop - selectionStart);
         }
 
+        private void OnTouchDownImpl(TouchEventArgs args)
+        {
+        }
+
+        private void OnTouchMoveImpl(TouchEventArgs args)
+        {
+        }
+
         internal GameBase GetGame()
         {
             if (UIElementServices.Services == null)

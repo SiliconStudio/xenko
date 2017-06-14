@@ -31,10 +31,6 @@ namespace SiliconStudio.BuildEngine
 
         [OperationContract]
         [UseXenkoDataContractSerializer]
-        Task<ResultStatus> SpawnCommand(Command command);
-
-        [OperationContract]
-        [UseXenkoDataContractSerializer]
         ObjectId ComputeInputHash(UrlType type, string filePath);
 
         [OperationContract]

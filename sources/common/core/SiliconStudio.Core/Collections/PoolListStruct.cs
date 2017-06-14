@@ -9,14 +9,12 @@ using SiliconStudio.Core.Annotations;
 namespace SiliconStudio.Core.Collections
 {
     /// <summary>
-    /// A pool of objects allocated and can be clear without loosing previously allocated instance.
+    /// A pool of objects allocated and can be cleared without loosing previously allocated instance.
     /// </summary>
     /// <typeparam name="T">Type of the pooled object</typeparam>
 
     public struct PoolListStruct<T> : IEnumerable<T> where T : class
     {
-        // TODO: Add method to return to the pool a specific instance/index
-
         /// <summary>
         /// The list of allocated objects.
         /// </summary>
@@ -86,6 +84,46 @@ namespace SiliconStudio.Core.Collections
             Count++;
 
             return result;
+        }
+
+        /// <summary>
+        /// Gets the index of <paramref name="item"/>
+        /// </summary>
+        /// <param name="item">The item to get the index of</param>
+        /// <returns>Index of the item, or -1 if the item is not in this list</returns>
+        public int IndexOf(T item)
+        {
+            return allocated.IndexOf(item);
+        }
+
+
+        public void RemoveAt(int index)
+        {
+            if (index < 0 || index >= Count)
+                throw new ArgumentOutOfRangeException(nameof(index));
+
+            Count--;
+            var oldItem = allocated[index];
+			
+			// This will shift all items after this item 1 to the left but without changing the capacity of the container
+            allocated.RemoveAt(index);
+			
+            // Place item at the end
+            allocated.Add(oldItem);
+        }
+
+        /// <summary>
+        /// Removes the object from the list
+        /// </summary>
+        /// <param name="item">The item to remove</param>
+        /// <remarks>The item is added back in the pool to be reused for the next <see cref="Add"/></remarks>
+        public void Remove(T item)
+        {
+            int removeIndex = IndexOf(item);
+            if (removeIndex == -1)
+                throw new InvalidOperationException();
+
+            RemoveAt(removeIndex);
         }
 
         /// <summary>

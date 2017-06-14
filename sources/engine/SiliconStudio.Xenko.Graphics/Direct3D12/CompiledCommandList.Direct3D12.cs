@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal CommandAllocator NativeCommandAllocator;
         internal List<DescriptorHeap> SrvHeaps;
         internal List<DescriptorHeap> SamplerHeaps;
-        internal List<Texture> StagingResources;
+        internal List<GraphicsResource> StagingResources;
     }
 }
 #endif

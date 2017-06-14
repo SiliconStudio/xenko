@@ -15,6 +15,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         compose IMaterialSpecularMicrofacetNormalDistributionFunction normalDistributionFunction;
 
+        compose IMaterialSpecularMicrofacetEnvironmentFunction environmentFunction;
+
         override float3 ComputeDirectLightContribution()
         {
             var specularColor = streams.matSpecularVisible;
@@ -34,7 +36,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             // TODO: Allow plugability of this function (pb is that it is a combination of fresnel, visibility and NDF)
             //return specularColor * streams.envLightSpecularColor;
-            return EnvironmentLightingDFG_GGX_Fresnel_SmithSchlickGGX(specularColor, streams.alphaRoughness, streams.NdotV) * streams.envLightSpecularColor;
+            return environmentFunction.Compute(specularColor, streams.alphaRoughness, streams.NdotV) * streams.envLightSpecularColor;
         }
     };
 }

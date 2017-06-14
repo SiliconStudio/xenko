@@ -34,9 +34,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             // TODO: This is not plug-n-play
             // Used by microfacet
             streams.H = normalize(streams.viewWS + streams.lightDirectionWS);
-            // Make sure that NdotL and NdotV != 0 as they are used as denominator in BRDF and causing NANs if not correctly clamped
-            streams.NdotH = max(dot(streams.normalWS, streams.H), 0.0001f);
-            streams.LdotH = max(dot(streams.lightDirectionWS, streams.H), 0.0001f);
+            streams.NdotH = saturate(dot(streams.normalWS, streams.H));
+            streams.LdotH = saturate(dot(streams.lightDirectionWS, streams.H));
             streams.VdotH = streams.LdotH;
         }
     };
