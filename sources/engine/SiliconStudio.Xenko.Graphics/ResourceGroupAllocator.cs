@@ -44,10 +44,12 @@ namespace SiliconStudio.Xenko.Graphics
             foreach (var descriptorPool in descriptorPools)
                 descriptorPool.Dispose();
             descriptorPools.Clear();
+            currentDescriptorPool = null;
 
             foreach (var bufferPool in bufferPools)
                 bufferPool.Dispose();
             bufferPools.Clear();
+            currentBufferPool = null;
 
             base.Destroy();
         }

@@ -36,7 +36,6 @@
     <Compile Include="Commands\InputOutputTestCommand.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Commands\SpawnAndAwaitCommand.cs" />
     <Compile Include="TestBuilder.cs" />
     <Compile Include="Commands\TestCommand.cs" />
     <Compile Include="TestCancellation.cs" />

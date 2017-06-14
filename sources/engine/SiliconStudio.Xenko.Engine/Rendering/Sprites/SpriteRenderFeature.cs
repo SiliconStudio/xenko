@@ -38,6 +38,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             {
                 context.Dispose();
             }
+            threadContext.Dispose();
         }
 
         public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
