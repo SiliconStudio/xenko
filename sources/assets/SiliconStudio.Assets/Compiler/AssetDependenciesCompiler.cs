@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -41,7 +41,8 @@ namespace SiliconStudio.Assets.Compiler
             foreach (var assetItem in assetItems)
             {
                 var visitedItems = new HashSet<BuildAssetNode>();
-                Prepare(addedBuildSteps, finalResult, context, assetItem, null, visitedItems);
+                var typesToInclude = new HashSet<KeyValuePair<Type, BuildDependencyType>>();
+                Prepare(addedBuildSteps, finalResult, context, assetItem, null, typesToInclude, visitedItems);
             }
             return finalResult;
         }
@@ -58,8 +59,9 @@ namespace SiliconStudio.Assets.Compiler
             var finalResult = new AssetCompilerResult();
             var addedBuildSteps = new Dictionary<AssetId, AssetCompilerResult>(); // a cache of build steps in order to link and reuse
             var filters = allowDependencyExclusion ? new HashSet<Type>() : null; //the types to filter out, this is incremental between prepares
+            var typesToInclude = new HashSet<KeyValuePair<Type, BuildDependencyType>>();
             var visitedItems = new HashSet<BuildAssetNode>();
-            Prepare(addedBuildSteps, finalResult, context, assetItem, filters, visitedItems);
+            Prepare(addedBuildSteps, finalResult, context, assetItem, filters, typesToInclude, visitedItems);
             return finalResult;
         }
 
@@ -81,7 +83,7 @@ namespace SiliconStudio.Assets.Compiler
             }
         }
 
-        private void Prepare(Dictionary<AssetId, AssetCompilerResult> resultsCache, AssetCompilerResult finalResult, AssetCompilerContext context, AssetItem assetItem, HashSet<Type> filterOutTypes, HashSet<BuildAssetNode> visitedItems, BuildStep parentBuildStep = null, 
+        private void Prepare(Dictionary<AssetId, AssetCompilerResult> resultsCache, AssetCompilerResult finalResult, AssetCompilerContext context, AssetItem assetItem, HashSet<Type> filterOutTypes, HashSet<KeyValuePair<Type, BuildDependencyType>> includeTypes, HashSet<BuildAssetNode> visitedItems, BuildStep parentBuildStep = null, 
             BuildDependencyType dependencyType = BuildDependencyType.Runtime)
         {
             var assetNode = BuildDependencyManager.FindOrCreateNode(assetItem, dependencyType);
@@ -91,7 +93,7 @@ namespace SiliconStudio.Assets.Compiler
 
             using (new OverflowPrevention(visitedItems, assetNode))
             {
-                assetNode.Analyze(context, filterOutTypes);
+                assetNode.Analyze(context, includeTypes, filterOutTypes);
 
                 //We want to avoid repeating steps, so we use the local cache to check if this compile command already has the step required first
                 AssetCompilerResult cachedResult;
@@ -120,12 +122,12 @@ namespace SiliconStudio.Assets.Compiler
                 }
 
                 //Go thru the dependencies of the node and prepare them as well
-                foreach (var dependencyNode in assetNode.DependencyNodes)
+                foreach (var dependencyNode in assetNode.References)
                 {
                     if ((dependencyNode.DependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent || //only if content is required Content.Load
                         (dependencyNode.DependencyType & BuildDependencyType.Runtime) == BuildDependencyType.Runtime) //or the asset is required anyway at runtime
                     {
-                        Prepare(resultsCache, finalResult, context, dependencyNode.AssetItem, filterOutTypes, visitedItems, cachedResult.BuildSteps, dependencyNode.DependencyType);
+                        Prepare(resultsCache, finalResult, context, dependencyNode.AssetItem, filterOutTypes, includeTypes, visitedItems, cachedResult.BuildSteps, dependencyNode.DependencyType);
                         if (finalResult.HasErrors)
                         {
                             return;
@@ -141,7 +143,7 @@ namespace SiliconStudio.Assets.Compiler
                         finalResult.BuildSteps.Add(cachedResult.BuildSteps);
 
                     //link
-                    if (parentBuildStep != null && ((dependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent)) //only if content is required Content.Load
+                    if (parentBuildStep != null && (dependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent) //only if content is required Content.Load
                         BuildStep.LinkBuildSteps(cachedResult.BuildSteps, parentBuildStep);
                 }
             }

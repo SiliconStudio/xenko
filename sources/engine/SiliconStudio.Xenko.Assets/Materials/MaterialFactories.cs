@@ -97,7 +97,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
                         MetalnessMap = new ComputeFloat(1.0f)
                     },
                     SpecularModel = new MaterialSpecularMicrofacetModelFeature()
-          }
+                }
             };
 
             return material;

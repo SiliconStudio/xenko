@@ -52,7 +52,6 @@
     <Compile Include="TimeInterval.cs" />
     <Compile Include="TransactionAssetIndexMap.cs" />
     <Compile Include="CommandIOMonitor.cs" />
-    <Compile Include="EnumerableBuildStep.cs" />
     <Compile Include="Builder.cs" />
     <Compile Include="BuilderContext.cs" />
     <Compile Include="BuildStep.cs" />
@@ -77,7 +76,6 @@
     <Compile Include="BuildStepEventArgs.cs" />
     <Compile Include="TagSymbol.cs" />
     <Compile Include="UseXenkoDataContractSerializerAttribute.cs" />
-    <Compile Include="WaitBuildStep.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
