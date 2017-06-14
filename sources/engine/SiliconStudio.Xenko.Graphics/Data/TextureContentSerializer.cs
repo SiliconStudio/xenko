@@ -152,14 +152,10 @@ namespace SiliconStudio.Xenko.Graphics.Data
                         if (!chunk.IsLoaded)
                             throw new ContentStreamingException("Data chunk is not loaded.", storage);
 
-                        unsafe
-                        {
-                            fixed (byte* p = data)
-                                dataBoxes[dataBoxIndex].DataPointer = (IntPtr)p + slicePitch * arrayIndex;
-                            dataBoxes[dataBoxIndex].RowPitch = rowPitch;
-                            dataBoxes[dataBoxIndex].SlicePitch = slicePitch;
-                            dataBoxIndex++;
-                        }
+                        dataBoxes[dataBoxIndex].DataPointer = data + slicePitch * arrayIndex;
+                        dataBoxes[dataBoxIndex].RowPitch = rowPitch;
+                        dataBoxes[dataBoxIndex].SlicePitch = slicePitch;
+                        dataBoxIndex++;
                     }
                 }
 
@@ -337,10 +333,9 @@ namespace SiliconStudio.Xenko.Graphics.Data
                                 var data = chunk.GetData(fileProvider);
                                 if (!chunk.IsLoaded)
                                     throw new ContentStreamingException("Data chunk is not loaded.", storage);
-
-                                fixed (byte* p = data)
-                                    Utilities.CopyMemory(bufferPtr, new IntPtr(p), data.Length);
-                                bufferPtr += data.Length;
+                                
+                                Utilities.CopyMemory(bufferPtr, data, chunk.Size);
+                                bufferPtr += chunk.Size;
                             }
                         }
                     }

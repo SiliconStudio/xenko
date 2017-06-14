@@ -159,6 +159,19 @@ namespace SiliconStudio.Xenko.Streaming
                 height = unchecked((int)(((uint)(height + 3)) & ~(uint)3));
             }
         }
+        private struct MipMapChunkInfo
+        {
+            public IntPtr Data;
+            public int RowPitch;
+            public int SlicePitch;
+
+            public MipMapChunkInfo(IntPtr data, int rowPitch, int slicePitch)
+            {
+                Data = data;
+                RowPitch = rowPitch;
+                SlicePitch = slicePitch;
+            }
+        }
 
         private void StreamingTask(int residency)
         {
@@ -192,13 +205,24 @@ namespace SiliconStudio.Xenko.Streaming
                 GetMipSize(isBlockCompressed, _desc.MipLevels - newDesc.MipLevels, out newDesc.Width, out newDesc.Height);
 
                 // Load chunks
-                var chunksData = new byte[newDesc.MipLevels][];
+                var mipInfos = new MipMapChunkInfo[newDesc.MipLevels];
                 for (int mipIndex = 0; mipIndex < newDesc.MipLevels; mipIndex++)
                 {
                     int totalMipIndex = newHighestResidentMipIndex + mipIndex;
                     var chunk = Storage.GetChunk(totalMipIndex);
                     if (chunk == null)
                         throw new ContentStreamingException("Data chunk is missing.", Storage);
+                    
+                    int mipWidth, mipHeight;
+                    GetMipSize(isBlockCompressed, totalMipIndex, out mipWidth, out mipHeight);
+
+                    int rowPitch, slicePitch;
+                    int widthPacked;
+                    int heightPacked;
+                    Image.ComputePitch(Format, mipWidth, mipHeight, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
+
+                    if (chunk.Size != slicePitch * newDesc.ArraySize)
+                        throw new ContentStreamingException("Data chunk has invalid size.", Storage);
 
                     var data = chunk.GetData(fileProvider);
                     if (!chunk.IsLoaded)
@@ -207,7 +231,7 @@ namespace SiliconStudio.Xenko.Streaming
                     if (_cancellationToken.IsCancellationRequested)
                         return;
 
-                    chunksData[mipIndex] = data;
+                    mipInfos[mipIndex] = new MipMapChunkInfo(data, rowPitch, slicePitch);
                 }
 
                 // Get data boxes
@@ -217,26 +241,12 @@ namespace SiliconStudio.Xenko.Streaming
                 {
                     for (int mipIndex = 0; mipIndex < newDesc.MipLevels; mipIndex++)
                     {
-                        int totalMipIndex = newHighestResidentMipIndex + mipIndex;
-                        int mipWidth, mipHeight;
-                        GetMipSize(isBlockCompressed, totalMipIndex, out mipWidth, out mipHeight);
+                        var info = mipInfos[mipIndex];
 
-                        int rowPitch, slicePitch;
-                        int widthPacked;
-                        int heightPacked;
-                        Image.ComputePitch(Format, mipWidth, mipHeight, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
-                        
-                        if (chunksData[mipIndex].Length != slicePitch * newDesc.ArraySize)
-                            throw new ContentStreamingException("Data chunk has invalid size.", Storage);
-
-                        unsafe
-                        {
-                            fixed (byte* p = chunksData[mipIndex])
-                                dataBoxes[dataBoxIndex].DataPointer = (IntPtr)p + slicePitch * arrayIndex;
-                            dataBoxes[dataBoxIndex].RowPitch = rowPitch;
-                            dataBoxes[dataBoxIndex].SlicePitch = slicePitch;
-                            dataBoxIndex++;
-                        }
+                        dataBoxes[dataBoxIndex].DataPointer = info.Data + info.SlicePitch * arrayIndex;
+                        dataBoxes[dataBoxIndex].RowPitch = info.RowPitch;
+                        dataBoxes[dataBoxIndex].SlicePitch = info.SlicePitch;
+                        dataBoxIndex++;
                     }
                 }
 

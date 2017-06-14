@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 
 using System;
+using System.IO;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Core.Streaming
@@ -11,8 +12,8 @@ namespace SiliconStudio.Core.Streaming
     /// </summary>
     public class ContentChunk
     {
-        private byte[] data;
-
+        private IntPtr data;
+        
         /// <summary>
         /// Gets the parent storage container.
         /// </summary>
@@ -36,12 +37,12 @@ namespace SiliconStudio.Core.Streaming
         /// <summary>
         /// Gets a value indicating whether this chunk is loaded.
         /// </summary>
-        public bool IsLoaded => data != null;
+        public bool IsLoaded => data != IntPtr.Zero;
 
         /// <summary>
         /// Gets a value indicating whether this chunk is not loaded.
         /// </summary>
-        public bool IsMissing => data == null;
+        public bool IsMissing => data == IntPtr.Zero;
 
         /// <summary>
         /// Gets a value indicating whether this exists in file.
@@ -67,7 +68,7 @@ namespace SiliconStudio.Core.Streaming
         /// Loads chunk data from the storage container.
         /// </summary>
         /// <param name="fileProvider">Database file provider.</param>
-        public byte[] GetData(DatabaseFileProvider fileProvider)
+        public unsafe IntPtr GetData(DatabaseFileProvider fileProvider)
         {
             if (IsLoaded)
                 return data;
@@ -78,9 +79,29 @@ namespace SiliconStudio.Core.Streaming
             using (var stream = fileProvider.OpenStream(Storage.Url, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read, StreamFlags.Seekable))
             {
                 stream.Position = Location;
-                var bytes = new byte[Size];
-                stream.Read(bytes, 0, Size);
-                data = bytes;
+
+                var chunkBytes = Utilities.AllocateMemory(Size);
+
+                const int bufferCapacity = 8192;
+                var buffer = new byte[bufferCapacity];
+
+                int count = Size;
+                fixed (byte* bufferFixed = buffer)
+                {
+                    var chunkBytesPtr = chunkBytes;
+                    var bufferPtr = new IntPtr(bufferFixed);
+                    do
+                    {
+                        int read = stream.Read(buffer, 0, Math.Min(count, bufferCapacity));
+                        if (read <= 0)
+                            break;
+                        Utilities.CopyMemory(chunkBytesPtr, bufferPtr, read);
+                        chunkBytesPtr += read;
+                        count -= read;
+                    } while (count > 0);
+                }
+
+                data = chunkBytes;
             }
 
             RegisterUsage();
@@ -90,7 +111,11 @@ namespace SiliconStudio.Core.Streaming
 
         internal void Unload()
         {
-            data = null;
+            if (data != IntPtr.Zero)
+            {
+                Utilities.FreeMemory(data);
+                data = IntPtr.Zero;
+            }
         }
     }
 }
