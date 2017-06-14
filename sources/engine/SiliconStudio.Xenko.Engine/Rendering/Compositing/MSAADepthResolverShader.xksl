@@ -38,13 +38,14 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             float resolvedDepth = InputTexture.Load(pixelPos, 0).r;
 
 #ifdef INPUT_MSAA_SAMPLES
+            
+            // Get the closest depth value
             for (int sampleIndex = 1; sampleIndex < INPUT_MSAA_SAMPLES; sampleIndex++)
             {
                 float sampleDepth = InputTexture.Load(pixelPos, sampleIndex).r;
-
-                // Note that max depth actually means closest depth, since 1/depth is stored. 
-                resolvedDepth = max(resolvedDepth, sampleDepth);
+                resolvedDepth = min(resolvedDepth, sampleDepth);
             }
+
 #endif
 
             streams.Depth = resolvedDepth;
