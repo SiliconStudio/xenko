@@ -138,8 +138,8 @@ namespace SiliconStudio.Xenko.Rendering
                 queryEvents.Dequeue();
 
                 // Profile
-                query.ProfilingState.Begin(queryResults[query.Index]);
-                query.ProfilingState.End(queryResults[query.Index + 1]);
+                /* query.ProfilingState.Begin(queryResults[query.Index]);
+                query.ProfilingState.End(queryResults[query.Index + 1]); */
             }
         }
 
