@@ -934,7 +934,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_IOS
             GL.Ext.QueryCounter(queryPool.NativeQueries[index], QueryCounterTarget.TimestampExt);
-#else
+#elif !SILICONSTUDIO_PLATFORM_IOS
             GL.QueryCounter(queryPool.NativeQueries[index], QueryCounterTarget.Timestamp);
 #endif
         }
