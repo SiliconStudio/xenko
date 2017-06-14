@@ -35,10 +35,10 @@ namespace SiliconStudio.Xenko.Graphics
 #else
                 GL.GetQueryObject(NativeQueries[index], GetQueryObjectParam.QueryResult, out dataArray[index]);
 #endif
-#endif
             }
 
             return true;
+#endif
         }
 
         /// <inheritdoc/>
