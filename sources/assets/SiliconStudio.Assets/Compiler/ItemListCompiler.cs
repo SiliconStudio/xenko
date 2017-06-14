@@ -134,7 +134,7 @@ namespace SiliconStudio.Assets.Compiler
             if (buildStep.TransformExecuteContextLogger == null)
                 buildStep.TransformExecuteContextLogger = (ref Logger logger) => logger = new AssetLogger(package, assetReference, assetFullPath, logger);
 
-            var enumerableBuildStep = buildStep as EnumerableBuildStep;
+            var enumerableBuildStep = buildStep as ListBuildStep;
             if (enumerableBuildStep != null && enumerableBuildStep.Steps != null)
             {
                 foreach (var child in enumerableBuildStep.Steps)

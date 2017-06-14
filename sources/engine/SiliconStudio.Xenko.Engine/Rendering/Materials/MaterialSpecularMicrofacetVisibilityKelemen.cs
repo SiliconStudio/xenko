@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     [Display("Kelemen")]
     public class MaterialSpecularMicrofacetVisibilityKelemen : IMaterialSpecularMicrofacetVisibilityFunction
     {
-        public ShaderSource Generate()
+        public ShaderSource Generate(MaterialGeneratorContext context)
         {
             return new ShaderClassSource("MaterialSpecularMicrofacetVisibilityKelemen");
         }

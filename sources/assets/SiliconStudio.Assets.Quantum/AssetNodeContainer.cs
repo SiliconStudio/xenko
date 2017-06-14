@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using SiliconStudio.Core;
@@ -38,16 +38,6 @@ namespace SiliconStudio.Assets.Quantum
             {
                 NodeBuilder.RegisterPrimitiveType(contentType);
             }
-        }
-
-        public new IAssetObjectNode GetOrCreateNode(object rootObject)
-        {
-            return (IAssetObjectNode)base.GetOrCreateNode(rootObject);
-        }
-
-        public new IAssetObjectNode GetNode(object rootObject)
-        {
-            return (IAssetObjectNode)base.GetNode(rootObject);
         }
     }
 }

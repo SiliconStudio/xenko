@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         protected bool HasAlreadyTessellationFeature;
 
-        public override void VisitFeature(MaterialGeneratorContext context)
+        public override void GenerateShader(MaterialGeneratorContext context)
         {
             // determine if an tessellation material have already been added in another layer
             HasAlreadyTessellationFeature = context.GetStreamFinalModifier<MaterialTessellationBaseFeature>(MaterialShaderStage.Domain) != null;
@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             if (AdjacentEdgeAverage && !context.Tags.Get(HasFinalCallback))
             {
                 context.Tags.Set(HasFinalCallback, true);
-                context.Material.TessellationMethod = XenkoTessellationMethod.AdjacentEdgeAverage;
+                context.MaterialPass.TessellationMethod = XenkoTessellationMethod.AdjacentEdgeAverage;
                 context.AddFinalCallback(MaterialShaderStage.Domain, AddAdjacentEdgeAverageMacros);
                 context.AddFinalCallback(MaterialShaderStage.Domain, AddAdjacentEdgeAverageShaders);
             }

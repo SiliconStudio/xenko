@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [DefaultValue(false)]
         public bool Invert { get; set; }
 
-        public override void VisitFeature(MaterialGeneratorContext context)
+        public override void GenerateShader(MaterialGeneratorContext context)
         {
             if (GlossinessMap != null)
             {

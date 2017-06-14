@@ -28,6 +28,14 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         [DefaultValue(true)]
         public bool IgnoreCameraRotation { get; set; } = true;
 
+        /// <summary>
+        /// Specifies if VR rendering should be copied to the current render target.
+        /// </summary>
+        /// <userdoc>If checked, VR rendering will be copied to the current render target. Can be unchecked to have different rendering on desktop than VR headset.</userdoc>
+        [DataMember(25)]
+        [DefaultValue(true)]
+        public bool CopyMirror { get; set; } = true;
+
         [DataMember(30)]
         public List<VRDeviceDescription> RequiredApis { get; } = new List<VRDeviceDescription>();
 
