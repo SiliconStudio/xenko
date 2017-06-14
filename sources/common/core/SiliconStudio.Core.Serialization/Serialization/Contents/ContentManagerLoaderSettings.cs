@@ -35,7 +35,7 @@ namespace SiliconStudio.Core.Serialization.Contents
         /// <value>
         /// The loader settings which doesn't support resources streaming.
         /// </value>
-        public static ContentManagerLoaderSettings DisableStreaming { get; } = new ContentManagerLoaderSettings { AllowContentStreaming = false };
+        public static ContentManagerLoaderSettings StreamingDisabled { get; } = new ContentManagerLoaderSettings { AllowContentStreaming = false };
 
         /// <summary>
         /// Gets or sets a value indicating whether <see cref="IReference"/> should be loaded.
