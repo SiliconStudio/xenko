@@ -154,8 +154,18 @@
     <Compile Include="Rendering\Compositing\GraphicsCompositor.cs" />
     <Compile Include="Rendering\Compositing\GraphicsCompositorHelper.cs" />
     <Compile Include="Rendering\Compositing\IRenderTargetSemantic.cs" />
+    <Compile Include="Rendering\Compositing\MSAADepthResolverShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MSAADepthResolverShader.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Compositing\MSAAResolver.cs" />
     <None Include="packages.config" />
+    <None Include="Rendering\Compositing\MSAADepthResolverShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MSAADepthResolverShader.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Compositing\MSAAResolverEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MSAAResolverEffect.cs</LastGenOutput>

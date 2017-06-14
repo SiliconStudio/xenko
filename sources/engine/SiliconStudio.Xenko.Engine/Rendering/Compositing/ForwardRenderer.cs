@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
@@ -33,11 +33,12 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         private VRDeviceSystem vrSystem;
 
         private readonly FastList<Texture> currentRenderTargets = new FastList<Texture>();
-        private readonly FastList<Texture> currentRenderTargetsMSAA = new FastList<Texture>();
-
+        private readonly FastList<Texture> currentRenderTargetsNonMSAA = new FastList<Texture>();
+        private Texture currentDepthStencil;
+        private Texture currentDepthStencilNonMSAA;
+        
         protected Texture ViewOutputTarget;
         protected Texture ViewDepthStencil;
-        protected Texture ViewDepthStencilNoMSAA;
 
         protected int ViewCount { get; private set; }
 
@@ -411,26 +412,12 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
             return result;
         }
-
-        protected virtual void ResolveDepthMSAA(RenderDrawContext drawContext)
-        {
-            if (ViewDepthStencil.MultisampleCount == MultisampleCount.None)
-            {
-                ViewDepthStencilNoMSAA = ViewDepthStencil;
-                return;
-            }
-
-            ViewDepthStencilNoMSAA = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(
-                ViewDepthStencil.ViewWidth, ViewDepthStencil.ViewHeight, 1, ComputeNonMSAADepthFormat(ViewDepthStencil.Format), TextureFlags.RenderTarget | TextureFlags.ShaderResource)));
-
-            ResolveMSAA(drawContext, ViewDepthStencil, ViewDepthStencilNoMSAA, 1);
-        }
-
-        protected virtual void ResolveMSAA(RenderDrawContext drawContext, Texture input, Texture output, int maxResolveSamples = (int)MultisampleCount.X8)
+        
+        protected virtual void ResolveMSAA(RenderDrawContext drawContext, Texture input, Texture output)
         {
             if (MSAAResolver != null && MSAAResolver.Enabled)
             {
-                MSAAResolver.Resolve(drawContext, input, output, maxResolveSamples);
+                MSAAResolver.Resolve(drawContext, input, output);
             }
             else
             {
@@ -438,10 +425,14 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             }
         }
 
-        protected virtual void ResolveMSAA(RenderDrawContext drawContext)
+        /// <summary>
+        /// Resolves the MSAA textures. Converts MSAA currentRenderTargets and currentDepthStencil into currentRenderTargetsNonMSAA and currentDepthStencilNonMSAA.
+        /// </summary>
+        /// <param name="drawContext">The draw context.</param>
+        private void ResolveMSAA(RenderDrawContext drawContext)
         {
-            currentRenderTargetsMSAA.Resize(currentRenderTargets.Count, false);
-
+            // Resolve render targets
+            currentRenderTargetsNonMSAA.Resize(currentRenderTargets.Count, false);
             for (int index = 0; index < currentRenderTargets.Count; index++)
             {
                 var input = currentRenderTargets[index];
@@ -449,9 +440,13 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 var outputDescription = TextureDescription.New2D(input.ViewWidth, input.ViewHeight, 1, input.Format, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
                 var output = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(outputDescription));
 
-                currentRenderTargetsMSAA[index] = output;
+                currentRenderTargetsNonMSAA[index] = output;
                 ResolveMSAA(drawContext, input, output);
             }
+
+            // Resolve depth buffer
+            currentDepthStencilNonMSAA = ViewDepthStencil;
+            ResolveMSAA(drawContext, currentDepthStencil, currentDepthStencilNonMSAA);
         }
 
         protected virtual void DrawView(RenderContext context, RenderDrawContext drawContext)
@@ -501,10 +496,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     {
                         depthStencilSRV = ResolveDepthAsSRV(drawContext);
 
-                        // Override depth stencil buffer if it doesn't support SRV
-                        if (depthStencilSRV != null)
-                            ViewDepthStencil = depthStencilSRV;
-
                         renderSystem.Draw(drawContext, context.RenderView, TransparentRenderStage);
                     }
                 }
@@ -512,38 +503,32 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 var colorTargetIndex = OpaqueRenderStage?.OutputValidator.Find(typeof(ColorTargetSemantic)) ?? -1;
                 if (colorTargetIndex == -1)
                     return;
+                
+                // Resolve MSAA targets
+                var renderTargets = currentRenderTargets;
+                var depthStencil = currentDepthStencil;
+                if (actualMultisampleCount != MultisampleCount.None)
+                {
+                    using (drawContext.QueryManager.BeginProfile(Color.Green, CompositingProfilingKeys.MsaaResolve))
+                    {
+                        ResolveMSAA(drawContext);
+                    }
+
+                    renderTargets = currentRenderTargetsNonMSAA;
+                    depthStencil = currentDepthStencilNonMSAA;
+                }
+
+                // Shafts if we have them
+                if (LightShafts != null)
+                {
+                    using (drawContext.QueryManager.BeginProfile(Color.Green, CompositingProfilingKeys.LightShafts))
+                    {
+                        LightShafts.Draw(drawContext, depthStencil, renderTargets[colorTargetIndex]);
+                    }
+                }
 
                 if (PostEffects != null)
                 {
-                    //Make sure we run post effects without MSAA
-                    var renderTargets = currentRenderTargets;
-                    var depthStencil = ViewDepthStencil;
-
-                    // Resolve MSAA targets
-                    if (actualMultisampleCount != MultisampleCount.None)
-                    {
-                        using (drawContext.QueryManager.BeginProfile(Color.Green, CompositingProfilingKeys.MsaaResolve))
-                        {
-                            // If lightprobes (which need Z-Prepass) are enabled, depth is already resolved
-                            //if (!lightProbes)
-                            // TODO: is that comment above true? i don't know lightprobes rendering stuff but if it does it should override ResolveDepthMSAA? maybe some redesign...
-                            renderTargets = currentRenderTargetsMSAA;
-                            ResolveDepthMSAA(drawContext);
-                            ResolveMSAA(drawContext);
-
-                            depthStencil = ViewDepthStencilNoMSAA;
-                        }
-                    }
-
-                    // Shafts if we have them
-                    if (LightShafts != null)
-                    {
-                        using (drawContext.QueryManager.BeginProfile(Color.Green, CompositingProfilingKeys.LightShafts))
-                        {
-                            LightShafts.Draw(drawContext, depthStencil, renderTargets[colorTargetIndex]);
-                        }
-                    }
-
                     // Run post effects
                     // Note: OpaqueRenderStage can't be null otherwise colorTargetIndex would be -1
                     PostEffects.Draw(drawContext, OpaqueRenderStage.OutputValidator, renderTargets.Items, depthStencil, ViewOutputTarget);
@@ -554,8 +539,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     {
                         using (drawContext.QueryManager.BeginProfile(Color.Green, CompositingProfilingKeys.MsaaResolve))
                         {
-                            ResolveMSAA(drawContext);
-                            drawContext.CommandList.Copy(currentRenderTargetsMSAA[colorTargetIndex], ViewOutputTarget);
+                            drawContext.CommandList.Copy(renderTargets[colorTargetIndex], ViewOutputTarget);
                         }
                     }
                 }
@@ -602,7 +586,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         using (drawContext.PushRenderTargetsAndRestore())
                         {
                             drawContext.CommandList.SetViewport(new Viewport(0.0f, 0.0f, VRSettings.VRDevice.ActualRenderFrameSize.Width / 2.0f, VRSettings.VRDevice.ActualRenderFrameSize.Height));
-                            drawContext.CommandList.SetRenderTargets(ViewDepthStencil, currentRenderTargets.Count, currentRenderTargets.Items);
+                            drawContext.CommandList.SetRenderTargets(currentDepthStencil, currentRenderTargets.Count, currentRenderTargets.Items);
 
                             ViewCount = 2;
 
@@ -659,7 +643,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
                     using (drawContext.PushRenderTargetsAndRestore())
                     {
-                        drawContext.CommandList.SetRenderTargets(ViewDepthStencil, currentRenderTargets.Count, currentRenderTargets.Items);
+                        drawContext.CommandList.SetRenderTargets(currentDepthStencil, currentRenderTargets.Count, currentRenderTargets.Items);
 
                         // Clear render target and depth stencil
                         Clear?.Draw(drawContext);
@@ -669,8 +653,11 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 }
             }
 
+            // Clear intermediate results
             currentRenderTargets.Clear();
-            currentRenderTargetsMSAA.Clear();
+            currentRenderTargetsNonMSAA.Clear();
+            currentDepthStencil = null;
+            currentDepthStencilNonMSAA = null;
         }
 
         private Texture ResolveDepthAsSRV(RenderDrawContext context)
@@ -713,7 +700,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             return depthStencilSRV;
         }
 
-        private void PrepareRenderTargets(RenderDrawContext drawContext, Texture currentRenderTarget)
+        private void PrepareRenderTargets(RenderDrawContext drawContext, Texture outputRenderTarget, Texture outputDepthStencil)
         {
             if (OpaqueRenderStage == null)
                 return;
@@ -726,17 +713,30 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             {
                 if (renderTargets[index].Semantic is ColorTargetSemantic && PostEffects == null && actualMultisampleCount == MultisampleCount.None)
                 {
-                    currentRenderTargets[index] = currentRenderTarget;
+                    currentRenderTargets[index] = outputRenderTarget;
                 }
                 else
                 { 
                     var description = renderTargets[index];
-                    var textureDescription = TextureDescription.New2D(currentRenderTarget.Width, currentRenderTarget.Height, 1, description.Format, TextureFlags.RenderTarget | TextureFlags.ShaderResource, 1, GraphicsResourceUsage.Default, actualMultisampleCount);
+                    var textureDescription = TextureDescription.New2D(outputRenderTarget.Width, outputRenderTarget.Height, 1, description.Format, TextureFlags.RenderTarget | TextureFlags.ShaderResource, 1, GraphicsResourceUsage.Default, actualMultisampleCount);
                     currentRenderTargets[index] = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(textureDescription));
                 }
 
                 drawContext.CommandList.ResourceBarrierTransition(currentRenderTargets[index], GraphicsResourceState.RenderTarget);
             }
+
+            // Prepare depth buffer
+            if (actualMultisampleCount == MultisampleCount.None)
+            {
+                currentDepthStencil = outputDepthStencil;
+            }
+            else
+            {
+                var description = outputDepthStencil.Description;
+                var textureDescription = TextureDescription.New2D(description.Width, description.Height, 1, description.Format, TextureFlags.DepthStencil | TextureFlags.ShaderResource, 1, GraphicsResourceUsage.Default, actualMultisampleCount);
+                currentDepthStencil = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(textureDescription));
+            }
+            drawContext.CommandList.ResourceBarrierTransition(currentDepthStencil, GraphicsResourceState.DepthWrite);
         }
 
         /// <summary>
@@ -746,43 +746,28 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         /// <param name="renderTargetsSize"></param>
         protected virtual void PrepareRenderTargets(RenderDrawContext drawContext, Size2 renderTargetsSize)
         {
-            var currentRenderTarget = drawContext.CommandList.RenderTarget;
+            ViewOutputTarget = drawContext.CommandList.RenderTarget;
             if (drawContext.CommandList.RenderTargetCount == 0)
-                currentRenderTarget = null;
+                ViewOutputTarget = null;
+            ViewDepthStencil = drawContext.CommandList.DepthStencilBuffer;
 
-            var currentDepthStencil = drawContext.CommandList.DepthStencilBuffer;
-
-            // Make sure we got a valid NOT MSAA final OUTPUT Target
-            if (currentRenderTarget == null)
+            // Create output if needed
+            if (ViewOutputTarget == null || ViewOutputTarget.MultisampleCount != MultisampleCount.None)
             {
-                currentRenderTarget = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(
+                ViewOutputTarget = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(
                     TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, PixelFormat.R8G8B8A8_UNorm_SRgb,
                         TextureFlags.ShaderResource | TextureFlags.RenderTarget)));
             }
 
-            PrepareRenderTargets(drawContext, currentRenderTarget);
-
-            //MSAA, we definitely need new buffers
-            if (actualMultisampleCount != MultisampleCount.None)
+            // Create depth if needed
+            if (ViewDepthStencil == null || ViewDepthStencil.MultisampleCount != MultisampleCount.None)
             {
-                //Handle Depth
                 ViewDepthStencil = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(
-                    TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, currentDepthStencil?.ViewFormat ?? PixelFormat.D24_UNorm_S8_UInt,
-                        TextureFlags.ShaderResource | TextureFlags.DepthStencil, 1, GraphicsResourceUsage.Default, actualMultisampleCount)));
+                    TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, DepthBufferFormat,
+                        TextureFlags.ShaderResource | TextureFlags.DepthStencil)));
             }
-            else
-            {
-                //Handle Depth
-                if (currentDepthStencil == null)
-                {
-                    currentDepthStencil = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(
-                        TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, PixelFormat.D24_UNorm_S8_UInt,
-                            TextureFlags.ShaderResource | TextureFlags.DepthStencil)));
-                }
-                ViewDepthStencil = currentDepthStencil;
-            }
-
-            ViewOutputTarget = currentRenderTarget;
+            
+            PrepareRenderTargets(drawContext, ViewOutputTarget, ViewDepthStencil);
         }
 
         protected override void Destroy()
