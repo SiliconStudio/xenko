@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Graphics
             {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_IOS
                 GL.Ext.GetQueryObject(NativeQueries[index], GetQueryObjectParam.QueryResultAvailable, out long availability);
-#else
+#elif !SILICONSTUDIO_PLATFORM_IOS
                 GL.GetQueryObject(NativeQueries[index], GetQueryObjectParam.QueryResultAvailable, out long availability);
 #endif
                 if (availability == 0)
@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Graphics
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_IOS
                 GL.Ext.GetQueryObject(NativeQueries[index], GetQueryObjectParam.QueryResult, out dataArray[index]);
-#else
+#elif !SILICONSTUDIO_PLATFORM_IOS
                 GL.GetQueryObject(NativeQueries[index], GetQueryObjectParam.QueryResult, out dataArray[index]);
 #endif
             }
