@@ -58,8 +58,8 @@ namespace SiliconStudio.Xenko.Graphics
             nativeDevice.CheckThreadingSupport(out HasMultiThreadingConcurrentResources, out this.HasDriverCommandLists);
 
             HasDepthAsSRV = (CurrentProfile >= GraphicsProfile.Level_10_0);
-            HasDepthAsReadOnlyRT = Texture.IsDepthStencilReadOnlySupported(deviceRoot);
-            HasMultisampleDepthAsSRV = (CurrentProfile > GraphicsProfile.Level_10_0);
+            HasDepthAsReadOnlyRT = CurrentProfile >= GraphicsProfile.Level_11_0;
+            HasMultisampleDepthAsSRV = CurrentProfile >= GraphicsProfile.Level_11_0;
 
             // Check features for each DXGI.Format
             foreach (var format in Enum.GetValues(typeof(SharpDX.DXGI.Format)))
