@@ -18,7 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 {
     [DataContract]public partial class MSAAResolverParams : ShaderMixinParameters
     {
-        public static readonly PermutationParameterKey<int> InputQuality = ParameterKeys.NewPermutation<int>();
         public static readonly PermutationParameterKey<int> MSAASamples = ParameterKeys.NewPermutation<int>();
         public static readonly PermutationParameterKey<int> ResolveFilterType = ParameterKeys.NewPermutation<int>();
         public static readonly PermutationParameterKey<float> ResolveFilterDiameter = ParameterKeys.NewPermutation<float>();
@@ -29,7 +28,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         {
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                mixin.AddMacro("INPUT_MSAA_SAMPLES", context.GetParam(MSAAResolverParams.InputQuality));
+                mixin.AddMacro("INPUT_MSAA_SAMPLES", context.GetParam(MSAAResolverParams.MSAASamples));
                 context.Mixin(mixin, "MSAAResolverShader", context.GetParam(MSAAResolverParams.MSAASamples), context.GetParam(MSAAResolverParams.ResolveFilterType), context.GetParam(MSAAResolverParams.ResolveFilterDiameter));
             }
 
@@ -38,6 +37,24 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
             {
                 ShaderMixinManager.Register("MSAAResolverEffect", new MSAAResolverEffect());
+            }
+        }
+    }
+    internal static partial class ShaderMixins
+    {
+        internal partial class MSAADepthResolverEffect  : IShaderMixinBuilder
+        {
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
+            {
+                mixin.AddMacro("INPUT_MSAA_SAMPLES", context.GetParam(MSAAResolverParams.MSAASamples));
+                context.Mixin(mixin, "MSAADepthResolverShader");
+            }
+
+            [ModuleInitializer]
+            internal static void __Initialize__()
+
+            {
+                ShaderMixinManager.Register("MSAADepthResolverEffect", new MSAADepthResolverEffect());
             }
         }
     }
