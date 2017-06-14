@@ -932,7 +932,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="index">The query index.</param>
         public void WriteTimestamp(QueryPool queryPool, int index)
         {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_IOS
             GL.Ext.QueryCounter(queryPool.NativeQueries[index], QueryCounterTarget.TimestampExt);
 #else
             GL.QueryCounter(queryPool.NativeQueries[index], QueryCounterTarget.Timestamp);

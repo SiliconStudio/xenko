@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using SharpDX.Direct3D11;
 using SharpDX;
-using SharpDX.DXGI;
 
 namespace SiliconStudio.Xenko.Graphics
 {
