@@ -83,7 +83,7 @@ namespace SiliconStudio.Xenko.VirtualReality
             OpenVR.GetEyeToHead(eye == Eyes.Left ? 0 : 1, out eyeMat);
             OpenVR.GetProjection(eye == Eyes.Left ? 0 : 1, near, far, out projection);
 
-            eyeMat = eyeMat * currentHead * Matrix.Scaling(ViewScaling) * Matrix.Translation(cameraPosition) * cameraRotation;
+            eyeMat = eyeMat * currentHead * Matrix.Scaling(ViewScaling) * cameraRotation * Matrix.Translation(cameraPosition);
             eyeMat.Decompose(out scale, out rot, out pos);
             var finalUp = Vector3.TransformCoordinate(new Vector3(0, 1, 0), rot);
             var finalForward = Vector3.TransformCoordinate(new Vector3(0, 0, -1), rot);

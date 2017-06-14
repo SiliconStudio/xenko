@@ -49,13 +49,6 @@ namespace SiliconStudio.BuildEngine
                 commandContext.Logger.Log(new LogMessage(message.Module, message.Type, message.ExceptionInfo.ToString()));
         }
 
-        public async Task<ResultStatus> SpawnCommand(Command command)
-        {
-            Task<ResultStatus> task = commandContext.ScheduleAndExecuteCommand(command);
-            commandContext.Step.AwaitSpawnedCommand(task);
-            return await task;
-        }
-
         public ObjectId ComputeInputHash(UrlType type, string filePath)
         {
             return commandContext.ComputeInputHash(type, filePath);

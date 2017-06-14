@@ -3,7 +3,7 @@
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 using System;
-
+using SharpDX;
 using SharpDX.DXGI;
 
 using SiliconStudio.Core;
@@ -224,6 +224,8 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             nativeDeviceContext = nativeDevice.ImmediateContext;
+            // We keep one reference so that it doesn't disappear with InternalMainCommandList
+            ((IUnknown)nativeDeviceContext).AddReference();
             if (IsDebugMode)
             {
                 GraphicsResourceBase.SetDebugName(this, nativeDeviceContext, "ImmediateContext");

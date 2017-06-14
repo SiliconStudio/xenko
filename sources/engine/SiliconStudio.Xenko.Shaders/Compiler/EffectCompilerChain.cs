@@ -33,6 +33,13 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             set { compiler.FileProvider = value; }
         }
 
+        protected override void Destroy()
+        {
+            compiler.Dispose();
+
+            base.Destroy();
+        }
+
         public override ObjectId GetShaderSourceHash(string type)
         {
             return compiler.GetShaderSourceHash(type);

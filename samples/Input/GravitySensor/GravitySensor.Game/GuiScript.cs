@@ -17,7 +17,7 @@ namespace GravitySensor
 
         public override async Task Execute()
         {
-            if (Input.Gravity.IsSupported) // do not display any message when orientation sensor is available
+            if (Input.Gravity != null) // do not display any message when orientation sensor is available
                 return;
 
             if (IsLiveReloading)

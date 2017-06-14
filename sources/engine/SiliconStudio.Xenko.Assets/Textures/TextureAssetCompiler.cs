@@ -63,7 +63,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
             private IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
-                // TODO dependency not working
                 yield return new ObjectUrl(UrlType.File, Parameters.SourcePathFromDisk);
             }
 

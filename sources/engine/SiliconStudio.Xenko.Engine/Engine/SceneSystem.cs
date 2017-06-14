@@ -135,6 +135,12 @@ namespace SiliconStudio.Xenko.Engine
                 SceneInstance = null;
             }
 
+            if (GraphicsCompositor != null)
+            {
+                GraphicsCompositor.Dispose();
+                GraphicsCompositor = null;
+            }
+
             base.Destroy();
         }
 

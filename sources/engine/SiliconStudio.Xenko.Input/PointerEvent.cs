@@ -1,5 +1,6 @@
 // Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
+
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Mathematics;
@@ -9,44 +10,8 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// A pointer event.
     /// </summary>
-    public class PointerEvent : EventArgs
+    public class PointerEvent : InputEvent
     {
-        public readonly static Queue<PointerEvent> Pool = new Queue<PointerEvent>();
-
-        public static PointerEvent GetOrCreatePointerEvent()
-        {
-            lock (Pool)
-                return Pool.Count > 0 ? Pool.Dequeue() : new PointerEvent();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PointerEvent" /> class.
-        /// </summary>
-        public PointerEvent()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PointerEvent" /> class.
-        /// </summary>
-        /// <param name="pointerId">The pointer id.</param>
-        /// <param name="position">The position.</param>
-        /// <param name="deltaPosition">The delta position.</param>
-        /// <param name="deltaTime">The delta time.</param>
-        /// <param name="state">The state.</param>
-        /// <param name="pointerType">Type of the pointer.</param>
-        /// <param name="isPrimary">if set to <c>true</c> [is primary].</param>
-        internal PointerEvent(int pointerId, Vector2 position, Vector2 deltaPosition, TimeSpan deltaTime, PointerState state, PointerType pointerType, bool isPrimary)
-        {
-            PointerId = pointerId;
-            Position = position;
-            DeltaPosition = deltaPosition;
-            DeltaTime = deltaTime;
-            State = state;
-            PointerType = pointerType;
-            IsPrimary = isPrimary;
-        }
-
         /// <summary>
         /// Gets a unique identifier of the pointer. See remarks.
         /// </summary>
@@ -57,14 +22,26 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Gets the absolute screen position of the pointer.
         /// </summary>
+        /// <value>The absolute delta position.</value>
+        public Vector2 AbsolutePosition => Position * Pointer.SurfaceSize;
+
+        /// <summary>
+        /// Gets the normalized screen position of the pointer.
+        /// </summary>
         /// <value>The position.</value>
         public Vector2 Position { get; internal set; }
+
+        /// <summary>
+        /// Gets the absolute delta position of the pointer since the previous frame.
+        /// </summary>
+        /// <value>The absolute delta position.</value>
+        public Vector2 AbsoluteDeltaPosition => DeltaPosition * Pointer.SurfaceSize;
 
         /// <summary>
         /// Gets the delta position of the pointer since the previous frame.
         /// </summary>
         /// <value>The delta position.</value>
-        public Vector2 DeltaPosition { get; set; }
+        public Vector2 DeltaPosition { get; internal set; }
 
         /// <summary>
         /// Gets the amount of time since the previous state.
@@ -73,45 +50,42 @@ namespace SiliconStudio.Xenko.Input
         public TimeSpan DeltaTime { get; internal set; }
 
         /// <summary>
-        /// Gets the state of this pointer event (down, up, move... etc.)
+        /// Gets the type of pointer event (pressed,released,etc.)
         /// </summary>
         /// <value>The state.</value>
-        public PointerState State { get; internal set; }
+        public PointerEventType EventType { get; internal set; }
 
         /// <summary>
-        /// Gets the type of the pointer.
+        /// Gets if the pointer is down, useful for filtering out move events that are not placed between drags
         /// </summary>
-        /// <value>The type of the pointer.</value>
-        public PointerType PointerType { get; internal set; }
+        public bool IsDown { get; internal set; }
 
         /// <summary>
-        /// Gets a boolean indicating whether this is the default primary pointer.
+        /// The pointer that sent this event
         /// </summary>
-        /// <value><c>true</c> if this instance is primary; otherwise, <c>false</c>.</value>
-        public bool IsPrimary { get; internal set; }
-
-        /// <summary>
-        /// Clones this instance.
-        /// </summary>
-        /// <returns>PointerEvent.</returns>
-        public PointerEvent Clone()
-        {
-            var clone = GetOrCreatePointerEvent();
-
-            clone.PointerId = PointerId;
-            clone.Position = Position;
-            clone.DeltaPosition = DeltaPosition;
-            clone.DeltaTime = DeltaTime;
-            clone.State = State;
-            clone.PointerType = PointerType;
-            clone.IsPrimary = IsPrimary;
-
-            return clone;
-        }
+        public IPointerDevice Pointer => (IPointerDevice)Device;
 
         public override string ToString()
         {
-            return string.Format("PointerId: {0}, Position: {1:0.00}, DeltaPosition: {2:0.00}, DeltaTime: {3:0.000}, State: {4}, PointerType: {5}, IsPrimary: {6}", PointerId, Position, DeltaPosition, DeltaTime.TotalSeconds, State, PointerType, IsPrimary);
+            return $"Pointer {PointerId} {EventType}, {AbsolutePosition}, Delta: {AbsoluteDeltaPosition}, DT: {DeltaTime}, {nameof(IsDown)}: {IsDown}, {nameof(Pointer)}: {Pointer.Name}";
+        }
+
+        /// <summary>
+        /// Clones the pointer event, this is useful if you intend to use it after this frame, since otherwise it would be recycled by the input manager the next frame
+        /// </summary>
+        /// <returns>The cloned event</returns>
+        public PointerEvent Clone()
+        {
+            return new PointerEvent
+            {
+                Device = Device,
+                PointerId = PointerId,
+                Position = Position,
+                DeltaPosition = DeltaPosition,
+                DeltaTime = DeltaTime,
+                EventType = EventType,
+                IsDown = IsDown
+            };
         }
     }
 }

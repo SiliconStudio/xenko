@@ -1,5 +1,6 @@
 // Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
+
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_UNIX
 
 namespace SiliconStudio.Xenko.UI.Controls
@@ -28,15 +29,6 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         private void OnMinLinesChangedImpl()
         {
-        }
-
-        private void ActivateEditTextImpl()
-        {
-        }
-
-        private void DeactivateEditTextImpl()
-        {
-            FocusedElement = null;
         }
 
         private void UpdateTextToEditImpl()

@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Engine.Network;
@@ -13,15 +14,27 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
     /// Used internally by <see cref="RemoteEffectCompiler"/> to compile shaders remotely,
     /// and <see cref="Rendering.EffectSystem.CreateEffectCompiler"/> to record effect requested.
     /// </summary>
-    class RemoteEffectCompilerClient
+    class RemoteEffectCompilerClient : IDisposable
     {
         private readonly object lockObject = new object();
         private readonly Guid? packageId;
         private Task<SocketMessageLayer> socketMessageLayerTask;
+        private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
         public RemoteEffectCompilerClient(Guid? packageId)
         {
             this.packageId = packageId;
+        }
+
+        public void Dispose()
+        {
+            // Notify cancellation
+            cancellationTokenSource.Cancel();
+            if (socketMessageLayerTask != null && socketMessageLayerTask.Status == TaskStatus.RanToCompletion)
+            {
+                socketMessageLayerTask.Result.Context.Dispose();
+                socketMessageLayerTask = null;
+            }
         }
 
         public void NotifyEffectUsed(EffectCompileRequest effectCompileRequest, CompilerResults result)
@@ -32,7 +45,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             Task.Run(async () =>
             {
                 // Silently fails if connection already failed previously
-                var socketMessageLayerTask = GetOrCreateConnection();
+                var socketMessageLayerTask = GetOrCreateConnection(cancellationTokenSource.Token);
                 if (socketMessageLayerTask.IsFaulted)
                     return;
 
@@ -56,13 +69,13 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             });
         }
 
-        public async Task<SocketMessageLayer> Connect(Guid? packageId)
+        public async Task<SocketMessageLayer> Connect(Guid? packageId, CancellationToken cancellationToken)
         {
             var url = string.Format("/service/{0}/SiliconStudio.Xenko.EffectCompilerServer.exe", XenkoVersion.NuGetVersion);
             if (packageId.HasValue)
                 url += string.Format("?packageid={0}", packageId.Value);
 
-            var socketContext = await RouterClient.RequestServer(url);
+            var socketContext = await RouterClient.RequestServer(url, cancellationToken);
 
             var socketMessageLayer = new SocketMessageLayer(socketContext, false);
 
@@ -78,7 +91,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
         {
             // Make sure we are connected
             // TODO: Handle reconnections, etc...
-            var socketMessageLayer = await GetOrCreateConnection();
+            var socketMessageLayer = await GetOrCreateConnection(cancellationTokenSource.Token);
 
             var shaderCompilerAnswer = (RemoteEffectCompilerEffectAnswer)await socketMessageLayer.SendReceiveAsync(new RemoteEffectCompilerEffectRequest
             {
@@ -96,13 +109,13 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             return result;
         }
 
-        private async Task<SocketMessageLayer> GetOrCreateConnection()
+        private async Task<SocketMessageLayer> GetOrCreateConnection(CancellationToken cancellationToken)
         {
             // Lazily connect
             lock (lockObject)
             {
                 if (socketMessageLayerTask == null)
-                    socketMessageLayerTask = Task.Run(() => Connect(packageId));
+                    socketMessageLayerTask = Task.Run(() => Connect(packageId, cancellationToken));
             }
 
             return await socketMessageLayerTask;
