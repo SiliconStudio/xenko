@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
@@ -21,7 +22,7 @@ namespace SiliconStudio.Core.Settings
     public class SettingsContainer
     {
         internal static readonly object SettingsLock = new object();
-        
+
         /// <summary>
         /// A dictionary containing every existing <see cref="SettingsKey"/>.
         /// </summary>
@@ -77,6 +78,7 @@ namespace SiliconStudio.Core.Settings
         /// Gets a list of all registered <see cref="SettingsKey"/> instances.
         /// </summary>
         /// <returns>A list of all registered <see cref="SettingsKey"/> instances.</returns>
+        [NotNull]
         public List<SettingsKey> GetAllSettingsKeys()
         {
             return settingsKeys.Values.ToList();
@@ -93,6 +95,7 @@ namespace SiliconStudio.Core.Settings
         /// If the profile is not registered to the container, it won't be able to receive <see cref="SettingsKey"/> that are registered after its
         /// creation. If the profile is registered to the container, <see cref="UnloadSettingsProfile"/> must be call in order to unregister it.
         /// </remarks>
+        [NotNull]
         public SettingsProfile CreateSettingsProfile(bool setAsCurrent, SettingsProfile parent = null, bool registerInContainer = true)
         {
             if (setAsCurrent && !registerInContainer) throw new ArgumentException(@"Cannot set the profile as current if it's not registered to the container", nameof(setAsCurrent));
@@ -123,7 +126,8 @@ namespace SiliconStudio.Core.Settings
         /// If the profile is not registered to the container, it won't be able to receive <see cref="SettingsKey"/> that are registered after its
         /// creation. If the profile is registered to the container, <see cref="UnloadSettingsProfile"/> must be call in order to unregister it.
         /// </remarks>
-        public SettingsProfile LoadSettingsProfile(UFile filePath, bool setAsCurrent, SettingsProfile parent = null, bool registerInContainer = true)
+        [CanBeNull]
+        public SettingsProfile LoadSettingsProfile([NotNull] UFile filePath, bool setAsCurrent, SettingsProfile parent = null, bool registerInContainer = true)
         {
             if (filePath == null) throw new ArgumentNullException(nameof(filePath));
             if (setAsCurrent && !registerInContainer) throw new ArgumentException(@"Cannot set the profile as current if it's not registered to the container", nameof(setAsCurrent));
@@ -160,7 +164,7 @@ namespace SiliconStudio.Core.Settings
                     }
                 }
             }
-            
+
             var handler = SettingsFileLoaded;
             handler?.Invoke(null, new SettingsFileLoadedEventArgs(filePath));
             return profile;
@@ -170,7 +174,7 @@ namespace SiliconStudio.Core.Settings
         /// Reloads a profile from its file, updating the value that have changed.
         /// </summary>
         /// <param name="profile">The profile to reload.</param>
-        public void ReloadSettingsProfile(SettingsProfile profile)
+        public void ReloadSettingsProfile([NotNull] SettingsProfile profile)
         {
             var filePath = profile.FilePath;
             if (filePath == null) throw new ArgumentException("profile");
@@ -219,7 +223,7 @@ namespace SiliconStudio.Core.Settings
         /// <param name="profile">The profile to save.</param>
         /// <param name="filePath">The path of the file.</param>
         /// <returns><c>true</c> if the file was correctly saved, <c>false</c> otherwise.</returns>
-        public bool SaveSettingsProfile(SettingsProfile profile, UFile filePath)
+        public bool SaveSettingsProfile([NotNull] SettingsProfile profile, [NotNull] UFile filePath)
         {
             if (profile == null) throw new ArgumentNullException(nameof(profile));
             try
@@ -241,7 +245,7 @@ namespace SiliconStudio.Core.Settings
                     }
 
                     profile.FilePath = filePath;
-                }               
+                }
             }
             catch (Exception e)
             {
@@ -255,7 +259,7 @@ namespace SiliconStudio.Core.Settings
             return true;
         }
 
-        internal void EncodeSettings(SettingsProfile profile, SettingsDictionary settingsDictionary)
+        internal void EncodeSettings([NotNull] SettingsProfile profile, SettingsDictionary settingsDictionary)
         {
             lock (SettingsLock)
             {
@@ -276,7 +280,7 @@ namespace SiliconStudio.Core.Settings
             }
         }
 
-        internal void DecodeSettings(SettingsDictionary settingsDictionary, SettingsProfile profile)
+        internal void DecodeSettings([NotNull] SettingsDictionary settingsDictionary, SettingsProfile profile)
         {
             lock (SettingsLock)
             {
@@ -299,7 +303,8 @@ namespace SiliconStudio.Core.Settings
         /// </summary>
         /// <param name="name">The name of the settings property to fetch.</param>
         /// <returns>The settings key that matches the given name, or <c>null</c>.</returns>
-        public SettingsKey GetSettingsKey(UFile name)
+        [CanBeNull]
+        public SettingsKey GetSettingsKey([NotNull] UFile name)
         {
             lock (SettingsLock)
             {
@@ -324,7 +329,7 @@ namespace SiliconStudio.Core.Settings
             }
         }
 
-        internal void RegisterSettingsKey(UFile name, object defaultValue, SettingsKey settingsKey)
+        internal void RegisterSettingsKey([NotNull] UFile name, object defaultValue, SettingsKey settingsKey)
         {
             lock (SettingsLock)
             {
@@ -346,7 +351,7 @@ namespace SiliconStudio.Core.Settings
             }
         }
 
-        private void ChangeCurrentProfile(SettingsProfile oldProfile, SettingsProfile newProfile)
+        private void ChangeCurrentProfile([NotNull] SettingsProfile oldProfile, [NotNull] SettingsProfile newProfile)
         {
             if (oldProfile == null) throw new ArgumentNullException(nameof(oldProfile));
             if (newProfile == null) throw new ArgumentNullException(nameof(newProfile));

@@ -13,12 +13,13 @@
 
 using System;
 using System.Text.RegularExpressions;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Core
 {
     /// <summary>
-    /// A hybrid implementation of SemVer that supports semantic versioning as described at http://semver.org while not strictly enforcing it to 
+    /// A hybrid implementation of SemVer that supports semantic versioning as described at http://semver.org while not strictly enforcing it to
     /// allow older 4-digit versioning schemes to continue working.
     /// </summary>
     [DataContract("PackageVersion")]
@@ -39,10 +40,10 @@ namespace SiliconStudio.Core
         /// Initializes a new instance of the <see cref="PackageVersion"/> class.
         /// </summary>
         /// <param name="version">The version.</param>
-        public PackageVersion(string version)
+        public PackageVersion([NotNull] string version)
             : this(Parse(version))
         {
-            // The constructor normalizes the version string so that it we do not need to normalize it every time we need to operate on it. 
+            // The constructor normalizes the version string so that it we do not need to normalize it every time we need to operate on it.
             // The original string represents the original form in which the version is represented to be used when printing.
             originalString = version;
         }
@@ -75,8 +76,8 @@ namespace SiliconStudio.Core
         /// Initializes a new instance of the <see cref="PackageVersion"/> class.
         /// </summary>
         /// <param name="version">The version.</param>
-        public PackageVersion(Version version)
-            : this(version, String.Empty)
+        public PackageVersion([NotNull] Version version)
+            : this(version, string.Empty)
         {
         }
 
@@ -85,23 +86,20 @@ namespace SiliconStudio.Core
         /// </summary>
         /// <param name="version">The version.</param>
         /// <param name="specialVersion">The special version.</param>
-        public PackageVersion(Version version, string specialVersion)
+        public PackageVersion([NotNull] Version version, string specialVersion)
             : this(version, specialVersion, null)
         {
         }
 
-        private PackageVersion(Version version, string specialVersion, string originalString)
+        private PackageVersion([NotNull] Version version, string specialVersion, string originalString)
         {
-            if (version == null)
-            {
-                throw new ArgumentNullException(nameof(version));
-            }
+            if (version == null) throw new ArgumentNullException(nameof(version));
             Version = NormalizeVersionValue(version);
             SpecialVersion = specialVersion ?? string.Empty;
             this.originalString = string.IsNullOrEmpty(originalString) ? version + (!string.IsNullOrEmpty(specialVersion) ? '-' + specialVersion : null) : originalString;
         }
 
-        internal PackageVersion(PackageVersion semVer)
+        internal PackageVersion([NotNull] PackageVersion semVer)
         {
             originalString = semVer.ToString();
             Version = semVer.Version;
@@ -118,6 +116,7 @@ namespace SiliconStudio.Core
         /// </summary>
         public string SpecialVersion { get; }
 
+        [NotNull]
         public string[] GetOriginalVersionComponents()
         {
             if (!string.IsNullOrEmpty(originalString))
@@ -135,7 +134,8 @@ namespace SiliconStudio.Core
             }
         }
 
-        private static string[] SplitAndPadVersionString(string version)
+        [NotNull]
+        private static string[] SplitAndPadVersionString([NotNull] string version)
         {
             string[] a = version.Split('.');
             if (a.Length == 4)
@@ -144,7 +144,7 @@ namespace SiliconStudio.Core
             }
             else
             {
-                // if 'a' has less than 4 elements, we pad the '0' at the end 
+                // if 'a' has less than 4 elements, we pad the '0' at the end
                 // to make it 4.
                 string [] b = { "0", "0", "0", "0" };
                 Array.Copy(a, 0, b, 0, a.Length);
@@ -155,7 +155,7 @@ namespace SiliconStudio.Core
         /// <summary>
         /// Parses a version string using loose semantic versioning rules that allows 2-4 version components followed by an optional special version.
         /// </summary>
-        public static PackageVersion Parse(string version)
+        public static PackageVersion Parse([NotNull] string version)
         {
             if (string.IsNullOrEmpty(version))
             {
@@ -189,7 +189,7 @@ namespace SiliconStudio.Core
         private static bool TryParseInternal(string version, Regex regex, out PackageVersion semVer)
         {
             semVer = null;
-            if (String.IsNullOrEmpty(version))
+            if (string.IsNullOrEmpty(version))
             {
                 return false;
             }
@@ -200,7 +200,7 @@ namespace SiliconStudio.Core
             {
                 // Support integer version numbers (i.e. 1 -> 1.0)
                 int versionNumber;
-                if (Int32.TryParse(version, out versionNumber))
+                if (int.TryParse(version, out versionNumber))
                 {
                     semVer = new PackageVersion(new Version(versionNumber, 0));
                     return true;
@@ -224,7 +224,8 @@ namespace SiliconStudio.Core
             return semVer;
         }
 
-        private static Version NormalizeVersionValue(Version version)
+        [NotNull]
+        private static Version NormalizeVersionValue([NotNull] Version version)
         {
             return new Version(version.Major,
                 version.Minor,
@@ -260,8 +261,8 @@ namespace SiliconStudio.Core
                 return result;
             }
 
-            bool empty = String.IsNullOrEmpty(SpecialVersion);
-            bool otherEmpty = String.IsNullOrEmpty(other.SpecialVersion);
+            bool empty = string.IsNullOrEmpty(SpecialVersion);
+            bool otherEmpty = string.IsNullOrEmpty(other.SpecialVersion);
             if (empty && otherEmpty)
             {
                 return 0;
@@ -287,7 +288,7 @@ namespace SiliconStudio.Core
             return !Equals(version1, version2);
         }
 
-        public static bool operator <(PackageVersion version1, PackageVersion version2)
+        public static bool operator <([NotNull] PackageVersion version1, PackageVersion version2)
         {
             if (version1 == null)
             {
@@ -301,7 +302,7 @@ namespace SiliconStudio.Core
             return version1 == version2 || version1 < version2;
         }
 
-        public static bool operator >(PackageVersion version1, PackageVersion version2)
+        public static bool operator >([NotNull] PackageVersion version1, PackageVersion version2)
         {
             if (version1 == null)
             {

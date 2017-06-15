@@ -8,7 +8,7 @@ namespace SiliconStudio.Core
     /// </summary>
     /// <remarks>
     /// Class implementing both <see cref="IDestroyable"/> and <see cref="System.IDisposable"/> should call <see cref="Destroy"/>
-    /// from the <see cref="System.IDisposable.Dispose"/> method when appropriate. 
+    /// from the <see cref="System.IDisposable.Dispose"/> method when appropriate.
     /// </remarks>
     public interface IDestroyable
     {

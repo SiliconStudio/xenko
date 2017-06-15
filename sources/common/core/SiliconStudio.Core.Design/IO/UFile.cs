@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 using System;
 using System.ComponentModel;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.IO
 {
@@ -25,6 +26,7 @@ namespace SiliconStudio.Core.IO
         /// Gets the name of the file with its extension. Can be null.
         /// </summary>
         /// <returns>The name.</returns>
+        [CanBeNull]
         public string GetFileName()
         {
             var span = NameSpan;
@@ -34,13 +36,14 @@ namespace SiliconStudio.Core.IO
             }
             return span.IsValid ? FullPath.Substring(span) : null;
 
-            
+
         }
 
         /// <summary>
         /// Gets the name of the file without its extension.
         /// </summary>
         /// <value>The name of file.</value>
+        [CanBeNull]
         public string GetFileNameWithoutExtension()
         {
             return NameSpan.IsValid ? FullPath.Substring(NameSpan) : null;
@@ -50,6 +53,7 @@ namespace SiliconStudio.Core.IO
         /// Gets the file path (<see cref="UPath.GetDirectory()"/> + '/' + <see cref="UFile.GetFileName()"/>) with the extension or drive. Can be an null if no filepath.
         /// </summary>
         /// <returns>The path.</returns>
+        [CanBeNull]
         public string GetDirectoryAndFileName()
         {
             var span = DirectorySpan;
@@ -68,6 +72,7 @@ namespace SiliconStudio.Core.IO
         /// Gets the file path (<see cref="UPath.GetDirectory()"/> + '/' + <see cref="UFile.GetFileName()"/>) without the extension or drive. Can be an null if no filepath.
         /// </summary>
         /// <returns>The path.</returns>
+        [CanBeNull]
         public string GetDirectoryAndFileNameWithoutExtension()
         {
             var span = DirectorySpan;
@@ -82,6 +87,7 @@ namespace SiliconStudio.Core.IO
         /// Gets the extension of the file. Can be null.
         /// </summary>
         /// <returns>The extension.</returns>
+        [CanBeNull]
         public string GetFileExtension()
         {
             return ExtensionSpan.IsValid ? FullPath.Substring(ExtensionSpan) : null;
@@ -91,6 +97,7 @@ namespace SiliconStudio.Core.IO
         /// Gets the name of the file with its extension.
         /// </summary>
         /// <value>The name of file.</value>
+        [CanBeNull]
         public string GetFullPathWithoutExtension()
         {
             var span = new StringSpan(0, FullPath.Length);
@@ -107,7 +114,8 @@ namespace SiliconStudio.Core.IO
         /// <param name="leftPath">The left path.</param>
         /// <param name="rightPath">The right path.</param>
         /// <returns>The combination of both paths.</returns>
-        public static UFile Combine(UDirectory leftPath, UFile rightPath)
+        [NotNull]
+        public static UFile Combine([NotNull] UDirectory leftPath, [NotNull] UFile rightPath)
         {
             return UPath.Combine(leftPath, rightPath);
         }
@@ -117,7 +125,7 @@ namespace SiliconStudio.Core.IO
         /// </summary>
         /// <param name="anchorDirectory">The anchor directory.</param>
         /// <returns>A relative path of this instance to the anchor directory.</returns>
-        public new UFile MakeRelative(UDirectory anchorDirectory)
+        public new UFile MakeRelative([NotNull] UDirectory anchorDirectory)
         {
             return (UFile)base.MakeRelative(anchorDirectory);
         }
@@ -127,9 +135,9 @@ namespace SiliconStudio.Core.IO
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns><c>true</c> if the specified path is a valid <see cref="UFile"/>; otherwise, <c>false</c>.</returns>
-        public new static bool IsValid(string path)
+        public new static bool IsValid([NotNull] string path)
         {
-            if (path == null) throw new ArgumentNullException("path");
+            if (path == null) throw new ArgumentNullException(nameof(path));
             if (!UPath.IsValid(path))
             {
                 return false;
@@ -146,6 +154,7 @@ namespace SiliconStudio.Core.IO
         /// </summary>
         /// <param name="fullPath">The full path.</param>
         /// <returns>The result of the conversion.</returns>
+        [CanBeNull]
         public static implicit operator UFile(string fullPath)
         {
             return fullPath != null ? new UFile(fullPath) : null;

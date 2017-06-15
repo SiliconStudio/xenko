@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Transactions
 {
@@ -18,6 +19,7 @@ namespace SiliconStudio.Core.Transactions
         /// <summary>
         /// Gets the operations executed during the transaction.
         /// </summary>
+        [ItemNotNull, NotNull]
         IReadOnlyList<Operation> Operations { get; }
 
         /// <summary>

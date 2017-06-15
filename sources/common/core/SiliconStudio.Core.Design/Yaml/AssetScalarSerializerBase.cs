@@ -1,6 +1,7 @@
 // Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
@@ -9,7 +10,8 @@ namespace SiliconStudio.Core.Yaml
 {
     public abstract class AssetScalarSerializerBase : ScalarSerializerBase, IYamlSerializableFactory, IDataCustomVisitor
     {
-        public IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
+        [CanBeNull]
+        public IYamlSerializable TryCreate(SerializerContext context, [NotNull] ITypeDescriptor typeDescriptor)
         {
             return CanVisit(typeDescriptor.Type) ? this : null;
         }

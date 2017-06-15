@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 using System;
 using System.IO;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
 
@@ -20,7 +21,7 @@ namespace SiliconStudio.Core.Settings
         /// <param name="stream">A YAML string from a stream.</param>
         /// <param name="existingObject">The object to deserialize into.</param>
         /// <returns>An instance of the YAML data.</returns>
-        public object Deserialize(Stream stream, object existingObject)
+        public object Deserialize([NotNull] Stream stream, [NotNull] object existingObject)
         {
             if (existingObject == null) throw new ArgumentNullException(nameof(existingObject));
             using (var textReader = new StreamReader(stream))
@@ -66,6 +67,7 @@ namespace SiliconStudio.Core.Settings
             serializer.Serialize(stream, instance);
         }
 
+        /// <inheritdoc />
         protected override ISerializerFactorySelector CreateSelector()
         {
             return new ProfileSerializerFactorySelector(YamlSerializerFactoryAttribute.Default, "Settings");

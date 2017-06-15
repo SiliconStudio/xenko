@@ -15,6 +15,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core
 {
@@ -53,7 +54,7 @@ namespace SiliconStudio.Core
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PackageVersionRange" /> class with just a lower bound 
+        /// Initializes a new instance of the <see cref="PackageVersionRange" /> class with just a lower bound
         /// <paramref name="minVersion"/> that can be inclusive or not depending on <paramref name="minVersionInclusive"/>.
         /// </summary>
         /// <param name="minVersion">The minimum version.</param>
@@ -150,7 +151,8 @@ namespace SiliconStudio.Core
         /// <summary>
         /// The safe range is defined as the highest build and revision for a given major and minor version
         /// </summary>
-        public static PackageVersionRange GetSafeRange(PackageVersion version)
+        [NotNull]
+        public static PackageVersionRange GetSafeRange([NotNull] PackageVersion version)
         {
             return new PackageVersionRange
                 {
@@ -345,7 +347,8 @@ namespace SiliconStudio.Core
             return versionBuilder.ToString();
         }
 
-        public Func<T, bool> ToFilter<T>(Func<T, PackageVersion> extractor)
+        [NotNull]
+        public Func<T, bool> ToFilter<T>([NotNull] Func<T, PackageVersion> extractor)
         {
             if (extractor == null)
             {

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Transactions
 {
@@ -29,6 +30,7 @@ namespace SiliconStudio.Core.Transactions
         /// <summary>
         /// Gets the collection of transactions currently on the stack.
         /// </summary>
+        [ItemNotNull, NotNull]
         public IReadOnlyList<IReadOnlyTransaction> Transactions => transactions;
 
         /// <inheritdoc/>
@@ -128,8 +130,7 @@ namespace SiliconStudio.Core.Transactions
             return transactions;
         }
 
-        /// <inheritdoc/>
-        public void CompleteTransaction(Transaction transaction)
+        public void CompleteTransaction([NotNull] Transaction transaction)
         {
             lock (lockObject)
             {

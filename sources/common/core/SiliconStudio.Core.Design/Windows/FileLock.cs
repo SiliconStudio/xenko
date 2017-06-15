@@ -57,6 +57,7 @@ namespace SiliconStudio.Core.Windows
         /// Tries to take ownership of the file lock within a given delay.
         /// <returns>A new instance of <see cref="FileLock"/> if the ownership could be taken, <c>null</c> otherwise.</returns>
         /// <remarks>The returned <see cref="FileLock"/> must be disposed to release the mutex.</remarks>
+        [CanBeNull]
         public static FileLock TryLock(string name)
         {
             return Wait(name, 0);
@@ -68,6 +69,7 @@ namespace SiliconStudio.Core.Windows
         /// Tries to take ownership of the file lock within a given delay.
         /// <returns>A new instance of <see cref="FileLock"/> if the ownership could be taken, <c>null</c> otherwise.</returns>
         /// <remarks>The returned <see cref="FileLock"/> must be disposed to release the file lock.</remarks>
+        [CanBeNull]
         public static FileLock Wait(string name)
         {
             return Wait(name, -1);
@@ -84,6 +86,7 @@ namespace SiliconStudio.Core.Windows
         /// Calling this method with 0 for <see paramref="millisecondsTimeout"/> is equivalent to call <see cref="TryLock"/>.
         /// Calling this method with a negative value for <see paramref="millisecondsTimeout"/> is equivalent to call <see cref="Wait(string)"/>.
         /// </remarks>
+        [CanBeNull]
         public static FileLock Wait(string name, int millisecondsTimeout)
         {
             var fileLock = BuildFileLock(name);

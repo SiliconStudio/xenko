@@ -3,21 +3,21 @@
 // This file is distributed under MIT License. See LICENSE.md for details.
 //
 // SLNTools
-// Copyright (c) 2009 
+// Copyright (c) 2009
 // by Christian Warren
 //
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated 
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation 
-// the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+// documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
 // to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in all copies or substantial portions
 // of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
-// TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
-// THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
-// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+// TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+// THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 #endregion
 
@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.VisualStudio
 {
@@ -45,7 +46,7 @@ namespace SiliconStudio.Core.VisualStudio
         /// </summary>
         /// <param name="solution">The solution.</param>
         /// <param name="original">The original.</param>
-        public Project(Solution solution, Project original)
+        public Project([NotNull] Solution solution, [NotNull] Project original)
             : this(
                 solution,
                 original.Guid,
@@ -81,27 +82,27 @@ namespace SiliconStudio.Core.VisualStudio
         /// name
         /// </exception>
         public Project(
-            Solution solution,
+            [NotNull] Solution solution,
             Guid guid,
             Guid typeGuid,
-            string name,
+            [NotNull] string name,
             string relativePath,
             Guid parentGuid,
             IEnumerable<Section> projectSections,
             IEnumerable<PropertyItem> versionControlLines,
             IEnumerable<PropertyItem> projectConfigurationPlatformsLines)
         {
-            if (solution == null) throw new ArgumentNullException("solution");
-            if (guid == null) throw new ArgumentNullException("guid");
-            if (typeGuid == null) throw new ArgumentNullException("typeGuid");
-            if (name == null) throw new ArgumentNullException("name");
+            if (solution == null) throw new ArgumentNullException(nameof(solution));
+            if (guid == null) throw new ArgumentNullException(nameof(guid));
+            if (typeGuid == null) throw new ArgumentNullException(nameof(typeGuid));
+            if (name == null) throw new ArgumentNullException(nameof(name));
 
             this.solution = solution;
             this.guid = guid;
-            this.TypeGuid = typeGuid;
-            this.Name = name;
-            this.RelativePath = relativePath;
-            this.ParentGuid = parentGuid;
+            TypeGuid = typeGuid;
+            Name = name;
+            RelativePath = relativePath;
+            ParentGuid = parentGuid;
             sections = new SectionCollection(projectSections);
             versionControlProperties = new PropertyItemCollection(versionControlLines);
             platformProperties = new PropertyItemCollection(projectConfigurationPlatformsLines);
@@ -139,9 +140,10 @@ namespace SiliconStudio.Core.VisualStudio
         }
 
         /// <summary>
-        /// Gets all direct child <see cref="Project"/> 
+        /// Gets all direct child <see cref="Project"/>
         /// </summary>
         /// <value>The children.</value>
+        [ItemNotNull]
         public IEnumerable<Project> Children
         {
             get
@@ -174,9 +176,9 @@ namespace SiliconStudio.Core.VisualStudio
 
                 if (sections.Contains("ProjectDependencies"))
                 {
-                    foreach (PropertyItem propertyLine in sections["ProjectDependencies"].Properties)
+                    foreach (var propertyLine in sections["ProjectDependencies"].Properties)
                     {
-                        string dependencyGuid = propertyLine.Name;
+                        var dependencyGuid = propertyLine.Name;
                         yield return FindProjectInContainer(
                             dependencyGuid,
                             "Cannot find one of the dependency of project '{0}'.\nProject guid: {1}\nDependency guid: {2}\nReference found in: ProjectDependencies section of the solution file",
@@ -191,10 +193,7 @@ namespace SiliconStudio.Core.VisualStudio
                 {
                     if (!File.Exists(FullPath))
                     {
-                        throw new SolutionFileException(string.Format(
-                            "Cannot detect dependencies of projet '{0}' because the project file cannot be found.\nProject full path: '{1}'",
-                            Name,
-                            FullPath));
+                        throw new SolutionFileException($"Cannot detect dependencies of projet '{Name}' because the project file cannot be found.\nProject full path: '{FullPath}'");
                     }
 
                     var docVisualC = new XmlDocument();
@@ -202,17 +201,9 @@ namespace SiliconStudio.Core.VisualStudio
 
                     foreach (XmlNode xmlNode in docVisualC.SelectNodes(@"//ProjectReference"))
                     {
-                        string dependencyGuid = xmlNode.Attributes["ReferencedProjectIdentifier"].Value; // TODO handle null
-                        string dependencyRelativePathToProject;
+                        var dependencyGuid = xmlNode.Attributes["ReferencedProjectIdentifier"].Value; // TODO handle null
                         XmlNode relativePathToProjectNode = xmlNode.Attributes["RelativePathToProject"];
-                        if (relativePathToProjectNode != null)
-                        {
-                            dependencyRelativePathToProject = relativePathToProjectNode.Value;
-                        }
-                        else
-                        {
-                            dependencyRelativePathToProject = "???";
-                        }
+                        var dependencyRelativePathToProject = relativePathToProjectNode != null ? relativePathToProjectNode.Value : "???";
                         yield return FindProjectInContainer(
                             dependencyGuid,
                             "Cannot find one of the dependency of project '{0}'.\nProject guid: {1}\nDependency guid: {2}\nDependency relative path: '{3}'\nReference found in: ProjectReference node of file '{4}'",
@@ -228,19 +219,16 @@ namespace SiliconStudio.Core.VisualStudio
                 {
                     if (!File.Exists(FullPath))
                     {
-                        throw new SolutionFileException(string.Format(
-                            "Cannot detect dependencies of projet '{0}' because the project file cannot be found.\nProject full path: '{1}'",
-                            Name,
-                            FullPath));
+                        throw new SolutionFileException($"Cannot detect dependencies of projet '{Name}' because the project file cannot be found.\nProject full path: '{FullPath}'");
                     }
 
-                    foreach (string line in File.ReadAllLines(FullPath))
+                    foreach (var line in File.ReadAllLines(FullPath))
                     {
                         var regex = new Regex("^\\s*\"OutputProjectGuid\" = \"\\d*\\:(?<PROJECTGUID>.*)\"$");
-                        Match match = regex.Match(line);
+                        var match = regex.Match(line);
                         if (match.Success)
                         {
-                            string dependencyGuid = match.Groups["PROJECTGUID"].Value.Trim();
+                            var dependencyGuid = match.Groups["PROJECTGUID"].Value.Trim();
                             yield return FindProjectInContainer(
                                 dependencyGuid,
                                 "Cannot find one of the dependency of project '{0}'.\nProject guid: {1}\nDependency guid: {2}\nReference found in: OutputProjectGuid line of file '{3}'",
@@ -257,20 +245,20 @@ namespace SiliconStudio.Core.VisualStudio
 
                     // Format is: "({GUID}|ProjectName;)*"
                     // Example: "{GUID}|Infra.dll;{GUID2}|Services.dll;"
-                    PropertyItem propertyItem = sections["WebsiteProperties"].Properties["ProjectReferences"];
-                    string value = propertyItem.Value;
+                    var propertyItem = sections["WebsiteProperties"].Properties["ProjectReferences"];
+                    var value = propertyItem.Value;
                     if (value.StartsWith("\""))
                         value = value.Substring(1);
                     if (value.EndsWith("\""))
                         value = value.Substring(0, value.Length - 1);
 
-                    foreach (string dependency in value.Split(';'))
+                    foreach (var dependency in value.Split(';'))
                     {
                         if (dependency.Trim().Length > 0)
                         {
-                            string[] parts = dependency.Split('|');
-                            string dependencyGuid = parts[0];
-                            string dependencyName = parts[1]; // TODO handle null
+                            var parts = dependency.Split('|');
+                            var dependencyGuid = parts[0];
+                            var dependencyName = parts[1]; // TODO handle null
                             yield return FindProjectInContainer(
                                 dependencyGuid,
                                 "Cannot find one of the dependency of project '{0}'.\nProject guid: {1}\nDependency guid: {2}\nDependency name: {3}\nReference found in: ProjectReferences line in WebsiteProperties section of the solution file",
@@ -285,10 +273,7 @@ namespace SiliconStudio.Core.VisualStudio
                 {
                     if (!File.Exists(FullPath))
                     {
-                        throw new SolutionFileException(string.Format(
-                            "Cannot detect dependencies of projet '{0}' because the project file cannot be found.\nProject full path: '{1}'",
-                            Name,
-                            FullPath));
+                        throw new SolutionFileException($"Cannot detect dependencies of projet '{Name}' because the project file cannot be found.\nProject full path: '{FullPath}'");
                     }
 
                     var docManaged = new XmlDocument();
@@ -299,8 +284,8 @@ namespace SiliconStudio.Core.VisualStudio
 
                     foreach (XmlNode xmlNode in docManaged.SelectNodes(@"//prefix:ProjectReference", xmlManager))
                     {
-                        string dependencyGuid = xmlNode.SelectSingleNode(@"prefix:Project", xmlManager).InnerText.Trim(); // TODO handle null
-                        string dependencyName = xmlNode.SelectSingleNode(@"prefix:Name", xmlManager).InnerText.Trim(); // TODO handle null
+                        var dependencyGuid = xmlNode.SelectSingleNode(@"prefix:Project", xmlManager).InnerText.Trim(); // TODO handle null
+                        var dependencyName = xmlNode.SelectSingleNode(@"prefix:Name", xmlManager).InnerText.Trim(); // TODO handle null
                         yield return FindProjectInContainer(
                             dependencyGuid,
                             "Cannot find one of the dependency of project '{0}'.\nProject guid: {1}\nDependency guid: {2}\nDependency name: {3}\nReference found in: ProjectReference node of file '{4}'",
@@ -330,6 +315,7 @@ namespace SiliconStudio.Core.VisualStudio
         /// Gets the full path.
         /// </summary>
         /// <value>The full path.</value>
+        [NotNull]
         public string FullPath
         {
             get
@@ -342,6 +328,7 @@ namespace SiliconStudio.Core.VisualStudio
         /// Gets the parent project.
         /// </summary>
         /// <value>The parent project.</value>
+        [CanBeNull]
         public Project ParentProject
         {
             get
@@ -448,12 +435,13 @@ namespace SiliconStudio.Core.VisualStudio
 
         public override string ToString()
         {
-            return string.Format("Project '{0}'", FullName);
+            return $"Project '{FullName}'";
         }
 
+        [NotNull]
         private Project FindProjectInContainer(Guid projectGuidToFind, string errorMessageFormat, params object[] errorMessageParams)
         {
-            Project project = solution.Projects.FindByGuid(projectGuidToFind);
+            var project = solution.Projects.FindByGuid(projectGuidToFind);
             if (project == null)
             {
                 throw new SolutionFileException(string.Format(errorMessageFormat, errorMessageParams));
@@ -461,7 +449,8 @@ namespace SiliconStudio.Core.VisualStudio
             return project;
         }
 
-        private Project FindProjectInContainer(string projectGuidToFind, string errorMessageFormat, params object[] errorMessageParams)
+        [NotNull]
+        private Project FindProjectInContainer([NotNull] string projectGuidToFind, string errorMessageFormat, params object[] errorMessageParams)
         {
             return FindProjectInContainer(Guid.Parse(projectGuidToFind), errorMessageFormat, errorMessageParams);
         }

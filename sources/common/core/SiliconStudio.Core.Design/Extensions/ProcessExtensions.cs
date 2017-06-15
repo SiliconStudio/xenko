@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Extensions
 {
@@ -17,7 +17,7 @@ namespace SiliconStudio.Core.Extensions
         /// <param name="cancellationToken">A cancellation token. If invoked, the task will return
         /// immediately as cancelled.</param>
         /// <returns>A Task representing waiting for the process to end.</returns>
-        public static Task WaitForExitAsync(this Process process, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task WaitForExitAsync([NotNull] this Process process, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Source: https://stackoverflow.com/questions/139593/processstartinfo-hanging-on-waitforexit-why/39872058#39872058
             process.EnableRaisingEvents = true;
