@@ -81,7 +81,7 @@ namespace SiliconStudio.Xenko.Input
         public override void SetPosition(Vector2 normalizedPosition)
         {
             Vector2 position = normalizedPosition * SurfaceSize;
-            Cursor.Position = new Point((int)position.X, (int)position.Y);
+            uiControl.RelativeCursorPosition = new Point((int)position.X, (int)position.Y);
         }
         
         private void OnSizeChanged(SDL.SDL_WindowEvent eventArgs)
