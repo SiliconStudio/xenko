@@ -2,7 +2,7 @@
 // See LICENSE.md for full license information.
 
 using System;
-
+using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering;
@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Renders text with a fixed size font.
         /// </summary>
-        public class FastTextRendering
+        public class FastTextRendering : ComponentBase
         {
             private const int IndexStride = sizeof(int);
 
@@ -32,11 +32,58 @@ namespace SiliconStudio.Xenko.Graphics
 
             private int charsToRenderCount;
 
+            public static FastTextRendering New([NotNull] GraphicsContext graphicsContext)
+            {
+                return new FastTextRendering().Initialize(graphicsContext);
+            }
+
+            public FastTextRendering()
+            {
+                
+            }
+
+            public FastTextRendering([NotNull] GraphicsContext graphicsContext)
+            {
+                Initialize(graphicsContext);
+            }
+
+            protected override void Destroy()
+            {
+                vertexBuffers[0].Dispose();
+                vertexBuffers[1].Dispose();
+
+                activeVertexBufferIndex = -1;
+
+                mappedVertexBufferPointer = IntPtr.Zero;
+
+                if (indexBuffer != null)
+                {
+                    indexBuffer.Dispose();
+                    indexBuffer = null;
+                }
+
+                indexBufferBinding = null;
+                pipelineState = null;
+
+                if (simpleEffect != null)
+                {
+                    simpleEffect.Dispose();
+                    simpleEffect = null;
+                }
+
+                inputElementDescriptions[0] = null;
+                inputElementDescriptions[1] = null;
+
+                charsToRenderCount = -1;
+
+                base.Destroy();
+            }
+
             /// <summary>
             /// Initializes a FastTextRendering instance (create and build required ressources, ...).
             /// </summary>
             /// <param name="graphicsContext">The current GraphicsContext.</param>
-            public unsafe void Initialize([NotNull] GraphicsContext graphicsContext)
+            public unsafe FastTextRendering Initialize([NotNull] GraphicsContext graphicsContext)
             {
                 var indexBufferSize = MaxCharactersPerLine * MaxCharactersLines * 6 * sizeof(int);
                 var indexBufferLength = indexBufferSize / IndexStride;
@@ -98,6 +145,8 @@ namespace SiliconStudio.Xenko.Graphics
                 simpleEffect.Parameters.Set(SpriteEffectKeys.Color, TextColor);
 
                 simpleEffect.UpdateEffect(graphicsContext.CommandList.GraphicsDevice);
+
+                return this;
             }
 
             /// <summary>
@@ -168,7 +217,7 @@ namespace SiliconStudio.Xenko.Graphics
                 var textLength = text.Length;
                 var textLengthPointer = new IntPtr(&textLength);
 
-                Native.NativeInvoke.AppendTextToVertexBuffer(constantInfos, renderInfos, text, out textLengthPointer, out mappedVertexBufferPointer);
+                Native.NativeInvoke.xnGraphicsFastTextRendering(constantInfos, renderInfos, text, out textLengthPointer, out mappedVertexBufferPointer);
 
                 charsToRenderCount += *(int*)textLengthPointer.ToPointer();
             }

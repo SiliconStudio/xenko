@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Native
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void AppendTextToVertexBuffer(RectangleF constantInfos, RectangleF renderInfos, string text, out IntPtr textLength, out IntPtr vertexBufferPointer);
+        public static extern void xnGraphicsFastTextRendering(RectangleF constantInfos, RectangleF renderInfos, string text, out IntPtr textLength, out IntPtr vertexBufferPointer);
     }
 
     internal class Module
