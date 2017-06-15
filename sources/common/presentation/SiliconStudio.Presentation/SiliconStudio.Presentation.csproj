@@ -186,6 +186,7 @@
     <Compile Include="Windows\DialogHelper.cs" />
     <Compile Include="Windows\HwndHelper.cs" />
     <Compile Include="Controls\ModalWindow.cs" />
+    <Compile Include="Windows\IAsyncClosableWindow.cs" />
     <Compile Include="Windows\WindowInfo.cs" />
     <Compile Include="Windows\WindowInitialPosition.cs" />
     <Compile Include="XamlMarkdown.cs" />

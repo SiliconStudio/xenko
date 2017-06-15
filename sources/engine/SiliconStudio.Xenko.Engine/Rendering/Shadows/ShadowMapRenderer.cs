@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
@@ -22,6 +23,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     [DataContract(DefaultMemberMode = DataMemberMode.Never)]
     public class ShadowMapRenderer : IShadowMapRenderer
     {
+        public static readonly ProfilingKey ProfilingKey = new ProfilingKey(nameof(ShadowMapRenderer));
+
         // TODO: Extract a common interface and implem for shadow renderer (not only shadow maps)
         private readonly int MaximumTextureSize = (int)(ReferenceShadowSize * ComputeSizeFactor(LightShadowMapSize.XLarge) * 2.0f);
         private const float ReferenceShadowSize = 1024;
@@ -165,16 +168,15 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     var shadowmapRenderView = renderView as ShadowMapRenderView;
                     if (shadowmapRenderView != null && shadowmapRenderView.RenderView == drawContext.RenderContext.RenderView)
                     {
-                        drawContext.CommandList.BeginProfile(Color.Black, $"Shadow Map {shadowmapRenderView.ShadowMapTexture.Light}");
+                        using (drawContext.QueryManager.BeginProfile(Color.Black, ProfilingKey))
+                        {
+                            var shadowMapRectangle = shadowmapRenderView.Rectangle;
+                            drawContext.CommandList.SetRenderTarget(shadowmapRenderView.ShadowMapTexture.Atlas.Texture, null);
+                            shadowmapRenderView.ShadowMapTexture.Atlas.MarkClearNeeded();
+                            drawContext.CommandList.SetViewport(new Viewport(shadowMapRectangle.X, shadowMapRectangle.Y, shadowMapRectangle.Width, shadowMapRectangle.Height));
 
-                        var shadowMapRectangle = shadowmapRenderView.Rectangle;
-                        drawContext.CommandList.SetRenderTarget(shadowmapRenderView.ShadowMapTexture.Atlas.Texture, null);
-                        shadowmapRenderView.ShadowMapTexture.Atlas.MarkClearNeeded();
-                        drawContext.CommandList.SetViewport(new Viewport(shadowMapRectangle.X, shadowMapRectangle.Y, shadowMapRectangle.Width, shadowMapRectangle.Height));
-
-                        renderSystem.Draw(drawContext, shadowmapRenderView, renderSystem.RenderStages[shadowmapRenderView.RenderStages[0].Index]);
-                        
-                        drawContext.CommandList.EndProfile();
+                            renderSystem.Draw(drawContext, shadowmapRenderView, renderSystem.RenderStages[shadowmapRenderView.RenderStages[0].Index]);
+                        }
                     }
                 }
             }
