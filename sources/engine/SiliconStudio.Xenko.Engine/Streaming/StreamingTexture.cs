@@ -23,6 +23,28 @@ namespace SiliconStudio.Xenko.Streaming
         protected int _residentMips;
         protected Task _streamingTask;
         protected CancellationTokenSource _cancellationToken;
+        protected MipInfo[] _mipsInfo;
+
+        /// <summary>
+        /// Helper structure used to pre-cache <see cref="StreamingTexture"/> mip maps metadata. Used to improve streaming performance (smaller CPU usage).
+        /// </summary>
+        protected struct MipInfo
+        {
+            public int Width;
+            public int Height;
+            public int RowPitch;
+            public int SlicePitch;
+            public int TotalSize; // SlicePitch * ArraySize
+
+            public MipInfo(int width, int height, int rowPitch, int slicePitch, int arraySize)
+            {
+                Width = width;
+                Height = height;
+                RowPitch = rowPitch;
+                SlicePitch = slicePitch;
+                TotalSize = slicePitch * arraySize;
+            }
+        }
 
         internal StreamingTexture(StreamingManager manager, [NotNull] Texture texture)
             : base(manager)
@@ -113,12 +135,12 @@ namespace SiliconStudio.Xenko.Streaming
         public override int CalculateRequestedResidency(int targetResidency)
         {
             int requestedResidency;
-
+            
             // Check if need to increase it's residency or decrease
             if (targetResidency > CurrentResidency)
             {
                 // Stream target quality in steps but lower mips at once
-                requestedResidency = Math.Min(targetResidency, Math.Max(CurrentResidency + 1, 4)); 
+                requestedResidency = Math.Min(targetResidency, Math.Max(CurrentResidency + 1, 4));
 
                 // Stream target quality in steps
                 //requestedResidency = currentResidency + 1; 
@@ -146,6 +168,29 @@ namespace SiliconStudio.Xenko.Streaming
             Init(storage);
             _desc = imageDescription;
             _residentMips = 0;
+            CacheMipMaps();
+        }
+
+        private void CacheMipMaps()
+        {
+            var mipLevels = TotalMipLevels;
+            _mipsInfo = new MipInfo[mipLevels];
+            bool isBlockCompressed =
+                (Format >= PixelFormat.BC1_Typeless && Format <= PixelFormat.BC5_SNorm) ||
+                (Format >= PixelFormat.BC6H_Typeless && Format <= PixelFormat.BC7_UNorm_SRgb);
+
+            for (int mipIndex = 0; mipIndex < mipLevels; mipIndex++)
+            {
+                int mipWidth, mipHeight;
+                GetMipSize(isBlockCompressed, mipIndex, out mipWidth, out mipHeight);
+
+                int rowPitch, slicePitch;
+                int widthPacked;
+                int heightPacked;
+                Image.ComputePitch(Format, mipWidth, mipHeight, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
+
+                _mipsInfo[mipIndex] = new MipInfo(mipWidth, mipHeight, rowPitch, slicePitch, ArraySize);
+            }
         }
 
         private void GetMipSize(bool isBlockCompressed, int mipIndex, out int width, out int height)
@@ -159,19 +204,6 @@ namespace SiliconStudio.Xenko.Streaming
                 height = unchecked((int)(((uint)(height + 3)) & ~(uint)3));
             }
         }
-        private struct MipMapChunkInfo
-        {
-            public IntPtr Data;
-            public int RowPitch;
-            public int SlicePitch;
-
-            public MipMapChunkInfo(IntPtr data, int rowPitch, int slicePitch)
-            {
-                Data = data;
-                RowPitch = rowPitch;
-                SlicePitch = slicePitch;
-            }
-        }
 
         private void StreamingTask(int residency)
         {
@@ -182,9 +214,6 @@ namespace SiliconStudio.Xenko.Streaming
             var texture = Texture;
             int mipsChange = residency - CurrentResidency;
             int mipsCount = residency;
-            bool isBlockCompressed =
-                (Format >= PixelFormat.BC1_Typeless && Format <= PixelFormat.BC5_SNorm) ||
-                (Format >= PixelFormat.BC6H_Typeless && Format <= PixelFormat.BC7_UNorm_SRgb);
             Debug.Assert(mipsChange != 0);
 
             if (residency == 0)
@@ -203,26 +232,20 @@ namespace SiliconStudio.Xenko.Streaming
                 TextureDescription newDesc = _desc;
                 int newHighestResidentMipIndex = TotalMipLevels - mipsCount;
                 newDesc.MipLevels = mipsCount;
-                GetMipSize(isBlockCompressed, _desc.MipLevels - newDesc.MipLevels, out newDesc.Width, out newDesc.Height);
-
+                var topMip = _mipsInfo[_desc.MipLevels - newDesc.MipLevels];
+                newDesc.Width = topMip.Width;
+                newDesc.Height = topMip.Height;
+                
                 // Load chunks
-                var mipInfos = new MipMapChunkInfo[newDesc.MipLevels];
-                for (int mipIndex = 0; mipIndex < newDesc.MipLevels; mipIndex++)
+                var mipsData = new IntPtr[mipsCount];
+                for (int mipIndex = 0; mipIndex < mipsCount; mipIndex++)
                 {
                     int totalMipIndex = newHighestResidentMipIndex + mipIndex;
                     var chunk = Storage.GetChunk(totalMipIndex);
                     if (chunk == null)
                         throw new ContentStreamingException("Data chunk is missing.", Storage);
                     
-                    int mipWidth, mipHeight;
-                    GetMipSize(isBlockCompressed, totalMipIndex, out mipWidth, out mipHeight);
-
-                    int rowPitch, slicePitch;
-                    int widthPacked;
-                    int heightPacked;
-                    Image.ComputePitch(Format, mipWidth, mipHeight, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
-
-                    if (chunk.Size != slicePitch * newDesc.ArraySize)
+                    if (chunk.Size != _mipsInfo[totalMipIndex].TotalSize)
                         throw new ContentStreamingException("Data chunk has invalid size.", Storage);
 
                     var data = chunk.GetData(fileProvider);
@@ -231,8 +254,8 @@ namespace SiliconStudio.Xenko.Streaming
 
                     if (_cancellationToken.IsCancellationRequested)
                         return;
-
-                    mipInfos[mipIndex] = new MipMapChunkInfo(data, rowPitch, slicePitch);
+                    
+                    mipsData[mipIndex] = data;
                 }
 
                 // Get data boxes
@@ -240,11 +263,12 @@ namespace SiliconStudio.Xenko.Streaming
                 var dataBoxes = new DataBox[newDesc.MipLevels * newDesc.ArraySize];
                 for (int arrayIndex = 0; arrayIndex < newDesc.ArraySize; arrayIndex++)
                 {
-                    for (int mipIndex = 0; mipIndex < newDesc.MipLevels; mipIndex++)
+                    for (int mipIndex = 0; mipIndex < mipsCount; mipIndex++)
                     {
-                        var info = mipInfos[mipIndex];
+                        int totalMipIndex = newHighestResidentMipIndex + mipIndex;
+                        var info = _mipsInfo[totalMipIndex];
 
-                        dataBoxes[dataBoxIndex].DataPointer = info.Data + info.SlicePitch * arrayIndex;
+                        dataBoxes[dataBoxIndex].DataPointer = mipsData[mipIndex] + info.SlicePitch * arrayIndex;
                         dataBoxes[dataBoxIndex].RowPitch = info.RowPitch;
                         dataBoxes[dataBoxIndex].SlicePitch = info.SlicePitch;
                         dataBoxIndex++;
