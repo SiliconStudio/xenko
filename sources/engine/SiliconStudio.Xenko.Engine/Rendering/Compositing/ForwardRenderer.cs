@@ -7,6 +7,7 @@ using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Graphics;
@@ -460,8 +461,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 PrepareLightprobeConstantBuffer(context);
 
                 // TODO: Temporarily using ShadowMap shader
-                drawContext.CommandList.BeginProfile(Color.Green, "GBuffer");
-
+                using (drawContext.QueryManager.BeginProfile(Color.Green, CompositingProfilingKeys.GBuffer))
                 using (drawContext.PushRenderTargetsAndRestore())
                 {
                     drawContext.CommandList.Clear(drawContext.CommandList.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
@@ -470,8 +470,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     // Draw [main view | z-prepass stage]
                     renderSystem.Draw(drawContext, context.RenderView, GBufferRenderStage);
                 }
-
-                drawContext.CommandList.EndProfile();
 
                 // Bake lightprobes against Z-buffer
                 BakeLightProbes(context, drawContext);
@@ -482,7 +480,10 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 // Draw [main view | main stage]
                 if (OpaqueRenderStage != null)
                 {
-                    renderSystem.Draw(drawContext, context.RenderView, OpaqueRenderStage);
+                    using (drawContext.QueryManager.BeginProfile(Color.Green, CompositingProfilingKeys.Opaque))
+                    {
+                        renderSystem.Draw(drawContext, context.RenderView, OpaqueRenderStage);
+                    }
                 }
 
                 // Draw [main view | transparent stage]
@@ -490,6 +491,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 if (TransparentRenderStage != null)
                 {
                     // Some transparent shaders will require the depth as a shader resource - resolve it only once and set it here
+                    using (drawContext.QueryManager.BeginProfile(Color.Green, CompositingProfilingKeys.Transparent))
                     using (drawContext.PushRenderTargetsAndRestore())
                     {
                         depthStencilSRV = ResolveDepthAsSRV(drawContext);
@@ -507,13 +509,23 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 var depthStencil = currentDepthStencil;
                 if (actualMultisampleCount != MultisampleCount.None)
                 {
-                    ResolveMSAA(drawContext);
+                    using (drawContext.QueryManager.BeginProfile(Color.Green, CompositingProfilingKeys.MsaaResolve))
+                    {
+                        ResolveMSAA(drawContext);
+                    }
+
                     renderTargets = currentRenderTargetsNonMSAA;
                     depthStencil = currentDepthStencilNonMSAA;
                 }
 
                 // Shafts if we have them
-                LightShafts?.Draw(drawContext, depthStencil, renderTargets[colorTargetIndex]);
+                if (LightShafts != null)
+                {
+                    using (drawContext.QueryManager.BeginProfile(Color.Green, CompositingProfilingKeys.LightShafts))
+                    {
+                        LightShafts.Draw(drawContext, depthStencil, renderTargets[colorTargetIndex]);
+                    }
+                }
 
                 if (PostEffects != null)
                 {
@@ -525,7 +537,10 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 {
                     if (actualMultisampleCount != MultisampleCount.None)
                     {
-                        drawContext.CommandList.Copy(renderTargets[colorTargetIndex], ViewOutputTarget);
+                        using (drawContext.QueryManager.BeginProfile(Color.Green, CompositingProfilingKeys.MsaaResolve))
+                        {
+                            drawContext.CommandList.Copy(renderTargets[colorTargetIndex], ViewOutputTarget);
+                        }
                     }
                 }
 

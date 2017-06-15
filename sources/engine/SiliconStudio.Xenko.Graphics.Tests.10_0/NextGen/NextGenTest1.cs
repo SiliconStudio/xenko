@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
 
         public NextGenTest1()
         {
-            GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
+            //GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
             //Profiler.EnableAll();
         }
@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
         protected override Task LoadContent()
         {
             //Profiler.Enable(GameProfilingKeys.GameDrawFPS);
-            ProfilerSystem.EnableProfiling(false, GameProfilingKeys.GameDrawFPS);
+            ProfilerSystem.EnableProfiling(false, GameProfilingKeys.GameDrawFPS, CompositingProfilingKeys.Opaque);
 
             model = Content.Load<Model>("Model");
             material1 = Content.Load<Material>("Material1");
