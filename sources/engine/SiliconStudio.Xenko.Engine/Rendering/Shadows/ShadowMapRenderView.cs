@@ -1,6 +1,7 @@
 // Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Rendering.Shadows
@@ -25,6 +26,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         /// </summary>
         public Rectangle Rectangle;
 
+        public ProfilingKey ProfilingKey { get; } = new ProfilingKey($"ShadowMapRenderView", ProfilingKeyFlags.GpuProfiling);
+        
         /// <summary>
         /// Ignore depth planes in visibility test
         /// </summary>

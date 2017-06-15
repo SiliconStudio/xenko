@@ -210,6 +210,9 @@ namespace SiliconStudio.Xenko.Engine
             //context.GraphicsDevice.Parameters.Set(GlobalKeys.Time, (float)gameTime.Total.TotalSeconds);
             //context.GraphicsDevice.Parameters.Set(GlobalKeys.TimeStep, (float)gameTime.Elapsed.TotalSeconds);
 
+            renderDrawContext.ResourceGroupAllocator.Flush();
+            renderDrawContext.QueryManager.Flush();
+
             // Push context (pop after using)
             using (renderDrawContext.RenderContext.PushTagAndRestore(SceneInstance.Current, SceneInstance))
             {
