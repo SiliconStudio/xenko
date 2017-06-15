@@ -30,11 +30,26 @@ namespace SiliconStudio.Xenko.Streaming
         private int lastUpdateResourcesIndex;
         private bool isDisposing;
         private int frameIndex;
-
-        // Configuration
+        
+        /// <summary>
+        /// The interval between <see cref="StreamingManager"/> updates.
+        /// </summary>
         public TimeSpan ManagerUpdatesInterval = TimeSpan.FromMilliseconds(33);
+
+        /// <summary>
+        /// The inverval between streaming updates per single <see cref="StreamableResource"/>
+        /// </summary>
         public TimeSpan ResourceUpdatesInterval = TimeSpan.FromMilliseconds(200);
-        public const int MaxResourcesPerUpdate = 30;
+
+        /// <summary>
+        /// The <see cref="StreamableResource"/> live timeout. If rouse is not used for a while it's quality gets down.
+        /// </summary>
+        public TimeSpan ResourceLiveTimeout = TimeSpan.FromSeconds(5);
+        
+        /// <summary>
+        /// The maximum amount of resources updated per streaming managed tick. Used to balance performance/streaming speed.
+        /// </summary>
+        public const int MaxResourcesPerUpdate = 20;
 
         /// <summary>
         /// Gets the content streaming service.
@@ -273,7 +288,7 @@ namespace SiliconStudio.Xenko.Streaming
                     {
                         var now = DateTime.UtcNow;
                         int resourcesUpdates = Math.Min(MaxResourcesPerUpdate, resourcesCount);
-
+                        
                         // Update high priority queue and then rest of the resources
                         // Note: resources in the update queue are updated always, while others only between specified intervals
                         int resourcesChecks = resourcesCount - priorityUpdateQueue.Count;
@@ -327,7 +342,7 @@ namespace SiliconStudio.Xenko.Streaming
             else if (resource.LastTimeUsed > 0)
             {
                 var lastUsageTimespan = new TimeSpan((frameIndex - resource.LastTimeUsed) * ManagerUpdatesInterval.Ticks);
-                if (lastUsageTimespan < TimeSpan.FromSeconds(5))
+                if (lastUsageTimespan < ResourceLiveTimeout)
                 {
                     //targetQuality = handler.CalculateTargetQuality(resource, now);
                     //targetQuality = (testQuality / 100.0f); // apply quality scale for testing
