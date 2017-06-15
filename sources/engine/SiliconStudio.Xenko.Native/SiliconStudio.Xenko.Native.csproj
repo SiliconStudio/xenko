@@ -53,6 +53,7 @@
     </None>
     <None Include="XenkoNative.h" />
     <None Include="LinuxAllocator.cpp" />
+	<None Include="FastTextRendering\FastTextRendering.c" />
     <None Include="Sprite\SpriteBatchNative.c" />
     <None Include="DirectInput\XInputChecker.cpp" />
     <None Include="Lightprobes\predicates.c" />
