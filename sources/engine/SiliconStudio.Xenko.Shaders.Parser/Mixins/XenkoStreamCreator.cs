@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
@@ -461,11 +461,25 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 {
                     if (!prevStreamUsage.OutStreamList.Contains(variable))
                     {
+                        var sem = (variable as Variable).Qualifiers.OfType<Semantic>().FirstOrDefault();
+                        if (sem.Name.Text == "SV_IsFrontFace") // PS input only
+                        {
+                            stageExclusiveInputStreams.Add(variable);
+                            continue;
+                        }
+
                         prevStreamUsage.OutStreamList.Add(variable);
 
                         if (!prevStreamUsage.InStreamList.Contains(variable))
                             prevStreamUsage.InStreamList.Add(variable);
                     }
+                }
+
+                // Move stage exclusive input streams to the end of the declaration list
+                foreach (var variable in stageExclusiveInputStreams)
+                {
+                    nextStreamUsage.InStreamList.Remove(variable);
+                    nextStreamUsage.InStreamList.Add(variable);
                 }
 
                 // keep variable from prev output only if they are necessary to next stage OR their semantics force them to be in it
@@ -511,16 +525,16 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// <param name="stageName">the name of the stage</param>
         /// <param name="prevOuputStructure">the output structutre from the previous stage</param>
         /// <returns>the new output structure</returns>
-        private StructType GenerateStreams(MethodDefinition entryPoint, StreamStageUsage streamStageUsage, string stageName, StructType prevOuputStructure, bool autoGenSem = true)
+        private StructType GenerateStreams(MethodDefinition entryPoint, StreamStageUsage streamStageUsage, string stageName, StructType prevOuputStructure /* FIXME */, bool autoGenSem = true)
         {
             if (entryPoint != null)
             {
                 // create the stream structures
-                var inStreamStruct = prevOuputStructure ?? CreateStreamStructure(streamStageUsage.InStreamList, stageName + "_INPUT");
+                var inStreamStruct = CreateInputStreamStructure(prevOuputStructure, streamStageUsage.InStreamList, stageName + "_INPUT");
                 var outStreamStruct = CreateStreamStructure(streamStageUsage.OutStreamList, stageName + "_OUTPUT", true, autoGenSem);
 
                 var intermediateStreamStruct = CreateIntermediateStructType(streamStageUsage, stageName);
-
+                
                 // modify the entrypoint
                 if (inStreamStruct.Fields.Count != 0)
                 {
@@ -1144,6 +1158,48 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 }
             }
             return tempStruct;
+        }
+
+        /// <summary>
+        /// Generate a stream structure from a previous output structure if specified
+        /// </summary>
+        /// <param name="prevStreamStageUsage">The previous stream stage to match the new structure's layout to (optional)</param>
+        /// <param name="streamsDeclarationList">the list of the declarations</param>
+        /// <param name="structName">the name of the structure</param>
+        /// <returns>the structure</returns>
+        private static StructType CreateInputStreamStructure(StructType prevOutputStructure, List<IDeclaration> streamsDeclarationList, string structName, bool useSem = true,
+            bool autoAddSem = true)
+        {
+            var declarations = new List<IDeclaration>();
+            var semanticNames = new HashSet<string>();
+            var fieldNames = new HashSet<string>();
+
+            if (prevOutputStructure != null)
+            {
+                foreach (var variable in prevOutputStructure.Fields)
+                {
+                    var sem = variable.Qualifiers.OfType<Semantic>().FirstOrDefault();
+                    declarations.Add(variable);
+                    fieldNames.Add(variable.Name);
+                    if (sem != null)
+                    {
+                        semanticNames.Add(sem.Name);
+                    }
+                }
+            }
+
+            foreach (var decl in streamsDeclarationList)
+            {
+                var variable = (Variable)decl;
+                var sem = variable.Qualifiers.OfType<Semantic>().FirstOrDefault();
+                if (!fieldNames.Contains(variable.Name) && (sem == null || !semanticNames.Contains(sem.Name)))
+                {
+                    declarations.Add(decl);
+                    if(sem != null) semanticNames.Add(sem.Name);
+                    fieldNames.Add(variable.Name);
+                }
+            }
+            return CreateStreamStructure(declarations, structName, useSem, autoAddSem);
         }
 
         /// <summary>
