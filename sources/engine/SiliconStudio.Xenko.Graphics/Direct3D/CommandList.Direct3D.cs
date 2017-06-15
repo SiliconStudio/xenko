@@ -41,8 +41,10 @@ namespace SiliconStudio.Xenko.Graphics
         internal CommandList(GraphicsDevice device) : base(device)
         {
             nativeDeviceContext = device.NativeDeviceContext;
+            NativeDeviceChild = nativeDeviceContext;
             nativeDeviceContext1 = new SharpDX.Direct3D11.DeviceContext1(nativeDeviceContext.NativePointer);
             nativeDeviceProfiler = device.IsDebugMode ? SharpDX.ComObject.QueryInterfaceOrNull<SharpDX.Direct3D11.UserDefinedAnnotation>(nativeDeviceContext.NativePointer) : null;
+
             InitializeStages();
 
             ClearState();
@@ -478,27 +480,31 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
-        /// Begins profiling.
+        /// Submits a GPU timestamp query.
         /// </summary>
-        /// <param name="profileColor">Color of the profile.</param>
-        /// <param name="name">The name.</param>
-        public unsafe void BeginProfile(Color4 profileColor, string name)
+        /// <param name="queryPool">The <see cref="QueryPool"/> owning the query.</param>
+        /// <param name="index">The query index.</param>
+        public void WriteTimestamp(QueryPool queryPool, int index)
         {
-            if (nativeDeviceProfiler != null)
-            {
-                nativeDeviceProfiler.BeginEvent(name);
-            }
+            nativeDeviceContext.End(queryPool.NativeQueries[index]);    
         }
 
         /// <summary>
-        /// Ends profiling.
+        /// Begins debug event.
+        /// </summary>
+        /// <param name="profileColor">Color of the profile.</param>
+        /// <param name="name">The name.</param>
+        public void BeginProfile(Color4 profileColor, string name)
+        {
+            nativeDeviceProfiler?.BeginEvent(name);
+        }
+
+        /// <summary>
+        /// Ends debug event.
         /// </summary>
         public void EndProfile()
         {
-            if (nativeDeviceProfiler != null)
-            {
-                nativeDeviceProfiler.EndEvent();
-            }
+            nativeDeviceProfiler?.EndEvent();
         }
 
         /// <summary>

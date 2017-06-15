@@ -81,13 +81,6 @@ namespace SiliconStudio.BuildEngine
         private readonly HashSet<BuildStep> prerequisiteSteps = new HashSet<BuildStep>();
 
         /// <summary>
-        /// List of commands that needs this command to be successfully executed before being processed
-        /// </summary>
-        public IEnumerable<CommandBuildStep> SpawnedSteps => SpawnedStepsList;
-
-        protected readonly List<CommandBuildStep> SpawnedStepsList = new List<CommandBuildStep>();
-
-        /// <summary>
         /// The parent build step, which will be the instigator of the step
         /// </summary>
         public BuildStep Parent { get { return parent; } protected internal set { if (parent != null && value != null) throw new InvalidOperationException("BuildStep already has a parent"); parent = value; } }
@@ -212,7 +205,7 @@ namespace SiliconStudio.BuildEngine
             var currentBuildStep = this;
             while (currentBuildStep != null)
             {
-                var enumBuildStep = currentBuildStep as EnumerableBuildStep;
+                var enumBuildStep = currentBuildStep as ListBuildStep;
                 if (enumBuildStep != null)
                     yield return enumBuildStep.OutputObjects;
 

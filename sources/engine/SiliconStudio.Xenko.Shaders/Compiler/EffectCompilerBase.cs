@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Storage;
 
@@ -10,7 +11,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
     /// <summary>
     /// Base class for implementations of <see cref="IEffectCompiler"/>, providing some helper functions.
     /// </summary>
-    public abstract class EffectCompilerBase : IEffectCompiler
+    public abstract class EffectCompilerBase : DisposeBase, IEffectCompiler
     {
         protected EffectCompilerBase()
         {
