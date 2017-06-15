@@ -468,6 +468,21 @@ namespace SiliconStudio.Xenko.Graphics
             return this;
         }
 
+        /// <summary>
+        /// Releases the texture data.
+        /// </summary>
+        public void ReleaseData()
+        {
+            // Release GPU data
+            OnDestroyed();
+
+            // Clean description
+            textureDescription = new TextureDescription();
+            textureViewDescription = new TextureViewDescription();
+            ViewWidth = ViewHeight = ViewDepth = 0;
+            RowStride = DepthStride = 0;
+            mipmapDescriptions = null;
+        }
 
         /// <summary>
         /// Gets a view on this texture for a particular <see cref="ViewType" />, array index (or zIndex for Texture3D), and mipmap index.
