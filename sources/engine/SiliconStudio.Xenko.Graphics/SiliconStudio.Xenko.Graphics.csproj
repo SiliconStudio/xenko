@@ -129,6 +129,7 @@
     <Compile Include="DefaultCommandListLock.cs" />
     <Compile Include="Direct3D12\CompiledCommandList.Direct3D12.cs" />
     <Compile Include="Direct3D\SharpDXInterop.cs" />
+    <Compile Include="FastTextRendering.cs" />
     <Compile Include="Font\SignedDistanceFieldSpriteFont.cs" />
     <Compile Include="Null\CommandList.Null.cs" />
     <Compile Include="Null\DescriptorPool.Null.cs" />
