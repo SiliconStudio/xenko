@@ -24,7 +24,7 @@ namespace SiliconStudio.Core
         /// <param name="location">The location to try to use.</param>
         /// <returns><c>true</c> if the specified location is already used, <c>false</c> otherwise.</returns>
         public delegate bool ContainsLocationDelegate(UFile location);
-        
+
         /// <summary>
         /// Determines whether the specified string is valid namespace identifier.
         /// </summary>

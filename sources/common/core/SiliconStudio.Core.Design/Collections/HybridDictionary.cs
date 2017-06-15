@@ -4,6 +4,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Core.Collections
 {
@@ -29,7 +31,7 @@ namespace SiliconStudio.Core.Collections
         {
         }
 
-        public HybridDictionary(IDictionary<TKey, TValue> dictionary) : this(dictionary, null)
+        public HybridDictionary([NotNull] IDictionary<TKey, TValue> dictionary) : this(dictionary, null)
         {
         }
 
@@ -46,10 +48,10 @@ namespace SiliconStudio.Core.Collections
                 list = new List<KeyValuePair<TKey, TValue>>(capacity);
             }
         }
-        public HybridDictionary(IDictionary<TKey, TValue> dictionary, IEqualityComparer<TKey> comparer) : this(dictionary?.Count ?? 0, comparer)
+        public HybridDictionary([NotNull] IDictionary<TKey, TValue> dictionary, IEqualityComparer<TKey> comparer)
+            : this(dictionary.SafeArgument(nameof(dictionary)).Count, comparer)
         {
-            if (dictionary == null) throw new ArgumentNullException(nameof(dictionary));
-            foreach (KeyValuePair<TKey, TValue> keyValuePair in dictionary)
+            foreach (var keyValuePair in dictionary)
                 InternalAdd(keyValuePair);
         }
 
@@ -194,7 +196,7 @@ namespace SiliconStudio.Core.Collections
             }
         }
 
-        public bool ContainsKey(TKey key)
+        public bool ContainsKey([NotNull] TKey key)
         {
             if (key == null) throw new ArgumentNullException(nameof(key));
             if (list != null)
@@ -257,7 +259,7 @@ namespace SiliconStudio.Core.Collections
             valueCollection = null;
             if (list != null)
             {
-                for (int i = 0; i < list.Count; i++)
+                for (var i = 0; i < list.Count; i++)
                 {
                     var kvp = list[i];
                     if (keyComparer.Equals(kvp.Key, key))

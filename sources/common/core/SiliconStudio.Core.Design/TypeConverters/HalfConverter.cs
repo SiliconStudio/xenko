@@ -54,7 +54,7 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Core.TypeConverters
 {
 /// <summary>
-/// Provides a type converter to convert <see cref="T:SlimDX.Half" /> objects to and from various 
+/// Provides a type converter to convert <see cref="T:SlimDX.Half" /> objects to and from various
 /// other representations.
 /// </summary>
 public class HalfConverter : ExpandableObjectConverter
@@ -129,7 +129,7 @@ public class HalfConverter : ExpandableObjectConverter
     {
         if (destinationType == null)
         {
-            throw new ArgumentNullException("destinationType");
+            throw new ArgumentNullException(nameof(destinationType));
         }
         if (culture == null)
         {

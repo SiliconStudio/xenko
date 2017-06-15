@@ -4,6 +4,7 @@ using System;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Threading;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Windows
 {
@@ -30,13 +31,14 @@ namespace SiliconStudio.Core.Windows
         {
             mutex.ReleaseMutex();
         }
-        
+
         /// <summary>
         /// Tries to take ownership of the mutex without waiting.
         /// </summary>
         /// Tries to take ownership of the mutex within a given delay.
         /// <returns>A new instance of <see cref="GlobalMutex"/> if the ownership could be taken, <c>null</c> otherwise.</returns>
         /// <remarks>The returned <see cref="GlobalMutex"/> must be disposed to release the mutex.</remarks>
+        [CanBeNull]
         public static GlobalMutex TryLock(string name)
         {
             return Wait(name, 0);
@@ -48,6 +50,7 @@ namespace SiliconStudio.Core.Windows
         /// Tries to take ownership of the mutex within a given delay.
         /// <returns>A new instance of <see cref="GlobalMutex"/> if the ownership could be taken, <c>null</c> otherwise.</returns>
         /// <remarks>The returned <see cref="GlobalMutex"/> must be disposed to release the mutex.</remarks>
+        [CanBeNull]
         public static GlobalMutex Wait(string name)
         {
             return Wait(name, -1);
@@ -64,6 +67,7 @@ namespace SiliconStudio.Core.Windows
         /// Calling this method with 0 for <see paramref="millisecondsTimeout"/> is equivalent to call <see cref="TryLock"/>.
         /// Calling this method with a negative value for <see paramref="millisecondsTimeout"/> is equivalent to call <see cref="Wait(string)"/>.
         /// </remarks>
+        [CanBeNull]
         public static GlobalMutex Wait(string name, int millisecondsTimeout)
         {
             var mutex = BuildMutex(name);
@@ -78,6 +82,7 @@ namespace SiliconStudio.Core.Windows
             }
         }
 
+        [NotNull]
         private static Mutex BuildMutex(string name)
         {
             name = name.Replace(":", "_");

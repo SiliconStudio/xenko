@@ -49,6 +49,7 @@
 using System;
 using System.ComponentModel;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.TypeConverters
 {
@@ -56,15 +57,18 @@ namespace SiliconStudio.Core.TypeConverters
     {
         private readonly FieldInfo fieldInfo;
 
+        [NotNull]
         public FieldInfo FieldInfo => fieldInfo;
 
+        [CanBeNull]
         public override Type ComponentType => fieldInfo.DeclaringType;
 
         public override bool IsReadOnly => false;
 
+        [NotNull]
         public override Type PropertyType => fieldInfo.FieldType;
 
-        public FieldPropertyDescriptor(FieldInfo fieldInfo)
+        public FieldPropertyDescriptor([NotNull] FieldInfo fieldInfo)
             : base(fieldInfo.Name, new Attribute[0])
         {
             this.fieldInfo = fieldInfo;

@@ -28,7 +28,7 @@ namespace SiliconStudio.Core.Extensions
             this.equals = equals;
             this.getHashCode = getHashCode;
         }
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AnonymousEqualityComparer{T}"/> class using the default <see cref="object.GetHashCode"/> method to get hash codes.
         /// </summary>

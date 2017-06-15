@@ -51,7 +51,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
 using System.Globalization;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Core.TypeConverters
@@ -67,10 +67,10 @@ namespace SiliconStudio.Core.TypeConverters
         public Vector2Converter()
         {
             var type = typeof(Vector2);
-            Properties = new PropertyDescriptorCollection(new PropertyDescriptor[] 
-            { 
-                new FieldPropertyDescriptor(type.GetField(nameof(Vector2.X))), 
-                new FieldPropertyDescriptor(type.GetField(nameof(Vector2.Y))) 
+            Properties = new PropertyDescriptorCollection(new PropertyDescriptor[]
+            {
+                new FieldPropertyDescriptor(type.GetField(nameof(Vector2.X))),
+                new FieldPropertyDescriptor(type.GetField(nameof(Vector2.Y)))
             });
         }
 
@@ -104,6 +104,7 @@ namespace SiliconStudio.Core.TypeConverters
         }
 
         /// <inheritdoc/>
+        [NotNull]
         public override object CreateInstance(ITypeDescriptorContext context, IDictionary propertyValues)
         {
             if (propertyValues == null) throw new ArgumentNullException(nameof(propertyValues));

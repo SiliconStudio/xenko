@@ -1,6 +1,7 @@
 // Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Transactions
 {
@@ -37,7 +38,8 @@ namespace SiliconStudio.Core.Transactions
         /// <summary>
         /// Gets the <see cref="IOperation"/> interface used to interact with the transaction stack.
         /// </summary>
-        internal IOperation Interface => (IOperation)this;
+        [NotNull]
+        internal IOperation Interface => this;
 
         /// <summary>
         /// Rollbacks the operation, restoring the state of object as they were before the operation.
@@ -50,7 +52,7 @@ namespace SiliconStudio.Core.Transactions
         protected abstract void Rollforward();
 
         /// <summary>
-        /// Freezes the content of this operation, forbidding any subsequent rollback and rollforward. 
+        /// Freezes the content of this operation, forbidding any subsequent rollback and rollforward.
         /// </summary>
         /// <remarks>This operation should release any reference that is not needed anymore by the operation.</remarks>
         protected virtual void FreezeContent()

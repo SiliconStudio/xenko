@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Yaml.Events;
 
@@ -21,7 +22,7 @@ namespace SiliconStudio.Core.Settings
         /// </summary>
         /// <param name="profile">The profile this <see cref="SettingsEntry"/>belongs to.</param>
         /// <param name="name">The name associated to this <see cref="SettingsEntry"/>.</param>
-        protected SettingsEntry(SettingsProfile profile, UFile name)
+        protected SettingsEntry([NotNull] SettingsProfile profile, [NotNull] UFile name)
         {
             if (profile == null) throw new ArgumentNullException(nameof(profile));
             if (name == null) throw new ArgumentNullException(nameof(name));
@@ -40,13 +41,14 @@ namespace SiliconStudio.Core.Settings
         internal object Value { get { return value; } set { UpdateValue(value); } }
 
         /// <summary>
-        /// Creates a new instance of a class derived from <see cref="SettingsEntry"/> that matches the type of the given value. 
+        /// Creates a new instance of a class derived from <see cref="SettingsEntry"/> that matches the type of the given value.
         /// </summary>
         /// <param name="profile">The profile the <see cref="SettingsEntry"/> to create belongs to.</param>
         /// <param name="name">The name associated to the <see cref="SettingsEntry"/> to create.</param>
         /// <param name="value">The value to associate to the <see cref="SettingsEntry"/> to create.</param>
         /// <returns>A new instance of a <see cref="SettingsEntry"/> class.</returns>
-        internal static SettingsEntry CreateFromValue(SettingsProfile profile, UFile name, object value)
+        [NotNull]
+        internal static SettingsEntry CreateFromValue([NotNull] SettingsProfile profile, [NotNull] UFile name, object value)
         {
             if (profile == null) throw new ArgumentNullException(nameof(profile));
             if (name == null) throw new ArgumentNullException(nameof(name));

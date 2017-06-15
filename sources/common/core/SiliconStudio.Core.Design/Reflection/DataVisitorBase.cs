@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Reflection
 {
@@ -22,7 +23,8 @@ namespace SiliconStudio.Core.Reflection
         /// Initializes a new instance of the <see cref="DataVisitorBase"/> class.
         /// </summary>
         /// <param name="attributeRegistry">The attribute registry.</param>
-        protected DataVisitorBase(IAttributeRegistry attributeRegistry) : this(new TypeDescriptorFactory(attributeRegistry))
+        protected DataVisitorBase([NotNull] IAttributeRegistry attributeRegistry)
+            : this(new TypeDescriptorFactory(attributeRegistry))
         {
         }
 
@@ -39,7 +41,7 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <param name="typeDescriptorFactory">The type descriptor factory.</param>
         /// <exception cref="ArgumentNullException">typeDescriptorFactory</exception>
-        protected DataVisitorBase(ITypeDescriptorFactory typeDescriptorFactory)
+        protected DataVisitorBase([NotNull] ITypeDescriptorFactory typeDescriptorFactory)
         {
             if (typeDescriptorFactory == null) throw new ArgumentNullException(nameof(typeDescriptorFactory));
             TypeDescriptorFactory = typeDescriptorFactory;
@@ -53,6 +55,7 @@ namespace SiliconStudio.Core.Reflection
         /// Gets the type descriptor factory.
         /// </summary>
         /// <value>The type descriptor factory.</value>
+        [NotNull]
         public ITypeDescriptorFactory TypeDescriptorFactory { get; }
 
         /// <summary>
@@ -131,7 +134,7 @@ namespace SiliconStudio.Core.Reflection
                 default:
                     // Note that the behaviour is slightly different if a type has a custom visitor or not.
                     // If it has a custom visitor, it will visit the object even if the object has been already visited
-                    // otherwise it will use CanVisit() on this instance. The CanVisit() is tracking a list of 
+                    // otherwise it will use CanVisit() on this instance. The CanVisit() is tracking a list of
                     // visited objects and it will not revisit the object.
                     IDataCustomVisitor customVisitor;
                     if (!mapTypeToCustomVisitors.TryGetValue(objectType, out customVisitor) && CustomVisitors.Count > 0)
@@ -160,19 +163,22 @@ namespace SiliconStudio.Core.Reflection
             }
         }
 
+        /// <inheritdoc />
         public virtual void VisitNull()
         {
         }
 
+        /// <inheritdoc />
         public virtual void VisitPrimitive(object primitive, PrimitiveDescriptor descriptor)
         {
         }
 
+        /// <inheritdoc />
         public virtual void VisitObject(object obj, ObjectDescriptor descriptor, bool visitMembers)
         {
             if (!obj.GetType().IsArray && visitMembers)
             {
-                foreach (var member in descriptor.Members.Cast<IMemberDescriptor>())
+                foreach (var member in descriptor.Members)
                 {
                     CurrentPath.Push(member);
                     VisitObjectMember(obj, descriptor, member, member.Get(obj));
@@ -194,11 +200,13 @@ namespace SiliconStudio.Core.Reflection
             }
         }
 
+        /// <inheritdoc />
         public virtual void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
         {
-            Visit(value, (ITypeDescriptor)member.TypeDescriptor);
+            Visit(value, member.TypeDescriptor);
         }
 
+        /// <inheritdoc />
         public virtual void VisitArray(Array array, ArrayDescriptor descriptor)
         {
             for (var i = 0; i < array.Length; i++)
@@ -210,11 +218,13 @@ namespace SiliconStudio.Core.Reflection
             }
         }
 
+        /// <inheritdoc />
         public virtual void VisitArrayItem(Array array, ArrayDescriptor descriptor, int index, object item, ITypeDescriptor itemDescriptor)
         {
             Visit(item, itemDescriptor);
         }
 
+        /// <inheritdoc />
         public virtual void VisitCollection(IEnumerable collection, CollectionDescriptor descriptor)
         {
             var i = 0;
@@ -231,11 +241,13 @@ namespace SiliconStudio.Core.Reflection
             }
         }
 
+        /// <inheritdoc />
         public virtual void VisitCollectionItem(IEnumerable collection, CollectionDescriptor descriptor, int index, object item, ITypeDescriptor itemDescriptor)
         {
             Visit(item, itemDescriptor);
         }
 
+        /// <inheritdoc />
         public virtual void VisitDictionary(object dictionary, DictionaryDescriptor descriptor)
         {
             // Make a copy in case VisitCollectionItem mutates something
@@ -254,13 +266,14 @@ namespace SiliconStudio.Core.Reflection
             }
         }
 
+        /// <inheritdoc />
         public virtual void VisitDictionaryKeyValue(object dictionary, DictionaryDescriptor descriptor, object key, ITypeDescriptor keyDescriptor, object value, ITypeDescriptor valueDescriptor)
         {
             Visit(key, keyDescriptor);
             Visit(value, valueDescriptor);
         }
 
-        protected virtual bool CanVisit(object obj)
+        protected virtual bool CanVisit([NotNull] object obj)
         {
             // Always visit valuetypes
             if (obj.GetType().GetTypeInfo().IsValueType)
