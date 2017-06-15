@@ -47,7 +47,7 @@
     </ItemGroup>
   </Target>
   
-  <Target Name="_SiliconStudioCopyContent" DependsOnTargets="_SiliconStudioBuildDependencies" AfterTargets="ResolveAssemblyReferences" Condition="'$(SiliconStudioXenkoOutputFolder)' != ''">
+  <Target Name="_SiliconStudioCopyContent" DependsOnTargets="_SiliconStudioBuildDependencies" AfterTargets="ResolveAssemblyReferences" Condition="'$(SiliconStudioDependenciesCopy)' != 'false'">
     <ItemGroup>
       <Content Include="@(_SiliconStudioDependencyContent)"/>
     </ItemGroup>
@@ -58,9 +58,9 @@
   Native libraries setup (from .ssdeps)
   *****************************************************************************************************************************
   -->
-  <Target Name="_SiliconStudioSetupNativeLibraries" DependsOnTargets="_SiliconStudioBuildDependencies" AfterTargets="ResolveAssemblyReferences" Condition="'$(SiliconStudioXenkoOutputFolder)' != ''">
+  <Target Name="_SiliconStudioSetupNativeLibraries" DependsOnTargets="_SiliconStudioBuildDependencies" AfterTargets="ResolveAssemblyReferences" Condition="'$(SiliconStudioDependenciesCopy)' != 'false'">
     <!-- Windows, UWP, Linux & macOS -->
-    <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'Linux' Or '$(SiliconStudioPlatform)' == 'macOS' ">
+    <ItemGroup Condition=" '$(SiliconStudioPlatform)' == '' Or '$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'Linux' Or '$(SiliconStudioPlatform)' == 'macOS' ">
       <None Include="@(_SiliconStudioDependencyNativeLib)">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
