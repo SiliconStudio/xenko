@@ -32,13 +32,16 @@ namespace SiliconStudio.Xenko.Graphics
 
             private int charsToRenderCount;
 
+            /// <summary>
+            /// Initializes a FastTextRendering instance (create and build required ressources, ...).
+            /// </summary>
+            /// <param name="graphicsContext">The current GraphicsContext.</param>
             public unsafe void Initialize([NotNull] GraphicsContext graphicsContext)
             {
                 var indexBufferSize = MaxCharactersPerLine * MaxCharactersLines * 6 * sizeof(int);
                 var indexBufferLength = indexBufferSize / IndexStride;
 
-                var vertexBufferLength = MaxCharactersPerLine * MaxCharactersLines * 4;
-
+                // Map and build the indice buffer
                 indexBuffer = graphicsContext.Allocator.GetTemporaryBuffer(new BufferDescription(indexBufferSize, BufferFlags.IndexBuffer, GraphicsResourceUsage.Dynamic));
 
                 var mappedIndices = graphicsContext.CommandList.MapSubresource(indexBuffer, 0, MapMode.WriteNoOverwrite, false, 0, indexBufferSize);
@@ -58,6 +61,11 @@ namespace SiliconStudio.Xenko.Graphics
 
                 graphicsContext.CommandList.UnmapSubresource(mappedIndices);
 
+                indexBufferBinding = new IndexBufferBinding(Buffer.Index.New(graphicsContext.CommandList.GraphicsDevice, new DataPointer(indexPointer, indexBufferSize)), true, indexBufferLength);
+
+                // Create vertex buffers
+                var vertexBufferLength = MaxCharactersPerLine * MaxCharactersLines * 4;
+
                 vertexBuffers = new Buffer[]
                 {
                     Buffer.Vertex.New(graphicsContext.CommandList.GraphicsDevice, new VertexPositionNormalTexture[vertexBufferLength], GraphicsResourceUsage.Dynamic),
@@ -76,13 +84,13 @@ namespace SiliconStudio.Xenko.Graphics
                     vertexBuffersBinding[1].Declaration.CreateInputElements()
                 };
 
-                indexBufferBinding = new IndexBufferBinding(Buffer.Index.New(graphicsContext.CommandList.GraphicsDevice, new DataPointer(indexPointer, indexBufferSize)), true, indexBufferLength);
-
+                // Create the pipeline state object
                 pipelineState = new MutablePipelineState(graphicsContext.CommandList.GraphicsDevice);
                 pipelineState.State.SetDefaults();
                 pipelineState.State.InputElements = inputElementDescriptions[0];
                 pipelineState.State.PrimitiveType = PrimitiveType.TriangleList;
 
+                // Create the effect
                 simpleEffect = new EffectInstance(new Effect(graphicsContext.CommandList.GraphicsDevice, SpriteEffect.Bytecode));
                 simpleEffect.Parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Identity);
                 simpleEffect.Parameters.Set(TexturingKeys.Texture0, DebugSpriteFont);
@@ -90,24 +98,33 @@ namespace SiliconStudio.Xenko.Graphics
                 simpleEffect.Parameters.Set(SpriteEffectKeys.Color, TextColor);
 
                 simpleEffect.UpdateEffect(graphicsContext.CommandList.GraphicsDevice);
-
             }
 
+            /// <summary>
+            /// Begins text rendering (swaps and maps the vertex buffer to write to).
+            /// </summary>
+            /// <param name="graphicsContext">The current GraphicsContext.</param>
             public void Begin([NotNull] GraphicsContext graphicsContext)
             {
+                // Swap vertex buffer
                 activeVertexBufferIndex = activeVertexBufferIndex == 0 ? 1 : 0;
+
                 charsToRenderCount = 0;
 
-                // Map the VertexBuffer
+                // Map the vertex buffer to write to
                 mappedVertexBuffer = graphicsContext.CommandList.MapSubresource(vertexBuffers[activeVertexBufferIndex], 0, MapMode.WriteDiscard);
                 mappedVertexBufferPointer = mappedVertexBuffer.DataBox.DataPointer;
             }
 
+            /// <summary>
+            /// Begins text rendering (swaps and maps the vertex buffer to write to).
+            /// </summary>
+            /// <param name="graphicsContext">The current GraphicsContext.</param>
             public void End([NotNull] GraphicsContext graphicsContext)
             {
                 if (graphicsContext == null) throw new ArgumentNullException(nameof(graphicsContext));
 
-                // Unmap the VertexBuffer
+                // Unmap the vertex buffer
                 graphicsContext.CommandList.UnmapSubresource(mappedVertexBuffer);
                 mappedVertexBufferPointer = IntPtr.Zero;
 
@@ -134,7 +151,14 @@ namespace SiliconStudio.Xenko.Graphics
                 graphicsContext.CommandList.DrawIndexed(charsToRenderCount * 6);
             }
 
-            public unsafe void AppendTextToVertexBuffer(GraphicsContext graphicsContext, string text, int x, int y)
+            /// <summary>
+            /// Adds a string to be drawn once End() is called.
+            /// </summary>
+            /// <param name="graphicsContext">The current GraphicsContext.</param>
+            /// <param name="text">The text to draw.</param>
+            /// <param name="x">Position of the text on the X axis (in viewport space).</param>
+            /// <param name="y">Position of the text on the Y axis (in viewport space).</param>
+            public unsafe void DrawString(GraphicsContext graphicsContext, string text, int x, int y)
             {
                 var target = graphicsContext.CommandList.RenderTarget;
 
@@ -144,7 +168,7 @@ namespace SiliconStudio.Xenko.Graphics
                 var textLength = text.Length;
                 var textLengthPointer = new IntPtr(&textLength);
 
-                Native.NativeInvoke.AppendTextToVertexBuffer(new IntPtr(&constantInfos), new IntPtr(&renderInfos), text, out textLengthPointer, out mappedVertexBufferPointer);
+                Native.NativeInvoke.AppendTextToVertexBuffer(constantInfos, renderInfos, text, out textLengthPointer, out mappedVertexBufferPointer);
 
                 charsToRenderCount += *(int*)textLengthPointer.ToPointer();
             }
