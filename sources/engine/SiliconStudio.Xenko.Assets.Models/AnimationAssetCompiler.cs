@@ -43,43 +43,43 @@ namespace SiliconStudio.Xenko.Assets.Models
             if (asset.Skeleton != null)
                 skeleton = assetItem.Package.FindAssetFromProxyObject(asset.Skeleton);
 
-            var sourceBuildStep = ImportModelCommand.Create(extension);
-            if (sourceBuildStep == null)
+            var sourceBuildCommand = ImportModelCommand.Create(extension);
+            if (sourceBuildCommand == null)
             {
                 result.Error($"No importer found for model extension '{extension}. The model '{assetSource}' can't be imported.");
                 return;
             }
 
-            sourceBuildStep.Mode = ImportModelCommand.ExportMode.Animation;
-            sourceBuildStep.SourcePath = assetSource;
-            sourceBuildStep.Location = targetUrlInStorage;
-            sourceBuildStep.AnimationRepeatMode = asset.RepeatMode;
-            sourceBuildStep.AnimationRootMotion = asset.RootMotion;
+            sourceBuildCommand.Mode = ImportModelCommand.ExportMode.Animation;
+            sourceBuildCommand.SourcePath = assetSource;
+            sourceBuildCommand.Location = targetUrlInStorage;
+            sourceBuildCommand.AnimationRepeatMode = asset.RepeatMode;
+            sourceBuildCommand.AnimationRootMotion = asset.RootMotion;
             if (asset.ClipDuration.Enabled)
             {
-                sourceBuildStep.StartFrame = asset.ClipDuration.StartAnimationTime;
-                sourceBuildStep.EndFrame = asset.ClipDuration.EndAnimationTime;
+                sourceBuildCommand.StartFrame = asset.ClipDuration.StartAnimationTime;
+                sourceBuildCommand.EndFrame = asset.ClipDuration.EndAnimationTime;
             }
             else
             {
-                sourceBuildStep.StartFrame = TimeSpan.Zero;
-                sourceBuildStep.EndFrame = AnimationAsset.LongestTimeSpan;
+                sourceBuildCommand.StartFrame = TimeSpan.Zero;
+                sourceBuildCommand.EndFrame = AnimationAsset.LongestTimeSpan;
             }
-            sourceBuildStep.ScaleImport = asset.ScaleImport;
-            sourceBuildStep.PivotPosition = asset.PivotPosition;
+            sourceBuildCommand.ScaleImport = asset.ScaleImport;
+            sourceBuildCommand.PivotPosition = asset.PivotPosition;
 
             if (skeleton != null)
             {
-                sourceBuildStep.SkeletonUrl = skeleton.Location;
+                sourceBuildCommand.SkeletonUrl = skeleton.Location;
                 // Note: skeleton override values
-                sourceBuildStep.ScaleImport = ((SkeletonAsset)skeleton.Asset).ScaleImport;
-                sourceBuildStep.PivotPosition = ((SkeletonAsset)skeleton.Asset).PivotPosition;
+                sourceBuildCommand.ScaleImport = ((SkeletonAsset)skeleton.Asset).ScaleImport;
+                sourceBuildCommand.PivotPosition = ((SkeletonAsset)skeleton.Asset).PivotPosition;
             }
 
             if (asset.Type.Type == AnimationAssetTypeEnum.AnimationClip)
             {
                 // Import the main animation
-                buildStep.Add(sourceBuildStep);
+                buildStep.Add(sourceBuildCommand);
             }
             else if (asset.Type.Type == AnimationAssetTypeEnum.DifferenceClip)
             {
@@ -93,67 +93,81 @@ namespace SiliconStudio.Xenko.Assets.Models
                 var baseAssetSource = UPath.Combine(assetDirectory, referenceClip);
                 var baseExtension = baseAssetSource.GetFileExtension();
 
-                sourceBuildStep.Location = sourceUrlInStorage;
+                sourceBuildCommand.Location = sourceUrlInStorage;
 
-                var baseBuildStep = ImportModelCommand.Create(extension);
-                if (baseBuildStep == null)
+                var baseBuildCommand = ImportModelCommand.Create(extension);
+                if (baseBuildCommand == null)
                 {
                     result.Error($"No importer found for model extension '{baseExtension}. The model '{baseAssetSource}' can't be imported.");
                     return;
                 }
 
-                baseBuildStep.Mode = ImportModelCommand.ExportMode.Animation;
-                baseBuildStep.SourcePath = baseAssetSource;
-                baseBuildStep.Location = baseUrlInStorage;
-                baseBuildStep.AnimationRepeatMode = asset.RepeatMode;
-                baseBuildStep.AnimationRootMotion = asset.RootMotion;
+                baseBuildCommand.Mode = ImportModelCommand.ExportMode.Animation;
+                baseBuildCommand.SourcePath = baseAssetSource;
+                baseBuildCommand.Location = baseUrlInStorage;
+                baseBuildCommand.AnimationRepeatMode = asset.RepeatMode;
+                baseBuildCommand.AnimationRootMotion = asset.RootMotion;
 
                 if (diffAnimationAsset.ClipDuration.Enabled)
                 {
-                    baseBuildStep.StartFrame = diffAnimationAsset.ClipDuration.StartAnimationTimeBox;
-                    baseBuildStep.EndFrame = diffAnimationAsset.ClipDuration.EndAnimationTimeBox;
+                    baseBuildCommand.StartFrame = diffAnimationAsset.ClipDuration.StartAnimationTimeBox;
+                    baseBuildCommand.EndFrame = diffAnimationAsset.ClipDuration.EndAnimationTimeBox;
                 }
                 else
                 {
-                    baseBuildStep.StartFrame = TimeSpan.Zero;
-                    baseBuildStep.EndFrame = AnimationAsset.LongestTimeSpan;
+                    baseBuildCommand.StartFrame = TimeSpan.Zero;
+                    baseBuildCommand.EndFrame = AnimationAsset.LongestTimeSpan;
                 }
 
-                baseBuildStep.ScaleImport = asset.ScaleImport;
-                baseBuildStep.PivotPosition = asset.PivotPosition;
+                baseBuildCommand.ScaleImport = asset.ScaleImport;
+                baseBuildCommand.PivotPosition = asset.PivotPosition;
 
                 if (skeleton != null)
                 {
-                    baseBuildStep.SkeletonUrl = skeleton.Location;
+                    baseBuildCommand.SkeletonUrl = skeleton.Location;
                     // Note: skeleton override values
-                    baseBuildStep.ScaleImport = ((SkeletonAsset)skeleton.Asset).ScaleImport;
-                    baseBuildStep.PivotPosition = ((SkeletonAsset)skeleton.Asset).PivotPosition;
+                    baseBuildCommand.ScaleImport = ((SkeletonAsset)skeleton.Asset).ScaleImport;
+                    baseBuildCommand.PivotPosition = ((SkeletonAsset)skeleton.Asset).PivotPosition;
                 }
 
                 // Import base and main animation
-                buildStep.Add(sourceBuildStep);
-                buildStep.Add(baseBuildStep);
+                var sourceStep = new CommandBuildStep(sourceBuildCommand);
+                buildStep.Add(sourceStep);
+                var baseStep = new CommandBuildStep(baseBuildCommand);
+                buildStep.Add(baseStep);
+              
+                IEnumerable<ObjectUrl> InputFilesGetter()
+                {
+                    yield return new ObjectUrl(UrlType.File, GetAbsolutePath(assetItem, diffAnimationAsset.BaseSource));
+                }
 
-                // Wait for both import fbx commands to be completed
-                buildStep.Add(new WaitBuildStep());
+                var diffCommand = new AdditiveAnimationCommand(targetUrlInStorage, new AdditiveAnimationParameters(baseUrlInStorage, sourceUrlInStorage, rebaseMode), assetItem.Package)
+                {
+                    InputFilesGetter = InputFilesGetter
+                };
+
+                var diffStep = new CommandBuildStep(diffCommand);
+
+                BuildStep.LinkBuildSteps(sourceStep, diffStep);
+                BuildStep.LinkBuildSteps(baseStep, diffStep);
 
                 // Generate the diff of those two animations
-                buildStep.Add(new AdditiveAnimationCommand(targetUrlInStorage, new AdditiveAnimationParameters(baseUrlInStorage, sourceUrlInStorage, rebaseMode), assetItem.Package));
+                buildStep.Add(diffStep);
             }
             else
             {
                 throw new NotImplementedException("This type of animation asset is not supported yet!");
             }
 
-
             result.BuildSteps = buildStep;
         }
 
         internal class AdditiveAnimationCommand : AssetCommand<AdditiveAnimationParameters>
         {
-            public AdditiveAnimationCommand(string url, AdditiveAnimationParameters parameters, Package package) : 
+            public AdditiveAnimationCommand(string url, AdditiveAnimationParameters parameters, Package package) :
                 base(url, parameters, package)
             {
+                Version = 2;
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)

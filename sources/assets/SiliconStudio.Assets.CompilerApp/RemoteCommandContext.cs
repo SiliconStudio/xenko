@@ -32,12 +32,6 @@ namespace SiliconStudio.Assets.CompilerApp
             yield return processBuilderRemote.GetOutputObjects().ToDictionary(x => x.Key, x => new OutputObject(x.Key, x.Value));
         }
 
-        protected override Task<ResultStatus> ScheduleAndExecuteCommandInternal(Command command)
-        {
-            // Send serialized command
-            return processBuilderRemote.SpawnCommand(command);
-        }
-
         protected override ObjectId ComputeInputHash(UrlType type, string filePath)
         {
             return processBuilderRemote.ComputeInputHash(type, filePath);

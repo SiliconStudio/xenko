@@ -18,10 +18,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\build\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\Microsoft.Expression.Interactions.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.Windows.Shell, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\build\packages\Microsoft.Windows.Shell.3.0.1.0\lib\net40\Microsoft.Windows.Shell.dll</HintPath>
@@ -31,9 +27,8 @@
     <Reference Include="PresentationFramework.Aero" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\build\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\System.Windows.Interactivity.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="System.Windows.Interactivity">
+      <HintPath>$(SiliconStudioDependenciesDir)ExpressionBlendSDK\System.Windows.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
@@ -42,7 +37,7 @@
   <ItemGroup>
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
+    </Compile>    
     <Compile Include="Behaviors\NumericTextBoxDragBehavior.cs" />
     <Compile Include="Behaviors\ToggleButtonPopupBehavior.cs" />
     <Compile Include="Controls\PopupModalWindow.cs" />
@@ -181,6 +176,7 @@
     <Compile Include="Windows\DialogHelper.cs" />
     <Compile Include="Windows\HwndHelper.cs" />
     <Compile Include="Controls\ModalWindow.cs" />
+    <Compile Include="Windows\IAsyncClosableWindow.cs" />
     <Compile Include="Windows\WindowInfo.cs" />
     <Compile Include="Windows\WindowInitialPosition.cs" />
     <Compile Include="XamlMarkdown.cs" />

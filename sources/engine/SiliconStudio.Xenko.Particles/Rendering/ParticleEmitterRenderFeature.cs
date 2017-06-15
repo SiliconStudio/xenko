@@ -87,6 +87,13 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             perMaterialDescriptorSetSlot = GetOrCreateEffectDescriptorSetSlot("PerMaterial");
         }
 
+        protected override void Destroy()
+        {
+            descriptorSets.Dispose();
+
+            base.Destroy();
+        }
+
         /// <inheritdoc/>
         public override void Extract()
         {
