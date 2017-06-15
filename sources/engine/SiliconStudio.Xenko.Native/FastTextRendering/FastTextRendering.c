@@ -32,7 +32,7 @@ extern "C" {
 		const int textCharCount = **textLength;
 
 		float scaledDestinationX = 0.0f;
-		float scaledDestinationY = 0.0f;
+		float scaledDestinationY = -(destination.y * 2.0f - 1.0f);
 
 		for (int i = 0; i < textCharCount; i++)
 		{
@@ -50,6 +50,7 @@ extern "C" {
 				// New Line
 				destination.x = fX;
 				destination.y += fH;
+				scaledDestinationY = -(destination.y * 2.0f - 1.0f);
 				--**textLength;
 				continue;
 			}
@@ -62,7 +63,6 @@ extern "C" {
 			source.y = ((float)((currentChar / 32) % 4)) * constantInfos.y;
 
 			scaledDestinationX = (destination.x * 2.0f - 1.0f);
-			scaledDestinationY = -(destination.y * 2.0f - 1.0f);
 
 			// 0
 			(*vertexBufferPointer)->Position.X = scaledDestinationX + BaseVertexBufferData[0].Position.X * destination.width;
