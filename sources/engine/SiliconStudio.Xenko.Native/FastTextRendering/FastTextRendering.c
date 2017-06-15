@@ -18,15 +18,15 @@ extern "C" {
 		{ { 1, -1, 0 },{ 0, 0, 1 },{ 1, 1 } },
 	};
 
-	DLL_EXPORT_API void AppendTextToVertexBuffer(RectangleF* constantInfos, RectangleF* renderInfos, const char* textPointer, int** textLength, VertexPositionNormalTexture** vertexBufferPointer)
+	DLL_EXPORT_API void AppendTextToVertexBuffer(RectangleF constantInfos, RectangleF renderInfos, const char* textPointer, int** textLength, VertexPositionNormalTexture** vertexBufferPointer)
 	{
-		const float fX = renderInfos->x / renderInfos->width;
-		const float fY = renderInfos->y / renderInfos->height;
-		const float fW = constantInfos->x / renderInfos->width;
-		const float fH = constantInfos->y / renderInfos->height;
+		const float fX = renderInfos.x / renderInfos.width;
+		const float fY = renderInfos.y / renderInfos.height;
+		const float fW = constantInfos.x / renderInfos.width;
+		const float fH = constantInfos.y / renderInfos.height;
 
 		RectangleF destination = { fX, fY, fW, fH };
-		RectangleF source = { 0.0f, 0.0f, constantInfos->x, constantInfos->y };
+		RectangleF source = { 0.0f, 0.0f, constantInfos.x, constantInfos.y };
 
 		// Copy the array length (since it may change during an iteration)
 		const int textCharCount = **textLength;
@@ -55,20 +55,44 @@ extern "C" {
 				currentChar = 32;
 			}
 
-			source.x = ((float)(currentChar % 32)) * constantInfos->x;
-			source.y = ((float)((currentChar / 32) % 4)) * constantInfos->y;
+			source.x = ((float)(currentChar % 32)) * constantInfos.x;
+			source.y = ((float)((currentChar / 32) % 4)) * constantInfos.y;
 
-			for (int j = 0; j < 4; j++)
-			{
-				(*vertexBufferPointer)->Position.X = (destination.x * 2.0f - 1.0f) + BaseVertexBufferData[j].Position.X * destination.width;
-				(*vertexBufferPointer)->Position.Y = -(destination.y * 2.0f - 1.0f) + BaseVertexBufferData[j].Position.Y * destination.height;
-				(*vertexBufferPointer)->Position.Z = 0.0f;
+			// 0
+			(*vertexBufferPointer)->Position.X = (destination.x * 2.0f - 1.0f) + BaseVertexBufferData[0].Position.X * destination.width;
+			(*vertexBufferPointer)->Position.Y = -(destination.y * 2.0f - 1.0f) + BaseVertexBufferData[0].Position.Y * destination.height;
 
-				(*vertexBufferPointer)->TextureCoordinate.X = (source.x + BaseVertexBufferData[j].TextureCoordinate.X * source.width) / constantInfos->width;
-				(*vertexBufferPointer)->TextureCoordinate.Y = (source.y + BaseVertexBufferData[j].TextureCoordinate.Y * source.height) / constantInfos->height;
+			(*vertexBufferPointer)->TextureCoordinate.X = (source.x + BaseVertexBufferData[0].TextureCoordinate.X * source.width) / constantInfos.width;
+			(*vertexBufferPointer)->TextureCoordinate.Y = (source.y + BaseVertexBufferData[0].TextureCoordinate.Y * source.height) / constantInfos.height;
 
-				++(*vertexBufferPointer);
-			}
+			++(*vertexBufferPointer);
+
+			// 1
+			(*vertexBufferPointer)->Position.X = (destination.x * 2.0f - 1.0f) + BaseVertexBufferData[1].Position.X * destination.width;
+			(*vertexBufferPointer)->Position.Y = -(destination.y * 2.0f - 1.0f) + BaseVertexBufferData[1].Position.Y * destination.height;
+
+			(*vertexBufferPointer)->TextureCoordinate.X = (source.x + BaseVertexBufferData[1].TextureCoordinate.X * source.width) / constantInfos.width;
+			(*vertexBufferPointer)->TextureCoordinate.Y = (source.y + BaseVertexBufferData[1].TextureCoordinate.Y * source.height) / constantInfos.height;
+
+			++(*vertexBufferPointer);
+
+			// 2
+			(*vertexBufferPointer)->Position.X = (destination.x * 2.0f - 1.0f) + BaseVertexBufferData[2].Position.X * destination.width;
+			(*vertexBufferPointer)->Position.Y = -(destination.y * 2.0f - 1.0f) + BaseVertexBufferData[2].Position.Y * destination.height;
+
+			(*vertexBufferPointer)->TextureCoordinate.X = (source.x + BaseVertexBufferData[2].TextureCoordinate.X * source.width) / constantInfos.width;
+			(*vertexBufferPointer)->TextureCoordinate.Y = (source.y + BaseVertexBufferData[2].TextureCoordinate.Y * source.height) / constantInfos.height;
+
+			++(*vertexBufferPointer);
+
+			// 3
+			(*vertexBufferPointer)->Position.X = (destination.x * 2.0f - 1.0f) + BaseVertexBufferData[3].Position.X * destination.width;
+			(*vertexBufferPointer)->Position.Y = -(destination.y * 2.0f - 1.0f) + BaseVertexBufferData[3].Position.Y * destination.height;
+
+			(*vertexBufferPointer)->TextureCoordinate.X = (source.x + BaseVertexBufferData[3].TextureCoordinate.X * source.width) / constantInfos.width;
+			(*vertexBufferPointer)->TextureCoordinate.Y = (source.y + BaseVertexBufferData[3].TextureCoordinate.Y * source.height) / constantInfos.height;
+
+			++(*vertexBufferPointer);
 
 			destination.x += destination.width;
 		}
