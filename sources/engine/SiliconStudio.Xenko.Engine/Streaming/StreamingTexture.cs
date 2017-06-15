@@ -186,11 +186,12 @@ namespace SiliconStudio.Xenko.Streaming
                 (Format >= PixelFormat.BC1_Typeless && Format <= PixelFormat.BC5_SNorm) ||
                 (Format >= PixelFormat.BC6H_Typeless && Format <= PixelFormat.BC7_UNorm_SRgb);
             Debug.Assert(mipsChange != 0);
-            
-            // TODO: allocation task should dispose texture or merge those tasks?
+
             if (residency == 0)
             {
-                texture.OnDestroyed();
+                // Release
+                texture.ReleaseData();
+                _residentMips = 0;
                 return;
             }
 
