@@ -86,6 +86,11 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
+        /// The tick frquency of timestamp queries in Hertz.
+        /// </summary>
+        public long TimestampFrequency { get; private set; }
+
+        /// <summary>
         ///     Gets the status of this device.
         /// </summary>
         /// <value>The graphics device status.</value>
@@ -253,10 +258,12 @@ namespace SiliconStudio.Xenko.Graphics
             PhysicalDeviceProperties physicalDeviceProperties;
             NativePhysicalDevice.GetProperties(out physicalDeviceProperties);
             ConstantBufferDataPlacementAlignment = (int)physicalDeviceProperties.Limits.MinUniformBufferOffsetAlignment;
+            TimestampFrequency = (long)(1.0e9 / physicalDeviceProperties.Limits.TimestampPeriod); // Resolution in nanoseconds
 
             RequestedProfile = graphicsProfiles.Last();
 
             var queueProperties = NativePhysicalDevice.QueueFamilyProperties;
+            //IsProfilingSupported = queueProperties[0].TimestampValidBits > 0;
 
             // Command lists are thread-safe and execute deferred
             IsDeferred = true;
@@ -355,7 +362,6 @@ namespace SiliconStudio.Xenko.Graphics
 
             EmptyTexelBuffer = Buffer.Typed.New(this, 1, PixelFormat.R32G32B32A32_Float);
         }
-
         internal unsafe IntPtr AllocateUploadBuffer(int size, out SharpVulkan.Buffer resource, out int offset)
         {
             // TODO D3D12 thread safety, should we simply use locks?
@@ -613,20 +619,30 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal void TagResource(GraphicsResourceLink resourceLink)
         {
-            var texture = resourceLink.Resource as Texture;
-            if (texture != null && texture.Usage == GraphicsResourceUsage.Dynamic)
+            switch (resourceLink.Resource)
             {
-                // Increase the reference count until GPU is done with the resource
-                resourceLink.ReferenceCount++;
-                graphicsResourceLinkCollector.Add(NextFenceValue, resourceLink);
-            }
+                case Texture texture:
+                    if (texture.Usage == GraphicsResourceUsage.Dynamic)
+                    {
+                        // Increase the reference count until GPU is done with the resource
+                        resourceLink.ReferenceCount++;
+                        graphicsResourceLinkCollector.Add(NextFenceValue, resourceLink);
+                    }
+                    break;
 
-            var buffer = resourceLink.Resource as Buffer;
-            if (buffer != null && buffer.Usage == GraphicsResourceUsage.Dynamic)
-            {
-                // Increase the reference count until GPU is done with the resource
-                resourceLink.ReferenceCount++;
-                graphicsResourceLinkCollector.Add(NextFenceValue, resourceLink);
+                case Buffer buffer:
+                    if (buffer.Usage == GraphicsResourceUsage.Dynamic)
+                    {
+                        // Increase the reference count until GPU is done with the resource
+                        resourceLink.ReferenceCount++;
+                        graphicsResourceLinkCollector.Add(NextFenceValue, resourceLink);
+                    }
+                    break;
+
+                case QueryPool _:
+                    resourceLink.ReferenceCount++;
+                    graphicsResourceLinkCollector.Add(NextFenceValue, resourceLink);
+                    break;
             }
         }
     }
@@ -828,6 +844,11 @@ namespace SiliconStudio.Xenko.Graphics
             return new NativeResource(DebugReportObjectType.Fence, *(ulong*)&handle);
         }
 
+        public static unsafe implicit operator NativeResource(SharpVulkan.QueryPool handle)
+        {
+            return new NativeResource(DebugReportObjectType.QueryPool, *(ulong*)&handle);
+        }
+
         public unsafe void Destroy(GraphicsDevice device)
         {
             var handleCopy = handle;
@@ -860,6 +881,9 @@ namespace SiliconStudio.Xenko.Graphics
                     break;
                 case DebugReportObjectType.Fence:
                     device.NativeDevice.DestroyFence(*(Fence*)&handleCopy);
+                    break;
+                case DebugReportObjectType.QueryPool:
+                    device.NativeDevice.DestroyQueryPool(*(SharpVulkan.QueryPool*)&handleCopy);
                     break;
             }
         }
