@@ -18,8 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
         public static readonly ObjectParameterKey<LuminanceResult> LuminanceResult = ParameterKeys.NewObject<LuminanceResult>();
 
         private PixelFormat luminanceFormat = PixelFormat.R16_Float;
-        private ImageEffectShader luminanceLogEffect;
-        private Texture luminance1x1;
         private GaussianBlur blur;
 
         private ImageMultiScaler multiScaler;
@@ -44,7 +42,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             LuminanceLogEffect = ToLoadAndUnload(new LuminanceLogEffect());
 
             // Create 1x1 texture
-            luminance1x1 = Texture.New2D(GraphicsDevice, 1, 1, 1, luminanceFormat, TextureFlags.ShaderResource | TextureFlags.RenderTarget).DisposeBy(this);
+            AverageLuminanceTexture = Texture.New2D(GraphicsDevice, 1, 1, 1, luminanceFormat, TextureFlags.ShaderResource | TextureFlags.RenderTarget).DisposeBy(this);
 
             // Use a multiscaler
             multiScaler = ToLoadAndUnload(new ImageMultiScaler());
@@ -62,16 +60,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         public PixelFormat LuminanceFormat
         {
-            get
-            {
-                return luminanceFormat;
-            }
-
+            get => luminanceFormat;
             set
             {
                 if (value.IsCompressed() || value.IsPacked() || value.IsTypeless() || value == PixelFormat.None)
                 {
-                    throw new ArgumentOutOfRangeException("luminanceFormat", "Unsupported format [{0}] (must be not none, compressed, packed or typeless)".ToFormat(luminanceFormat));
+                    throw new ArgumentOutOfRangeException(nameof(value), "Unsupported format [{0}] (must be not none, compressed, packed or typeless)".ToFormat(value));
                 }
                 luminanceFormat = value;
             }
@@ -80,17 +74,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// Luminance log effect.
         /// </summary>
-        public ImageEffectShader LuminanceLogEffect
-        {
-            get
-            {
-                return luminanceLogEffect;
-            }
-            set
-            {
-                luminanceLogEffect = value;
-            }
-        }
+        public ImageEffectShader LuminanceLogEffect { get; set; }
 
         /// <summary>
         /// Gets or sets down scale count used to downscale the input intermediate texture used for local luminance (if no 
@@ -126,13 +110,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Gets the average luminance 1x1 texture available after drawing this effect.
         /// </summary>
         /// <value>The average luminance texture.</value>
-        public Texture AverageLuminanceTexture
-        {
-            get
-            {
-                return luminance1x1;
-            }
-        }
+        public Texture AverageLuminanceTexture { get; private set; }
+
+        /// <summary>
+        /// Indicated if the local luminance should be rendered to the output texture.
+        /// </summary>
+        public bool EnableLocalLuminanceCalculation { get; set; }
 
         public override void Reset()
         {
@@ -144,64 +127,66 @@ namespace SiliconStudio.Xenko.Rendering.Images
         protected override void DrawCore(RenderDrawContext context)
         {
             var input = GetSafeInput(0);
-            var output = GetSafeOutput(0);
 
             // Render the luminance to a power-of-two target, so we preserve energy on downscaling
             var startWidth = Math.Max(1, Math.Min(MathUtil.NextPowerOfTwo(input.Size.Width), MathUtil.NextPowerOfTwo(input.Size.Height)) / 2);
             var startSize = new Size3(startWidth, startWidth, 1);
             var blurTextureSize = startSize.Down2(UpscaleCount);
 
-            Texture outputTextureDown = null;
-            if (blurTextureSize.Width != 1 && blurTextureSize.Height != 1)
+            // If we don't need a blur pass, or no local luminance output at all, don't allocate a blur target
+            Texture blurTexture = null;
+            if (EnableLocalLuminanceCalculation && blurTextureSize.Width != 1 && blurTextureSize.Height != 1)
             {
-                outputTextureDown = NewScopedRenderTarget2D(blurTextureSize.Width, blurTextureSize.Height, luminanceFormat, 1);
+                blurTexture = NewScopedRenderTarget2D(blurTextureSize.Width, blurTextureSize.Height, luminanceFormat, 1);
             }
 
             var luminanceMap = NewScopedRenderTarget2D(startSize.Width, startSize.Height, luminanceFormat, 1);
 
             // Calculate the first luminance map
-            luminanceLogEffect.SetInput(input);
-            luminanceLogEffect.SetOutput(luminanceMap);
-            ((RendererBase)luminanceLogEffect).Draw(context);
+            LuminanceLogEffect.SetInput(input);
+            LuminanceLogEffect.SetOutput(luminanceMap);
+            LuminanceLogEffect.Draw(context);
 
             // Downscales luminance up to BlurTexture (optional) and 1x1
             multiScaler.SetInput(luminanceMap);
-            if (outputTextureDown == null)
+            if (blurTexture == null)
             {
-                multiScaler.SetOutput(luminance1x1);
+                multiScaler.SetOutput(AverageLuminanceTexture);
+                multiScaler.Draw(context);
+
+                if (EnableLocalLuminanceCalculation)
+                {
+                    var output = GetSafeOutput(0);
+
+                    // TODO: Workaround to that the output filled with 1x1
+                    Scaler.SetInput(AverageLuminanceTexture);
+                    Scaler.SetOutput(output);
+                    Scaler.Draw(context);
+                }
             }
             else
             {
-                multiScaler.SetOutput(outputTextureDown, luminance1x1);
-            }
-            multiScaler.Draw(context);
+                multiScaler.SetOutput(blurTexture, AverageLuminanceTexture);
+                multiScaler.Draw(context);
 
-            // If we have an output texture
-            if (outputTextureDown != null)
-            {
                 // Blur x2 the intermediate output texture 
-                blur.SetInput(outputTextureDown);
-                blur.SetOutput(outputTextureDown);
-                ((RendererBase)blur).Draw(context);
-                ((RendererBase)blur).Draw(context);
+                blur.SetInput(blurTexture);
+                blur.SetOutput(blurTexture);
+                blur.Draw(context);
+                blur.Draw(context);
+
+                var output = GetSafeOutput(0);
 
                 // Upscale from intermediate to output
-                multiScaler.SetInput(outputTextureDown);
+                multiScaler.SetInput(blurTexture);
                 multiScaler.SetOutput(output);
-                ((RendererBase)multiScaler).Draw(context);
-            }
-            else
-            {
-                // TODO: Workaround to that the output filled with 1x1
-                Scaler.SetInput(luminance1x1);
-                Scaler.SetOutput(output);
-                ((RendererBase)Scaler).Draw(context);
+                multiScaler.Draw(context);
             }
 
             // Calculate average luminance only if needed
             if (EnableAverageLuminanceReadback)
             {
-                readback.SetInput(luminance1x1);
+                readback.SetInput(AverageLuminanceTexture);
                 readback.Draw(context);
                 var rawLogValue = readback.Result[0];
                 AverageLuminance = (float)Math.Pow(2.0, rawLogValue);
