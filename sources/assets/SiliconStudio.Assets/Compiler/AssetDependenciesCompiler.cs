@@ -67,7 +67,7 @@ namespace SiliconStudio.Assets.Compiler
         {
             var assetNode = BuildDependencyManager.FindOrCreateNode(assetItem, dependencyType);
 
-            // Prevent re-entrency in the same node
+            // Prevent re-entrancy in the same node
             if (visitedItems.Contains(assetNode))
                 return;
 
