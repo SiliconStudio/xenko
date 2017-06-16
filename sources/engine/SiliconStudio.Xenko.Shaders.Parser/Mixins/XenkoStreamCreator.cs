@@ -582,7 +582,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         {
             if (entryPoint != null)
             {
-                var inStreamStruct = prevOuputStructure ?? CreateStreamStructure(streamStageUsage.InStreamList, stageName + "_INPUT");
+                var inStreamStruct = CreateInputStreamStructure(prevOuputStructure, streamStageUsage.InStreamList, stageName + "_INPUT");
                 var outStreamStruct = CreateStreamStructure(streamStageUsage.OutStreamList, stageName + "_OUTPUT");
 
                 var mixin = entryPoint.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
