@@ -58,19 +58,25 @@ namespace SiliconStudio.Xenko.Games.Testing
 
             socketMessageLayer.AddPacketHandler<KeySimulationRequest>(request =>
             {
-                if (request.Down)
+                drawActions.Enqueue(() =>
                 {
-                    keyboardSimulated.SimulateDown(request.Key);
-                }
-                else
-                {
-                    keyboardSimulated.SimulateUp(request.Key);
-                }
+                    if (request.Down)
+                    {
+                        keyboardSimulated.SimulateDown(request.Key);
+                    }
+                    else
+                    {
+                        keyboardSimulated.SimulateUp(request.Key);
+                    }
+                });
             });
 
             socketMessageLayer.AddPacketHandler<TapSimulationRequest>(request =>
             {
-                mouseSimulated.SimulatePointer(request.EventType, request.Coords);
+                drawActions.Enqueue(() =>
+                {
+                    mouseSimulated.SimulatePointer(request.EventType, request.Coords);
+                });
             });
 
             socketMessageLayer.AddPacketHandler<ScreenshotRequest>(request =>
