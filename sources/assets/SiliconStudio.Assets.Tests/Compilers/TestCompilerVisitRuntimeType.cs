@@ -128,4 +128,72 @@ namespace SiliconStudio.Assets.Tests.Compilers
         [AssetCompiler(typeof(MyAssetContentType), typeof(AssetCompilationContext))]
         public class MyAssetContentTypeCompiler : TestAssertCompiler<MyAssetContentType> { }
     }
+
+    [DataContract, ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<MyContent1>), Profile = "Content")]
+    [ContentSerializer(typeof(DataContentSerializer<MyContent1>))]
+    public class MyContent1
+    {
+    }
+
+    [DataContract, ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<MyContent2>), Profile = "Content")]
+    [ContentSerializer(typeof(DataContentSerializer<MyContent2>))]
+    public class MyContent2
+    {
+        public MyContent2()
+        {
+
+        }
+    }
+
+    [DataContract, ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<MyContent3>), Profile = "Content")]
+    [ContentSerializer(typeof(DataContentSerializer<MyContent3>))]
+    public class MyContent3
+    {
+    }
+
+    [DataContract]
+    [AssetDescription(".xkmytest")]
+    [AssetContentType(typeof(MyContent1))]
+    public class MyAsset1 : Asset
+    {
+        public MyContent2 MyContent2 { get; set; }
+        public MyContent3 MyContent3 { get; set; }
+    }
+
+    [DataContract]
+    [AssetDescription(".xkmytest")]
+    [AssetContentType(typeof(MyContent2))]
+    public class MyAsset2 : Asset
+    {
+        public MyContent3 MyContent3 { get; set; }
+    }
+
+    [DataContract]
+    [AssetDescription(".xkmytest")]
+    [AssetContentType(typeof(MyContent3))]
+    public class MyAsset3 : Asset
+    {
+    }
+
+    [AssetCompiler(typeof(MyAsset1), typeof(AssetCompilationContext))]
+    public class MyAsset1Compiler : TestAssertCompiler<MyAsset1>
+    {
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        {
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MyAsset2), BuildDependencyType.Runtime);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MyAsset3), BuildDependencyType.CompileAsset);
+        }
+    }
+
+    [AssetCompiler(typeof(MyAsset2), typeof(AssetCompilationContext))]
+    public class MyAsset2Compiler : TestAssertCompiler<MyAsset2>
+    {
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        {
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MyAsset3), BuildDependencyType.Runtime);
+        }
+    }
+
+    [AssetCompiler(typeof(MyAsset3), typeof(AssetCompilationContext))]
+    public class MyAsset3Compiler : TestAssertCompiler<MyAsset3> { }
 }
