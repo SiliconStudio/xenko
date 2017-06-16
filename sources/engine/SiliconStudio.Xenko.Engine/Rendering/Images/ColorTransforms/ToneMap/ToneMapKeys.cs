@@ -8,6 +8,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         public static readonly PermutationParameterKey<bool> AutoKey = ParameterKeys.NewPermutation(false);
 
+        public static readonly PermutationParameterKey<bool> UseLocalLuminance = ParameterKeys.NewPermutation(false);
+
         public static readonly PermutationParameterKey<ToneMapOperator> Operator = ParameterKeys.NewPermutation<ToneMapOperator>();
     }
 }

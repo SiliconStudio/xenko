@@ -18,15 +18,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
     [Display("Post-Processing Effects")]
     public sealed class PostProcessingEffects : ImageEffect, IImageEffectRenderer, IPostProcessingEffects
     {
-        private AmbientOcclusion ambientOcclusion;
-        private DepthOfField depthOfField;
         private LuminanceEffect luminanceEffect;
-        private BrightFilter brightFilter;
-        private Bloom bloom;
-        private LightStreak lightStreak;
-        private LensFlare lensFlare;
         private ColorTransformGroup colorTransformsGroup;
-        private IScreenSpaceAntiAliasingEffect ssaa;
 
         private ImageEffectShader rangeCompress;
         private ImageEffectShader rangeDecompress;
@@ -45,14 +38,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         public PostProcessingEffects()
         {
-            ambientOcclusion = new AmbientOcclusion();
-            depthOfField = new DepthOfField();
+            AmbientOcclusion = new AmbientOcclusion();
+            DepthOfField = new DepthOfField();
             luminanceEffect = new LuminanceEffect();
-            brightFilter = new BrightFilter();
-            bloom = new Bloom();
-            lightStreak = new LightStreak();
-            lensFlare = new LensFlare();
-            ssaa = new FXAAEffect();
+            BrightFilter = new BrightFilter();
+            Bloom = new Bloom();
+            LightStreak = new LightStreak();
+            LensFlare = new LensFlare();
+            Antialiasing = new FXAAEffect();
             rangeCompress = new ImageEffectShader("RangeCompressorShader");
             rangeDecompress = new ImageEffectShader("RangeDecompressorShader");
             colorTransformsGroup = new ColorTransformGroup();
@@ -81,13 +74,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </userdoc>
         [DataMember(8)]
         [Category]
-        public AmbientOcclusion AmbientOcclusion
-        {
-            get
-            {
-                return ambientOcclusion;
-            }
-        }
+        public AmbientOcclusion AmbientOcclusion { get; private set; }
 
         /// <summary>
         /// Gets the depth of field effect.
@@ -96,13 +83,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <userdoc>The depth of field post-effect allows you to accentuate some regions of your image by blurring object in foreground or background.</userdoc>
         [DataMember(10)]
         [Category]
-        public DepthOfField DepthOfField
-        {
-            get
-            {
-                return depthOfField;
-            }
-        }
+        public DepthOfField DepthOfField { get; private set; }
 
         /// <summary>
         /// Gets the bright pass-filter.
@@ -112,13 +93,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// It just extracts the brightest areas of the image and gives it to other effect that need it (eg. bloom, light streaks, lens-flares).</userdoc>
         [DataMember(20)]
         [Category]
-        public BrightFilter BrightFilter
-        {
-            get
-            {
-                return brightFilter;
-            }
-        }
+        public BrightFilter BrightFilter { get; private set; }
 
         /// <summary>
         /// Gets the bloom effect.
@@ -127,13 +102,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <userdoc>Produces a bleeding effect of bright areas onto their surrounding.</userdoc>
         [DataMember(30)]
         [Category]
-        public Bloom Bloom
-        {
-            get
-            {
-                return bloom;
-            }
-        }
+        public Bloom Bloom { get; private set; }
 
         /// <summary>
         /// Gets the light streak effect.
@@ -142,13 +111,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <userdoc>Produces a bleeding effect of the brightest points of the image along streaks.</userdoc>
         [DataMember(40)]
         [Category]
-        public LightStreak LightStreak
-        {
-            get
-            {
-                return lightStreak;
-            }
-        }
+        public LightStreak LightStreak { get; private set; }
 
         /// <summary>
         /// Gets the lens flare effect.
@@ -157,13 +120,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <userdoc>Simulates the artifacts produced by the internal reflection or scattering of the light within camera lens.</userdoc>
         [DataMember(50)]
         [Category]
-        public LensFlare LensFlare
-        {
-            get
-            {
-                return lensFlare;
-            }
-        }
+        public LensFlare LensFlare { get; private set; }
 
         /// <summary>
         /// Gets the final color transforms.
@@ -172,13 +129,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <userdoc>Performs a transformation onto the image colors.</userdoc>
         [DataMember(70)]
         [Category]
-        public ColorTransformGroup ColorTransforms
-        {
-            get
-            {
-                return colorTransformsGroup;
-            }
-        }
+        public ColorTransformGroup ColorTransforms => colorTransformsGroup;
 
         /// <summary>
         /// Gets the antialiasing effect.
@@ -187,31 +138,19 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <userdoc>Performs anti-aliasing filtering on the image. This smoothes the jagged edges of models.</userdoc>
         [DataMember(80)]
         [Display("Type", "Antialiasing")]
-        public IScreenSpaceAntiAliasingEffect Antialiasing
-        {
-            get
-            {
-                return ssaa;
-            }
-
-            set
-            {
-                // TODO: Unload previous anti-aliasing before replacing it
-                ssaa = value;
-            }
-        }
+        public IScreenSpaceAntiAliasingEffect Antialiasing { get; set; } // TODO: Unload previous anti aliasing
 
         /// <summary>
         /// Disables all post processing effects.
         /// </summary>
         public void DisableAll()
         {
-            ambientOcclusion.Enabled = false;
-            depthOfField.Enabled = false;
-            bloom.Enabled = false;
-            lightStreak.Enabled = false;
-            lensFlare.Enabled = false;
-            ssaa.Enabled = false;
+            AmbientOcclusion.Enabled = false;
+            DepthOfField.Enabled = false;
+            Bloom.Enabled = false;
+            LightStreak.Enabled = false;
+            LensFlare.Enabled = false;
+            Antialiasing.Enabled = false;
             rangeCompress.Enabled = false;
             rangeDecompress.Enabled = false;
             colorTransformsGroup.Enabled = false;
@@ -230,15 +169,15 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             base.InitializeCore();
 
-            ambientOcclusion = ToLoadAndUnload(ambientOcclusion);
-            depthOfField = ToLoadAndUnload(depthOfField);
+            AmbientOcclusion = ToLoadAndUnload(AmbientOcclusion);
+            DepthOfField = ToLoadAndUnload(DepthOfField);
             luminanceEffect = ToLoadAndUnload(luminanceEffect);
-            brightFilter = ToLoadAndUnload(brightFilter);
-            bloom = ToLoadAndUnload(bloom);
-            lightStreak = ToLoadAndUnload(lightStreak);
-            lensFlare = ToLoadAndUnload(lensFlare);
+            BrightFilter = ToLoadAndUnload(BrightFilter);
+            Bloom = ToLoadAndUnload(Bloom);
+            LightStreak = ToLoadAndUnload(LightStreak);
+            LensFlare = ToLoadAndUnload(LensFlare);
             //this can be null if no SSAA is selected in the editor
-            if(ssaa != null) ssaa = ToLoadAndUnload(ssaa);
+            if(Antialiasing != null) Antialiasing = ToLoadAndUnload(Antialiasing);
 
             rangeCompress = ToLoadAndUnload(rangeCompress);
             rangeDecompress = ToLoadAndUnload(rangeDecompress);
@@ -310,61 +249,70 @@ namespace SiliconStudio.Xenko.Rendering.Images
             
             var currentInput = input;
 
-            var fxaa = ssaa as FXAAEffect;
-            bool aaFirst = bloom != null && bloom.StableConvolution;
+            var fxaa = Antialiasing as FXAAEffect;
+            bool aaFirst = Bloom != null && Bloom.StableConvolution;
             bool needAA = fxaa != null && fxaa.Enabled;
 
             // do AA here, first. (hybrid method from Karis2013)
             if (aaFirst && needAA)
             {
-                // explanation:
-                // The Karis method (Unreal Engine 4.1x), uses a hybrid pipeline to execute AA.
-                // The AA is usually done at the end of the pipeline, but we don't benefit from
-                // AA for the posteffects, which is a shame.
-                // The Karis method, executes AA at the beginning, but for AA to be correct, it must work post tonemapping,
-                // and even more in fact, in gamma space too. Plus, it waits for the alpha=luma to be a "perceptive luma" so also gamma space.
-                // in our case, working in gamma space created monstruous outlining artefacts around eggageratedely strong constrasted objects (way in hdr range).
-                // so AA works in linear space, but still with gamma luma, as a light tradeoff to supress artefacts.
+                using (context.QueryManager.BeginProfile(Color.Green, ImageEffectProfilingKeys.HybridFxaa))
+                {
+                    // explanation:
+                    // The Karis method (Unreal Engine 4.1x), uses a hybrid pipeline to execute AA.
+                    // The AA is usually done at the end of the pipeline, but we don't benefit from
+                    // AA for the posteffects, which is a shame.
+                    // The Karis method, executes AA at the beginning, but for AA to be correct, it must work post tonemapping,
+                    // and even more in fact, in gamma space too. Plus, it waits for the alpha=luma to be a "perceptive luma" so also gamma space.
+                    // in our case, working in gamma space created monstruous outlining artefacts around eggageratedely strong constrasted objects (way in hdr range).
+                    // so AA works in linear space, but still with gamma luma, as a light tradeoff to supress artefacts.
 
-                // create a 16 bits target for FXAA:
-                var aaSurface = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
+                    // create a 16 bits target for FXAA:
+                    var aaSurface = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
 
-                // render range compression & perceptual luma to alpha channel:
-                rangeCompress.SetInput(currentInput);
-                rangeCompress.SetOutput(aaSurface);
-                rangeCompress.Draw(context);
+                    // render range compression & perceptual luma to alpha channel:
+                    rangeCompress.SetInput(currentInput);
+                    rangeCompress.SetOutput(aaSurface);
+                    rangeCompress.Draw(context);
 
-                // do AA:
-                fxaa.InputLuminanceInAlpha = true;
-                ssaa.SetInput(aaSurface);
-                ssaa.SetOutput(currentInput);
-                ssaa.Draw(context);
+                    // do AA:
+                    fxaa.InputLuminanceInAlpha = true;
+                    Antialiasing.SetInput(aaSurface);
+                    Antialiasing.SetOutput(currentInput);
+                    Antialiasing.Draw(context);
 
-                // reverse tone LDR to HDR:
-                rangeDecompress.SetInput(currentInput);
-                rangeDecompress.SetOutput(aaSurface);
-                rangeDecompress.Draw(context);
-                currentInput = aaSurface;
+                    // reverse tone LDR to HDR:
+                    rangeDecompress.SetInput(currentInput);
+                    rangeDecompress.SetOutput(aaSurface);
+                    rangeDecompress.Draw(context);
+                    currentInput = aaSurface;
+                }
             }
 
-            if (ambientOcclusion.Enabled && inputDepthTexture != null)
+            if (AmbientOcclusion.Enabled && inputDepthTexture != null)
             {
-                // Ambient Occlusion
-                var aoOutput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
-                ambientOcclusion.SetColorDepthInput(currentInput, inputDepthTexture);
-                ambientOcclusion.SetOutput(aoOutput);
-                ambientOcclusion.Draw(context);
-                currentInput = aoOutput;
+                using (context.QueryManager.BeginProfile(Color.Green, ImageEffectProfilingKeys.AmbientOcclusion))
+                {
+                    // Ambient Occlusion
+                    var aoOutput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
+                    AmbientOcclusion.SetColorDepthInput(currentInput, inputDepthTexture);
+                    AmbientOcclusion.SetOutput(aoOutput);
+                    AmbientOcclusion.Draw(context);
+                    currentInput = aoOutput;
+                }
             }
 
-            if (depthOfField.Enabled && inputDepthTexture != null)
+            if (DepthOfField.Enabled && inputDepthTexture != null)
             {
-                // DoF
-                var dofOutput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
-                depthOfField.SetColorDepthInput(currentInput, inputDepthTexture);
-                depthOfField.SetOutput(dofOutput);
-                depthOfField.Draw(context);
-                currentInput = dofOutput;
+                using (context.QueryManager.BeginProfile(Color.Green, ImageEffectProfilingKeys.DepthOfField))
+                {
+                    // DoF
+                    var dofOutput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
+                    DepthOfField.SetColorDepthInput(currentInput, inputDepthTexture);
+                    DepthOfField.SetOutput(dofOutput);
+                    DepthOfField.Draw(context);
+                    currentInput = dofOutput;
+                }
             }
 
             // Luminance pass (only if tone mapping is enabled)
@@ -372,55 +320,75 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var toneMap = colorTransformsGroup.Transforms.Get<ToneMap>();
             if (colorTransformsGroup.Enabled && toneMap != null && toneMap.Enabled)
             {
-                const int localLuminanceDownScale = 3;
+                using (context.QueryManager.BeginProfile(Color.Green, ImageEffectProfilingKeys.AverageLumiance))
+                {
+                    Texture luminanceTexture = null;
+                    if (toneMap.UseLocalLuminance)
+                    {
+                        const int localLuminanceDownScale = 3;
 
-                // The luminance chain uses power-of-two intermediate targets, so it expects to output to one as well
-                var lumWidth = Math.Min(MathUtil.NextPowerOfTwo(currentInput.Size.Width), MathUtil.NextPowerOfTwo(currentInput.Size.Height));
-                lumWidth = Math.Max(1, lumWidth / 2);
+                        // The luminance chain uses power-of-two intermediate targets, so it expects to output to one as well
+                        var lumWidth = Math.Min(MathUtil.NextPowerOfTwo(currentInput.Size.Width), MathUtil.NextPowerOfTwo(currentInput.Size.Height));
+                        lumWidth = Math.Max(1, lumWidth / 2);
 
-                var lumSize = new Size3(lumWidth, lumWidth, 1).Down2(localLuminanceDownScale);
-                var luminanceTexture = NewScopedRenderTarget2D(lumSize.Width, lumSize.Height, PixelFormat.R16_Float, 1);
+                        var lumSize = new Size3(lumWidth, lumWidth, 1).Down2(localLuminanceDownScale);
+                        luminanceTexture = NewScopedRenderTarget2D(lumSize.Width, lumSize.Height, PixelFormat.R16_Float, 1);
 
-                luminanceEffect.SetInput(currentInput);
-                luminanceEffect.SetOutput(luminanceTexture);
-                luminanceEffect.Draw(context);
+                        luminanceEffect.SetOutput(luminanceTexture);
+                    }
 
-                // Set this parameter that will be used by the tone mapping
-                colorTransformsGroup.Parameters.Set(LuminanceEffect.LuminanceResult, new LuminanceResult(luminanceEffect.AverageLuminance, luminanceTexture));
+                    luminanceEffect.EnableLocalLuminanceCalculation = toneMap.UseLocalLuminance;
+                    luminanceEffect.SetInput(currentInput);
+                    luminanceEffect.Draw(context);
+
+                    // Set this parameter that will be used by the tone mapping
+                    colorTransformsGroup.Parameters.Set(LuminanceEffect.LuminanceResult, new LuminanceResult(luminanceEffect.AverageLuminance, luminanceTexture));
+                }
             }
 
-            if (brightFilter.Enabled && (bloom.Enabled || lightStreak.Enabled || lensFlare.Enabled))
+            if (BrightFilter.Enabled && (Bloom.Enabled || LightStreak.Enabled || LensFlare.Enabled))
             {
-                // Bright filter pass
-                Texture brightTexture = null;
-                brightTexture = NewScopedRenderTarget2D(currentInput.Width, currentInput.Height, currentInput.Format, 1);
+                Texture brightTexture = NewScopedRenderTarget2D(currentInput.Width, currentInput.Height, currentInput.Format, 1);
+                using (context.QueryManager.BeginProfile(Color.Green, ImageEffectProfilingKeys.BrightFilter))
+                {
+                    // Bright filter pass
 
-                brightFilter.SetInput(currentInput);
-                brightFilter.SetOutput(brightTexture);
-                brightFilter.Draw(context);
+                    BrightFilter.SetInput(currentInput);
+                    BrightFilter.SetOutput(brightTexture);
+                    BrightFilter.Draw(context);
+                }
 
                 // Bloom pass
-                if (bloom.Enabled)
+                if (Bloom.Enabled)
                 {
-                    bloom.SetInput(brightTexture);
-                    bloom.SetOutput(currentInput);
-                    bloom.Draw(context);
+                    using (context.QueryManager.BeginProfile(Color.Green, ImageEffectProfilingKeys.Bloom))
+                    {
+                        Bloom.SetInput(brightTexture);
+                        Bloom.SetOutput(currentInput);
+                        Bloom.Draw(context);
+                    }
                 }
 
                 // Light streak pass
-                if (lightStreak.Enabled)
+                if (LightStreak.Enabled)
                 {
-                    lightStreak.SetInput(brightTexture);
-                    lightStreak.SetOutput(currentInput);
-                    lightStreak.Draw(context);
+                    using (context.QueryManager.BeginProfile(Color.Green, ImageEffectProfilingKeys.LightStreak))
+                    {
+                        LightStreak.SetInput(brightTexture);
+                        LightStreak.SetOutput(currentInput);
+                        LightStreak.Draw(context);
+                    }
                 }
 
                 // Lens flare pass
-                if (lensFlare.Enabled)
+                if (LensFlare.Enabled)
                 {
-                    lensFlare.SetInput(brightTexture);
-                    lensFlare.SetOutput(currentInput);
-                    lensFlare.Draw(context);
+                    using (context.QueryManager.BeginProfile(Color.Green, ImageEffectProfilingKeys.LensFlare))
+                    {
+                        LensFlare.SetInput(brightTexture);
+                        LensFlare.SetOutput(currentInput);
+                        LensFlare.Draw(context);
+                    }
                 }
             }
 
@@ -445,18 +413,24 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 luminanceToChannelTransform.Enabled = false;
             }
 
-            // Color transform group pass (tonemap, color grading)
-            var lastEffect = colorTransformsGroup.Enabled ? (ImageEffect)colorTransformsGroup : Scaler;
-            lastEffect.SetInput(currentInput);
-            lastEffect.SetOutput(toneOutput);
-            lastEffect.Draw(context);
+            using (context.QueryManager.BeginProfile(Color.Green, ImageEffectProfilingKeys.ColorTransformGroup))
+            {
+                // Color transform group pass (tonemap, color grading)
+                var lastEffect = colorTransformsGroup.Enabled ? (ImageEffect)colorTransformsGroup : Scaler;
+                lastEffect.SetInput(currentInput);
+                lastEffect.SetOutput(toneOutput);
+                lastEffect.Draw(context);
+            }
 
             // do AA here, last, if not already done.
             if (aaLast)
             {
-                ssaa.SetInput(toneOutput);
-                ssaa.SetOutput(output);
-                ssaa.Draw(context);
+                using (context.QueryManager.BeginProfile(Color.Green, ImageEffectProfilingKeys.Fxaa))
+                {
+                    Antialiasing.SetInput(toneOutput);
+                    Antialiasing.SetOutput(output);
+                    Antialiasing.Draw(context);
+                }
             }
         }
     }
