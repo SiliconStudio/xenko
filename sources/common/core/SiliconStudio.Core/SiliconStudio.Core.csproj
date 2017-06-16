@@ -16,6 +16,7 @@
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
     <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
@@ -303,6 +304,7 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Logger.Extensions.cs</LastGenOutput>
     </None>
+    <None Include="packages.config" />
     <None Include="Serialization\MemberSerializerClass.ttinclude" />
     <None Include="Serialization\MemberSerializerCore.ttinclude" />
     <None Include="Serialization\MemberSerializerGenerated.tt">
@@ -313,7 +315,7 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>TupleSerializer.cs</LastGenOutput>
     </None>
-    <SiliconStudioContent Include="SiliconStudio.Core.dll.config"/>
+    <SiliconStudioContent Include="SiliconStudio.Core.dll.config" />
     <None Include="Native\lz4\lz4.c" />
     <None Include="Native\lz4\lz4.h" />
     <None Include="Native\lz4\lz4hc.c" />
@@ -324,8 +326,20 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\build\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="..\..\..\native\Xenko.Native.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
