@@ -41,8 +41,7 @@ namespace SiliconStudio.Assets.Compiler
             foreach (var assetItem in assetItems)
             {
                 var visitedItems = new HashSet<BuildAssetNode>();
-                var typesToInclude = new HashSet<KeyValuePair<Type, BuildDependencyType>>();
-                Prepare(addedBuildSteps, finalResult, context, assetItem, null, typesToInclude, visitedItems);
+                Prepare(addedBuildSteps, finalResult, context, assetItem, visitedItems);
             }
             return finalResult;
         }
@@ -58,14 +57,12 @@ namespace SiliconStudio.Assets.Compiler
         {
             var finalResult = new AssetCompilerResult();
             var addedBuildSteps = new Dictionary<AssetId, AssetCompilerResult>(); // a cache of build steps in order to link and reuse
-            var filters = allowDependencyExclusion ? new HashSet<Type>() : null; //the types to filter out, this is incremental between prepares
-            var typesToInclude = new HashSet<KeyValuePair<Type, BuildDependencyType>>();
             var visitedItems = new HashSet<BuildAssetNode>();
-            Prepare(addedBuildSteps, finalResult, context, assetItem, filters, typesToInclude, visitedItems);
+            Prepare(addedBuildSteps, finalResult, context, assetItem, visitedItems);
             return finalResult;
         }
 
-        private void Prepare(Dictionary<AssetId, AssetCompilerResult> resultsCache, AssetCompilerResult finalResult, AssetCompilerContext context, AssetItem assetItem, HashSet<Type> filterOutTypes, HashSet<KeyValuePair<Type, BuildDependencyType>> includeTypes, HashSet<BuildAssetNode> visitedItems, BuildStep parentBuildStep = null, 
+        private void Prepare(Dictionary<AssetId, AssetCompilerResult> resultsCache, AssetCompilerResult finalResult, AssetCompilerContext context, AssetItem assetItem, HashSet<BuildAssetNode> visitedItems, BuildStep parentBuildStep = null, 
             BuildDependencyType dependencyType = BuildDependencyType.Runtime)
         {
             var assetNode = BuildDependencyManager.FindOrCreateNode(assetItem, dependencyType);
@@ -78,7 +75,7 @@ namespace SiliconStudio.Assets.Compiler
             {
                 visitedItems.Add(assetNode);
 
-                assetNode.Analyze(context, includeTypes, filterOutTypes);
+                assetNode.Analyze(context);
 
                 //We want to avoid repeating steps, so we use the local cache to check if this compile command already has the step required first
                 AssetCompilerResult cachedResult;
@@ -112,7 +109,7 @@ namespace SiliconStudio.Assets.Compiler
                     if ((dependencyNode.DependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent || //only if content is required Content.Load
                         (dependencyNode.DependencyType & BuildDependencyType.Runtime) == BuildDependencyType.Runtime) //or the asset is required anyway at runtime
                     {
-                        Prepare(resultsCache, finalResult, context, dependencyNode.AssetItem, filterOutTypes, includeTypes, visitedItems, cachedResult.BuildSteps, dependencyNode.DependencyType);
+                        Prepare(resultsCache, finalResult, context, dependencyNode.AssetItem, visitedItems, cachedResult.BuildSteps, dependencyNode.DependencyType);
                         if (finalResult.HasErrors)
                         {
                             return;
