@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Renders text with a fixed size font.
         /// </summary>
-        public class FastTextRendering : ComponentBase
+        public class FastTextRenderer : ComponentBase
         {
             private const int IndexStride = sizeof(int);
 
@@ -32,17 +32,17 @@ namespace SiliconStudio.Xenko.Graphics
 
             private int charsToRenderCount;
 
-            public static FastTextRendering New([NotNull] GraphicsContext graphicsContext)
+            public static FastTextRenderer New([NotNull] GraphicsContext graphicsContext)
             {
-                return new FastTextRendering().Initialize(graphicsContext);
+                return new FastTextRenderer().Initialize(graphicsContext);
             }
 
-            public FastTextRendering()
+            public FastTextRenderer()
             {
                 
             }
 
-            public FastTextRendering([NotNull] GraphicsContext graphicsContext)
+            public FastTextRenderer([NotNull] GraphicsContext graphicsContext)
             {
                 Initialize(graphicsContext);
             }
@@ -83,7 +83,7 @@ namespace SiliconStudio.Xenko.Graphics
             /// Initializes a FastTextRendering instance (create and build required ressources, ...).
             /// </summary>
             /// <param name="graphicsContext">The current GraphicsContext.</param>
-            public unsafe FastTextRendering Initialize([NotNull] GraphicsContext graphicsContext)
+            public unsafe FastTextRenderer Initialize([NotNull] GraphicsContext graphicsContext)
             {
                 var indexBufferSize = MaxCharactersPerLine * MaxCharactersLines * 6 * sizeof(int);
                 var indexBufferLength = indexBufferSize / IndexStride;
