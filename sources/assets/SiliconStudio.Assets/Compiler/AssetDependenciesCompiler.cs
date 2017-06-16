@@ -65,34 +65,19 @@ namespace SiliconStudio.Assets.Compiler
             return finalResult;
         }
 
-        private struct OverflowPrevention : IDisposable
-        {
-            private readonly HashSet<BuildAssetNode> hash;
-            private readonly BuildAssetNode node;
-
-            public OverflowPrevention(HashSet<BuildAssetNode> hash, BuildAssetNode node)
-            {
-                this.hash = hash;
-                this.node = node;
-                hash.Add(node);
-            }
-
-            public void Dispose()
-            {
-                hash.Remove(node);
-            }
-        }
-
         private void Prepare(Dictionary<AssetId, AssetCompilerResult> resultsCache, AssetCompilerResult finalResult, AssetCompilerContext context, AssetItem assetItem, HashSet<Type> filterOutTypes, HashSet<KeyValuePair<Type, BuildDependencyType>> includeTypes, HashSet<BuildAssetNode> visitedItems, BuildStep parentBuildStep = null, 
             BuildDependencyType dependencyType = BuildDependencyType.Runtime)
         {
             var assetNode = BuildDependencyManager.FindOrCreateNode(assetItem, dependencyType);
 
+            // Prevent re-entrency in the same node
             if (visitedItems.Contains(assetNode))
                 return;
 
-            using (new OverflowPrevention(visitedItems, assetNode))
+            try
             {
+                visitedItems.Add(assetNode);
+
                 assetNode.Analyze(context, includeTypes, filterOutTypes);
 
                 //We want to avoid repeating steps, so we use the local cache to check if this compile command already has the step required first
@@ -146,6 +131,10 @@ namespace SiliconStudio.Assets.Compiler
                     if (parentBuildStep != null && (dependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent) //only if content is required Content.Load
                         BuildStep.LinkBuildSteps(cachedResult.BuildSteps, parentBuildStep);
                 }
+            }
+            finally
+            {
+                visitedItems.Remove(assetNode);
             }
         }
     }
