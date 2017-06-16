@@ -5,16 +5,96 @@ using System;
 namespace SiliconStudio.Shaders.Ast.Hlsl
 {
     /// <summary>
-    /// A Storage qualifier.
+    /// A parameter interpolation qualifier.
     /// </summary>
-    public static class StorageQualifier
+    /// <seealso cref="SiliconStudio.Shaders.Ast.Qualifier" />
+    public class InterpolationQualifier : Qualifier
     {
         #region Constants and Fields
 
         /// <summary>
         ///   Centroid modifier, only valid for structure field.
         /// </summary>
-        public static readonly Qualifier Centroid = new Qualifier("centroid");
+        public static readonly InterpolationQualifier Centroid = new InterpolationQualifier("centroid");
+
+        /// <summary>
+        ///   Linear modifier, only valid for structure field.
+        /// </summary>
+        public static readonly InterpolationQualifier Linear = new InterpolationQualifier("linear");
+
+        /// <summary>
+        ///   NoPerspective modifier, only valid for structure field.
+        /// </summary>
+        public static readonly InterpolationQualifier NoPerspective = new InterpolationQualifier("noperspective");
+
+        /// <summary>
+        ///   Nointerpolation modifier.
+        /// </summary>
+        public static readonly InterpolationQualifier Nointerpolation = new InterpolationQualifier("nointerpolation");
+
+        /// <summary>
+        ///   Sample modifier, only valid for structure field.
+        /// </summary>
+        public static readonly InterpolationQualifier Sample = new InterpolationQualifier("sample");
+
+        #endregion
+
+        #region Constructors and Destructors
+
+        /// <summary>
+        ///   Initializes a new instance of the <see cref="InterpolationQualifier" /> class.
+        /// </summary>
+        public InterpolationQualifier()
+            : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InterpolationQualifier"/> class.
+        /// </summary>
+        /// <param name="key">Name of the enum.</param>
+        public InterpolationQualifier(object key)
+            : base(key)
+        {
+        }
+
+        #endregion
+        
+        #region Public Methods
+
+        /// <summary>
+        /// Parses the specified enum name.
+        /// </summary>
+        /// <param name="enumName">
+        /// Name of the enum.
+        /// </param>
+        /// <returns>
+        /// A storage qualifier
+        /// </returns>
+        public static Qualifier Parse(string enumName)
+        {
+            if (enumName == (string)Centroid.Key)
+                return Centroid;
+            if (enumName == (string)Linear.Key)
+                return Linear;
+            if (enumName == (string)NoPerspective.Key)
+                return NoPerspective;
+            if (enumName == (string)Nointerpolation.Key)
+                return Nointerpolation;
+            if (enumName == (string)Sample.Key)
+                return Sample;
+            return null;
+        }
+
+        #endregion
+    }
+
+    /// <summary>
+    /// A Storage qualifier.
+    /// </summary>
+    public static class StorageQualifier
+    {
+        #region Constants and Fields
 
         /// <summary>
         ///   ColumnMajor modifier.
@@ -32,21 +112,6 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
         public static readonly Qualifier Groupshared = new Qualifier("groupshared");
 
         /// <summary>
-        ///   Linear modifier, only valid for structure field.
-        /// </summary>
-        public static readonly Qualifier Linear = new Qualifier("linear");
-
-        /// <summary>
-        ///   NoPerspective modifier, only valid for structure field.
-        /// </summary>
-        public static readonly Qualifier NoPerspective = new Qualifier("noperspective");
-
-        /// <summary>
-        ///   Nointerpolation modifier.
-        /// </summary>
-        public static readonly Qualifier Nointerpolation = new Qualifier("nointerpolation");
-
-        /// <summary>
         ///   Precise modifier.
         /// </summary>
         public static readonly Qualifier Precise = new Qualifier("precise");
@@ -55,11 +120,6 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
         ///   RowMajor modifier.
         /// </summary>
         public static readonly Qualifier RowMajor = new Qualifier("row_major");
-
-        /// <summary>
-        ///   Sample modifier, only valid for structure field.
-        /// </summary>
-        public static readonly Qualifier Sample = new Qualifier("sample");
 
         /// <summary>
         ///   Shared modifier.
@@ -101,28 +161,18 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
         /// </returns>
         public static Qualifier Parse(string enumName)
         {
-            if (enumName == (string)Centroid.Key)
-                return Centroid;
             if (enumName == (string)ColumnMajor.Key)
                 return ColumnMajor;
             if (enumName == (string)Extern.Key)
                 return Extern;
             if (enumName == (string)Groupshared.Key)
                 return Groupshared;
-            if (enumName == (string)Linear.Key)
-                return Linear;
-            if (enumName == (string)NoPerspective.Key)
-                return NoPerspective;
-            if (enumName == (string)Nointerpolation.Key)
-                return Nointerpolation;
             if (enumName == (string)Precise.Key)
                 return Precise;
             if (enumName == (string)Precise.Key)
                 return Precise;
             if (enumName == (string)RowMajor.Key)
                 return RowMajor;
-            if (enumName == (string)Sample.Key)
-                return Sample;
             if (enumName == (string)Shared.Key)
                 return Shared;
             if (enumName == (string)Static.Key)
@@ -133,6 +183,11 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
                 return Unsigned;
             if (enumName == (string)Volatile.Key)
                 return Volatile;
+
+            // Fallback to parameter interpolation qualifiers
+            var result = InterpolationQualifier.Parse(enumName);
+            if (result != null)
+                return result;
 
             // Fallback to shared parameter qualifiers
             return Ast.StorageQualifier.Parse(enumName);
