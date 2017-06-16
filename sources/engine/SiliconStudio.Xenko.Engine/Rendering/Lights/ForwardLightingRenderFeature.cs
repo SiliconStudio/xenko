@@ -154,6 +154,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             drawLightingKey = ((RootEffectRenderFeature)RootRenderFeature).CreateDrawLogicalGroup("Lighting");
         }
 
+        protected override void Destroy()
+        {
+            prepareThreadLocals.Dispose();
+
+            base.Destroy();
+        }
+
         public override void Unload()
         {
             // Unload light renderers
@@ -278,7 +285,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             {
                 var renderMesh = (RenderMesh)renderObject;
 
-                if (!renderMesh.Material.IsLightDependent)
+                if (!renderMesh.MaterialPass.IsLightDependent)
                     return;
 
                 var staticObjectNode = renderMesh.StaticObjectNode;

@@ -108,36 +108,5 @@ namespace SiliconStudio.BuildEngine.Tests
                 Assert.That(step.Status, Is.EqualTo(expectedResult));
         }
 
-        [Test]
-        public void TestSpawnAndAwaitCommandResults()
-        {
-            Utils.CleanContext();
-            ExecuteSpawnAndAwaitCommands(ResultStatus.Successful);
-            TestCommand.ResetCounter();
-            ExecuteSpawnAndAwaitCommands(ResultStatus.NotTriggeredWasSuccessful);
-        }
-
-        private static void ExecuteSpawnAndAwaitCommands(ResultStatus expectedResult)
-        {
-            var builder = Utils.CreateBuilder(false);
-            var commands = new List<Command>();
-
-            for (int i = 0; i < 10; ++i)
-                commands.Add(new SpawnAndAwaitCommand());
-
-            var steps = builder.Root.Add(commands);
-            builder.Run(Builder.Mode.Build);
-
-            foreach (var step in steps)
-            {
-                Assert.That(step.Status, Is.EqualTo(expectedResult));
-                Assert.That(step.Result.SpawnedCommands.Count, Is.EqualTo(10));
-                Assert.That(step.SpawnedSteps.Count(), Is.EqualTo(10));
-                foreach (var childStep in step.SpawnedSteps)
-                {
-                    Assert.That(childStep.Status, Is.EqualTo(expectedResult));
-                }
-            }
-        }
     }
 }

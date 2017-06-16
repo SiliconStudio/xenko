@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
@@ -14,6 +14,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Assets.Materials;
+using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Extensions;
 using SiliconStudio.Xenko.Graphics;
@@ -40,11 +41,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 
             //Material are needed both in game and in compiler
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
-        }
-
-        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
-        {
-            return base.GetInputFiles(context, assetItem);
+            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(TextureAsset), BuildDependencyType.Runtime);
         }
 
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
@@ -361,8 +358,8 @@ namespace SiliconStudio.Xenko.Assets.Models
                         var modelAsset = contentManager.Load<Model>(AttachedReferenceManager.GetUrl(modelComponent.Model), loadSettings);
                         if (modelAsset == null ||
                             modelAsset.Meshes.Any(x => x.Draw.PrimitiveType != PrimitiveType.TriangleList || x.Draw.VertexBuffers == null || x.Draw.VertexBuffers.Length != 1) ||
-                            modelAsset.Materials.Any(x => x.Material != null && x.Material.HasTransparency) ||
-                            modelComponent.Materials.Values.Any(x => x.HasTransparency)) //For now we limit only to TriangleList types and interleaved vertex buffers, also we skip transparent
+                            modelAsset.Materials.Any(x => x.Material != null && x.Material.Passes.Any(pass => pass.HasTransparency)) ||
+                            modelComponent.Materials.Values.Any(x => x.Passes.Any(pass => pass.HasTransparency))) //For now we limit only to TriangleList types and interleaved vertex buffers, also we skip transparent
                         {
                             commandContext.Logger.Info($"Skipped entity {subEntity.Name} since it's not compatible with PrefabModel.");
                             continue;

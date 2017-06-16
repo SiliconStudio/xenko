@@ -62,7 +62,6 @@ namespace SiliconStudio.Xenko.Graphics
         public Viewport[] Viewports => viewports;
         public int ViewportCount => boundViewportCount;
 
-
         /// <summary>
         /// Clears the state and restore the state of the device.
         /// </summary>

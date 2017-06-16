@@ -151,7 +151,7 @@ namespace JumpyJet
 
         private bool UserTappedScreen()
         {
-            return Input.PointerEvents.Any(pointerEvent => pointerEvent.State == PointerState.Down);
+            return Input.PointerEvents.Any(pointerEvent => pointerEvent.EventType == PointerEventType.Pressed);
         }
 
         private void UpdateAgentAnimation()

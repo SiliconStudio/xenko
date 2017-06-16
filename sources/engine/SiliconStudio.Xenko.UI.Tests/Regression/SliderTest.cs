@@ -27,8 +27,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public SliderTest()
         {
-            //CurrentVersion = 4;
-            CurrentVersion = 5; // Texture assets set to uncompressed, build machine changed
+            // 5 = Texture assets set to uncompressed, build machine changed
+            CurrentVersion = 6; // Element is now correctly focused due to simulated input
         }
 
         protected override async Task LoadContent()
@@ -166,9 +166,9 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public void DrawTest3()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.75f, 0.5f)));
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.75f, 0.5f)));
+            AddPointerEvent(PointerEventType.Pressed, new Vector2(0.75f, 0.5f));
+            AddPointerEvent(PointerEventType.Released, new Vector2(0.75f, 0.5f));
+            Input.Update(new GameTime());
         }
 
         public void DrawTest4()
@@ -185,9 +185,9 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public void DrawTest6()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.54f, 0.5f)));
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.54f, 0.5f)));
+            AddPointerEvent(PointerEventType.Pressed, new Vector2(0.54f, 0.5f));
+            AddPointerEvent(PointerEventType.Released, new Vector2(0.54f, 0.5f));
+            Input.Update(new GameTime());
         }
 
         public void DrawTest7()

@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [Display("Reconstruct Z")]
         public bool IsXYNormal { get; set; }
 
-        public override void VisitFeature(MaterialGeneratorContext context)
+        public override void GenerateShader(MaterialGeneratorContext context)
         {
             if (NormalMap != null)
             {

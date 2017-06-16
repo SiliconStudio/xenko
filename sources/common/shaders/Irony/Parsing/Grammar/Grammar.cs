@@ -203,7 +203,7 @@ namespace Irony.Parsing {
       if (node.Token != null)
         return node.Token.ToString();
       if(node.Term == null) //special case for initial node pushed into the stack at parser start
-        return (node.State != null ? string.Empty : "(State " + node.State.Name + ")"); //  Resources.LabelInitialState;
+        return node.State != null ? "(State " + node.State.Name + ")" : string.Empty; //  Resources.LabelInitialState;
       var ntTerm = node.Term as NonTerminal;
       if(ntTerm != null && !string.IsNullOrEmpty(ntTerm.NodeCaptionTemplate))
         return ntTerm.GetNodeCaption(node); 

@@ -142,7 +142,8 @@ namespace SiliconStudio.ExecServer
             host.AddServiceEndpoint(typeof(IExecServerRemote), new NetNamedPipeBinding(NetNamedPipeSecurityMode.None)
             {
                 MaxReceivedMessageSize = int.MaxValue,
-                // TODO: Check if we need to tweak timeouts
+                SendTimeout = TimeSpan.FromHours(1),
+                ReceiveTimeout = TimeSpan.FromHours(1),
             }, address);
 
             try

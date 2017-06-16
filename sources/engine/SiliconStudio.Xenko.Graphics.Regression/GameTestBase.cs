@@ -1,5 +1,6 @@
 // Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,6 +14,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Compositing;
 
@@ -30,6 +32,10 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
         public int StopOnFrameCount { get; set; }
 
+        public InputSourceSimulated InputSourceSimulated { get; private set; }
+        public MouseSimulated MouseSimulated { get; private set; }
+        public KeyboardSimulated KeyboardSimulated { get; private set; }
+
         /// <summary>
         /// The current version of the test
         /// </summary>
@@ -43,6 +49,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         public int FrameIndex;
 
         private bool screenshotAutomationEnabled;
+
         private BackBufferSizeMode backBufferSizeMode;
 
         protected GameTestBase()
@@ -137,7 +144,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 screenshotAutomationEnabled = value;
             }
         }
-        
+
         public BackBufferSizeMode BackBufferSizeMode
         {
             get { return backBufferSizeMode; }
@@ -160,6 +167,24 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                         throw new ArgumentOutOfRangeException();
                 }
 #endif // TODO implement it other mobile platforms
+            }
+        }
+
+        protected internal void EnableSimulatedInputSource()
+        {
+            InputSourceSimulated = new InputSourceSimulated();
+            if(Input != null)
+                InitializeSimulatedInputSource();
+        }
+
+        private void InitializeSimulatedInputSource()
+        {
+            if (InputSourceSimulated != null)
+            {
+                Input.Sources.Clear();
+                Input.Sources.Add(InputSourceSimulated);
+                MouseSimulated = InputSourceSimulated.AddMouse();
+                KeyboardSimulated = InputSourceSimulated.AddKeyboard();
             }
         }
 
@@ -193,8 +218,11 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         {
             await base.LoadContent();
 
+            if(!ForceInteractiveMode)
+                InitializeSimulatedInputSource();
+
 #if !SILICONSTUDIO_XENKO_UI_SDL
-            // Disabled for SDL as a positio of (0,0) actually means that the client area of the
+            // Disabled for SDL as a position of (0,0) actually means that the client area of the
             // window will be at (0,0) not the top left corner of the non-client area of the window.
             Window.Position = Int2.Zero; // avoid possible side effects due to position of the window in the screen.
 #endif
@@ -299,6 +327,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
         protected static void RunGameTest(GameTestBase game)
         {
+            game.EnableSimulatedInputSource();
+
             game.CurrentTestContext = TestContext.CurrentContext;
 
             game.ScreenShotAutomationEnabled = !ForceInteractiveMode;
@@ -320,7 +350,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             if (failedTests.Count > 0)
                 Assert.Fail($"Some image comparison tests failed: {string.Join(", ", failedTests.Select(x => x))}");
         }
-        
+
         /// <summary>
         /// Send the data of the test to the server.
         /// </summary>
