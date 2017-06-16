@@ -135,6 +135,12 @@ namespace SiliconStudio.Xenko.Engine
                 SceneInstance = null;
             }
 
+            if (GraphicsCompositor != null)
+            {
+                GraphicsCompositor.Dispose();
+                GraphicsCompositor = null;
+            }
+
             base.Destroy();
         }
 
@@ -203,6 +209,9 @@ namespace SiliconStudio.Xenko.Engine
             // TODO GRAPHICS REFACTOR
             //context.GraphicsDevice.Parameters.Set(GlobalKeys.Time, (float)gameTime.Total.TotalSeconds);
             //context.GraphicsDevice.Parameters.Set(GlobalKeys.TimeStep, (float)gameTime.Elapsed.TotalSeconds);
+
+            renderDrawContext.ResourceGroupAllocator.Flush();
+            renderDrawContext.QueryManager.Flush();
 
             // Push context (pop after using)
             using (renderDrawContext.RenderContext.PushTagAndRestore(SceneInstance.Current, SceneInstance))

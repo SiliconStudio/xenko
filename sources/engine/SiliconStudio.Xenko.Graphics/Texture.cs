@@ -454,6 +454,13 @@ namespace SiliconStudio.Xenko.Graphics
                 throw new NotSupportedException("Cannot create a texture view with flags [{0}] from the parent texture [{1}] as the parent texture must include all flags defined by the view".ToFormat(ViewFlags, Flags));
             }
 
+            if (IsMultisample)
+            {
+                var maxCount = GraphicsDevice.Features[Format].MultisampleCountMax;
+                if (maxCount < MultisampleCount)
+                    throw new NotSupportedException($"Cannot create a texture with format {Format} and multisample level {MultisampleCount}. Maximum supported level is {maxCount}");
+            }
+
             InitializeFromImpl(textureDatas);
  
 
@@ -1227,10 +1234,10 @@ namespace SiliconStudio.Xenko.Graphics
 
             for (int i = 0; i < Description.MipLevels; ++i)
             {
-                result += Description.ArraySize * ComputeSubresourceSize(i);
+                result += ComputeSubresourceSize(i);
             }
 
-            return result;
+            return result * Description.ArraySize;
         }
 
         private static int CountMips(int width)

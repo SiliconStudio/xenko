@@ -191,7 +191,7 @@ namespace SiliconStudio.Shaders.Utility
             hashSet.IntersectWith(other);
 
             // Remove items from ordered list
-            for (int i = 0; i < listSet.Count && i != hashSet.Count; i++)
+            for (int i = 0; i < listSet.Count && listSet.Count != hashSet.Count; i++)
             {
                 var item = listSet[i];
                 if (!hashSet.Contains(item))

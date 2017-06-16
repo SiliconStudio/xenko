@@ -58,6 +58,8 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
 
             result.BuildSteps = new AssetBuildStep(assetItem);
 
+            var prereqs = new Queue<BuildStep>();
+
             // build the textures for windows (needed for skybox compilation)
             foreach (var dependency in asset.GetDependencies())
             {
@@ -82,13 +84,36 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
 
                     // Create and add the texture command.
                     var textureParameters = new TextureConvertParameters(assetSource, textureAsset, PlatformType.Windows, GraphicsPlatform.Direct3D11, graphicsProfile, gameSettingsAsset.GetOrCreate<TextureSettings>().TextureQuality, colorSpace);
-                    result.BuildSteps.Add(new AssetBuildStep(textureAssetItem) { new TextureAssetCompiler.TextureConvertCommand(textureUrl, textureParameters, assetItem.Package) });
-                    result.BuildSteps.Add(new WaitBuildStep());
+                    var prereqStep = new AssetBuildStep(textureAssetItem) { new TextureAssetCompiler.TextureConvertCommand(textureUrl, textureParameters, assetItem.Package) };
+                    result.BuildSteps.Add(prereqStep);
+                    prereqs.Enqueue(prereqStep);
                 }
             }
 
             // add the skybox command itself.
-            result.BuildSteps.Add(new SkyboxCompileCommand(targetUrlInStorage, asset, assetItem.Package));
+            IEnumerable<ObjectUrl> InputFilesGetter()
+            {
+                var skyboxAsset = (SkyboxAsset)assetItem.Asset;
+                foreach (var dependency in skyboxAsset.GetDependencies())
+                {
+                    var dependencyItem = assetItem.Package.Assets.Find(dependency.Id);
+                    if (dependencyItem?.Asset is TextureAsset)
+                    {
+                        yield return new ObjectUrl(UrlType.Content, dependency.Location);
+                    }
+                }
+            }
+
+            var assetStep = new CommandBuildStep(new SkyboxCompileCommand(targetUrlInStorage, asset, assetItem.Package)
+            {
+                InputFilesGetter = InputFilesGetter
+            });
+            result.BuildSteps.Add(assetStep);
+            while (prereqs.Count > 0)
+            {
+                var prereq = prereqs.Dequeue();
+                BuildStep.LinkBuildSteps(prereq, assetStep);
+            }
         }
 
         private class SkyboxCompileCommand : AssetCommand<SkyboxAsset>

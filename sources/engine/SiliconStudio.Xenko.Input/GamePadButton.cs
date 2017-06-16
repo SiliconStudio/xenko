@@ -11,24 +11,29 @@ namespace SiliconStudio.Xenko.Input
     public enum GamePadButton : ushort
     {
         /// <summary>
-        /// PadUp button.
+        /// PadUp button. (DPad / Directional Pad)
         /// </summary>
         PadUp = 1 << 0,
 
         /// <summary>
-        /// PadDown button.
+        /// PadDown button. (DPad / Directional Pad)
         /// </summary>
         PadDown = 1 << 1,
 
         /// <summary>	
-        /// PadLeft button.
+        /// PadLeft button. (DPad / Directional Pad)
         /// </summary>	
         PadLeft = 1 << 2,
 
         /// <summary>	
-        /// PadRight button.
+        /// PadRight button. (DPad / Directional Pad)
         /// </summary>	
         PadRight = 1 << 3,
+
+        /// <summary>
+        /// Any pad button (DPad / Directional Pad)
+        /// </summary>
+        Pad = 0xF,
 
         /// <summary>	
         /// Start button.

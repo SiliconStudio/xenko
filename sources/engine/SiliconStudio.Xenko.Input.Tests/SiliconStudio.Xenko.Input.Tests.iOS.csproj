@@ -201,9 +201,12 @@
     </ProjectReference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Compile Include="BasicInputTest.cs" />
     <Compile Include="AdvancedInputTest.cs" />
+    <Compile Include="InputTestBase.cs" />
     <Compile Include="SensorGameTest.cs" />
+    <Compile Include="TestDirection.cs" />
+    <Compile Include="TestInput.cs" />
+    <Compile Include="TestInputEvents.cs" />
     <None Include="GameAssets\Arial.xkfnt" />
     <None Include="GameAssets\Font.xkfnt" />
     <None Include="GameAssets\GameSettings.xkgamesettings" />

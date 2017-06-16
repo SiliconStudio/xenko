@@ -4,6 +4,7 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -54,7 +55,16 @@ namespace SiliconStudio.Xenko.Rendering
                 {
                     for (int resourceSlot = 0; resourceSlot < layout.ElementCount; ++resourceSlot)
                     {
-                        descriptorSet.SetValue(resourceSlot, parameters.ObjectValues[descriptorStartSlot + resourceSlot]);
+                        var value = parameters.ObjectValues[descriptorStartSlot + resourceSlot];
+                        switch (layout.Entries[resourceSlot].Class)
+                        {
+                            case EffectParameterClass.UnorderedAccessView:
+                                descriptorSet.SetUnorderedAccessView(resourceSlot, value as GraphicsResource);
+                                break;
+                            default:
+                                descriptorSet.SetValue(resourceSlot, value);
+                                break;
+                        }
                     }
                 }
 

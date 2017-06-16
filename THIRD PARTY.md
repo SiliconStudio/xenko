@@ -34,3 +34,4 @@ Xenko uses the following open-source products:
 * [AvalonDock](https://avalondock.codeplex.com/) (New BSD License)
 * [SocketsForPCL](https://github.com/rdavisau/sockets-for-pcl) (MIT License)
 * [NativePath] (https://github.com/sinkingsugar/NativePath) (MIT License)
+* [Recast & Detour] (https://github.com/recastnavigation/recastnavigation) (zlib License)

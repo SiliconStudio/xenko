@@ -41,8 +41,10 @@ namespace SiliconStudio.Xenko.Graphics
         internal CommandList(GraphicsDevice device) : base(device)
         {
             nativeDeviceContext = device.NativeDeviceContext;
+            NativeDeviceChild = nativeDeviceContext;
             nativeDeviceContext1 = new SharpDX.Direct3D11.DeviceContext1(nativeDeviceContext.NativePointer);
             nativeDeviceProfiler = device.IsDebugMode ? SharpDX.ComObject.QueryInterfaceOrNull<SharpDX.Direct3D11.UserDefinedAnnotation>(nativeDeviceContext.NativePointer) : null;
+
             InitializeStages();
 
             ClearState();
@@ -478,27 +480,31 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
-        /// Begins profiling.
+        /// Submits a GPU timestamp query.
         /// </summary>
-        /// <param name="profileColor">Color of the profile.</param>
-        /// <param name="name">The name.</param>
-        public unsafe void BeginProfile(Color4 profileColor, string name)
+        /// <param name="queryPool">The <see cref="QueryPool"/> owning the query.</param>
+        /// <param name="index">The query index.</param>
+        public void WriteTimestamp(QueryPool queryPool, int index)
         {
-            if (nativeDeviceProfiler != null)
-            {
-                nativeDeviceProfiler.BeginEvent(name);
-            }
+            nativeDeviceContext.End(queryPool.NativeQueries[index]);    
         }
 
         /// <summary>
-        /// Ends profiling.
+        /// Begins debug event.
+        /// </summary>
+        /// <param name="profileColor">Color of the profile.</param>
+        /// <param name="name">The name.</param>
+        public void BeginProfile(Color4 profileColor, string name)
+        {
+            nativeDeviceProfiler?.BeginEvent(name);
+        }
+
+        /// <summary>
+        /// Ends debug event.
         /// </summary>
         public void EndProfile()
         {
-            if (nativeDeviceProfiler != null)
-            {
-                nativeDeviceProfiler.EndEvent();
-            }
+            nativeDeviceProfiler?.EndEvent();
         }
 
         /// <summary>
@@ -548,8 +554,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.ArgumentException">Expecting buffer supporting UAV;buffer</exception>
         public unsafe void ClearReadWrite(Buffer buffer, Vector4 value)
         {
-            if (buffer == null) throw new ArgumentNullException("buffer");
-            if (buffer.NativeUnorderedAccessView == null) throw new ArgumentException("Expecting buffer supporting UAV", "buffer");
+            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
+            if (buffer.NativeUnorderedAccessView == null) throw new ArgumentException("Expecting buffer supporting UAV", nameof(buffer));
 
             NativeDeviceContext.ClearUnorderedAccessView(buffer.NativeUnorderedAccessView, *(RawVector4*)&value);
         }
@@ -563,8 +569,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.ArgumentException">Expecting buffer supporting UAV;buffer</exception>
         public unsafe void ClearReadWrite(Buffer buffer, Int4 value)
         {
-            if (buffer == null) throw new ArgumentNullException("buffer");
-            if (buffer.NativeUnorderedAccessView == null) throw new ArgumentException("Expecting buffer supporting UAV", "buffer");
+            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
+            if (buffer.NativeUnorderedAccessView == null) throw new ArgumentException("Expecting buffer supporting UAV", nameof(buffer));
 
             NativeDeviceContext.ClearUnorderedAccessView(buffer.NativeUnorderedAccessView, *(RawInt4*)&value);
         }
@@ -578,8 +584,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.ArgumentException">Expecting buffer supporting UAV;buffer</exception>
         public unsafe void ClearReadWrite(Buffer buffer, UInt4 value)
         {
-            if (buffer == null) throw new ArgumentNullException("buffer");
-            if (buffer.NativeUnorderedAccessView == null) throw new ArgumentException("Expecting buffer supporting UAV", "buffer");
+            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
+            if (buffer.NativeUnorderedAccessView == null) throw new ArgumentException("Expecting buffer supporting UAV", nameof(buffer));
 
             NativeDeviceContext.ClearUnorderedAccessView(buffer.NativeUnorderedAccessView, *(RawInt4*)&value);
         }
@@ -590,11 +596,11 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="texture">The texture.</param>
         /// <param name="value">The value.</param>
         /// <exception cref="System.ArgumentNullException">texture</exception>
-        /// <exception cref="System.ArgumentException">Expecting buffer supporting UAV;texture</exception>
+        /// <exception cref="System.ArgumentException">Expecting texture supporting UAV;texture</exception>
         public unsafe void ClearReadWrite(Texture texture, Vector4 value)
         {
-            if (texture == null) throw new ArgumentNullException("texture");
-            if (texture.NativeUnorderedAccessView == null) throw new ArgumentException("Expecting buffer supporting UAV", "texture");
+            if (texture == null) throw new ArgumentNullException(nameof(texture));
+            if (texture.NativeUnorderedAccessView == null) throw new ArgumentException("Expecting texture supporting UAV", nameof(texture));
 
             NativeDeviceContext.ClearUnorderedAccessView(texture.NativeUnorderedAccessView, *(RawVector4*)&value);
         }
@@ -605,11 +611,11 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="texture">The texture.</param>
         /// <param name="value">The value.</param>
         /// <exception cref="System.ArgumentNullException">texture</exception>
-        /// <exception cref="System.ArgumentException">Expecting buffer supporting UAV;texture</exception>
+        /// <exception cref="System.ArgumentException">Expecting texture supporting UAV;texture</exception>
         public unsafe void ClearReadWrite(Texture texture, Int4 value)
         {
-            if (texture == null) throw new ArgumentNullException("texture");
-            if (texture.NativeUnorderedAccessView == null) throw new ArgumentException("Expecting buffer supporting UAV", "texture");
+             if (texture == null) throw new ArgumentNullException(nameof(texture));
+            if (texture.NativeUnorderedAccessView == null) throw new ArgumentException("Expecting texture supporting UAV", nameof(texture));
 
             NativeDeviceContext.ClearUnorderedAccessView(texture.NativeUnorderedAccessView, *(RawInt4*)&value);
         }
@@ -620,11 +626,11 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="texture">The texture.</param>
         /// <param name="value">The value.</param>
         /// <exception cref="System.ArgumentNullException">texture</exception>
-        /// <exception cref="System.ArgumentException">Expecting buffer supporting UAV;texture</exception>
+        /// <exception cref="System.ArgumentException">Expecting texture supporting UAV;texture</exception>
         public unsafe void ClearReadWrite(Texture texture, UInt4 value)
         {
-            if (texture == null) throw new ArgumentNullException("texture");
-            if (texture.NativeUnorderedAccessView == null) throw new ArgumentException("Expecting buffer supporting UAV", "texture");
+            if (texture == null) throw new ArgumentNullException(nameof(texture));
+            if (texture.NativeUnorderedAccessView == null) throw new ArgumentException("Expecting texture supporting UAV", nameof(texture));
 
             NativeDeviceContext.ClearUnorderedAccessView(texture.NativeUnorderedAccessView, *(RawInt4*)&value);
         }

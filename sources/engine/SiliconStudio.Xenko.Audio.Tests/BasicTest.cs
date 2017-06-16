@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
 
             if (Input.PointerEvents.Count > 0)
             {
-                if (Input.PointerEvents.Any(x => x.State == PointerState.Up))
+                if (Input.PointerEvents.Any(x => x.EventType == PointerEventType.Released))
                 {
                     if (count % 5 == 0)
                         effect48kHz.CreateInstance(Audio.AudioEngine.DefaultListener).Play();

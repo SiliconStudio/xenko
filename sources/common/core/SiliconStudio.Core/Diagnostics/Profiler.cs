@@ -241,6 +241,13 @@ namespace SiliconStudio.Core.Diagnostics
             return profiler;
         }
 
+        public static ProfilingState Begin([NotNull] ProfilingKey profilingKey, long timeStamp)
+        {
+            var profiler = New(profilingKey);
+            profiler.Begin(timeStamp);
+            return profiler;
+        }
+
         /// <summary>
         /// Resets the id counter to zero and disable all registered profiles.
         /// </summary>

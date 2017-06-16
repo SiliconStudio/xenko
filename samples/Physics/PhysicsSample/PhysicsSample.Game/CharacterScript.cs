@@ -116,7 +116,7 @@ namespace PhysicsSample
             }
 
             // -- Pointer (mouse/touch)
-            foreach (var pointerEvent in Input.PointerEvents.Where(pointerEvent => pointerEvent.State == PointerState.Down))
+            foreach (var pointerEvent in Input.PointerEvents.Where(pointerEvent => pointerEvent.EventType == PointerEventType.Pressed))
             {
                 if (!movingToTarget)
                 {
