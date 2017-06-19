@@ -39,10 +39,10 @@ namespace SiliconStudio.Presentation.Quantum
 
         public override void SetNodeValue(TTargetType value)
         {
-            using (var transaction = actionService?.CreateTransaction())
+            using (var transaction = ActionService?.CreateTransaction())
             {
-                Node.Update(converter(value));
-                actionService?.SetName(transaction, $"Update property {propertyName}");
+                Node.Update(Converter(value));
+                ActionService?.SetName(transaction, $"Update property {PropertyName}");
             }
         }
     }

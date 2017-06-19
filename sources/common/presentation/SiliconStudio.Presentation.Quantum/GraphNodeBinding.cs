@@ -10,30 +10,22 @@ namespace SiliconStudio.Presentation.Quantum
     {
         public delegate void PropertyChangeDelegate(string[] propertyNames);
 
-        protected readonly IUndoRedoService actionService;
-        protected readonly string propertyName;
-        protected readonly Func<TTargetType, TContentType> converter;
+        protected readonly IUndoRedoService ActionService;
+        protected readonly string PropertyName;
+        protected readonly Func<TTargetType, TContentType> Converter;
+
         private readonly PropertyChangeDelegate propertyChanging;
         private readonly PropertyChangeDelegate propertyChanged;
         private readonly bool notifyChangesOnly;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MemberGraphNodeBinding{TTargetType, TContentType}"/> class.
-        /// </summary>
-        /// <param name="propertyName">The name of the property of the view model that is bound to this instance.</param>
-        /// <param name="propertyChanging">The delegate to invoke when the node content is about to change.</param>
-        /// <param name="propertyChanged">The delegate to invoke when the node content has changed.</param>
-        /// <param name="converter">A converter function to convert between the property type and the content type.</param>
-        /// <param name="actionService"></param>
-        /// <param name="notifyChangesOnly">If <c>True</c>, delegates will be invoked only if the content of the node has actually changed. Otherwise, they will be invoked every time the node is updated, even if the new value is equal to the previous one.</param>
-        public GraphNodeBinding(string propertyName, PropertyChangeDelegate propertyChanging, PropertyChangeDelegate propertyChanged, Func<TTargetType, TContentType> converter, IUndoRedoService actionService, bool notifyChangesOnly = true)
+        
+        internal GraphNodeBinding(string propertyName, PropertyChangeDelegate propertyChanging, PropertyChangeDelegate propertyChanged, Func<TTargetType, TContentType> converter, IUndoRedoService actionService, bool notifyChangesOnly = true)
         {
             if (converter == null) throw new ArgumentNullException(nameof(converter));
-            this.propertyName = propertyName;
+            this.PropertyName = propertyName;
             this.propertyChanging = propertyChanging;
             this.propertyChanged = propertyChanged;
-            this.converter = converter;
-            this.actionService = actionService;
+            this.Converter = converter;
+            this.ActionService = actionService;
             this.notifyChangesOnly = notifyChangesOnly;
         }
 
@@ -61,7 +53,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
             if (!notifyChangesOnly || !Equals(e.OldValue, e.NewValue))
             {
-                propertyChanging?.Invoke(new[] { propertyName });
+                propertyChanging?.Invoke(new[] { PropertyName });
             }
         }
 
@@ -69,7 +61,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
             if (!notifyChangesOnly || !Equals(e.OldValue,e.NewValue))
             {
-                propertyChanged?.Invoke(new[] { propertyName });
+                propertyChanged?.Invoke(new[] { PropertyName });
             }
         }
     }
