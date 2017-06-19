@@ -350,7 +350,7 @@ namespace SiliconStudio.BuildEngine
 
                     if (process.ExitCode != 0)
                     {
-                        logger.Debug($"Remote command crashed with output:{Environment.NewLine}{string.Join(Environment.NewLine, output)}");
+                        logger.Error($"Remote command crashed with output:{Environment.NewLine}{string.Join(Environment.NewLine, output)}");
                     }
 
                     if (processBuilderRemote.Result != null)
