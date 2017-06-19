@@ -93,7 +93,7 @@ namespace SiliconStudio.AssemblyProcessor
 
             bool changed = false;
 
-            foreach (var type in context.Assembly.EnumerateTypes().ToArray())
+            foreach (var type in context.Assembly.MainModule.GetAllTypes().ToArray())
             {
                 foreach (var method in type.Methods.ToArray())
                 {
