@@ -52,6 +52,7 @@ namespace SiliconStudio.Assets.Tests.Compilers
 
             var assetBuilder = new PackageCompiler(new RootPackageAssetEnumerator(package));
             var assetBuildResult = assetBuilder.Prepare(context);
+            // Since MyAsset2 is a CompileAsset reference, it should not be compiled, so we should have only 1 asset (MyAsset1) to compile.
             Assert.AreEqual(1, assetBuildResult.BuildSteps.Count);
         }
 
@@ -75,7 +76,7 @@ namespace SiliconStudio.Assets.Tests.Compilers
                 CompileContentReference = CreateRef<MyContent9>(otherAssets[1]),
                 CompileRuntimeReference = CreateRef<MyContent10>(otherAssets[2]),
             };
-            var assetItem = new AssetItem("asset2", compileAssetReference, package);
+            var assetItem = new AssetItem("asset3", compileAssetReference, package);
             package.Assets.Add(assetItem);
 
             var asset = new MyAsset1 { CompileAssetReference = CreateRef<MyContent2>(assetItem) };
@@ -95,7 +96,52 @@ namespace SiliconStudio.Assets.Tests.Compilers
 
             var assetBuilder = new PackageCompiler(new RootPackageAssetEnumerator(package));
             var assetBuildResult = assetBuilder.Prepare(context);
-            Assert.AreEqual(1, assetBuildResult.BuildSteps.Count);
+            // Since MyAsset3 is a CompileContent reference, it should be compiled, so we should have only 2 asset (MyAsset1 and MyAsset3) to compile.
+            Assert.AreEqual(2, assetBuildResult.BuildSteps.Count);
+        }
+
+        [Test]
+        public void TestRuntime()
+        {
+            var package = new Package();
+            // ReSharper disable once UnusedVariable - we need a package session to compile
+            var packageSession = new PackageSession(package);
+            var otherAssets = new List<AssetItem>
+            {
+                new AssetItem("asset11", new MyAsset11(), package),
+                new AssetItem("asset12", new MyAsset12(), package),
+                new AssetItem("asset13", new MyAsset13(), package),
+            };
+            otherAssets.ForEach(x => package.Assets.Add(x));
+
+            var compileAssetReference = new MyAsset4
+            {
+                CompileAssetReference = CreateRef<MyContent11>(otherAssets[0]),
+                CompileContentReference = CreateRef<MyContent12>(otherAssets[1]),
+                CompileRuntimeReference = CreateRef<MyContent13>(otherAssets[2]),
+            };
+            var assetItem = new AssetItem("asset4", compileAssetReference, package);
+            package.Assets.Add(assetItem);
+
+            var asset = new MyAsset1 { CompileAssetReference = CreateRef<MyContent2>(assetItem) };
+            assetItem = new AssetItem("asset1", asset, package);
+            package.Assets.Add(assetItem);
+            package.RootAssets.Add(new AssetReference(assetItem.Id, assetItem.Location));
+
+            // Create context
+            var context = new AssetCompilerContext();
+
+            // Builds the project
+            MyAsset1Compiler.AssertFunc = (url, ass, pkg) =>
+            {
+                // Nothing must have been compiled compiled before
+                Assert.AreEqual(1, TestCompilerBase.CompiledAssets);
+            };
+
+            var assetBuilder = new PackageCompiler(new RootPackageAssetEnumerator(package));
+            var assetBuildResult = assetBuilder.Prepare(context);
+            // Since MyAsset4 is a Runtime reference, it should be compiled, so we should have 2 asset (MyAsset1 and MyAsset4) to compile.
+            Assert.AreEqual(2, assetBuildResult.BuildSteps.Count);
         }
 
         #region Types
@@ -154,9 +200,9 @@ namespace SiliconStudio.Assets.Tests.Compilers
         [DataContract, AssetDescription(".xkmytest"), AssetContentType(typeof(MyContent4))]
         public class MyAsset4 : Asset
         {
-            public MyAsset11 CompileAssetReference;
-            public MyAsset12 CompileContentReference;
-            public MyAsset13 CompileRuntimeReference;
+            public MyContent11 CompileAssetReference;
+            public MyContent12 CompileContentReference;
+            public MyContent13 CompileRuntimeReference;
         }
 
         [DataContract, AssetDescription(".xkmytest"), AssetContentType(typeof(MyContent5))]

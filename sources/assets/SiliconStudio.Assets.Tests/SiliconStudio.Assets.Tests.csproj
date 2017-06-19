@@ -43,6 +43,7 @@
     <Compile Include="Compilers\TestAssertCompiler.cs" />
     <Compile Include="Compilers\TestBuildDependencyManager.cs" />
     <Compile Include="Compilers\TestCompilerBase.cs" />
+    <Compile Include="Compilers\TestDependencyByIncludeTypeAnalysis.cs" />
     <Compile Include="CustomParameterCollection.cs" />
     <Compile Include="Helpers\GuidGenerator.cs" />
     <Compile Include="Helpers\IdentifierGenerator.cs" />
