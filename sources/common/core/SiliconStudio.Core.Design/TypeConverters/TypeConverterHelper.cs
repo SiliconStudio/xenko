@@ -30,7 +30,7 @@ namespace SiliconStudio.Core.TypeConverters
                         target = source;
                         return true;
                     }
-                
+
                     if (source is IConvertible)
                     {
                         var typeCode = Type.GetTypeCode(targetType);
@@ -61,10 +61,12 @@ namespace SiliconStudio.Core.TypeConverters
                 catch (InvalidOperationException) { }
                 catch (FormatException) { }
                 catch (NotSupportedException) { }
+                catch (OverflowException) { }
                 catch (Exception ex) when (ex.InnerException is InvalidCastException) { }
                 catch (Exception ex) when (ex.InnerException is InvalidOperationException) { }
                 catch (Exception ex) when (ex.InnerException is FormatException) { }
                 catch (Exception ex) when (ex.InnerException is NotSupportedException) { }
+                catch (Exception ex) when (ex.InnerException is OverflowException) { }
             }
 
             // Incompatible type and no conversion available
