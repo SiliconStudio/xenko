@@ -296,7 +296,9 @@
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /d /y $(TargetDir)*.* $(SolutionDir)..\deps\AssemblyProcessor</PostBuildEvent>
+    <PostBuildEvent>xcopy /d /y $(TargetDir)*.* $(SolutionDir)..\deps\AssemblyProcessor
+cd $(SolutionDir)..\deps\AssemblyProcessor
+ilrepack SiliconStudio.AssemblyProcessor.exe Mono.Cecil.dll Mono.Cecil.Mdb.dll Mono.Cecil.Pdb.dll Mono.Cecil.Rocks.dll Mono.Options.dll Microsoft.CodeAnalysis.dll Microsoft.CodeAnalysis.CSharp.dll ILRepack.exe System.Reflection.Metadata.dll System.Collections.Immutable.dll /out:SiliconStudio.AssemblyProcessor.Packed.exe</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
