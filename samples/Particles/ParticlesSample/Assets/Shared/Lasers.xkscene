@@ -1,36 +1,36 @@
 !SceneAsset
 Id: 8eb3fe28-2a08-441a-a015-a428d2e17bef
-SerializedVersion: {Xenko: 2.0.0.0}
+SerializedVersion: {Xenko: 2.1.0.1}
 Tags: []
 ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
-    RootPartIds:
-        - a41aa685-3271-4e96-a72c-639c52070011
-        - 79735979-e91a-4eae-b702-070a873dfa9c
-        - 7698999c-4c4d-43e0-ac5d-5e2360bafde7
-        - 2d712fb9-648d-418a-a5de-54d72c35271b
-        - 42102787-023a-480b-a3d1-2648b1f533bb
-        - 7c54d88e-d96c-496b-923c-896458b82f6f
-        - fd406c1e-177f-447a-9a12-51c467000898
-        - f739d26c-29c3-4e13-baf4-119c76899760
-        - 73879aea-8457-4189-b2bc-86bfde627556
-        - b84c6094-f2ac-4719-b14a-5d557c4170f3
-        - 2407431b-c342-4631-bc69-f2a5a3fdc6ae
-        - f3c9f97f-ad83-4e0e-b6c7-cce0a4c06198
-        - f09e35cf-5f9d-4520-92ad-9f56310dc6b0
-        - a85a5f1b-0311-4216-9b6b-2626c688cdca
-        - 87aa4de4-8893-4337-aabe-effb902154d9
-        - b6abb062-9940-44a7-90f5-7dc6f0a6a26e
-        - 03161826-c447-4a12-abef-b9d3d4dd3e12
-        - 3193f71d-4a03-4ec7-8322-2368df63ab69
-        - ec12fc02-8c3b-47c6-83d4-2f8d48629865
-        - cebe733a-e4ab-4aae-92a6-a2ab2edf6145
-        - ce89b8d2-6eb0-4b6c-b163-c1421e856a6c
-        - 83a43b83-904c-4dce-87e3-15cf6bb4e301
-        - c55ff62f-649e-4c8c-9d71-38b8ea1b6f07
-        - 5a991e37-7289-444f-9bbd-2cdf3640e578
-        - 3e165d22-3def-48eb-97b5-fbaee2f6fa1f
+    RootParts:
+        - ref!! a41aa685-3271-4e96-a72c-639c52070011
+        - ref!! 79735979-e91a-4eae-b702-070a873dfa9c
+        - ref!! 7698999c-4c4d-43e0-ac5d-5e2360bafde7
+        - ref!! 2d712fb9-648d-418a-a5de-54d72c35271b
+        - ref!! 42102787-023a-480b-a3d1-2648b1f533bb
+        - ref!! 7c54d88e-d96c-496b-923c-896458b82f6f
+        - ref!! fd406c1e-177f-447a-9a12-51c467000898
+        - ref!! f739d26c-29c3-4e13-baf4-119c76899760
+        - ref!! 73879aea-8457-4189-b2bc-86bfde627556
+        - ref!! b84c6094-f2ac-4719-b14a-5d557c4170f3
+        - ref!! 2407431b-c342-4631-bc69-f2a5a3fdc6ae
+        - ref!! f3c9f97f-ad83-4e0e-b6c7-cce0a4c06198
+        - ref!! f09e35cf-5f9d-4520-92ad-9f56310dc6b0
+        - ref!! a85a5f1b-0311-4216-9b6b-2626c688cdca
+        - ref!! 87aa4de4-8893-4337-aabe-effb902154d9
+        - ref!! b6abb062-9940-44a7-90f5-7dc6f0a6a26e
+        - ref!! 03161826-c447-4a12-abef-b9d3d4dd3e12
+        - ref!! 3193f71d-4a03-4ec7-8322-2368df63ab69
+        - ref!! ec12fc02-8c3b-47c6-83d4-2f8d48629865
+        - ref!! cebe733a-e4ab-4aae-92a6-a2ab2edf6145
+        - ref!! ce89b8d2-6eb0-4b6c-b163-c1421e856a6c
+        - ref!! 83a43b83-904c-4dce-87e3-15cf6bb4e301
+        - ref!! c55ff62f-649e-4c8c-9d71-38b8ea1b6f07
+        - ref!! 5a991e37-7289-444f-9bbd-2cdf3640e578
+        - ref!! 3e165d22-3def-48eb-97b5-fbaee2f6fa1f
     Parts:
         -   Entity:
                 Id: 01fab643-422d-4ad5-94c9-114d87c334bb
