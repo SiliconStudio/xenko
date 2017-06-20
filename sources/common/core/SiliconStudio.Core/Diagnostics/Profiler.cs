@@ -304,6 +304,11 @@ namespace SiliconStudio.Core.Diagnostics
                 if (events.Count == 0)
                     return "No profiling events.";
 
+                if (GpuTimestampFrequencyRatio <= 0.0)
+                {
+                    throw new ArgumentOutOfRangeException("Invalid GPU clock frequency ratio (value has not been set and/or is <= 0)");
+                }
+
                 // Group by profiling keys
                 var elapsedTime = events.Count > 0 ? events[events.Count - 1].TimeStamp - events[0].TimeStamp : 0;
 
