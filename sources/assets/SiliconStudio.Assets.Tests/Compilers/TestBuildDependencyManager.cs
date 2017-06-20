@@ -227,7 +227,7 @@ namespace SiliconStudio.Assets.Tests.Compilers
         [AssetCompiler(typeof(MyAsset1), typeof(AssetCompilationContext))]
         public class MyAsset1Compiler : TestAssertCompiler<MyAsset1>
         {
-            public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+            public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
             {
                 yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MyAsset2), BuildDependencyType.CompileAsset);
                 yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MyAsset3), BuildDependencyType.CompileContent);
