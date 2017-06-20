@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 {
     public abstract class EntityHierarchyCompilerBase<T> : AssetCompilerBase where T : EntityHierarchyAssetBase
     {
-        public override IEnumerable<Type> GetRuntimeTypes(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<Type> GetRuntimeTypes(AssetItem assetItem)
         {
             yield return typeof(Entity);
         }
