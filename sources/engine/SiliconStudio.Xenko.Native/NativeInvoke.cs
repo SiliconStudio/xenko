@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Xenko.Native
@@ -35,6 +36,10 @@ namespace SiliconStudio.Xenko.Native
         [SuppressUnmanagedCodeSecurity]
         [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
         public static extern void UpdateBufferValuesFromElementInfo(IntPtr drawInfo, IntPtr vertexPtr, IntPtr indexPtr, int vertexOffset);
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void xnGraphicsFastTextRendererGenerateVertices(RectangleF constantInfos, RectangleF renderInfos, string text, out IntPtr textLength, out IntPtr vertexBufferPointer);
     }
 
     internal class Module

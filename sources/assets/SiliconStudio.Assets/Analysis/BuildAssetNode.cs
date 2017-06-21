@@ -52,8 +52,8 @@ namespace SiliconStudio.Assets.Analysis
             if (Interlocked.Exchange(ref version, assetVersion) == assetVersion)
                 return; //same version, skip analysis, do not clear links
 
-            var typesToInclude = new HashSet<KeyValuePair<Type, BuildDependencyType>>(mainCompiler.GetInputTypes(context, AssetItem));
-            var typesToExclude = new HashSet<Type>(mainCompiler.GetInputTypesToExclude(context, AssetItem));
+            var typesToInclude = new HashSet<KeyValuePair<Type, BuildDependencyType>>(mainCompiler.GetInputTypes(AssetItem));
+            var typesToExclude = new HashSet<Type>(mainCompiler.GetInputTypesToExclude(AssetItem));
 
             //rebuild the dependency links, we clean first
             //remove self from current childs
@@ -83,7 +83,7 @@ namespace SiliconStudio.Assets.Analysis
             }
 
             //Input files required
-            foreach (var inputFile in mainCompiler.GetInputFiles(context, AssetItem)) //directly resolve by input files, in the future we might just want this pass
+            foreach (var inputFile in mainCompiler.GetInputFiles(AssetItem)) //directly resolve by input files, in the future we might just want this pass
             {
                 if (inputFile.Type == UrlType.Content || inputFile.Type == UrlType.ContentLink)
                 {
@@ -105,7 +105,7 @@ namespace SiliconStudio.Assets.Analysis
             context.Properties.TryGet(VisitRuntimeTypes, out shouldVisitTypes);
             if (shouldVisitTypes || mainCompiler.AlwaysCheckRuntimeTypes)
             {
-                var collector = new RuntimeDependenciesCollector(mainCompiler.GetRuntimeTypes(context, AssetItem));
+                var collector = new RuntimeDependenciesCollector(mainCompiler.GetRuntimeTypes(AssetItem));
                 var deps = collector.GetDependencies(AssetItem);
                 foreach (var reference in deps)
                 {
