@@ -16,8 +16,6 @@ shader NormalFromMesh : NormalBase, Transformation
         // Normalize just once the normal coming from the vertex shader
         if (dot(streams.normalWS, streams.normalWS) > 0)
             streams.normalWS = normalize(streams.normalWS);
-        if(!streams.IsFrontFace)
-            streams.normalWS = -streams.normalWS;
     }
     
     stage override void UpdateNormalFromTangentSpace(float3 normalInTangentSpace)
