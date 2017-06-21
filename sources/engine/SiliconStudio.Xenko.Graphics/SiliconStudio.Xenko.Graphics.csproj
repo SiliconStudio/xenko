@@ -131,6 +131,7 @@
     <Compile Include="Direct3D12\QueryPool.Direct3D12.cs" />
     <Compile Include="Direct3D\QueryPool.Direct3D.cs" />
     <Compile Include="Direct3D\SharpDXInterop.cs" />
+    <Compile Include="FastTextRenderer.cs" />
     <Compile Include="Font\SignedDistanceFieldSpriteFont.cs" />
     <Compile Include="Null\CommandList.Null.cs" />
     <Compile Include="Null\DescriptorPool.Null.cs" />
