@@ -369,7 +369,7 @@ namespace SiliconStudio.Xenko.Streaming
                 var lastUsageTimespan = new TimeSpan((frameIndex - resource.LastTimeUsed) * ManagerUpdatesInterval.Ticks);
                 if (lastUsageTimespan < ResourceLiveTimeout)
                 {
-                    //targetQuality = StreamingQuality.Maximum;
+                    targetQuality = StreamingQuality.Maximum;
 #if USE_TEST_MANUAL_QUALITY
                     targetQuality = (testQuality / 100.0f); // apply quality scale for testing
 #endif
