@@ -115,13 +115,33 @@ namespace SiliconStudio.Xenko.Streaming
             base.Destroy();
         }
 
+        /// <summary>
+        /// Gets the <see cref="StreamableResource"/> corresponding to the given resource object.
+        /// </summary>
+        /// <typeparam name="T">The type of the streamable resource.</typeparam>
+        /// <param name="obj">The object.</param>
+        /// <returns>Streamable resource or null if cannot find it.</returns>
         [CanBeNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private T Get<T>(object obj) where T : StreamableResource
+        public T Get<T>(object obj) where T : StreamableResource
         {
             StreamableResource result;
             resourcesLookup.TryGetValue(obj, out result);
             return result as T;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="StreamingTexture"/> corresponding to the given texture object.
+        /// </summary>
+        /// <param name="obj">The texture object.</param>
+        /// <returns>Streamable texture or null if cannot find it.</returns>
+        [CanBeNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public StreamingTexture Get(Texture obj)
+        {
+            StreamableResource result;
+            resourcesLookup.TryGetValue(obj, out result);
+            return result as StreamingTexture;
         }
 
         internal void RegisterResource(StreamableResource resource)
@@ -162,7 +182,7 @@ namespace SiliconStudio.Xenko.Streaming
                 throw new ContentStreamingException("Missing content storage.");
 
             // Find resource or create new
-            var resource = Get<StreamingTexture>(obj);
+            var resource = Get(obj);
             if (resource == null)
             {
                 resource = new StreamingTexture(this, obj);
@@ -229,7 +249,7 @@ namespace SiliconStudio.Xenko.Streaming
 
             lock (resources)
             {
-                var resource = Get<StreamingTexture>(obj);
+                var resource = Get(obj);
                 resource?.Dispose();
             }
         }
@@ -262,24 +282,6 @@ namespace SiliconStudio.Xenko.Streaming
         {
             while (!IsDisposed)
             {
-                // temp for testing...
-                /*if (!((Game)Game).Input.IsKeyDown(Keys.P))
-                {
-                    ContentStreaming.Update();
-                    await ((Game)Game).Script.NextFrame();
-                    continue;
-                }*/
-
-                // temp code for testing quality changing using K/L keys
-                /*if (((Game)Game).Input.IsKeyPressed(Keys.K))
-                {
-                    testQuality = Math.Min(testQuality + 5, 100);
-                }
-                if (((Game)Game).Input.IsKeyPressed(Keys.L))
-                {
-                    testQuality = Math.Max(testQuality - 5, 0);
-                }*/
-
                 // Update resources
                 lock (resources)
                 {
@@ -344,8 +346,6 @@ namespace SiliconStudio.Xenko.Streaming
                 var lastUsageTimespan = new TimeSpan((frameIndex - resource.LastTimeUsed) * ManagerUpdatesInterval.Ticks);
                 if (lastUsageTimespan < ResourceLiveTimeout)
                 {
-                    //targetQuality = handler.CalculateTargetQuality(resource, now);
-                    //targetQuality = (testQuality / 100.0f); // apply quality scale for testing
                     targetQuality = StreamingQuality.Maximum;
                     // TODO: here we should apply resources group master scale (based on game settings quality level and memory level)
                 }
@@ -413,7 +413,7 @@ namespace SiliconStudio.Xenko.Streaming
             {
                 if (e is Texture t)
                 {
-                    var resource = Get<StreamingTexture>(t);
+                    var resource = Get(t);
                     if (resource != null)
                     {
                         resource.LastTimeUsed = frameIndex;
@@ -431,7 +431,7 @@ namespace SiliconStudio.Xenko.Streaming
             if (texture == null)
                 return;
 
-            var resource = Get<StreamingTexture>(texture);
+            var resource = Get(texture);
             if (resource != null)
             {
                 resource.LastTimeUsed = frameIndex;
@@ -475,7 +475,7 @@ namespace SiliconStudio.Xenko.Streaming
             {
                 if (e is Texture t)
                 {
-                    var resource = Get<StreamingTexture>(t);
+                    var resource = Get(t);
                     if (resource != null)
                     {
                         resource.ForceFullyLoaded = true;
@@ -494,7 +494,7 @@ namespace SiliconStudio.Xenko.Streaming
             if (texture == null)
                 return;
 
-            var resource = Get<StreamingTexture>(texture);
+            var resource = Get(texture);
             if (resource != null)
             {
                 resource.ForceFullyLoaded = true;
