@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     [AssetCompiler(typeof(PrefabModelAsset), typeof(AssetCompilationContext))]
     internal class PrefabModelAssetCompiler : AssetCompilerBase
     {
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
         {
             //The following types will never make it to the game!
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(PrefabAsset), BuildDependencyType.CompileContent);

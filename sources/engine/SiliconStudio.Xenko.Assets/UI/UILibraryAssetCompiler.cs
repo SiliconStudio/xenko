@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Assets.UI
     [AssetCompiler(typeof(UILibraryAsset), typeof(AssetCompilationContext))]
     public sealed class UILibraryAssetCompiler : UIAssetCompilerBase<UILibraryAsset>
     {
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
         {
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SpriteFontAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SpriteSheetAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
