@@ -190,6 +190,7 @@ namespace SiliconStudio.Xenko.Rendering
             foreach (var context in threadContext.Values)
             {
                 context.ResourceGroupAllocator.Flush();
+                context.QueryManager.Flush();
             }
         }
 

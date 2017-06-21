@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Linq;
 using Mono.Cecil;
+using Mono.Cecil.Rocks;
 
 namespace SiliconStudio.AssemblyProcessor
 {
@@ -20,7 +21,7 @@ namespace SiliconStudio.AssemblyProcessor
         public bool Process(AssemblyProcessorContext context)
         {
             var assemblyScanCodeGenerator = new AssemblyScanCodeGenerator(context.Assembly);
-            foreach (var type in context.Assembly.EnumerateTypes())
+            foreach (var type in context.Assembly.MainModule.GetAllTypes())
             {
                 // Ignore interface types as well as types with generics
                 // Note: we could support generic types at some point but we probably need

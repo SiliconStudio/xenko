@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Engine;

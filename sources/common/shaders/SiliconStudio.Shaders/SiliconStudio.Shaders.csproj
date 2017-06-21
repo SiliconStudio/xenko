@@ -53,6 +53,7 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Ast\Hlsl\InterpolationQualifier.cs" />
     <Compile Include="Ast\Xenko\ClassIdentifierGeneric.cs" />
     <Compile Include="Ast\Xenko\EnumType.cs" />
     <Compile Include="Ast\Xenko\ForEachStatement.cs" />
