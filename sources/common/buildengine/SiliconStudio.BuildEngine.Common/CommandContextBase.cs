@@ -19,23 +19,15 @@ namespace SiliconStudio.BuildEngine
 
         protected internal readonly CommandResultEntry ResultEntry;
 
-        protected abstract Task<ResultStatus> ScheduleAndExecuteCommandInternal(Command command);
-
         public abstract IEnumerable<IDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups();
 
-        internal protected abstract ObjectId ComputeInputHash(UrlType type, string filePath);
+        protected internal abstract ObjectId ComputeInputHash(UrlType type, string filePath);
 
         protected CommandContextBase(Command command, BuilderContext builderContext)
         {
             CurrentCommand = command;
             BuildParameters = builderContext.Parameters;
             ResultEntry = new CommandResultEntry();
-        }
-
-        public Task<ResultStatus> ScheduleAndExecuteCommand(Command command)
-        {
-            ResultEntry.SpawnedCommands.Add(command);
-            return ScheduleAndExecuteCommandInternal(command);
         }
 
         public void RegisterInputDependency(ObjectUrl url)
@@ -59,11 +51,6 @@ namespace SiliconStudio.BuildEngine
         public void AddTag(ObjectUrl url, TagSymbol tagSymbol)
         {
             ResultEntry.TagSymbols.Add(new KeyValuePair<ObjectUrl, string>(url, tagSymbol.Name));
-        }
-
-        public void RegisterSpawnedCommandWithoutScheduling(Command command)
-        {
-            ResultEntry.SpawnedCommands.Add(command);
         }
     }
 }

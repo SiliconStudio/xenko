@@ -7,7 +7,7 @@ using SiliconStudio.Core.Storage;
 namespace SiliconStudio.BuildEngine
 {
     /// <summary>
-    /// A build output object, as exposed by <see cref="EnumerableBuildStep"/>. This object represents the hash of an output object and its associated url.
+    /// A build output object, as exposed by <see cref="ListBuildStep"/>. This object represents the hash of an output object and its associated url.
     /// </summary>
     public class OutputObject
     {

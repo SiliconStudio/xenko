@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
     /// A tonemap shader
     /// </summary>
-    internal shader ToneMapShader<bool TAutoKeyValue, bool TAutoExposure> : ColorTransformShader, Texturing
+    internal shader ToneMapShader<bool TAutoKeyValue, bool TAutoExposure, bool TUseLocalLuminance> : ColorTransformShader, Texturing
     {
         // Luminance texture
         Texture2D LuminanceTexture;
@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
 	        // Gets the local luminance
             float avgLuminance = LuminanceAverageGlobal;
-            if (LuminanceLocalFactor > 0.0f)
+            if (TUseLocalLuminance)
             {
 	            float luminanceAverageLocal = LuminanceTexture.Sample(Texturing.LinearSampler, streams.TexCoord).r;
 
