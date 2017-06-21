@@ -1157,6 +1157,39 @@ namespace SiliconStudio.Xenko.Graphics
             return new DataBox(fixedPointer, rowPitch, slicePitch);
         }
 
+        /// <summary>
+        /// Swaps the texture internal data with the other texture.
+        /// </summary>
+        /// <param name="other">The other texture.</param>
+        internal void Swap(Texture other)
+        {
+            Utilities.Swap(ref textureDescription, ref other.textureDescription);
+            Utilities.Swap(ref textureViewDescription, ref other.textureViewDescription);
+            Utilities.Swap(ref mipmapDescriptions, ref other.mipmapDescriptions);
+            //
+            var temp = ViewWidth;
+            ViewWidth = other.ViewWidth;
+            other.ViewWidth = temp;
+            //
+            temp = ViewHeight;
+            ViewHeight = other.ViewHeight;
+            other.ViewHeight = temp;
+            //
+            temp = ViewDepth;
+            ViewDepth = other.ViewDepth;
+            other.ViewDepth = temp;
+            //
+            temp = RowStride;
+            RowStride = other.RowStride;
+            other.RowStride = temp;
+            //
+            temp = DepthStride;
+            DepthStride = other.DepthStride;
+            other.DepthStride = temp;
+
+            SwapInternal(other);
+        }
+
         internal void GetViewSliceBounds(ViewType viewType, ref int arrayOrDepthIndex, ref int mipIndex, out int arrayOrDepthCount, out int mipCount)
         {
             int arrayOrDepthSize = this.Depth > 1 ? this.Depth : this.ArraySize;

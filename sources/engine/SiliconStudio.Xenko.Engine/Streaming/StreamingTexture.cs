@@ -19,6 +19,7 @@ namespace SiliconStudio.Xenko.Streaming
     public class StreamingTexture : StreamableResource
     {
         protected Texture _texture;
+        protected Texture _textureToSync;
         protected ImageDescription _desc;
         protected int _residentMips;
         protected Task _streamingTask;
@@ -114,7 +115,7 @@ namespace SiliconStudio.Xenko.Streaming
         public override int MaxResidency => _desc.MipLevels;
 
         /// <inheritdoc />
-        internal override bool CanBeUpdated => _streamingTask == null || _streamingTask.IsCompleted;
+        internal override bool CanBeUpdated => (_streamingTask == null || _streamingTask.IsCompleted) && _textureToSync == null;
 
         /// <inheritdoc />
         public override int CalculateTargetResidency(StreamingQuality quality)
@@ -211,7 +212,6 @@ namespace SiliconStudio.Xenko.Streaming
                 return;
 
             // Cache data
-            var texture = Texture;
             int mipsChange = residency - CurrentResidency;
             int mipsCount = residency;
             Debug.Assert(mipsChange != 0);
@@ -219,7 +219,7 @@ namespace SiliconStudio.Xenko.Streaming
             if (residency == 0)
             {
                 // Release
-                texture.ReleaseData();
+                _texture.ReleaseData();
                 _residentMips = 0;
                 return;
             }
@@ -278,10 +278,11 @@ namespace SiliconStudio.Xenko.Streaming
                 if (_cancellationToken.IsCancellationRequested)
                     return;
 
-                // Recreate texture
-                texture.OnDestroyed();
-                texture.InitializeFrom(newDesc, new TextureViewDescription(), dataBoxes);
+                // Create texture (use staging object and swap it on sync)
+                _textureToSync = Texture.New(_texture.GraphicsDevice, newDesc, new TextureViewDescription(), dataBoxes);
+
                 _residentMips = newDesc.MipLevels;
+                RequestSyncUpdate();
             }
             finally
             {
@@ -292,10 +293,26 @@ namespace SiliconStudio.Xenko.Streaming
         /// <inheritdoc />
         internal override Task StreamAsync(int residency)
         {
-            Debug.Assert(CanBeUpdated && residency <= MaxResidency);
+            Debug.Assert(CanBeUpdated && residency <= MaxResidency && _textureToSync == null);
 
             _cancellationToken = new CancellationTokenSource();
             return _streamingTask = new Task(() => StreamingTask(residency), _cancellationToken.Token);
+        }
+
+        /// <inheritdoc />
+        internal override void FlushSync()
+        {
+            if (_textureToSync == null)
+                return;
+
+            // Texture is loaded and created in the async task.
+            // But we have to sync on main therad with the engine to prevent leaks.
+            // Here we internaly swap two textures data (_texture with _textureToSync).
+
+            _texture.Swap(_textureToSync);
+
+            _textureToSync.Dispose();
+            _textureToSync = null;
         }
 
         /// <inheritdoc />
@@ -317,6 +334,12 @@ namespace SiliconStudio.Xenko.Streaming
                 _streamingTask.Wait();
             }
             _streamingTask = null;
+
+            if (_textureToSync != null)
+            {
+                _textureToSync.Dispose();
+                _textureToSync = null;
+            }
 
             base.Destroy();
         }

@@ -73,6 +73,40 @@ namespace SiliconStudio.Xenko.Graphics
             return true;
         }
 
+        internal void SwapInternal(Texture other)
+        {
+            var tmp = DepthPitch;
+            DepthPitch = other.DepthPitch;
+            other.DepthPitch = tmp;
+            //
+            tmp = RowPitch;
+            RowPitch = other.RowPitch;
+            other.RowPitch = tmp;
+            //
+            var tmp2 = IsDepthBuffer;
+            IsDepthBuffer = other.IsDepthBuffer;
+            other.IsDepthBuffer = tmp2;
+            //
+            tmp2 = HasStencil;
+            HasStencil = other.HasStencil;
+            other.HasStencil = tmp2;
+            //
+            tmp2 = IsRenderbuffer;
+            HasStencil = other.IsRenderbuffer;
+            other.IsRenderbuffer = tmp2;
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+            var tmp3 = StagingData;
+            StagingData = other.StagingData;
+            other.StagingData = tmp3;
+#endif
+            //
+            Utilities.Swap(ref BoundSamplerState, ref other.BoundSamplerState);
+            Utilities.Swap(ref PixelBufferFrame, ref other.PixelBufferFrame);
+            Utilities.Swap(ref TextureTotalSize, ref other.TextureTotalSize);
+            Utilities.Swap(ref pixelBufferObjectId, ref other.pixelBufferObjectId);
+            Utilities.Swap(ref stencilId, ref other.stencilId);
+        }
+
         public void Recreate(DataBox[] dataBoxes = null)
         {
             InitializeFromImpl(dataBoxes);

@@ -38,6 +38,11 @@ namespace SiliconStudio.Xenko.Graphics
             return false;
         }
 
+        internal void SwapInternal(Texture other)
+        {
+            NullHelper.ToImplement();
+        }
+
         private void InitializeFromImpl(DataBox[] dataBoxes = null)
         {
             NullHelper.ToImplement();
