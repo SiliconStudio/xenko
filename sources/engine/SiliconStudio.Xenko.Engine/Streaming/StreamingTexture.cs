@@ -140,7 +140,7 @@ namespace SiliconStudio.Xenko.Streaming
             if (targetResidency > CurrentResidency)
             {
                 // Stream target quality in steps but lower mips at once
-                requestedResidency = Math.Min(targetResidency, Math.Max(CurrentResidency + 1, 4));
+                requestedResidency = Math.Min(targetResidency, Math.Max(CurrentResidency + 4, 4));
 
                 // Stream target quality in steps
                 //requestedResidency = currentResidency + 1; 
