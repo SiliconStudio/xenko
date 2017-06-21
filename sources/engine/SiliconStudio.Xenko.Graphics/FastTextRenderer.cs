@@ -217,7 +217,7 @@ namespace SiliconStudio.Xenko.Graphics
                 var textLength = text.Length;
                 var textLengthPointer = new IntPtr(&textLength);
 
-                Native.NativeInvoke.xnGraphicsFastTextRendering(constantInfos, renderInfos, text, out textLengthPointer, out mappedVertexBufferPointer);
+                Native.NativeInvoke.xnGraphicsFastTextRendererGenerateVertices(constantInfos, renderInfos, text, out textLengthPointer, out mappedVertexBufferPointer);
 
                 charsToRenderCount += *(int*)textLengthPointer.ToPointer();
             }
