@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         public const string RefClipSuffix = "_reference_clip";
         public const string SrcClipSuffix = "_source_clip";
 
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
         {
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SkeletonAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
         }
