@@ -65,6 +65,8 @@ namespace SiliconStudio.Core.Diagnostics
         private static bool enableAll;
         private static int profileId;
 
+        public static double GpuTimestampFrequencyRatio = 0.0;
+
         /// <summary>
         /// Enables all profilers.
         /// </summary>
@@ -302,6 +304,11 @@ namespace SiliconStudio.Core.Diagnostics
                 if (events.Count == 0)
                     return "No profiling events.";
 
+                if (GpuTimestampFrequencyRatio <= 0.0)
+                {
+                    throw new ArgumentOutOfRangeException("Invalid GPU clock frequency ratio (value has not been set and/or is <= 0)");
+                }
+
                 // Group by profiling keys
                 var elapsedTime = events.Count > 0 ? events[events.Count - 1].TimeStamp - events[0].TimeStamp : 0;
 
@@ -356,15 +363,29 @@ namespace SiliconStudio.Core.Diagnostics
                 foreach (var profilingResult in profilingResults)
                 {
                     profilerResultBuilder.AppendFormat("{0,5:P1} | ", (double)profilingResult.AccumulatedTime / (double)elapsedTime);
-                    AppendTime(profilerResultBuilder, profilingResult.AccumulatedTime);
 
-                    profilerResultBuilder.Append(" |  ");
-                    AppendTime(profilerResultBuilder, profilingResult.MinTime);
-                    profilerResultBuilder.Append(" |  ");
-                    AppendTime(profilerResultBuilder, profilingResult.Count != 0 ? profilingResult.AccumulatedTime / profilingResult.Count : 0);
-                    profilerResultBuilder.Append(" |  ");
-                    AppendTime(profilerResultBuilder, profilingResult.MaxTime);
+                    if ((profilingResult.Key.Flags & ProfilingKeyFlags.GpuProfiling) == ProfilingKeyFlags.GpuProfiling)
+                    {                
+                        double minTimeMs = profilingResult.MinTime / GpuTimestampFrequencyRatio;
+                        double accTimeMs = (profilingResult.Count != 0 ? profilingResult.AccumulatedTime / (double)profilingResult.Count : 0.0) / GpuTimestampFrequencyRatio;
+                        double maxTimeMs = profilingResult.MaxTime / GpuTimestampFrequencyRatio;
 
+                        profilerResultBuilder.AppendFormat("{0:000.000}ms", accTimeMs);
+                        profilerResultBuilder.Append(" |  ");
+                        profilerResultBuilder.AppendFormat("{0:000.000}ms", minTimeMs);
+                        profilerResultBuilder.Append(" |  ");
+                        profilerResultBuilder.AppendFormat("{0:000.000}ms", maxTimeMs);
+                    }
+                    else
+                    {
+                        AppendTime(profilerResultBuilder, profilingResult.AccumulatedTime);
+                        profilerResultBuilder.Append(" |  ");
+                        AppendTime(profilerResultBuilder, profilingResult.MinTime);
+                        profilerResultBuilder.Append(" |  ");
+                        AppendTime(profilerResultBuilder, profilingResult.Count != 0 ? profilingResult.AccumulatedTime / profilingResult.Count : 0);
+                        profilerResultBuilder.Append(" |  ");
+                        AppendTime(profilerResultBuilder, profilingResult.MaxTime);
+                    }
                     profilerResultBuilder.AppendFormat(" | {0:00000} | {1}", profilingResult.Count, profilingResult.Key);
                     profilerResultBuilder.AppendLine();
                 }
