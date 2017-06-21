@@ -1,18 +1,18 @@
 !SceneAsset
 Id: 465718fa-96e7-4d3b-897d-8e7075b1a9ae
-SerializedVersion: {Xenko: 2.0.0.0}
+SerializedVersion: {Xenko: 2.1.0.1}
 Tags: []
 ChildrenIds: []
 Parent: b1ceb6db-e76e-4c37-be81-72941ddd6b9a:DynamicScene
 Offset: {X: 20.0, Y: 0.0, Z: 0.0}
 Hierarchy:
-    RootPartIds:
-        - 129e968e-fbac-43fb-ab69-f79174e22621
-        - 280eba89-d140-4c2f-b8c1-ad9fb3273e60
-        - 3ca8812d-29c6-485a-b7c2-b1def1734bdf
-        - 196fe837-f83c-4cc1-a3eb-006e0780f3ce
-        - c5193802-2294-48e4-92d6-4b35284b3bfb
-        - d2e42a5f-b5dc-41c8-9cbb-ea37037707a4
+    RootParts:
+        - ref!! 129e968e-fbac-43fb-ab69-f79174e22621
+        - ref!! 280eba89-d140-4c2f-b8c1-ad9fb3273e60
+        - ref!! 3ca8812d-29c6-485a-b7c2-b1def1734bdf
+        - ref!! 196fe837-f83c-4cc1-a3eb-006e0780f3ce
+        - ref!! c5193802-2294-48e4-92d6-4b35284b3bfb
+        - ref!! d2e42a5f-b5dc-41c8-9cbb-ea37037707a4
     Parts:
         -   Entity:
                 Id: 129e968e-fbac-43fb-ab69-f79174e22621
