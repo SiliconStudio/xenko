@@ -34,6 +34,9 @@ extern "C" {
 		float scaledDestinationX = 0.0f;
 		float scaledDestinationY = -(destination.y * 2.0f - 1.0f);
 
+		const float invertedWidth = 1.0f / constantInfos.width;
+		const float invertedHeight = 1.0f / constantInfos.height;
+
 		for (int i = 0; i < textCharCount; i++)
 		{
 			char currentChar = textPointer[i];
@@ -68,8 +71,8 @@ extern "C" {
 			(*vertexBufferPointer)->Position.X = scaledDestinationX + BaseVertexBufferData[0].Position.X * destination.width;
 			(*vertexBufferPointer)->Position.Y = scaledDestinationY + BaseVertexBufferData[0].Position.Y * destination.height;
 
-			(*vertexBufferPointer)->TextureCoordinate.X = (source.x + BaseVertexBufferData[0].TextureCoordinate.X * source.width) / constantInfos.width;
-			(*vertexBufferPointer)->TextureCoordinate.Y = (source.y + BaseVertexBufferData[0].TextureCoordinate.Y * source.height) / constantInfos.height;
+			(*vertexBufferPointer)->TextureCoordinate.X = (source.x + BaseVertexBufferData[0].TextureCoordinate.X * source.width) * invertedWidth;
+			(*vertexBufferPointer)->TextureCoordinate.Y = (source.y + BaseVertexBufferData[0].TextureCoordinate.Y * source.height) * invertedHeight;
 
 			++(*vertexBufferPointer);
 
@@ -77,8 +80,8 @@ extern "C" {
 			(*vertexBufferPointer)->Position.X = scaledDestinationX + BaseVertexBufferData[1].Position.X * destination.width;
 			(*vertexBufferPointer)->Position.Y = scaledDestinationY + BaseVertexBufferData[1].Position.Y * destination.height;
 
-			(*vertexBufferPointer)->TextureCoordinate.X = (source.x + BaseVertexBufferData[1].TextureCoordinate.X * source.width) / constantInfos.width;
-			(*vertexBufferPointer)->TextureCoordinate.Y = (source.y + BaseVertexBufferData[1].TextureCoordinate.Y * source.height) / constantInfos.height;
+			(*vertexBufferPointer)->TextureCoordinate.X = (source.x + BaseVertexBufferData[1].TextureCoordinate.X * source.width) * invertedWidth;
+			(*vertexBufferPointer)->TextureCoordinate.Y = (source.y + BaseVertexBufferData[1].TextureCoordinate.Y * source.height) * invertedHeight;
 
 			++(*vertexBufferPointer);
 
@@ -86,8 +89,8 @@ extern "C" {
 			(*vertexBufferPointer)->Position.X = scaledDestinationX + BaseVertexBufferData[2].Position.X * destination.width;
 			(*vertexBufferPointer)->Position.Y = scaledDestinationY + BaseVertexBufferData[2].Position.Y * destination.height;
 
-			(*vertexBufferPointer)->TextureCoordinate.X = (source.x + BaseVertexBufferData[2].TextureCoordinate.X * source.width) / constantInfos.width;
-			(*vertexBufferPointer)->TextureCoordinate.Y = (source.y + BaseVertexBufferData[2].TextureCoordinate.Y * source.height) / constantInfos.height;
+			(*vertexBufferPointer)->TextureCoordinate.X = (source.x + BaseVertexBufferData[2].TextureCoordinate.X * source.width) * invertedWidth;
+			(*vertexBufferPointer)->TextureCoordinate.Y = (source.y + BaseVertexBufferData[2].TextureCoordinate.Y * source.height) * invertedHeight;
 
 			++(*vertexBufferPointer);
 
@@ -95,8 +98,8 @@ extern "C" {
 			(*vertexBufferPointer)->Position.X = scaledDestinationX + BaseVertexBufferData[3].Position.X * destination.width;
 			(*vertexBufferPointer)->Position.Y = scaledDestinationY + BaseVertexBufferData[3].Position.Y * destination.height;
 
-			(*vertexBufferPointer)->TextureCoordinate.X = (source.x + BaseVertexBufferData[3].TextureCoordinate.X * source.width) / constantInfos.width;
-			(*vertexBufferPointer)->TextureCoordinate.Y = (source.y + BaseVertexBufferData[3].TextureCoordinate.Y * source.height) / constantInfos.height;
+			(*vertexBufferPointer)->TextureCoordinate.X = (source.x + BaseVertexBufferData[3].TextureCoordinate.X * source.width) * invertedWidth;
+			(*vertexBufferPointer)->TextureCoordinate.Y = (source.y + BaseVertexBufferData[3].TextureCoordinate.Y * source.height) * invertedHeight;
 
 			++(*vertexBufferPointer);
 
