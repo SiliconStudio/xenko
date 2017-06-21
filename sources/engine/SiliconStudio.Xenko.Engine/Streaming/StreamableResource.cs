@@ -130,6 +130,21 @@ namespace SiliconStudio.Xenko.Streaming
         internal abstract Task StreamAsync(int residency);
 
         /// <summary>
+        /// Requests resource data synchronized update (will call back method FlushSync() on main thread - streaming sync point).
+        /// </summary>
+        protected void RequestSyncUpdate()
+        {
+            Manager.RequestSyncUpdate(this);
+        }
+
+        /// <summary>
+        /// Flushes the staging data and performs streamed async data synchronization during update on main thread. Safety moment with write access to engine resources.
+        /// </summary>
+        internal virtual void FlushSync()
+        {
+        }
+
+        /// <summary>
         /// Releases this resources on StreamingManager shutdown.
         /// </summary>
         internal virtual void Release()

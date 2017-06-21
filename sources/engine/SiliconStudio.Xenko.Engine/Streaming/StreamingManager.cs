@@ -1,3 +1,4 @@
+//#define USE_TEST_MANUAL_QUALITY
 // Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
@@ -27,10 +28,14 @@ namespace SiliconStudio.Xenko.Streaming
         private readonly List<StreamableResource> resources = new List<StreamableResource>(512);
         private readonly Dictionary<object, StreamableResource> resourcesLookup = new Dictionary<object, StreamableResource>(512);
         private readonly List<StreamableResource> priorityUpdateQueue = new List<StreamableResource>(64); // Could be Queue<T> but it doesn't support .Remove(T)
+        private readonly Queue<StreamableResource> syncQueue = new Queue<StreamableResource>(64);
         private int lastUpdateResourcesIndex;
         private bool isDisposing;
         private int frameIndex;
-        
+#if USE_TEST_MANUAL_QUALITY
+        private int testQuality = 100;
+#endif
+
         /// <summary>
         /// The interval between <see cref="StreamingManager"/> updates.
         /// </summary>
@@ -276,12 +281,30 @@ namespace SiliconStudio.Xenko.Streaming
             var task = resource.StreamAsync(resource.MaxResidency);
             task.Start();
             task.Wait();
+
+            // Synchronize
+            FlushSync();
         }
 
         private async Task Update()
         {
             while (!IsDisposed)
             {
+                // Perform synchronization
+                FlushSync();
+
+#if USE_TEST_MANUAL_QUALITY
+                // Temporary testing code used for testing quality changing using K/L keys
+                if (((Game)Game).Input.IsKeyPressed(SiliconStudio.Xenko.Input.Keys.K))
+                {
+                    testQuality = Math.Min(testQuality + 5, 100);
+                }
+                if (((Game)Game).Input.IsKeyPressed(SiliconStudio.Xenko.Input.Keys.L))
+                {
+                    testQuality = Math.Max(testQuality - 5, 0);
+                }
+#endif
+
                 // Update resources
                 lock (resources)
                 {
@@ -323,7 +346,7 @@ namespace SiliconStudio.Xenko.Streaming
                         // TODO: add StreamingManager stats, update time per frame, updates per frame, etc.
                     }
                 }
-
+                
                 ContentStreaming.Update();
 
                 frameIndex++;
@@ -346,7 +369,10 @@ namespace SiliconStudio.Xenko.Streaming
                 var lastUsageTimespan = new TimeSpan((frameIndex - resource.LastTimeUsed) * ManagerUpdatesInterval.Ticks);
                 if (lastUsageTimespan < ResourceLiveTimeout)
                 {
-                    targetQuality = StreamingQuality.Maximum;
+                    //targetQuality = StreamingQuality.Maximum;
+#if USE_TEST_MANUAL_QUALITY
+                    targetQuality = (testQuality / 100.0f); // apply quality scale for testing
+#endif
                     // TODO: here we should apply resources group master scale (based on game settings quality level and memory level)
                 }
             }
@@ -382,6 +408,28 @@ namespace SiliconStudio.Xenko.Streaming
 
                 // Create streaming task (resource type specific)
                 resource.StreamAsync(requestedResidency).Start();
+            }
+        }
+
+        internal void RequestSyncUpdate(StreamableResource resource)
+        {
+            lock (syncQueue)
+            {
+                if (syncQueue.Contains(resource))
+                    throw new InvalidOperationException();
+                syncQueue.Enqueue(resource);
+            }
+        }
+
+        private void FlushSync()
+        {
+            lock (syncQueue)
+            {
+                while (syncQueue.Count > 0)
+                {
+                    var resource = syncQueue.Dequeue();
+                    resource.FlushSync();
+                }
             }
         }
 
