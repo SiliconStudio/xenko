@@ -3,6 +3,7 @@
 using System;
 using System.Linq;
 using Mono.Cecil;
+using Mono.Cecil.Rocks;
 
 namespace SiliconStudio.AssemblyProcessor.Serializers
 {
@@ -10,7 +11,7 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
     {
         public void ProcessSerializers(CecilSerializerContext context)
         {
-            foreach (var type in context.Assembly.EnumerateTypes())
+            foreach (var type in context.Assembly.MainModule.GetAllTypes())
             {
                 // Force generation of serializers (complex types, etc...)
                 // Check complex type definitions

@@ -18,7 +18,8 @@ namespace SiliconStudio.Xenko.Input
     internal class InputSourceWinforms : InputSourceBase
     {
         private readonly HashSet<WinFormsKeys> heldKeys = new HashSet<WinFormsKeys>();
-
+        private readonly List<WinFormsKeys> keysToRelease = new List<WinFormsKeys>();
+        
         private KeyboardWinforms keyboard;
         private MouseWinforms mouse;
 
@@ -68,6 +69,23 @@ namespace SiliconStudio.Xenko.Input
 
         public override void Update()
         {
+            // This check handles the case where the game window focus changes during key events causing it to drop WM_KEYUP events
+            if (heldKeys.Count > 0)
+            {
+                foreach (var key in heldKeys)
+                {
+                    if ((Win32Native.GetKeyState((int)key) & 0x8000) == 0)
+                        keysToRelease.Add(key);
+                }
+            
+                foreach (var keyToRelease in keysToRelease)
+                {
+                    keyboard?.HandleKeyUp(keyToRelease);
+                    heldKeys.Remove(keyToRelease);
+                }
+            
+                keysToRelease.Clear();
+            }
         }
         
         private void UIControlOnLostFocus(object sender, EventArgs eventArgs)
