@@ -60,10 +60,15 @@ namespace SiliconStudio.Xenko.Input
 
                 if (forceCenter)
                 {
-                    SetPosition(new Vector2(0.5f, 0.5f));
+                    // Take the center of the client area as the captured position and move the cursor to that position
+                    relativeCapturedPosition = new Point(uiControl.ClientSize.Width/2, uiControl.ClientSize.Height/2);
+                    uiControl.RelativeCursorPosition = relativeCapturedPosition;
+                }
+                else
+                {
+                    relativeCapturedPosition = uiControl.RelativeCursorPosition;
                 }
 
-                relativeCapturedPosition = uiControl.RelativeCursorPosition;
                 isMousePositionLocked = true;
             }
         }
@@ -81,7 +86,7 @@ namespace SiliconStudio.Xenko.Input
         public override void SetPosition(Vector2 normalizedPosition)
         {
             Vector2 position = normalizedPosition * SurfaceSize;
-            Cursor.Position = new Point((int)position.X, (int)position.Y);
+            uiControl.RelativeCursorPosition = new Point((int)position.X, (int)position.Y);
         }
         
         private void OnSizeChanged(SDL.SDL_WindowEvent eventArgs)

@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 
 #include "Common.h"
+#include "../../../../deps/NativePath/NativeMemory.h"
 
 #if defined(ANDROID) || !defined(__clang__)
 
@@ -99,11 +100,11 @@ extern "C" {
 
 		struct xnAudioListener
 		{
-			xnAudioDevice* audioDevice;
 			float4 pos;
 			float4 forward;
 			float4 up;
 			float4 velocity;
+			xnAudioDevice* audioDevice;
 		};
 
 		struct xnAudioSource
@@ -219,7 +220,10 @@ extern "C" {
 
 		xnAudioListener* xnAudioListenerCreate(xnAudioDevice* device)
 		{
-			auto res = new xnAudioListener;
+			auto res = static_cast<xnAudioListener*>(malloc(sizeof(xnAudioListener) + 15));
+			// attempt to fix alignement
+			auto bres = (uintptr_t(res) + 15) & ~uintptr_t(0x0F);
+			res = reinterpret_cast<xnAudioListener*>(bres);
 			memset(res, 0x0, sizeof(xnAudioListener));
 			res->audioDevice = device;
 			return res;

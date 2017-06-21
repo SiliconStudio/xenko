@@ -8,6 +8,6 @@ shader ComputeColorFromStream<Semantic TStream, MemberName TRgba> : ComputeColor
     stream float4 LocalColor : TStream;
 
     override float4 Compute() {
-        return streams.LocalColor.TRgba;
+        return saturate(streams.LocalColor.TRgba);
     }
 };

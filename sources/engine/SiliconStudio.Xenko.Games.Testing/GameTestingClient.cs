@@ -92,7 +92,8 @@ namespace SiliconStudio.Xenko.Games.Testing
                 Platform = (int)platform, Tester = true, Cmd = cmd, GameAssembly = gameName
             }).Wait();
 
-            var waitMs = 30000;
+            // Wait up to one minute
+            var waitMs = 60 * 1000;
             switch (platform)
             {
                 case PlatformType.Android:

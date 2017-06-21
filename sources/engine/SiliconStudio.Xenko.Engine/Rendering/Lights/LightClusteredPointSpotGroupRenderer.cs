@@ -207,7 +207,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
                     // No screen size set?
                     if (viewSize.X == 0 || viewSize.Y == 0)
-                        return;
+                        continue;
 
                     maxClusterCount.X = Math.Max(maxClusterCount.X, ((int)viewSize.X + ClusterSize - 1) / ClusterSize);
                     maxClusterCount.Y = Math.Max(maxClusterCount.Y, ((int)viewSize.Y + ClusterSize - 1) / ClusterSize);

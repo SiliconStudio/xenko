@@ -1143,8 +1143,13 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 {
                     var variable = new Variable(streamVar.Type, streamVar.Name) { Span = streamVar.Span };
                     if (useSem)
+                    {
                         foreach (var qualifier in streamVar.Qualifiers.OfType<Semantic>())
                             variable.Qualifiers |= qualifier;
+                    }
+
+                    foreach (var qualifier in streamVar.Qualifiers.OfType<InterpolationQualifier>())
+                        variable.Qualifiers |= qualifier;
 
                     if (useSem && addAutoSem)
                     {

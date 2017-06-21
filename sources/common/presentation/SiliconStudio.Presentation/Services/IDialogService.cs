@@ -152,6 +152,7 @@ namespace SiliconStudio.Presentation.Services
         /// Attempts to close the main window of the application.
         /// </summary>
         /// <param name="onClosed">An action to execute if the main window is successfully closed.</param>
-        void CloseMainWindow(Action onClosed);
+        [NotNull]
+        Task CloseMainWindow(Action onClosed);
     }
 }

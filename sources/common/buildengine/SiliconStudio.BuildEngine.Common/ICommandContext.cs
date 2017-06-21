@@ -14,8 +14,6 @@ namespace SiliconStudio.BuildEngine
         LoggerResult Logger { get; }
         BuildParameterCollection BuildParameters { get; }
 
-        Task<ResultStatus> ScheduleAndExecuteCommand(Command command);
-
         IEnumerable<IDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups();
 
         void RegisterInputDependency(ObjectUrl url);
@@ -23,7 +21,5 @@ namespace SiliconStudio.BuildEngine
         void RegisterCommandLog(IEnumerable<ILogMessage> logMessages);
 
         void AddTag(ObjectUrl url, TagSymbol tagSymbol);
-
-        void RegisterSpawnedCommandWithoutScheduling(Command command);
     }
 }

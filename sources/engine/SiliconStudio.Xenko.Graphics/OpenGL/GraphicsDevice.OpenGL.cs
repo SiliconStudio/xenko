@@ -107,6 +107,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal bool HasTextureBuffers;
         internal bool HasKhronosDebug;
+        internal bool HasTimerQueries;
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         internal bool HasKhronosDebugKHR;
@@ -191,6 +192,11 @@ namespace SiliconStudio.Xenko.Graphics
         };
 
         internal Buffer SquareBuffer;
+
+        /// <summary>
+        /// The tick frquency of timestamp queries in Hertz.
+        /// </summary>
+        public long TimestampFrequency { get; } = 1000_000_000L;
 
         /// <summary>
         /// Gets the status of this device.
@@ -982,7 +988,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal void TagResource(GraphicsResourceLink resourceLink)
         {
-            resourceLink.Resource.DiscardNextMap = true;
+            if (resourceLink.Resource is GraphicsResource resource)
+                resource.DiscardNextMap = true;
         }
 
         internal void InitDefaultRenderTarget(PresentationParameters presentationParameters)
