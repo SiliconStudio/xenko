@@ -13,13 +13,13 @@ namespace SiliconStudio.Assets.Tests.Compilers
 
         public abstract AssetCompilerResult Prepare(AssetCompilerContext context, AssetItem assetItem);
 
-        public virtual IEnumerable<Type> GetRuntimeTypes(AssetCompilerContext context, AssetItem assetItem) { yield break; }
+        public virtual IEnumerable<Type> GetRuntimeTypes(AssetItem assetItem) { yield break; }
 
-        public virtual IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem) { yield break; }
+        public virtual IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem) { yield break; }
 
-        public virtual IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem) { yield break; }
+        public virtual IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem) { yield break; }
 
-        public virtual IEnumerable<Type> GetInputTypesToExclude(AssetCompilerContext context, AssetItem assetItem) { yield break; }
+        public virtual IEnumerable<Type> GetInputTypesToExclude(AssetItem assetItem) { yield break; }
 
         public virtual bool AlwaysCheckRuntimeTypes { get; } = false;
     }
