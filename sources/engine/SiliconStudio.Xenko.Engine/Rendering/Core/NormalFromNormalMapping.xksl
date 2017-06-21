@@ -19,7 +19,5 @@ shader NormalFromNormalMapping : Transformation, NormalBase, NormalStream
     stage override void UpdateNormalFromTangentSpace(float3 normalInTangentSpace)
     {
         base.UpdateNormalFromTangentSpace(normalInTangentSpace);
-        if(!streams.IsFrontFace)
-            streams.normalWS = -streams.normalWS;
     }
 };
