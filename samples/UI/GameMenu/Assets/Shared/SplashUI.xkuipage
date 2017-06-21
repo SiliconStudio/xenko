@@ -1,17 +1,17 @@
 !UIPageAsset
 Id: 62c493c2-13ea-4fac-bbaf-578afafac104
-SerializedVersion: {Xenko: 2.0.0.0}
+SerializedVersion: {Xenko: 2.1.0.1}
 Tags: []
 Design:
     Resolution: {X: 640.0, Y: 1136.0, Z: 1000.0}
 Hierarchy:
-    RootPartIds:
-        - 93334aeb-cfe0-44a2-ab96-b95caab78745
+    RootParts:
+        - !UniformGrid ref!! 93334aeb-cfe0-44a2-ab96-b95caab78745
     Parts:
         -   UIElement: !ContentDecorator
+                Id: 0a85da82-3399-4f86-8e7c-cccae6c6e799
                 DependencyProperties:
                     6692e757eb20e17910661fabd17b423c~Panel.ZIndexPropertyKey: 1
-                Id: 0a85da82-3399-4f86-8e7c-cccae6c6e799
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
                 HorizontalAlignment: Center
@@ -22,8 +22,8 @@ Hierarchy:
                     Sheet: ba4ff50b-212b-47c5-af90-6672a8019b04:SplashScreenImages
                     CurrentFrame: 1
         -   UIElement: !TextBlock
-                DependencyProperties: {}
                 Id: 2ad3e2d4-7cd1-4577-aa93-7f1c0005cde8
+                DependencyProperties: {}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 HorizontalAlignment: Center
                 Margin: {}
@@ -33,8 +33,8 @@ Hierarchy:
                 TextSize: 60.0
                 TextColor: {R: 255, G: 255, B: 255, A: 255}
         -   UIElement: !TextBlock
-                DependencyProperties: {}
                 Id: 3d15fe1b-2814-43de-95b4-67dc1d49ceef
+                DependencyProperties: {}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: TouchStart
@@ -43,8 +43,8 @@ Hierarchy:
                 TextSize: 42.0
                 TextColor: {R: 255, G: 255, B: 255, A: 255}
         -   UIElement: !Grid
-                DependencyProperties: {}
                 Id: 46a89767-4ec1-41c7-b7c0-a12cd0fac7a1
+                DependencyProperties: {}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 HorizontalAlignment: Center
                 VerticalAlignment: Center
@@ -74,10 +74,10 @@ Hierarchy:
                 LayerDefinitions:
                     78dce92021389a41a4f1b271dad259f0: {}
         -   UIElement: !ContentDecorator
+                Id: 48d6ea9a-399c-4df7-a625-43db690bf6d2
                 DependencyProperties:
                     5b5de4e0cd7dd4c4fe747f869eaec1ba~GridBase.RowPropertyKey: 1
                     c3585ce727290778c89396a365beaa19~Panel.ZIndexPropertyKey: 1
-                Id: 48d6ea9a-399c-4df7-a625-43db690bf6d2
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
                 HorizontalAlignment: Center
@@ -88,12 +88,12 @@ Hierarchy:
                     Sheet: ba4ff50b-212b-47c5-af90-6672a8019b04:SplashScreenImages
                     CurrentFrame: 2
         -   UIElement: !ImageElement
+                Id: 6315d86e-f687-4d51-ab90-19a73d34dd7e
                 DependencyProperties:
                     701d35efffce8423067cf70a4ad44d73~Panel.ZIndexPropertyKey: -1
                     5a009995419f25cc6c01901351607242~GridBase.ColumnSpanPropertyKey: 1
                     8e3edd20355b37221ab1d0b25b0c5512~GridBase.LayerPropertyKey: 0
                     496861f32469c6690b7dc547da0a4428~GridBase.LayerSpanPropertyKey: 1
-                Id: 6315d86e-f687-4d51-ab90-19a73d34dd7e
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: Wallpaper
@@ -102,10 +102,10 @@ Hierarchy:
                 Color: {R: 255, G: 255, B: 255, A: 255}
                 StretchType: Fill
         -   UIElement: !ImageElement
+                Id: 65999106-6f97-4836-9160-c7d0fd2192c8
                 DependencyProperties:
                     3588035b866590c25a1a1f03b26a4fb2~Panel.ZIndexPropertyKey: 1
                     179093faf61328b5bd78179b0d74326b~GridBase.RowPropertyKey: 3
-                Id: 65999106-6f97-4836-9160-c7d0fd2192c8
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 HorizontalAlignment: Center
                 VerticalAlignment: Center
@@ -116,16 +116,16 @@ Hierarchy:
                     CurrentFrame: 3
                 Color: {R: 255, G: 255, B: 255, A: 255}
         -   UIElement: !UniformGrid
-                DependencyProperties: {}
                 Id: 93334aeb-cfe0-44a2-ab96-b95caab78745
+                DependencyProperties: {}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Children:
                     6ed8156387f6514dab9019a73d34dd7e: !ImageElement ref!! 6315d86e-f687-4d51-ab90-19a73d34dd7e
                     6797a846c14ec741b7c0a12cd0fac7a1: !Grid ref!! 46a89767-4ec1-41c7-b7c0-a12cd0fac7a1
         -   UIElement: !TextBlock
-                DependencyProperties: {}
                 Id: 9fa422f6-c6a0-414e-9c68-5e34fbbf6fe2
+                DependencyProperties: {}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 HorizontalAlignment: Center
                 Margin: {}
@@ -135,10 +135,10 @@ Hierarchy:
                 TextSize: 60.0
                 TextColor: {R: 255, G: 255, B: 255, A: 255}
         -   UIElement: !ContentDecorator
+                Id: d7b366d4-7efc-44bc-8df9-a0e938b7febc
                 DependencyProperties:
                     729b2621dd664b00698473136ff420c0~Panel.ZIndexPropertyKey: 1
                     173e14e188ff42607974186bdeaafdba~GridBase.RowPropertyKey: 5
-                Id: d7b366d4-7efc-44bc-8df9-a0e938b7febc
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
                 HorizontalAlignment: Center

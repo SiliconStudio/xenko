@@ -82,6 +82,7 @@
     <Compile Include="GamePadFromLayout.cs" />
     <Compile Include="GamePadIndexChangedEventArgs.cs" />
     <Compile Include="GamePadLayouts\GamePadLayout.cs" />
+    <Compile Include="GamePadLayouts\GamePadLayoutDS4.cs" />
     <Compile Include="GamePadLayouts\GamePadLayouts.cs" />
     <Compile Include="GamePadLayouts\GamePadLayoutXInput.cs" />
     <Compile Include="Gestures\GestureConfig.cs" />

@@ -13,7 +13,7 @@ using SiliconStudio.Xenko.Engine;
 
 namespace UIElementLink
 {
-    [DataContract("PlayAnimation")]
+    [DataContract]
     public class PlayAnimation
     {
         public AnimationClip Clip;
