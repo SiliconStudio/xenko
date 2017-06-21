@@ -18,7 +18,7 @@ extern "C" {
 		{ { 1, -1, 0 },{ 0, 0, 1 },{ 1, 1 } },
 	};
 
-	DLL_EXPORT_API void xnGraphicsFastTextRendering(RectangleF constantInfos, RectangleF renderInfos, const char* textPointer, int** textLength, VertexPositionNormalTexture** vertexBufferPointer)
+	DLL_EXPORT_API void xnGraphicsFastTextRendererGenerateVertices(RectangleF constantInfos, RectangleF renderInfos, const char* textPointer, int** textLength, VertexPositionNormalTexture** vertexBufferPointer)
 	{
 		const float fX = renderInfos.x / renderInfos.width;
 		const float fY = renderInfos.y / renderInfos.height;
