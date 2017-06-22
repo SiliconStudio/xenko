@@ -28,13 +28,15 @@ namespace SiliconStudio.Xenko.Streaming
         private readonly List<StreamableResource> resources = new List<StreamableResource>(512);
         private readonly Dictionary<object, StreamableResource> resourcesLookup = new Dictionary<object, StreamableResource>(512);
         private readonly List<StreamableResource> priorityUpdateQueue = new List<StreamableResource>(64); // Could be Queue<T> but it doesn't support .Remove(T)
-        private readonly Queue<StreamableResource> syncQueue = new Queue<StreamableResource>(64);
+        private readonly List<StreamableResource> activeStreaming = new List<StreamableResource>(64);
         private int lastUpdateResourcesIndex;
         private bool isDisposing;
         private int frameIndex;
 #if USE_TEST_MANUAL_QUALITY
         private int testQuality = 100;
 #endif
+
+        private bool HasActiveTaskSlotFree => activeStreaming.Count < MaxTasksRunningSimultaneously;
 
         /// <summary>
         /// The interval between <see cref="StreamingManager"/> updates.
@@ -54,7 +56,16 @@ namespace SiliconStudio.Xenko.Streaming
         /// <summary>
         /// The maximum amount of resources updated per streaming managed tick. Used to balance performance/streaming speed.
         /// </summary>
-        public const int MaxResourcesPerUpdate = 20;
+        public const int MaxResourcesPerUpdate = 10;
+
+        /// <summary>
+        /// The maximum amount of resources being streamed at the same time. Used to balance performance/streaming speed.
+        /// </summary>
+#if SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS
+        public const int MaxTasksRunningSimultaneously = 1;
+#else
+        public const int MaxTasksRunningSimultaneously = 4;
+#endif
 
         /// <summary>
         /// Gets the content streaming service.
@@ -113,6 +124,7 @@ namespace SiliconStudio.Xenko.Streaming
                 resources.Clear();
                 resourcesLookup.Clear();
                 priorityUpdateQueue.Clear();
+                activeStreaming.Clear();
             }
 
             ContentStreaming.Dispose();
@@ -176,6 +188,7 @@ namespace SiliconStudio.Xenko.Streaming
                 resources.Remove(resource);
                 resourcesLookup.Remove(resource.Resource);
                 priorityUpdateQueue.RemoveAll(x => x == resource);
+                activeStreaming.Remove(resource);
             }
         }
 
@@ -278,8 +291,8 @@ namespace SiliconStudio.Xenko.Streaming
             resource.ForceFullyLoaded = true;
 
             // Stream resource to the maximum level
-            var task = resource.StreamAsync(resource.MaxResidency);
-            task.Start();
+            // Note: this does not care about MaxTasksRunningSimultaneously limit
+            var task = StreamAsync(resource, resource.MaxResidency);
             task.Wait();
 
             // Synchronize
@@ -313,18 +326,18 @@ namespace SiliconStudio.Xenko.Streaming
                     {
                         var now = DateTime.UtcNow;
                         int resourcesUpdates = Math.Min(MaxResourcesPerUpdate, resourcesCount);
-                        
+
                         // Update high priority queue and then rest of the resources
                         // Note: resources in the update queue are updated always, while others only between specified intervals
                         int resourcesChecks = resourcesCount - priorityUpdateQueue.Count;
-                        while (priorityUpdateQueue.Count > 0 && resourcesUpdates-- > 0)
+                        while (priorityUpdateQueue.Count > 0 && resourcesUpdates-- > 0 && HasActiveTaskSlotFree)
                         {
                             var resource = priorityUpdateQueue[0];
                             priorityUpdateQueue.RemoveAt(0);
                             if (resource.CanBeUpdated)
                                 Update(resource, ref now);
                         }
-                        while (resourcesUpdates > 0 && resourcesChecks-- > 0)
+                        while (resourcesUpdates > 0 && resourcesChecks-- > 0 && HasActiveTaskSlotFree)
                         {
                             // Move forward
                             // Note: we update resources like in a ring buffer
@@ -407,29 +420,30 @@ namespace SiliconStudio.Xenko.Streaming
                 var requestedResidency = resource.CalculateRequestedResidency(targetResidency);
 
                 // Create streaming task (resource type specific)
-                resource.StreamAsync(requestedResidency).Start();
+                StreamAsync(resource, requestedResidency);
             }
         }
 
-        internal void RequestSyncUpdate(StreamableResource resource)
+        private Task StreamAsync(StreamableResource resource, int residency)
         {
-            lock (syncQueue)
-            {
-                if (syncQueue.Contains(resource))
-                    throw new InvalidOperationException();
-                syncQueue.Enqueue(resource);
-            }
+            activeStreaming.Add(resource);
+            var task = resource.StreamAsyncInternal(residency);
+            task.Start();
+
+            return task;
         }
 
         private void FlushSync()
         {
-            lock (syncQueue)
+            for (int i = 0; i < activeStreaming.Count; i++)
             {
-                while (syncQueue.Count > 0)
-                {
-                    var resource = syncQueue.Dequeue();
-                    resource.FlushSync();
-                }
+                var resource = activeStreaming[i];
+                if (resource.IsTaskActive)
+                    continue;
+
+                resource.FlushSync();
+                activeStreaming.RemoveAt(i);
+                i--;
             }
         }
 

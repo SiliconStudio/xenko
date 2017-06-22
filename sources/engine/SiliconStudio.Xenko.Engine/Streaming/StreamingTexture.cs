@@ -22,8 +22,6 @@ namespace SiliconStudio.Xenko.Streaming
         protected Texture _textureToSync;
         protected ImageDescription _desc;
         protected int _residentMips;
-        protected Task _streamingTask;
-        protected CancellationTokenSource _cancellationToken;
         protected MipInfo[] _mipsInfo;
 
         /// <summary>
@@ -115,7 +113,7 @@ namespace SiliconStudio.Xenko.Streaming
         public override int MaxResidency => _desc.MipLevels;
 
         /// <inheritdoc />
-        internal override bool CanBeUpdated => (_streamingTask == null || _streamingTask.IsCompleted) && _textureToSync == null;
+        internal override bool CanBeUpdated => _textureToSync == null && base.CanBeUpdated;
 
         /// <inheritdoc />
         public override int CalculateTargetResidency(StreamingQuality quality)
@@ -205,7 +203,7 @@ namespace SiliconStudio.Xenko.Streaming
                 height = unchecked((int)(((uint)(height + 3)) & ~(uint)3));
             }
         }
-
+        static System.Collections.Generic.List<string> urls = new System.Collections.Generic.List<string>();
         private void StreamingTask(int residency)
         {
             if (_cancellationToken.IsCancellationRequested)
@@ -227,6 +225,16 @@ namespace SiliconStudio.Xenko.Streaming
             try
             {
                 Storage.LockChunks();
+
+                lock (urls)
+                {
+                    urls.Add(Storage.Url);
+
+                    if (urls.Count > StreamingManager.MaxTasksRunningSimultaneously)
+                    {
+                        int a = 2;
+                    }
+                }
 
                 // Setup texture description
                 TextureDescription newDesc = _desc;
@@ -282,21 +290,22 @@ namespace SiliconStudio.Xenko.Streaming
                 _textureToSync = Texture.New(_texture.GraphicsDevice, newDesc, new TextureViewDescription(), dataBoxes);
 
                 _residentMips = newDesc.MipLevels;
-                RequestSyncUpdate();
             }
             finally
             {
                 Storage.UnlockChunks();
+
+                lock (urls)
+                {
+                    urls.Remove(Storage.Url);
+                }
             }
         }
 
         /// <inheritdoc />
-        internal override Task StreamAsync(int residency)
+        protected override Task StreamAsync(int residency)
         {
-            Debug.Assert(CanBeUpdated && residency <= MaxResidency && _textureToSync == null);
-
-            _cancellationToken = new CancellationTokenSource();
-            return _streamingTask = new Task(() => StreamingTask(residency), _cancellationToken.Token);
+            return new Task(() => StreamingTask(residency), _cancellationToken.Token);
         }
 
         /// <inheritdoc />
@@ -327,13 +336,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// <inheritdoc />
         protected override void Destroy()
         {
-            // Stop streaming
-            if (_streamingTask != null && !_streamingTask.IsCompleted)
-            {
-                _cancellationToken.Cancel();
-                _streamingTask.Wait();
-            }
-            _streamingTask = null;
+            StopStreaming();
 
             if (_textureToSync != null)
             {
