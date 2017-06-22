@@ -1,4 +1,4 @@
-//#define USE_UNMANAGED
+#define USE_UNMANAGED
 // Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
@@ -17,7 +17,7 @@ namespace SiliconStudio.Core.Streaming
     {
         private IntPtr data;
 #if !USE_UNMANAGED
-        private GCHandle? handle;
+        private GCHandle handle;
 #endif
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace SiliconStudio.Core.Streaming
 #if USE_UNMANAGED
                 var chunkBytes = Utilities.AllocateMemory(Size);
 
-                const int bufferCapacity = 8192;
+                int bufferCapacity = Math.Min(8192, Size);
                 var buffer = new byte[bufferCapacity];
 
                 int count = Size;
@@ -112,7 +112,7 @@ namespace SiliconStudio.Core.Streaming
                 stream.Read(bytes, 0, Size);
 
                 handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
-                var chunkBytes = handle.Value.AddrOfPinnedObject();
+                var chunkBytes = handle.AddrOfPinnedObject();
 #endif
 
                 data = chunkBytes;
@@ -125,16 +125,15 @@ namespace SiliconStudio.Core.Streaming
 
         internal void Unload()
         {
-#if USE_UNMANAGED
             if (data != IntPtr.Zero)
             {
+#if USE_UNMANAGED
                 Utilities.FreeMemory(data);
+#else
+                handle.Free();
+#endif
                 data = IntPtr.Zero;
             }
-#else
-            handle?.Free();
-            data = IntPtr.Zero;
-#endif
         }
     }
 }

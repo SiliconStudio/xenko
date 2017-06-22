@@ -307,36 +307,33 @@ namespace SiliconStudio.Xenko.Graphics.Data
 
                 try
                 {
-                    unsafe
+                    // Load image data to the buffer
+                    var bufferPtr = buffer;
+                    for (int arrayIndex = 0; arrayIndex < imageDescription.ArraySize; arrayIndex++)
                     {
-                        // Load image data to the buffer
-                        var bufferPtr = buffer;
-                        for (int arrayIndex = 0; arrayIndex < imageDescription.ArraySize; arrayIndex++)
+                        for (int mipIndex = 0; mipIndex < imageDescription.MipLevels; mipIndex++)
                         {
-                            for (int mipIndex = 0; mipIndex < imageDescription.MipLevels; mipIndex++)
+                            int mipWidth = Math.Max(1, imageDescription.Width >> mipIndex);
+                            int mipHeight = Math.Max(1, imageDescription.Height >> mipIndex);
+                            if (isBlockCompressed && ((mipWidth % 4) != 0 || (mipHeight % 4) != 0))
                             {
-                                int mipWidth = Math.Max(1, imageDescription.Width >> mipIndex);
-                                int mipHeight = Math.Max(1, imageDescription.Height >> mipIndex);
-                                if (isBlockCompressed && ((mipWidth % 4) != 0 || (mipHeight % 4) != 0))
-                                {
-                                    mipWidth = unchecked((int)(((uint)(mipWidth + 3)) & ~(uint)3));
-                                    mipHeight = unchecked((int)(((uint)(mipHeight + 3)) & ~(uint)3));
-                                }
-
-                                int rowPitch, slicePitch;
-                                int widthPacked;
-                                int heightPacked;
-                                Image.ComputePitch(format, mipWidth, mipHeight, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
-                                var chunk = storage.GetChunk(mipIndex);
-                                if (chunk == null || chunk.Size != slicePitch * imageDescription.ArraySize)
-                                    throw new ContentStreamingException("Data chunk is missing or has invalid size.", storage);
-                                var data = chunk.GetData(fileProvider);
-                                if (!chunk.IsLoaded)
-                                    throw new ContentStreamingException("Data chunk is not loaded.", storage);
-                                
-                                Utilities.CopyMemory(bufferPtr, data, chunk.Size);
-                                bufferPtr += chunk.Size;
+                                mipWidth = unchecked((int)(((uint)(mipWidth + 3)) & ~(uint)3));
+                                mipHeight = unchecked((int)(((uint)(mipHeight + 3)) & ~(uint)3));
                             }
+
+                            int rowPitch, slicePitch;
+                            int widthPacked;
+                            int heightPacked;
+                            Image.ComputePitch(format, mipWidth, mipHeight, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
+                            var chunk = storage.GetChunk(mipIndex);
+                            if (chunk == null || chunk.Size != slicePitch * imageDescription.ArraySize)
+                                throw new ContentStreamingException("Data chunk is missing or has invalid size.", storage);
+                            var data = chunk.GetData(fileProvider);
+                            if (!chunk.IsLoaded)
+                                throw new ContentStreamingException("Data chunk is not loaded.", storage);
+                                
+                            Utilities.CopyMemory(bufferPtr, data, chunk.Size);
+                            bufferPtr += chunk.Size;
                         }
                     }
 
