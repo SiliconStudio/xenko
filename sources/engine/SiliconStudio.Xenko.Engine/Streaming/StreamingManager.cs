@@ -27,7 +27,6 @@ namespace SiliconStudio.Xenko.Streaming
     {
         private readonly List<StreamableResource> resources = new List<StreamableResource>(512);
         private readonly Dictionary<object, StreamableResource> resourcesLookup = new Dictionary<object, StreamableResource>(512);
-        private readonly List<StreamableResource> priorityUpdateQueue = new List<StreamableResource>(64); // Could be Queue<T> but it doesn't support .Remove(T)
         private readonly List<StreamableResource> activeStreaming = new List<StreamableResource>(64);
         private int lastUpdateResourcesIndex;
         private bool isDisposing;
@@ -123,7 +122,6 @@ namespace SiliconStudio.Xenko.Streaming
                 resources.ForEach(x => x.Release());
                 resources.Clear();
                 resourcesLookup.Clear();
-                priorityUpdateQueue.Clear();
                 activeStreaming.Clear();
             }
 
@@ -187,7 +185,6 @@ namespace SiliconStudio.Xenko.Streaming
 
                 resources.Remove(resource);
                 resourcesLookup.Remove(resource.Resource);
-                priorityUpdateQueue.RemoveAll(x => x == resource);
                 activeStreaming.Remove(resource);
             }
         }
@@ -218,19 +215,7 @@ namespace SiliconStudio.Xenko.Streaming
 
             return resource;
         }
-
-        /// <summary>
-        /// Requests the streamable resource update.
-        /// </summary>
-        /// <param name="resource">The resource to update.</param>
-        public void RequestUpdate(StreamableResource resource)
-        {
-            lock (resources)
-            {
-                priorityUpdateQueue.Add(resource);
-            }
-        }
-
+        
         /// <inheritdoc />
         public void FullyLoadTexture(Texture obj, ref ImageDescription imageDescription, ref ContentStorageHeader storageHeader)
         {
@@ -252,11 +237,7 @@ namespace SiliconStudio.Xenko.Streaming
         {
             lock (resources)
             {
-                // Get streaming object
-                var resource = CreateStreamingTexture(obj, ref imageDescription, ref storageHeader);
-
-                // Register quicker update for that resource
-                RequestUpdate(resource);
+                CreateStreamingTexture(obj, ref imageDescription, ref storageHeader);
             }
         }
 
@@ -326,17 +307,8 @@ namespace SiliconStudio.Xenko.Streaming
                     {
                         var now = DateTime.UtcNow;
                         int resourcesUpdates = Math.Min(MaxResourcesPerUpdate, resourcesCount);
+                        int resourcesChecks = resourcesCount;
 
-                        // Update high priority queue and then rest of the resources
-                        // Note: resources in the update queue are updated always, while others only between specified intervals
-                        int resourcesChecks = resourcesCount - priorityUpdateQueue.Count;
-                        while (priorityUpdateQueue.Count > 0 && resourcesUpdates-- > 0 && HasActiveTaskSlotFree)
-                        {
-                            var resource = priorityUpdateQueue[0];
-                            priorityUpdateQueue.RemoveAt(0);
-                            if (resource.CanBeUpdated)
-                                Update(resource, ref now);
-                        }
                         while (resourcesUpdates > 0 && resourcesChecks-- > 0 && HasActiveTaskSlotFree)
                         {
                             // Move forward
