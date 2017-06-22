@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Assets.Compiler;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Assets.Analysis
 {
@@ -94,12 +95,12 @@ namespace SiliconStudio.Assets.Analysis
             return node;
         }
 
-        private void AnalyzeNode(BuildAssetNode node, AssetCompilerContext context, HashSet<KeyValuePair<Type, BuildDependencyType>> includes, HashSet<Type> excludes)
+        private static void AnalyzeNode([NotNull] BuildAssetNode node, AssetCompilerContext context)
         {
-            node.Analyze(context, includes, excludes);
+            node.Analyze(context);
             foreach (var buildAssetNode in node.References)
             {
-                AnalyzeNode(buildAssetNode, context, includes, excludes);
+                AnalyzeNode(buildAssetNode, context);
             }
         }
 
@@ -107,9 +108,7 @@ namespace SiliconStudio.Assets.Analysis
         {
             var node = FindOrCreateNode(sender, BuildDependencyType.Runtime); // update only runtime ones ( as they are root )
             var context = new AssetCompilerContext();
-            var includes = new HashSet<KeyValuePair<Type, BuildDependencyType>>();
-            var excludes = new HashSet<Type>();
-            AnalyzeNode(node, context, includes, excludes);
+            AnalyzeNode(node, context);
         }
 
         /// <summary>

@@ -91,10 +91,6 @@ namespace SiliconStudio.Xenko.Input
         public void Dispose()
         {
             joystick.Dispose();
-            if (Disconnected == null)
-                throw new InvalidOperationException("Something should handle controller disconnect");
-
-            Disconnected.Invoke(this, null);
         }
 
         public override string Name { get; }
@@ -169,10 +165,18 @@ namespace SiliconStudio.Xenko.Input
             }
             catch (SharpDXException)
             {
-                Dispose();
+                HandleDisconnect();
             }
 
             base.Update(inputEvents);
+        }
+
+        private void HandleDisconnect()
+        {
+            if (Disconnected == null)
+                throw new InvalidOperationException("Something should handle controller disconnect");
+
+            Disconnected.Invoke(this, null);
         }
 
         public class DirectInputAxisInfo : GameControllerAxisInfo

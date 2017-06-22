@@ -1,6 +1,6 @@
 !UILibraryAsset
 Id: 44a9ed4d-847f-4577-8cb1-eabf455799a7
-SerializedVersion: {Xenko: 2.0.0.0}
+SerializedVersion: {Xenko: 2.1.0.1}
 Tags: []
 Design:
     Resolution: {X: 640.0, Y: 1136.0, Z: 1000.0}
@@ -11,16 +11,16 @@ PublicUIElements:
     dab3aa68-8d2a-4ca6-98d1-2d105b28679f: StatusButton
     efdc3200-c774-4cea-a94d-e0e706bd7c4d: WelcomePopup
 Hierarchy:
-    RootPartIds:
-        - 0b37bd5e-d5ef-4cfe-b41e-0aad87c4df72
-        - 3f43a337-c8d0-4d80-830f-dd1621f717cd
-        - efdc3200-c774-4cea-a94d-e0e706bd7c4d
-        - dab3aa68-8d2a-4ca6-98d1-2d105b28679f
-        - 4a091c2c-0978-404f-99b3-dbf13f6468f5
+    RootParts:
+        - !ModalElement ref!! 0b37bd5e-d5ef-4cfe-b41e-0aad87c4df72
+        - !UniformGrid ref!! 3f43a337-c8d0-4d80-830f-dd1621f717cd
+        - !ModalElement ref!! efdc3200-c774-4cea-a94d-e0e706bd7c4d
+        - !Button ref!! dab3aa68-8d2a-4ca6-98d1-2d105b28679f
+        - !ContentDecorator ref!! 4a091c2c-0978-404f-99b3-dbf13f6468f5
     Parts:
         -   UIElement: !ImageElement
-                DependencyProperties: {}
                 Id: 04d990bf-c229-4e3b-b9a8-79a4e58a8a0c
+                DependencyProperties: {}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 VerticalAlignment: Center
                 Margin: {}
@@ -30,9 +30,9 @@ Hierarchy:
                     CurrentFrame: 13
                 Color: {R: 255, G: 255, B: 255, A: 255}
         -   UIElement: !ModalElement
+                Id: 0b37bd5e-d5ef-4cfe-b41e-0aad87c4df72
                 DependencyProperties:
                     696af3b8f93a6ab92934f3aa98257a3e~Panel.ZIndexPropertyKey: 1
-                Id: 0b37bd5e-d5ef-4cfe-b41e-0aad87c4df72
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
                 CanBeHitByUser: true
@@ -44,8 +44,8 @@ Hierarchy:
                 Content: !ContentDecorator ref!! a407797f-2bb7-4d43-be29-bd8682e09164
                 OverlayColor: {R: 0, G: 0, B: 0, A: 153}
         -   UIElement: !TextBlock
-                DependencyProperties: {}
                 Id: 0ef632cb-94ee-4836-b983-05975c6b6e62
+                DependencyProperties: {}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: validateText
@@ -53,9 +53,9 @@ Hierarchy:
                 Font: 6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
                 TextColor: {R: 255, G: 255, B: 255, A: 255}
         -   UIElement: !Button
+                Id: 14f2fc6b-320f-48e3-bfc6-121d8a6e3cfb
                 DependencyProperties:
                     d7d0d5432abcbf7e3a64f7b31109541d~GridBase.ColumnPropertyKey: 1
-                Id: 14f2fc6b-320f-48e3-bfc6-121d8a6e3cfb
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
                 CanBeHitByUser: true
@@ -73,9 +73,9 @@ Hierarchy:
                     Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 28
         -   UIElement: !EditText
+                Id: 17e65222-cb1c-4e25-9a7e-e8f8807d3d09
                 DependencyProperties:
                     9693d21c8b1a2f328399f7058d38ae76~GridBase.RowPropertyKey: 1
-                Id: 17e65222-cb1c-4e25-9a7e-e8f8807d3d09
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 5
                 CanBeHitByUser: true
@@ -101,12 +101,13 @@ Hierarchy:
                 CaretColor: {R: 240, G: 240, B: 240, A: 255}
                 CaretWidth: 1.0
                 SelectionColor: {R: 255, G: 255, B: 255, A: 255}
+                IMESelectionColor: {R: 240, G: 255, B: 240, A: 255}
                 MaxLength: 15
                 CaretFrequency: 1.0
                 Text: John Doe
         -   UIElement: !UniformGrid
-                DependencyProperties: {}
                 Id: 194a62d8-9ddd-497a-b893-521523c283aa
+                DependencyProperties: {}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {Left: 5.0, Top: -6.0}
                 Name: statusTextGrid
@@ -116,9 +117,9 @@ Hierarchy:
                     f71e26847f39dd4785045dfcc0a11fef: !TextBlock ref!! 84261ef7-397f-47dd-8504-5dfcc0a11fef
                 Rows: 3
         -   UIElement: !ContentDecorator
+                Id: 325d3ab0-71eb-4833-9d05-b71f932044b8
                 DependencyProperties:
                     e13905c7f34f77e1d58e34cd7c192f99~GridBase.RowPropertyKey: 2
-                Id: 325d3ab0-71eb-4833-9d05-b71f932044b8
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
                 Margin: {}
@@ -129,8 +130,8 @@ Hierarchy:
                     Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 9
         -   UIElement: !Grid
-                DependencyProperties: {}
                 Id: 3ceb61bc-9411-4a67-a034-572310ad2719
+                DependencyProperties: {}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: layoutGrid
@@ -149,9 +150,9 @@ Hierarchy:
                 LayerDefinitions:
                     2ec953d49348534595d5cca95ba2cd7a: {}
         -   UIElement: !ImageElement
+                Id: 3df05212-2ebb-4b80-b63d-82c8c5181fc0
                 DependencyProperties:
                     2e61848fc0361e45d70c279cd74aacde~Panel.ZIndexPropertyKey: 1
-                Id: 3df05212-2ebb-4b80-b63d-82c8c5181fc0
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Visibility: Hidden
                 Margin: {}
@@ -162,8 +163,8 @@ Hierarchy:
                 Color: {R: 255, G: 255, B: 255, A: 255}
                 StretchType: Fill
         -   UIElement: !UniformGrid
-                DependencyProperties: {}
                 Id: 3f43a337-c8d0-4d80-830f-dd1621f717cd
+                DependencyProperties: {}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 MaximumHeight: 100.0
@@ -172,8 +173,8 @@ Hierarchy:
                     e11f00be0866fe4bb639702029d9ffa1: !Button ref!! be001fe1-6608-4bfe-b639-702029d9ffa1
                     1252f03dbb2e804bb63d82c8c5181fc0: !ImageElement ref!! 3df05212-2ebb-4b80-b63d-82c8c5181fc0
         -   UIElement: !ContentDecorator
-                DependencyProperties: {}
                 Id: 4a091c2c-0978-404f-99b3-dbf13f6468f5
+                DependencyProperties: {}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
                 HorizontalAlignment: Center
@@ -186,9 +187,9 @@ Hierarchy:
                     Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 7
         -   UIElement: !TextBlock
+                Id: 53b7f194-0ab8-4deb-805a-e44f2e64eaff
                 DependencyProperties:
                     f75185e943650326cb016ad28fab1cb9~GridBase.RowPropertyKey: 1
-                Id: 53b7f194-0ab8-4deb-805a-e44f2e64eaff
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 HorizontalAlignment: Left
                 VerticalAlignment: Center
@@ -199,9 +200,9 @@ Hierarchy:
                 TextSize: 19.0
                 TextColor: {R: 0, G: 0, B: 0, A: 255}
         -   UIElement: !Button
+                Id: 54f5ff1d-4e87-4ba9-9fd5-e585f02f4ac1
                 DependencyProperties:
                     4bb09791328ed5b45cb57ed818b51dcb~GridBase.ColumnPropertyKey: 3
-                Id: 54f5ff1d-4e87-4ba9-9fd5-e585f02f4ac1
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
                 CanBeHitByUser: true
@@ -219,9 +220,9 @@ Hierarchy:
                     Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 28
         -   UIElement: !Grid
+                Id: 56441c6b-3ffd-49d3-afa7-3e6d3498a682
                 DependencyProperties:
                     1d677c4788c9341114ccb130e5982762~GridBase.RowPropertyKey: 2
-                Id: 56441c6b-3ffd-49d3-afa7-3e6d3498a682
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: buttonPanel
@@ -241,8 +242,8 @@ Hierarchy:
                 LayerDefinitions:
                     7c15c04e395b0044bee7a47f78cb0c07: {}
         -   UIElement: !Grid
-                DependencyProperties: {}
                 Id: 58768f72-7962-4070-a314-ff9947177867
+                DependencyProperties: {}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 HorizontalAlignment: Center
                 VerticalAlignment: Center
@@ -265,9 +266,9 @@ Hierarchy:
                 LayerDefinitions:
                     59168ccc5178674db547d16372d006f4: {}
         -   UIElement: !TextBlock
+                Id: 67958be9-efe8-40bf-9ff5-6f41765b4d16
                 DependencyProperties:
                     a5887c4db6325a1e7f27d3d62db2ca9f~GridBase.RowSpanPropertyKey: 1
-                Id: 67958be9-efe8-40bf-9ff5-6f41765b4d16
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {Left: 20.0, Right: 20.0}
                 Name: welcomeText
@@ -278,9 +279,9 @@ Hierarchy:
                 TextAlignment: Center
                 WrapText: true
         -   UIElement: !ImageElement
+                Id: 6bdf70ec-8db2-4205-956f-f359f0a6261c
                 DependencyProperties:
                     17fd5c810670a4e6f6759de2bc0de5bb~GridBase.RowPropertyKey: 1
-                Id: 6bdf70ec-8db2-4205-956f-f359f0a6261c
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 VerticalAlignment: Center
                 Margin: {}
@@ -290,9 +291,9 @@ Hierarchy:
                     CurrentFrame: 13
                 Color: {R: 255, G: 255, B: 255, A: 255}
         -   UIElement: !ImageElement
+                Id: 726bd73e-ee28-4b91-a4d2-9f4ef1708737
                 DependencyProperties:
                     a280ffa9d6756c87f23abe3c9bd76a47~GridBase.ColumnPropertyKey: 4
-                Id: 726bd73e-ee28-4b91-a4d2-9f4ef1708737
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: shipImage
@@ -301,8 +302,8 @@ Hierarchy:
                     CurrentFrame: 2
                 Color: {R: 255, G: 255, B: 255, A: 255}
         -   UIElement: !Grid
-                DependencyProperties: {}
                 Id: 7765f331-7994-4bc8-91d4-58dd12426bbe
+                DependencyProperties: {}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: shipContent
@@ -324,9 +325,9 @@ Hierarchy:
                 LayerDefinitions:
                     0cc2559779c3be4992a907f942d2eaca: {}
         -   UIElement: !TextBlock
+                Id: 84261ef7-397f-47dd-8504-5dfcc0a11fef
                 DependencyProperties:
                     1dc256e64da6d059c11627efcb52364c~GridBase.RowPropertyKey: 2
-                Id: 84261ef7-397f-47dd-8504-5dfcc0a11fef
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 HorizontalAlignment: Left
                 VerticalAlignment: Center
@@ -337,16 +338,16 @@ Hierarchy:
                 TextSize: 19.0
                 TextColor: {R: 0, G: 0, B: 0, A: 255}
         -   UIElement: !StackPanel
-                DependencyProperties: {}
                 Id: 852fd9fa-efb3-454d-a8d9-b5e1288ecf3a
+                DependencyProperties: {}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: contentStackPanel
                 Children: {}
         -   UIElement: !UniformGrid
+                Id: 8af7f84b-6c1b-4ce3-b274-f264077682df
                 DependencyProperties:
                     06a3841a046849349fb44e1254e67444~GridBase.ColumnPropertyKey: 2
-                Id: 8af7f84b-6c1b-4ce3-b274-f264077682df
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: starGrid
@@ -356,8 +357,8 @@ Hierarchy:
                     6d8c1cf901d7c949ae1dde28fb949b2f: !ImageElement ref!! f91c8c6d-d701-49c9-ae1d-de28fb949b2f
                 Rows: 3
         -   UIElement: !ContentDecorator
-                DependencyProperties: {}
                 Id: 8c3e5c16-2960-4539-8dee-395ab1cf1eb4
+                DependencyProperties: {}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
                 Margin: {}
@@ -368,8 +369,8 @@ Hierarchy:
                     Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 6
         -   UIElement: !TextBlock
-                DependencyProperties: {}
                 Id: a23a1e40-bdc2-417a-8cb0-df68dc17cd06
+                DependencyProperties: {}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: pleaseSelectText
@@ -380,8 +381,8 @@ Hierarchy:
                 TextAlignment: Center
                 WrapText: true
         -   UIElement: !TextBlock
-                DependencyProperties: {}
                 Id: a3861d95-b39e-42e4-93ac-a2c26ccbb95f
+                DependencyProperties: {}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 HorizontalAlignment: Left
                 VerticalAlignment: Center
@@ -392,8 +393,8 @@ Hierarchy:
                 TextSize: 19.0
                 TextColor: {R: 0, G: 0, B: 0, A: 255}
         -   UIElement: !ContentDecorator
-                DependencyProperties: {}
                 Id: a407797f-2bb7-4d43-be29-bd8682e09164
+                DependencyProperties: {}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
                 Margin: {}
@@ -404,8 +405,8 @@ Hierarchy:
                     Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 6
         -   UIElement: !TextBlock
-                DependencyProperties: {}
                 Id: ab061694-a406-4e39-b174-c95e023d1b66
+                DependencyProperties: {}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: cancelText
@@ -413,8 +414,8 @@ Hierarchy:
                 Font: 6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
                 TextColor: {R: 255, G: 255, B: 255, A: 255}
         -   UIElement: !ScrollViewer
-                DependencyProperties: {}
                 Id: b271da7f-5529-4149-90a0-6da7b8a8e2e6
+                DependencyProperties: {}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 ClipToBounds: true
                 CanBeHitByUser: true
@@ -426,8 +427,8 @@ Hierarchy:
                 ScrollMode: Vertical
                 Content: !StackPanel ref!! 852fd9fa-efb3-454d-a8d9-b5e1288ecf3a
         -   UIElement: !ImageElement
-                DependencyProperties: {}
                 Id: bb0e5ff1-a42a-4aba-aae0-c000d6098595
+                DependencyProperties: {}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: statusStar
@@ -437,9 +438,9 @@ Hierarchy:
                 Color: {R: 255, G: 255, B: 255, A: 255}
                 StretchDirection: DownOnly
         -   UIElement: !Button
+                Id: be001fe1-6608-4bfe-b639-702029d9ffa1
                 DependencyProperties:
                     5b7f4429dada50f0f023d8dc7cc527ea~Panel.ZIndexPropertyKey: 0
-                Id: be001fe1-6608-4bfe-b639-702029d9ffa1
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
                 CanBeHitByUser: true
@@ -457,8 +458,8 @@ Hierarchy:
                     Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 21
         -   UIElement: !Button
-                DependencyProperties: {}
                 Id: dab3aa68-8d2a-4ca6-98d1-2d105b28679f
+                DependencyProperties: {}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
                 CanBeHitByUser: true
@@ -479,9 +480,9 @@ Hierarchy:
                     Sheet: dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                     CurrentFrame: 10
         -   UIElement: !ModalElement
+                Id: efdc3200-c774-4cea-a94d-e0e706bd7c4d
                 DependencyProperties:
                     54511eca2781b2e7769881b06427b539~Panel.ZIndexPropertyKey: 1
-                Id: efdc3200-c774-4cea-a94d-e0e706bd7c4d
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
                 CanBeHitByUser: true
@@ -494,9 +495,9 @@ Hierarchy:
                 Content: !ContentDecorator ref!! 8c3e5c16-2960-4539-8dee-395ab1cf1eb4
                 OverlayColor: {R: 0, G: 0, B: 0, A: 153}
         -   UIElement: !ImageElement
+                Id: f91c8c6d-d701-49c9-ae1d-de28fb949b2f
                 DependencyProperties:
                     858f9a6fc4089925f087a94a4e9996e2~GridBase.RowPropertyKey: 2
-                Id: f91c8c6d-d701-49c9-ae1d-de28fb949b2f
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 VerticalAlignment: Center
                 Margin: {}
@@ -506,8 +507,8 @@ Hierarchy:
                     CurrentFrame: 13
                 Color: {R: 255, G: 255, B: 255, A: 255}
         -   UIElement: !TextBlock
-                DependencyProperties: {}
                 Id: ff603298-54a0-4d64-9efa-3a855e759809
+                DependencyProperties: {}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 HorizontalAlignment: Center
                 VerticalAlignment: Center

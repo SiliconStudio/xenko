@@ -333,7 +333,7 @@ namespace SiliconStudio.Assets.Quantum.Internal
             var baseNode = (AssetObjectNode)BaseNode;
             var removedId = ItemId.Empty;
             var isOverriding = baseNode != null && !PropertyGraph.UpdatingPropertyFromBase;
-            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(node.Retrieve());
+            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(value);
             var collectionDescriptor = node.Descriptor as CollectionDescriptor;
             switch (e.ChangeType)
             {
