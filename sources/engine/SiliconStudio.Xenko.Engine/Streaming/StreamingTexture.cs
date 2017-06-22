@@ -203,7 +203,7 @@ namespace SiliconStudio.Xenko.Streaming
                 height = unchecked((int)(((uint)(height + 3)) & ~(uint)3));
             }
         }
-        static System.Collections.Generic.List<string> urls = new System.Collections.Generic.List<string>();
+
         private void StreamingTask(int residency)
         {
             if (_cancellationToken.IsCancellationRequested)
@@ -225,16 +225,6 @@ namespace SiliconStudio.Xenko.Streaming
             try
             {
                 Storage.LockChunks();
-
-                lock (urls)
-                {
-                    urls.Add(Storage.Url);
-
-                    if (urls.Count > StreamingManager.MaxTasksRunningSimultaneously)
-                    {
-                        int a = 2;
-                    }
-                }
 
                 // Setup texture description
                 TextureDescription newDesc = _desc;
@@ -294,11 +284,6 @@ namespace SiliconStudio.Xenko.Streaming
             finally
             {
                 Storage.UnlockChunks();
-
-                lock (urls)
-                {
-                    urls.Remove(Storage.Url);
-                }
             }
         }
 
