@@ -38,8 +38,8 @@ namespace SiliconStudio.Xenko.Graphics
     /// Class used for all Textures (1D, 2D, 3D, DepthStencil, RenderTargets...etc.)
     /// </summary>
     [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<Texture>), Profile = "Content")]
-    [ContentSerializer(typeof(TextureImageSerializer))]
     [ContentSerializer(typeof(TextureContentSerializer))]
+    [ContentSerializer(typeof(TextureImageSerializer))]
     [DebuggerDisplay("Texture {ViewWidth}x{ViewHeight}x{ViewDepth} {Format} ({ViewFlags})")]
     [DataSerializer(typeof(TextureSerializer))]
     public sealed partial class Texture : GraphicsResource

@@ -1,8 +1,11 @@
+//#define USE_UNMANAGED
 // Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
-using System.IO;
+#if !USE_UNMANAGED
+using System.Runtime.InteropServices;
+#endif
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Core.Streaming
@@ -13,7 +16,10 @@ namespace SiliconStudio.Core.Streaming
     public class ContentChunk
     {
         private IntPtr data;
-        
+#if !USE_UNMANAGED
+        private GCHandle? handle;
+#endif
+
         /// <summary>
         /// Gets the parent storage container.
         /// </summary>
@@ -28,7 +34,7 @@ namespace SiliconStudio.Core.Streaming
         /// Gets the chunk size in file (in bytes).
         /// </summary>
         public int Size { get; }
-        
+
         /// <summary>
         /// Gets the last access time.
         /// </summary>
@@ -42,7 +48,7 @@ namespace SiliconStudio.Core.Streaming
         /// <summary>
         /// Gets a value indicating whether this chunk is not loaded.
         /// </summary>
-        public bool IsMissing => data == IntPtr.Zero;
+        public bool IsMissing => !IsLoaded;
 
         /// <summary>
         /// Gets a value indicating whether this exists in file.
@@ -55,7 +61,7 @@ namespace SiliconStudio.Core.Streaming
             Location = location;
             Size = size;
         }
-        
+
         /// <summary>
         /// Registers the usage operation of chunk data.
         /// </summary>
@@ -80,6 +86,7 @@ namespace SiliconStudio.Core.Streaming
             {
                 stream.Position = Location;
 
+#if USE_UNMANAGED
                 var chunkBytes = Utilities.AllocateMemory(Size);
 
                 const int bufferCapacity = 8192;
@@ -100,6 +107,13 @@ namespace SiliconStudio.Core.Streaming
                         count -= read;
                     } while (count > 0);
                 }
+#else
+                var bytes = new byte[Size];
+                stream.Read(bytes, 0, Size);
+
+                handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+                var chunkBytes = handle.Value.AddrOfPinnedObject();
+#endif
 
                 data = chunkBytes;
             }
@@ -111,11 +125,16 @@ namespace SiliconStudio.Core.Streaming
 
         internal void Unload()
         {
+#if USE_UNMANAGED
             if (data != IntPtr.Zero)
             {
                 Utilities.FreeMemory(data);
                 data = IntPtr.Zero;
             }
+#else
+            handle?.Free();
+            data = IntPtr.Zero;
+#endif
         }
     }
 }
