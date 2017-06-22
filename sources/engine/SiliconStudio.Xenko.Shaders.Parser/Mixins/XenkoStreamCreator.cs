@@ -443,7 +443,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                     var nonSemVar = new List<IDeclaration>();
                     foreach (var variable in nextStreamUsage.OutStreamList)
                     {
-                        var sem = (variable as Variable).Qualifiers.OfType<Semantic>().FirstOrDefault();
+                        var sem = ((Variable)variable).Qualifiers.OfType<Semantic>().FirstOrDefault();
                         if (sem != null && (sem.Name.Text.StartsWith("SV_Target") || sem.Name.Text == "SV_Depth"))
                             semVar.Add(variable);
                         else
@@ -462,8 +462,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 {
                     if (!prevStreamUsage.OutStreamList.Contains(variable))
                     {
-                        var sem = (variable as Variable).Qualifiers.OfType<Semantic>().FirstOrDefault();
-                        if (sem.Name.Text == "SV_IsFrontFace") // PS input only
+                        var sem = ((Variable)variable).Qualifiers.OfType<Semantic>().FirstOrDefault();
+                        if (sem != null && sem.Name.Text == "SV_IsFrontFace") // PS input only
                         {
                             stageExclusiveInputStreams.Add(variable);
                             continue;
