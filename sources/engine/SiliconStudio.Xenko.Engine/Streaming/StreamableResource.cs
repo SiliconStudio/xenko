@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -19,6 +20,8 @@ namespace SiliconStudio.Xenko.Streaming
     public abstract class StreamableResource : ComponentBase
     {
         protected DatabaseFileProvider fileProvider;
+        protected CancellationTokenSource _cancellationToken;
+        private Task _streamingTask;
 
         /// <summary>
         /// Gets the manager.
@@ -67,10 +70,18 @@ namespace SiliconStudio.Xenko.Streaming
         public bool IsAllocated => AllocatedResidency > 0;
 
         /// <summary>
+        /// Gets a value indicating whether this resource async task is active.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if async task is active; otherwise, <c>false</c>.
+        /// </value>
+        internal virtual bool IsTaskActive => _streamingTask != null && !_streamingTask.IsCompleted;
+
+        /// <summary>
         /// Determines whether this instance can be updated. Which means: no async streaming, no pending action in background.
         /// </summary>
         /// <returns><c>true</c> if this instance can be updated; otherwise, <c>false</c>.</returns>
-        internal abstract bool CanBeUpdated { get; }
+        internal virtual bool CanBeUpdated => _streamingTask == null || _streamingTask.IsCompleted;
 
         /// <summary>
         /// The last update time.
@@ -127,14 +138,19 @@ namespace SiliconStudio.Xenko.Streaming
         /// </summary>
         /// <param name="residency">The target residency.</param>
         [NotNull]
-        internal abstract Task StreamAsync(int residency);
+        protected abstract Task StreamAsync(int residency);
 
         /// <summary>
-        /// Requests resource data synchronized update (will call back method FlushSync() on main thread - streaming sync point).
+        /// Stream resource to the target residency level.
         /// </summary>
-        protected void RequestSyncUpdate()
+        /// <param name="residency">The target residency.</param>
+        [NotNull]
+        internal Task StreamAsyncInternal(int residency)
         {
-            Manager.RequestSyncUpdate(this);
+            Debug.Assert(CanBeUpdated && residency <= MaxResidency);
+
+            _cancellationToken = new CancellationTokenSource();
+            return _streamingTask = StreamAsync(residency);
         }
 
         /// <summary>
@@ -150,6 +166,19 @@ namespace SiliconStudio.Xenko.Streaming
         internal virtual void Release()
         {
             Dispose();
+        }
+
+        /// <summary>
+        /// Stops the resource streaming using cancellation token.
+        /// </summary>
+        protected void StopStreaming()
+        {
+            if (_streamingTask != null && !_streamingTask.IsCompleted)
+            {
+                _cancellationToken.Cancel();
+                _streamingTask.Wait();
+            }
+            _streamingTask = null;
         }
 
         /// <inheritdoc />
