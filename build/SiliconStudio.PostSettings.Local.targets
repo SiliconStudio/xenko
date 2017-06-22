@@ -8,7 +8,7 @@
     <SiliconStudioOutputCommonDir>$(SolutionDir)..\Bin\$(SiliconStudioBuildDirectory)\</SiliconStudioOutputCommonDir>
     <SiliconStudioOutputCommonDir>$([System.IO.Path]::GetFullPath('$(SiliconStudioOutputCommonDir)'))</SiliconStudioOutputCommonDir>
 
-    <SiliconStudioAssemblyProcessorPath>$(SiliconStudioPackageXenko)\deps\AssemblyProcessor\SiliconStudio.AssemblyProcessor.exe</SiliconStudioAssemblyProcessorPath>
+    <SiliconStudioAssemblyProcessorPath>$(SiliconStudioPackageXenko)\deps\AssemblyProcessor\SiliconStudio.AssemblyProcessor.Packed.exe</SiliconStudioAssemblyProcessorPath>
 
     <SiliconStudioXenkoOutputPath Condition="'$(SiliconStudioXenkoOutputPath)' == ''">$(SiliconStudioOutputCommonDir)</SiliconStudioXenkoOutputPath>
     <SiliconStudioXenkoOutputPath Condition="'$(SiliconStudioXenkoOutputFolder)' != ''">$(SiliconStudioXenkoOutputPath)$(SiliconStudioXenkoOutputFolder)\</SiliconStudioXenkoOutputPath>

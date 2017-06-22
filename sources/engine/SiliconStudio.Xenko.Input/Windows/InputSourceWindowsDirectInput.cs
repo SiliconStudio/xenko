@@ -47,9 +47,9 @@ namespace SiliconStudio.Xenko.Input
             // Process device removals
             foreach (var deviceIdToRemove in devicesToRemove)
             {
-                var gameController = Devices[deviceIdToRemove] as GameControllerDirectInput;
+                var gameController = Devices[deviceIdToRemove];
                 UnregisterDevice(gameController);
-                gameController.Dispose();
+                (gameController as IDisposable)?.Dispose();
             }
             devicesToRemove.Clear();
         }

@@ -13,7 +13,7 @@ using SiliconStudio.Xenko.Engine;
 
 namespace ParticlesSample
 {
-    [DataContract("PlayAnimation")]
+    [DataContract]
     public class PlayAnimation
     {
         public AnimationClip Clip;

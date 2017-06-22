@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
     [AssetCompiler(typeof(EffectLogAsset), typeof(AssetCompilationContext))]
     public class EffectLogAssetCompiler : AssetCompilerBase
     {
-        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
         {
             foreach (var sessionPackage in assetItem.Package.Session.Packages)
             {
