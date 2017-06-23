@@ -249,7 +249,7 @@ namespace SiliconStudio.Xenko.Streaming
             lock (resources)
             {
                 var resource = Get(obj);
-                resource?.Dispose();
+                resource?.Release();
             }
         }
 
