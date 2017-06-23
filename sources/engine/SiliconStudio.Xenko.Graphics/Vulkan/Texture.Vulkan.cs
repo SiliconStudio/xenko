@@ -57,6 +57,11 @@ namespace SiliconStudio.Xenko.Graphics
             Utilities.Swap(ref NativeLayout, ref other.NativeLayout);
             Utilities.Swap(ref NativeAccessMask, ref other.NativeAccessMask);
             Utilities.Swap(ref NativeImageAspect, ref other.NativeImageAspect);
+            //
+            Utilities.Swap(ref NativeMemory, ref other.NativeMemory);
+            Utilities.Swap(ref StagingFenceValue, ref other.StagingFenceValue);
+            Utilities.Swap(ref StagingBuilder, ref other.StagingBuilder);
+            Utilities.Swap(ref NativePipelineStageMask, ref other.NativePipelineStageMask);
         }
 
         internal Texture InitializeFromPersistent(TextureDescription description, SharpVulkan.Image nativeImage)
