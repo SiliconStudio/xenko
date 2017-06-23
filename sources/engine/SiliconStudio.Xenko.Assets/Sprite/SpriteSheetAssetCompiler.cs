@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     var textureAsset = new TextureAsset
                     {
                         Id = AssetId.Empty, // CAUTION: It is important to use an empty GUID here, as we don't want the command to be rebuilt (by default, a new asset is creating a new guid)
-
+                        IsStreamable = false,
                         IsCompressed = asset.IsCompressed,
                         GenerateMipmaps = asset.GenerateMipmaps,
                         Type = new ColorTextureType
@@ -125,7 +125,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
             public SpriteSheetCommand(string url, SpriteSheetParameters parameters, Package package)
                 : base(url, parameters, package)
             {
-                Version = 1;
+                Version = 2;
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
