@@ -235,7 +235,6 @@ namespace SiliconStudio.Assets.Quantum.Tests.Helpers
             {
                 Dictionary<Guid, Guid> idRemapping;
                 var instance = (MyAssetHierarchy)CreateDerivedAsset("", out idRemapping);
-                var instanceId = instance.Hierarchy.Parts.Values.FirstOrDefault()?.Base?.InstanceId ?? Guid.NewGuid();
                 return instance.Hierarchy;
             }
         }
@@ -246,8 +245,18 @@ namespace SiliconStudio.Assets.Quantum.Tests.Helpers
         {
             public MyAssetHierarchyPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger) : base(container, assetItem, logger) { }
             public override bool IsChildPartReference(IGraphNode node, Index index) => node.Type == typeof(ChildrenList);
-            protected override void AddChildPartToParentPart(MyPart parentPart, MyPart childPart, int index) => Container.NodeContainer.GetNode(parentPart)[nameof(MyPart.Children)].Target.Add(childPart, new Index(index));
-            protected override void RemoveChildPartFromParentPart(MyPart parentPart, MyPart childPart) => Container.NodeContainer.GetNode(parentPart)[nameof(MyPart.Children)].Target.Remove(childPart, new Index(parentPart.Children.IndexOf(childPart)));
+            protected override void AddChildPartToParentPart(MyPart parentPart, MyPart childPart, int index)
+            {
+                Container.NodeContainer.GetNode(parentPart)[nameof(MyPart.Children)].Target.Add(childPart, new Index(index));
+                Container.NodeContainer.GetNode(childPart)[nameof(MyPart.Parent)].Update(parentPart);
+            }
+
+            protected override void RemoveChildPartFromParentPart(MyPart parentPart, MyPart childPart)
+            {
+                Container.NodeContainer.GetNode(parentPart)[nameof(MyPart.Children)].Target.Remove(childPart, new Index(parentPart.Children.IndexOf(childPart)));
+                Container.NodeContainer.GetNode(childPart)[nameof(MyPart.Parent)].Update(null);
+            }
+
             protected override Guid GetIdFromChildPart(object part) => ((MyPart)part).Id;
             protected override IEnumerable<IGraphNode> RetrieveChildPartNodes(MyPart part)
             {
