@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -15,6 +16,7 @@ namespace SiliconStudio.Core.Streaming
     /// <summary>
     /// Streamable resources content storage containter.
     /// </summary>
+    [DebuggerDisplay("Content Storage: {Url}; Loaded chunks: {LoadedChunksCount}/{ChunksCount}")]
     public class ContentStorage : DisposeBase
     {
         private ContentChunk[] chunks;
@@ -56,6 +58,11 @@ namespace SiliconStudio.Core.Streaming
         /// Gets the amount of chunks located inside the storage container.
         /// </summary>
         public int ChunksCount => chunks.Length;
+
+        /// <summary>
+        /// Gets the amount of loaded chunks.
+        /// </summary>
+        public int LoadedChunksCount => chunks.Count(x => x.IsLoaded);
 
         internal ContentStorage(ContentStreamingService service)
         {

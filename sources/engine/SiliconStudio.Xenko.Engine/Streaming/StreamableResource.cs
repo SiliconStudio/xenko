@@ -176,7 +176,8 @@ namespace SiliconStudio.Xenko.Streaming
             if (_streamingTask != null && !_streamingTask.IsCompleted)
             {
                 _cancellationToken.Cancel();
-                _streamingTask.Wait();
+                if (!_streamingTask.IsCompleted)
+                    _streamingTask.Wait();
             }
             _streamingTask = null;
         }

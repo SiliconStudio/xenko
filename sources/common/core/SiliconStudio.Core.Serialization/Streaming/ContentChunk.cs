@@ -3,6 +3,7 @@
 // See LICENSE.md for full license information.
 
 using System;
+using System.Diagnostics;
 #if !USE_UNMANAGED
 using System.Runtime.InteropServices;
 #endif
@@ -13,7 +14,8 @@ namespace SiliconStudio.Core.Streaming
     /// <summary>
     /// Content storage data chunk.
     /// </summary>
-    public class ContentChunk
+    [DebuggerDisplay("Content Chunk; IsLoaded: {IsLoaded}; Size: {Size}")]
+    public sealed class ContentChunk
     {
         private IntPtr data;
 #if !USE_UNMANAGED
