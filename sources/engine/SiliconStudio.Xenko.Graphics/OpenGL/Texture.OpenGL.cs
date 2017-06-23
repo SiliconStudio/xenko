@@ -105,6 +105,14 @@ namespace SiliconStudio.Xenko.Graphics
             Utilities.Swap(ref TextureTotalSize, ref other.TextureTotalSize);
             Utilities.Swap(ref pixelBufferObjectId, ref other.pixelBufferObjectId);
             Utilities.Swap(ref stencilId, ref other.stencilId);
+            //
+            Utilities.Swap(ref DiscardNextMap, ref other.DiscardNextMap);
+            Utilities.Swap(ref TextureId, ref other.TextureId);
+            Utilities.Swap(ref TextureTarget, ref other.TextureTarget);
+            Utilities.Swap(ref TextureInternalFormat, ref other.TextureInternalFormat);
+            Utilities.Swap(ref TextureFormat, ref other.TextureFormat);
+            Utilities.Swap(ref TextureType, ref other.TextureType);
+            Utilities.Swap(ref TexturePixelSize, ref other.TexturePixelSize);
         }
 
         public void Recreate(DataBox[] dataBoxes = null)
