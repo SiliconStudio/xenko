@@ -517,7 +517,7 @@ namespace SiliconStudio.BuildEngine
         /// <summary>
         /// Runs this instance.
         /// </summary>
-        public BuildResultCode Run(Mode mode, bool writeIndexFile = true, bool enableMonitor = true)
+        public BuildResultCode Run(Mode mode, bool writeIndexFile = true, bool enableMonitor = false)
         {
             // When we setup the database ourself we have to take responsibility to close it after
             var shouldCloseDatabase = ObjectDatabase == null;
