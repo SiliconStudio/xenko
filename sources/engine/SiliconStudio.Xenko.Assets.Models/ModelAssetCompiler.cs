@@ -25,16 +25,6 @@ namespace SiliconStudio.Xenko.Assets.Models
         public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
         {
             var modelAsset = (ModelAsset)assetItem.Asset;
-
-            if (modelAsset.Skeleton != null)
-            {
-                var skeleton = assetItem.Package.FindAssetFromProxyObject(modelAsset.Skeleton);
-                if (skeleton != null)
-                {
-                    yield return new ObjectUrl(UrlType.Content, skeleton.Location);
-                }
-            }
-            
             var assetDirectory = assetItem.FullPath.GetParent();
             var assetSource = UPath.Combine(assetDirectory, modelAsset.Source);
             yield return new ObjectUrl(UrlType.File, assetSource);

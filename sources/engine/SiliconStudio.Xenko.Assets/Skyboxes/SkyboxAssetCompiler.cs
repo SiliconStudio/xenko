@@ -27,16 +27,6 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
 
         public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
         {
-            var skyboxAsset = (SkyboxAsset)assetItem.Asset;
-            foreach (var dependency in skyboxAsset.GetDependencies())
-            {
-                var dependencyItem = assetItem.Package.Assets.Find(dependency.Id);
-                if (dependencyItem?.Asset is TextureAsset)
-                {
-                    yield return new ObjectUrl(UrlType.Content, dependency.Location);
-                }
-            }
-
             //skybox needs many shaders to generate... todo should find which ones at some point maybe!
             foreach (var sessionPackage in assetItem.Package.Session.Packages)
             {
