@@ -13,8 +13,8 @@ namespace SiliconStudio.Assets.Quantum.Internal
     {
         private AssetObjectNodeExtended ex;
 
-        public AssetObjectNode([NotNull] INodeBuilder nodeBuilder, object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
-            : base(nodeBuilder, value, guid, descriptor, isPrimitive, reference)
+        public AssetObjectNode([NotNull] INodeBuilder nodeBuilder, object value, Guid guid, ITypeDescriptor descriptor, IReference reference)
+            : base(nodeBuilder, value, guid, descriptor, reference)
         {
             ex = new AssetObjectNodeExtended(this);
             ItemChanged += (sender, e) => ex.OnItemChanged(sender, e);
@@ -88,7 +88,7 @@ namespace SiliconStudio.Assets.Quantum.Internal
 
         void IAssetObjectNodeInternal.NotifyOverrideChanged() => OverrideChanged?.Invoke(this, EventArgs.Empty);
 
-        bool IAssetNodeInternal.ResettingOverride { get { return ex.ResettingOverride; } set { ex.ResettingOverride = value; } }
+        bool IAssetNodeInternal.ResettingOverride { get => ex.ResettingOverride; set => ex.ResettingOverride = value; }
 
         void IAssetNodeInternal.SetPropertyGraph(AssetPropertyGraph assetPropertyGraph) => ex.SetPropertyGraph(assetPropertyGraph);
 
