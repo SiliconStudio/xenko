@@ -20,7 +20,6 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="CombineMode.cs" />
     <Compile Include="ContentChangeType.cs" />
     <Compile Include="Internal\Content.cs" />
     <Compile Include="IInitializingGraphNode.cs" />
