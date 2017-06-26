@@ -17,6 +17,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         bool RequiresNormalBuffer { get; }
 
-        bool RequiresSsrGBuffers { get; }
+        bool RequiresSpecularRoughnessBuffer { get; }
     }
 }

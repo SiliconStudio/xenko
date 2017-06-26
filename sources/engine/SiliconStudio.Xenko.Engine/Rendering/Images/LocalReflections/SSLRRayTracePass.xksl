@@ -1,0 +1,148 @@
+﻿// Copyright (c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Images
+{
+    /// <summary>
+	/// Screen Space Local Reflections shader for Ray Trace Pass
+    /// </summary>
+    shader SSLRRayTracePass : ImageEffectShader, SSLRCommon, NormalPack
+    {
+		// Parmeter to control minimum Z of view space normal of the pixel to be used in SSR
+		#define SSR_MIN_Z_REFLECT 0.1f
+		
+		// Enable/disable debug visualization of the SSR hit points
+		#define SSR_DEBUG_HITS 0
+			
+        override stage float4 Shading()
+        {
+			// Inputs Mapping:
+			// Texture0 - Scene Color
+			// Texture1 - Depth
+			// Texture2 - World Space Normals
+			// Texture3 - Specular Color + Roughness
+			
+			float2 uv = streams.TexCoord;
+			
+			// Sample material roughness
+			float4 specularRoughnessBuffer = Texture3.SampleLevel(PointSampler, uv, 0);
+			float roughness = specularRoughnessBuffer.a;
+			
+			// Get view space position
+			float depth = SampleZ(uv);
+			float3 positionVS = ComputeViewPosition(uv, depth);
+			
+			// Reject invalid pixels
+			if(positionVS.z > 100.0f || roughness > RoughnessFade)
+				return 0;
+			
+			// Calculate view space normal vector
+			float4 normalsBuffer = Texture2.SampleLevel(PointSampler, uv, 0);
+			float3 normalWS = DecodeNormal(normalsBuffer.rgb);
+			float3 normalVS = mul(normalWS, (float3x3)V);
+			
+			// TODO: dont use reflectVS, only reflectWS ??
+			
+			// Calculate normalized view space reflection vector
+			float3 reflectVS = normalize(reflect(positionVS, normalVS));
+			
+			// Check if there is any chance to see the reflection
+			if(reflectVS.z < SSR_MIN_Z_REFLECT) 
+				return 0;
+			
+			float3 positionWS = ComputeWorldPosition(uv, depth);
+			float3 viewWS = normalize(positionWS - CameraPosWS.xyz);
+			float3 reflectWS = reflect(viewWS, normalWS);
+			
+			// Parameter WorldAntiSelfOcclusionBias is packed in CameraPosWS.w
+			#define WorldAntiSelfOcclusionBias CameraPosWS.w
+			
+			// TODO: cleanup unsused constants
+			
+			// TODO: optimzie some stuff, less view space <-> world space oeprations, less math etc.
+			
+			float3 startWS = positionWS + normalWS * WorldAntiSelfOcclusionBias;
+            float3 startUV = ProjectWorldToUv(startWS);
+            float3 endUV = ProjectWorldToUv(startWS + reflectWS);
+			
+            float3 rayUV = endUV - startUV;
+			float screenStep = 1.0f / ScreenSize.x;
+			rayUV *= screenStep / max2(abs(rayUV.xy));
+			float3 startUv = startUV + rayUV * 2;
+			
+			float3 currOffset = startUv;
+			float3 rayStep = rayUV * 2;
+			
+			// Calculate number of samples
+			float3 samplesToEdge = ((sign(rayStep.xyz) * 0.5 + 0.5) - currOffset.xyz) / rayStep.xyz;
+			samplesToEdge.x = min(samplesToEdge.x, min(samplesToEdge.y, samplesToEdge.z)) * 1.05f;
+			float numSamples = min(MaxTraceSamples, samplesToEdge.x);
+			rayStep *= samplesToEdge.x / numSamples;
+			
+			// Calculate depth diffrence error
+			float depthDiffError = 2.0f * abs(rayStep.z);
+			
+			// Ray trace
+			float currSampleIndex = 0;
+			float currSample, depthDiff;
+			[loop]
+			while (currSampleIndex < numSamples)
+			{
+				// Sample depth buffer
+				currSample = SampleZ(currOffset.xy);
+				
+				// Calculate depth diffrence
+				depthDiff = currOffset.z - currSample;
+				
+				// Check intersection
+				if(depthDiff >= 0)
+				{
+					// Check if it isn't false intersection
+					if(depthDiff >= depthDiffError)
+					{
+						// No hit
+		#if SSR_DEBUG_HITS
+						// Debug amount of fetched samples
+						return float4(float3(1, 1, 0) * (currSampleIndex / MaxTraceSamples), 1);
+		#else
+						currSampleIndex = numSamples;
+						// TODO: test return 0; here or weight set to 0 and use more liner math instead of ifs
+		#endif
+					}
+					
+					// End
+					break;
+				}
+				
+				// Move forward
+				currOffset += rayStep;
+				currSampleIndex++;
+			}
+			
+			// Check if has valid result after ray traycing
+			if(currSampleIndex >= numSamples)
+			{
+				// All samples done but no result
+		#if SSR_DEBUG_HITS
+				return float4(1, 0, 0, 1);
+		#else
+				return 0;
+		#endif
+			}
+			
+		#if SSR_DEBUG_HITS
+			return float4(0, 1, 0, 1);
+		#else
+			
+			// Calculate intersection texture coordinate
+			float3 lastOffset = currOffset - rayStep;
+			float2 hitUV = lastOffset.xy + (currSample - lastOffset.z) * rayStep.xy;
+			
+			// Debug scene color preview:
+			//return Texture0.Sample(PointSampler, hitUV.xy);
+			
+			// xy - hit UV
+			return float4(hitUV, 1, 1);
+        }
+    };
+}
