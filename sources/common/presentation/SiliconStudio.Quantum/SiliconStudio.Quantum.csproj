@@ -47,7 +47,6 @@
     <Compile Include="GraphNodePath.cs" />
     <Compile Include="BoxedNode.cs" />
     <Compile Include="References\IReference.cs" />
-    <Compile Include="Commands\INodeCommand.cs" />
     <Compile Include="References\IReferenceInternal.cs" />
     <Compile Include="References\ObjectReference.cs" />
     <Compile Include="MemberNode.cs" />

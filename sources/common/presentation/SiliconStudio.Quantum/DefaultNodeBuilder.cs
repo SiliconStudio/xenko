@@ -4,9 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Quantum.Commands;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
@@ -32,9 +30,6 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         public NodeContainer NodeContainer { get; }
         
-        /// <inheritdoc/>
-        public ICollection<INodeCommand> AvailableCommands { get; } = new List<INodeCommand>();
-
         /// <inheritdoc/>
         public INodeFactory NodeFactory { get; set; } = new DefaultNodeFactory();
 

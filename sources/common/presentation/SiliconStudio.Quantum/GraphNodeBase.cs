@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Quantum.Commands;
 
 namespace SiliconStudio.Quantum
 {
