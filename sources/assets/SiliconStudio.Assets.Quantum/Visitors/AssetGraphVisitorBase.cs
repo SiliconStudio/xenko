@@ -1,5 +1,8 @@
 ﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
+
+using System;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Assets.Quantum.Visitors
@@ -16,21 +19,21 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         /// Initializes a new instance of the <see cref="AssetGraphVisitorBase"/> class.
         /// </summary>
         /// <param name="propertyGraphDefinition">The <see cref="AssetPropertyGraphDefinition"/> used to analyze object references.</param>
-        public AssetGraphVisitorBase(AssetPropertyGraphDefinition propertyGraphDefinition)
+        public AssetGraphVisitorBase([NotNull] AssetPropertyGraphDefinition propertyGraphDefinition)
         {
-            PropertyGraphDefinition = propertyGraphDefinition;
+            PropertyGraphDefinition = propertyGraphDefinition ?? throw new ArgumentNullException(nameof(propertyGraphDefinition));
         }
 
         /// <inheritdoc/>
         protected override bool ShouldVisitMemberTarget(IMemberNode member)
         {
-            return !PropertyGraphDefinition.IsMemberTargetObjectReference(member, member.Retrieve()) && base.ShouldVisitMemberTarget(member);
+            return base.ShouldVisitMemberTarget(member) && !PropertyGraphDefinition.IsMemberTargetObjectReference(member, member.Retrieve());
         }
 
         /// <inheritdoc/>
         protected override bool ShouldVisitTargetItem(IObjectNode collectionNode, Index index)
         {
-            return !PropertyGraphDefinition.IsTargetItemObjectReference(collectionNode, index, collectionNode.Retrieve(index)) && base.ShouldVisitTargetItem(collectionNode, index);
+            return base.ShouldVisitTargetItem(collectionNode, index) && !PropertyGraphDefinition.IsTargetItemObjectReference(collectionNode, index, collectionNode.Retrieve(index));
         }
     }
 }
