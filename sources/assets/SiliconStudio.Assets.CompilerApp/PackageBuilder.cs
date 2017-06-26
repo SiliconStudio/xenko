@@ -1,7 +1,8 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.ServiceModel;
 
@@ -13,6 +14,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.MicroThreading;
 using System.Threading;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko;
 using SiliconStudio.Xenko.Assets;
@@ -29,8 +31,6 @@ namespace SiliconStudio.Assets.CompilerApp
 
         public PackageBuilder(PackageBuilderOptions packageBuilderOptions)
         {
-            if (packageBuilderOptions == null) throw new ArgumentNullException("packageBuilderOptions");
-
             builderOptions = packageBuilderOptions;
         }
 
@@ -71,8 +71,6 @@ namespace SiliconStudio.Assets.CompilerApp
             PackageSession projectSession = null;
             try
             {
-                // TODO handle solution file + package-id ?
-
                 // When the current platform is not on windows, we need to make sure that all plugins are build, so we
                 // setup auto-compile when loading the session
                 var sessionLoadParameters = new PackageLoadParameters
@@ -96,7 +94,6 @@ namespace SiliconStudio.Assets.CompilerApp
                 var package = projectSession.LocalPackages.Last();
 
                 // Check build profile
-                var sharedProfile = package.Profiles.FindSharedProfile();
                 var buildProfile = package.Profiles.FirstOrDefault(pair => pair.Name == builderOptions.BuildProfile);
                 if (buildProfile == null)
                 {
@@ -135,15 +132,11 @@ namespace SiliconStudio.Assets.CompilerApp
                 var assetBuilder = new PackageCompiler(new RootPackageAssetEnumerator(package));
                 assetBuilder.AssetCompiled += RegisterBuildStepProcessedHandler;
 
+                context.Properties.Set(BuildAssetNode.VisitRuntimeTypes, true);
                 var assetBuildResult = assetBuilder.Prepare(context);
                 assetBuildResult.CopyTo(builderOptions.Logger);
                 if (assetBuildResult.HasErrors)
                     return BuildResultCode.BuildError;
-
-                // Add specific steps to generate shaders
-                // TODO: This doesn't really belong here, where should we move it?
-                //assetBuildResult.BuildSteps.Add(new WaitBuildStep());
-                //assetBuildResult.BuildSteps.Add(new CompileDefaultSceneEffectCommand(context, package, assetBuildResult));
 
                 // Create the builder
                 var indexName = "index." + builderOptions.BuildProfile;

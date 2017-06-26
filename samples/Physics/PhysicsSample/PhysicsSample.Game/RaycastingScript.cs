@@ -1,4 +1,6 @@
-﻿using System.Linq;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System.Linq;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
@@ -20,7 +22,7 @@ namespace PhysicsSample
 
         public override void Update()
         {
-            foreach (var pointerEvent in Input.PointerEvents.Where(x => x.State == PointerState.Down))
+            foreach (var pointerEvent in Input.PointerEvents.Where(x => x.EventType == PointerEventType.Pressed))
             {
                 Raycast(pointerEvent.Position);
             }

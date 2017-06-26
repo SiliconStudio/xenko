@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
 // 
@@ -26,7 +26,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Xenko.Graphics;
 using Windows.ApplicationModel;
-using Windows.UI.Xaml;
+using Windows.ApplicationModel.Core;
 
 namespace SiliconStudio.Xenko.Games
 {
@@ -34,8 +34,12 @@ namespace SiliconStudio.Xenko.Games
     {
         public GamePlatformUWP(GameBase game) : base(game)
         {
-            Application.Current.Suspending += CurrentOnSuspending;
-            Application.Current.Resuming += CurrentOnResuming;
+            // Application lifecycle reference:
+            // https://docs.microsoft.com/en-us/windows/uwp/launch-resume/app-lifecycle
+            // https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.core.coreapplication
+
+            CoreApplication.Suspending += CurrentOnSuspending;
+            CoreApplication.Resuming += CurrentOnResuming;
         }
 
         private void CurrentOnResuming(object sender, object o)
@@ -50,7 +54,7 @@ namespace SiliconStudio.Xenko.Games
             using (var device3 = game.GraphicsDevice.NativeDevice.QueryInterface<SharpDX.DXGI.Device3>())
             {
                 game.GraphicsContext.CommandList.ClearState();
-                device3.Trim();    
+                device3.Trim();
             }
 
             OnSuspend(sender, null);
@@ -68,9 +72,9 @@ namespace SiliconStudio.Xenko.Games
 
         internal override GameWindow GetSupportedGameWindow(AppContextType type)
         {
-            if (type == AppContextType.UWP)
+            if (type == AppContextType.UWPCoreWindow || type == AppContextType.UWPXaml)
             {
-                return new GameWindowUWPSwapChainPanel();
+                return new GameWindowUWP();
             }
             else
             {

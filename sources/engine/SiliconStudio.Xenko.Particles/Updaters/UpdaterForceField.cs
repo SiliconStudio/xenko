@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.ComponentModel;
 using SiliconStudio.Core;
@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.Particles.Modules
         /// cease to exist (physically correct, but more difficult to control).
         /// </userdoc>
         [DataMember(50)]
-        [DataMemberRange(0, 1, 0.001, 0.1)]
+        [DataMemberRange(0, 1, 0.01, 0.1, 3)]
         [Display("Energy conservation")]
         public float EnergyConservation { get; set; } = 0f;
 

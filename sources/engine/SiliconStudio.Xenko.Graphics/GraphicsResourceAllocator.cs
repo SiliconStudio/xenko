@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -22,10 +22,13 @@ namespace SiliconStudio.Xenko.Graphics
         private readonly object thisLock = new object();
         private readonly Dictionary<TextureDescription, List<GraphicsResourceLink>> textureCache = new Dictionary<TextureDescription, List<GraphicsResourceLink>>();
         private readonly Dictionary<BufferDescription, List<GraphicsResourceLink>> bufferCache = new Dictionary<BufferDescription, List<GraphicsResourceLink>>();
+        private readonly Dictionary<QueryPoolDescription, List<GraphicsResourceLink>> queryPoolCache = new Dictionary<QueryPoolDescription, List<GraphicsResourceLink>>();
         private readonly Func<Texture, TextureDescription> getTextureDefinitionDelegate;
         private readonly Func<Buffer, BufferDescription> getBufferDescriptionDelegate;
+        private readonly Func<QueryPool, QueryPoolDescription> getQueryPoolDescriptionDelegate;
         private readonly Func<TextureDescription, PixelFormat, Texture> createTextureDelegate;
         private readonly Func<BufferDescription, PixelFormat, Buffer> createBufferDelegate;
+        private readonly Func<QueryPoolDescription, PixelFormat, QueryPool> createQueryPoolDelegate;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphicsResourceAllocator" /> class.
@@ -33,13 +36,14 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="graphicsDevice">The graphics device.</param>
         public GraphicsResourceAllocator(GraphicsDevice graphicsDevice)
         {
-            if (graphicsDevice == null) throw new ArgumentNullException(nameof(graphicsDevice));
-            GraphicsDevice = graphicsDevice;
+            GraphicsDevice = graphicsDevice ?? throw new ArgumentNullException(nameof(graphicsDevice));
 
             getTextureDefinitionDelegate = GetTextureDefinition;
             getBufferDescriptionDelegate = GetBufferDescription;
+            getQueryPoolDescriptionDelegate = GetQueryPoolDefinition;
             createTextureDelegate = CreateTexture;
             createBufferDelegate = CreateBuffer;
+            createQueryPoolDelegate = CreateQueryPool;
             RecyclePolicy = DefaultRecyclePolicy;
         }
 
@@ -118,6 +122,15 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
+        public QueryPool GetQueryPool(QueryType queryType, int queryCount)
+        {
+            // Global lock to be threadsafe. 
+            lock (thisLock)
+            {
+                return GetTemporaryResource(queryPoolCache, new QueryPoolDescription(queryType, queryCount), createQueryPoolDelegate, getQueryPoolDescriptionDelegate, PixelFormat.None);
+            }
+        }
+
         /// <summary>
         /// Increments the reference to a temporary resource.
         /// </summary>
@@ -135,7 +148,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// Decrements the reference to a temporary resource.
         /// </summary>
         /// <param name="resource"></param>
-        public void ReleaseReference(GraphicsResource resource)
+        public void ReleaseReference(GraphicsResourceBase resource)
         {
             // Global lock to be threadsafe. 
             lock (thisLock)
@@ -166,12 +179,18 @@ namespace SiliconStudio.Xenko.Graphics
             return Buffer.New(GraphicsDevice, description, viewFormat);
         }
 
+        protected virtual QueryPool CreateQueryPool(QueryPoolDescription description, PixelFormat viewFormat)
+        {
+            return QueryPool.New(GraphicsDevice, description.QueryType, description.QueryCount);
+        }
+
         protected override void Destroy()
         {
             lock (thisLock)
             {
                 DisposeCache(textureCache, true);
                 DisposeCache(bufferCache, true);
+                DisposeCache(queryPoolCache, true);
             }
 
             base.Destroy();
@@ -206,8 +225,13 @@ namespace SiliconStudio.Xenko.Graphics
             return texture.Description;
         }
 
+        private QueryPoolDescription GetQueryPoolDefinition(QueryPool queryPool)
+        {
+            return new QueryPoolDescription(queryPool.QueryType, queryPool.QueryCount);
+        }
+
         private TResource GetTemporaryResource<TResource, TKey>(Dictionary<TKey, List<GraphicsResourceLink>> cache, TKey description, Func<TKey, PixelFormat, TResource> creator, Func<TResource, TKey> getDefinition, PixelFormat viewFormat)
-            where TResource : GraphicsResource
+            where TResource : GraphicsResourceBase
             where TKey : struct
         {
             // For a specific description, get allocated textures
@@ -278,27 +302,31 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        private void UpdateReference(GraphicsResource resource, int referenceDelta)
+        private void UpdateReference(GraphicsResourceBase resource, int referenceDelta)
         {
             if (resource == null)
             {
                 return;
             }
 
-            var texture = resource as Texture;
-            bool resourceFound;
-            if (texture != null)
+            bool resourceFound = false;
+
+            switch (resource)
             {
-                resourceFound = UpdateReferenceCount(textureCache, texture, getTextureDefinitionDelegate, referenceDelta);
-            }
-            else
-            {
-                var buffer = resource as Buffer;
-                if (buffer == null)
-                {
-                    throw new ArgumentException("Unsupported GraphicsResource - Only Texture and Buffer", "resource");
-                }
-                resourceFound = UpdateReferenceCount(bufferCache, buffer, getBufferDescriptionDelegate, referenceDelta);
+                case Texture texture:
+                    resourceFound = UpdateReferenceCount(textureCache, texture, getTextureDefinitionDelegate, referenceDelta);
+                    break;
+
+                case Buffer buffer:
+                    resourceFound = UpdateReferenceCount(bufferCache, buffer, getBufferDescriptionDelegate, referenceDelta);
+                    break;
+
+                case QueryPool queryPool:
+                    resourceFound = UpdateReferenceCount(queryPoolCache, queryPool, getQueryPoolDescriptionDelegate, referenceDelta);
+                    break;
+
+                default:
+                    throw new ArgumentException("Unsupported graphics resource. Only Textures, Buffers and QueryPools are supported", nameof(resource));
             }
 
             if (!resourceFound)
@@ -308,7 +336,7 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         private bool UpdateReferenceCount<TKey, TResource>(Dictionary<TKey, List<GraphicsResourceLink>> cache, TResource resource, Func<TResource, TKey> getDefinition, int deltaCount)
-            where TResource : GraphicsResource
+            where TResource : GraphicsResourceBase
             where TKey : struct
         {
             if (resource == null)
@@ -355,6 +383,48 @@ namespace SiliconStudio.Xenko.Graphics
         private static bool DefaultRecyclePolicy(GraphicsResourceLink resourceLink)
         {
             return true;
+        }
+
+        protected struct QueryPoolDescription : IEquatable<QueryPoolDescription>
+        {
+            public QueryType QueryType;
+
+            public int QueryCount;
+
+            public QueryPoolDescription(QueryType queryType, int queryCount)
+            {
+                QueryType = queryType;
+                QueryCount = queryCount;
+            }
+
+            public bool Equals(QueryPoolDescription other)
+            {
+                return QueryType == other.QueryType && QueryCount == other.QueryCount;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                return obj is QueryPoolDescription && Equals((QueryPoolDescription)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return ((int)QueryType * 397) ^ QueryCount;
+                }
+            }
+
+            public static bool operator ==(QueryPoolDescription left, QueryPoolDescription right)
+            {
+                return left.Equals(right);
+            }
+
+            public static bool operator !=(QueryPoolDescription left, QueryPoolDescription right)
+            {
+                return !left.Equals(right);
+            }
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Threading.Tasks;
@@ -8,7 +8,7 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Xenko.Audio
 {
     /// <summary>
-    /// Base class for sound that creates voices 
+    /// Base class for sound that creates voices
     /// </summary>
     public class SoundInstance: ComponentBase, IPositionableSound
     {
@@ -36,6 +36,8 @@ namespace SiliconStudio.Xenko.Audio
         /// <param name="mono">Set to true if the souce is mono, false if stereo</param>
         /// <param name="spatialized">If the SoundInstance will be used for spatialized audio set to true, if not false, if true mono must also be true</param>
         /// <param name="useHrtf">If the engine should use Hrtf for spatialization</param>
+        /// <param name="directionalFactor"></param>
+        /// <param name="environment"></param>
         public SoundInstance(AudioEngine engine, AudioListener listener, DynamicSoundSource dynamicSoundSource, int sampleRate, bool mono, bool spatialized = false, bool useHrtf = false, float directionalFactor = 0.0f, HrtfEnvironment environment = HrtfEnvironment.Small)
         {
             Listener = listener;
@@ -92,22 +94,9 @@ namespace SiliconStudio.Xenko.Audio
         /// <summary>
         /// Gets or sets whether the sound is automatically looping from beginning when it reaches the end.
         /// </summary>
-        [Obsolete("Renamed, please use IsLooping.")]
-        public bool IsLooped
-        {
-            get {  return IsLooping; }
-            set { IsLooping = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets whether the sound is automatically looping from beginning when it reaches the end.
-        /// </summary>
         public bool IsLooping
         {
-            get
-            {
-                return isLooping;
-            }
+            get => isLooping;
             set
             {
                 isLooping = value;
@@ -123,15 +112,12 @@ namespace SiliconStudio.Xenko.Audio
         /// <summary>
         /// Set the sound balance between left and right speaker.
         /// </summary>
-        /// <remarks>Panning is ranging from -1.0f (full left) to 1.0f (full right). 0.0f is centered. Values beyond this range are clamped. 
-        /// Panning modifies the total energy of the signal (Pan == -1 => Energy = 1 + 0, Pan == 0 => Energy = 1 + 1, Pan == 0.5 => Energy = 1 + 0.5, ...) 
+        /// <remarks>Panning is ranging from -1.0f (full left) to 1.0f (full right). 0.0f is centered. Values beyond this range are clamped.
+        /// Panning modifies the total energy of the signal (Pan == -1 => Energy = 1 + 0, Pan == 0 => Energy = 1 + 1, Pan == 0.5 => Energy = 1 + 0.5, ...)
         /// </remarks>
         public float Pan
         {
-            get
-            {
-                return pan;
-            }
+            get => pan;
             set
             {
                 pan = value;
@@ -139,7 +125,7 @@ namespace SiliconStudio.Xenko.Audio
                 if (engine.State == AudioEngineState.Invalidated)
                     return;
 
-                AudioLayer.SourceSetPan(Source, value);                
+                AudioLayer.SourceSetPan(Source, value);
             }
         }
 
@@ -149,10 +135,7 @@ namespace SiliconStudio.Xenko.Audio
         /// <remarks>Volume is ranging from 0.0f (silence) to 1.0f (full volume). Values beyond those limits are clamped.</remarks>
         public float Volume
         {
-            get
-            {
-                return volume;
-            }
+            get => volume;
             set
             {
                 volume = value;
@@ -169,10 +152,7 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         public float Pitch
         {
-            get
-            {
-                return pitch;
-            }
+            get => pitch;
             set
             {
                 pitch = value;
@@ -195,16 +175,16 @@ namespace SiliconStudio.Xenko.Audio
         }
 
         /// <summary>
-        /// Applies 3D positioning to the sound. 
-        /// More precisely adjust the channel volumes and pitch of the sound, 
+        /// Applies 3D positioning to the sound.
+        /// More precisely adjust the channel volumes and pitch of the sound,
         /// such that the sound source seems to come from the <paramref name="emitter"/> to the listener/>.
         /// </summary>
         /// <param name="emitter">The emitter that correspond to this sound</param>
         /// <remarks>
         /// <see cref="Apply3D"/> can be used only on mono-sounds.
         /// <para>
-        /// The final resulting pitch depends on the listener and emitter relative velocity. 
-        /// The final resulting channel volumes depend on the listener and emitter relative positions and the value of <see cref="IPlayableSound.Volume"/>. 
+        /// The final resulting pitch depends on the listener and emitter relative velocity.
+        /// The final resulting channel volumes depend on the listener and emitter relative positions and the value of <see cref="IPlayableSound.Volume"/>.
         /// </para>
         /// </remarks>
         public void Apply3D(AudioEmitter emitter)
@@ -242,7 +222,7 @@ namespace SiliconStudio.Xenko.Audio
             }
             else
             {
-                soundSource.Pause();   
+                soundSource.Pause();
             }
 
             playState = SoundPlayState.Paused;
@@ -320,7 +300,7 @@ namespace SiliconStudio.Xenko.Audio
             else
             {
                 soundSource.Dispose();
-            }            
+            }
         }
 
         /// <summary>
@@ -342,7 +322,7 @@ namespace SiliconStudio.Xenko.Audio
 
             if (soundSource == null)
             {
-                AudioLayer.SourcePlay(Source);             
+                AudioLayer.SourcePlay(Source);
             }
             else
             {
@@ -396,7 +376,7 @@ namespace SiliconStudio.Xenko.Audio
 
             if (soundSource == null)
             {
-                AudioLayer.SourceSetRange(Source, range.Start.TotalSeconds, range.End.TotalSeconds);               
+                AudioLayer.SourceSetRange(Source, range.Start.TotalSeconds, range.End.TotalSeconds);
             }
             else
             {

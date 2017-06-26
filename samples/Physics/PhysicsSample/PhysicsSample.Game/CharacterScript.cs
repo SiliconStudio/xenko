@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -114,7 +116,7 @@ namespace PhysicsSample
             }
 
             // -- Pointer (mouse/touch)
-            foreach (var pointerEvent in Input.PointerEvents.Where(pointerEvent => pointerEvent.State == PointerState.Down))
+            foreach (var pointerEvent in Input.PointerEvents.Where(pointerEvent => pointerEvent.EventType == PointerEventType.Pressed))
             {
                 if (!movingToTarget)
                 {

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -27,6 +27,11 @@ namespace SiliconStudio.Assets.Compiler
     {
         protected readonly Package Package;
 
+        /// <summary>
+        /// This is useful if the asset binary format has changed and we want to bump the version to force re-evaluation/compilation of the command
+        /// </summary>
+        protected int Version;
+
         protected AssetCommand(string url, T parameters, Package package)
             : base (url)
         {
@@ -41,6 +46,8 @@ namespace SiliconStudio.Assets.Compiler
         protected override void ComputeParameterHash(BinarySerializationWriter writer)
         {
             base.ComputeParameterHash(writer);
+
+            writer.Serialize(ref Version);
             
             var url = Url;
             var assetParameters = Parameters;

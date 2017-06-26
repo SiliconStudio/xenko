@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_NULL
 
@@ -20,6 +20,7 @@ namespace SiliconStudio.Xenko.Graphics
             HasComputeShaders = true;
             HasDepthAsReadOnlyRT = false;
             HasDepthAsSRV = true;
+            HasMultisampleDepthAsSRV = false;
             HasDoublePrecision = true;
             HasDriverCommandLists = true;
             HasMultiThreadingConcurrentResources = true;

@@ -9,7 +9,6 @@
     <ProjectGuid>{1AC5A693-3CC4-4450-AA76-70DA4F0C29DF}</ProjectGuid>
     <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
-    <SiliconStudioBuildTags>*</SiliconStudioBuildTags>
     <AssemblyName>SiliconStudio.Xenko.Navigation.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

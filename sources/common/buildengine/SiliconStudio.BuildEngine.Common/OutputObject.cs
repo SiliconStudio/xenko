@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.Collections.Generic;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
@@ -7,7 +7,7 @@ using SiliconStudio.Core.Storage;
 namespace SiliconStudio.BuildEngine
 {
     /// <summary>
-    /// A build output object, as exposed by <see cref="EnumerableBuildStep"/>. This object represents the hash of an output object and its associated url.
+    /// A build output object, as exposed by <see cref="ListBuildStep"/>. This object represents the hash of an output object and its associated url.
     /// </summary>
     public class OutputObject
     {

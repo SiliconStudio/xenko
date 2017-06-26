@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
@@ -98,9 +100,15 @@ namespace ThirdPersonPlatformer.Player
 
                 // Mouse-based camera rotation. Only enabled after you click the screen to lock your cursor, pressing escape cancels this
                 if (Input.IsMouseButtonDown(MouseButton.Left))
+                {
                     Input.LockMousePosition(true);
+                    Game.IsMouseVisible = false;
+                }
                 if (Input.IsKeyPressed(Keys.Escape))
+                {
                     Input.UnlockMousePosition();
+                    Game.IsMouseVisible = true;
+                }
                 if (Input.IsMousePositionLocked)
                 {
                     cameraDirection += new Vector2(Input.MouseDelta.X, -Input.MouseDelta.Y)*MouseSensitivity;

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Threading;
@@ -38,6 +38,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             {
                 context.Dispose();
             }
+            threadContext.Dispose();
         }
 
         public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
@@ -91,8 +92,6 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                     var blendState = isPicking ? BlendStates.Default : sprite.IsTransparent ? (spriteComp.PremultipliedAlpha ? BlendStates.AlphaBlend : BlendStates.NonPremultiplied) : BlendStates.Opaque;
                     var currentEffect = isPicking ? batchContext.GetOrCreatePickingSpriteEffect(RenderSystem.EffectSystem) : null; // TODO remove this code when material are available
                     var depthStencilState = renderSprite.SpriteComponent.IgnoreDepth ? DepthStencilStates.None : DepthStencilStates.Default;
-                    if (isMultisample)
-                        blendState.AlphaToCoverageEnable = true;
 
                     var samplerState = context.GraphicsDevice.SamplerStates.LinearClamp;
                     if (renderSprite.SpriteComponent.Sampler != SpriteComponent.SpriteSampler.LinearClamp)

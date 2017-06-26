@@ -1,23 +1,19 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
 {
-    /// <summary>
-    /// This class represents a sensor of type Accelerometer. It measures the acceleration forces (including gravity) applying on the device.
-    /// </summary>
-    public class AccelerometerSensor : SensorBase
+    internal class AccelerometerSensor : Sensor, IAccelerometerSensor
     {
-        /// <summary>
-        /// Gets the current acceleration applied on the device (in meters/seconds^2).
-        /// </summary>
         public Vector3 Acceleration { get; internal set; }
 
-        internal override void ResetData()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AccelerometerSensor"/> class.
+        /// </summary>
+        public AccelerometerSensor(IInputSource source, string systemName) : base(source, systemName, "Accelerometer")
         {
-            Acceleration = Vector3.Zero;
         }
     }
 }

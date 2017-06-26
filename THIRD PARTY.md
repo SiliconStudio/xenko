@@ -1,8 +1,6 @@
-#Third Pary Softwares
+# Third Party Software
 
-Xenko uses several open-source products.
-
-Here is the list of products that we are using and their respective license:
+Xenko uses the following open-source products:
 
 * [SharpDX](http://sharpdx.org/) (MIT License)
 * [SharpVulkan] (https://github.com/jwollen/SharpVulkan) (MIT License)
@@ -36,3 +34,4 @@ Here is the list of products that we are using and their respective license:
 * [AvalonDock](https://avalondock.codeplex.com/) (New BSD License)
 * [SocketsForPCL](https://github.com/rdavisau/sockets-for-pcl) (MIT License)
 * [NativePath] (https://github.com/sinkingsugar/NativePath) (MIT License)
+* [Recast & Detour] (https://github.com/recastnavigation/recastnavigation) (zlib License)

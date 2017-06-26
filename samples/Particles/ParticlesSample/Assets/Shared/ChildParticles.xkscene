@@ -1,28 +1,28 @@
 !SceneAsset
 Id: 71292a97-5a05-4865-9ac8-e113ffad9561
-SerializedVersion: {Xenko: 2.0.0.0}
+SerializedVersion: {Xenko: 2.1.0.1}
 Tags: []
 ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
-    RootPartIds:
-        - a41aa685-3271-4e96-a72c-639c52070011
-        - 64152308-88f1-4c34-a604-a4c77d963543
-        - 79735979-e91a-4eae-b702-070a873dfa9c
-        - 7698999c-4c4d-43e0-ac5d-5e2360bafde7
-        - dbf4ae4f-162b-486c-9db5-4ba9bfb2d775
-        - 6a0191a4-fefe-483d-be2b-c55bae7fa77f
-        - 2d712fb9-648d-418a-a5de-54d72c35271b
-        - c390f2ae-dd0c-4250-bccd-b0da0890e929
-        - c392f952-51b2-4dde-aad9-9449a33be394
-        - bb66c45b-34d7-4b3c-b0c1-33133ee0f7db
-        - f7181193-0904-41a9-9615-1ae4e56b9627
-        - f1abb6b2-1dfd-414e-831c-7972150839d4
-        - 5e301371-56f7-4e2a-8da8-fd2c34cbe11f
-        - 023c2453-9702-4f6e-99e0-7ab35d850d7e
-        - 4c5af260-634c-4009-bbf3-4d36845a85d5
-        - 73a14e08-d551-43cd-b43c-084776a89c1c
-        - 994a64a4-fae3-48c7-a68c-50c3ab61ba04
+    RootParts:
+        - ref!! a41aa685-3271-4e96-a72c-639c52070011
+        - ref!! 64152308-88f1-4c34-a604-a4c77d963543
+        - ref!! 79735979-e91a-4eae-b702-070a873dfa9c
+        - ref!! 7698999c-4c4d-43e0-ac5d-5e2360bafde7
+        - ref!! dbf4ae4f-162b-486c-9db5-4ba9bfb2d775
+        - ref!! 6a0191a4-fefe-483d-be2b-c55bae7fa77f
+        - ref!! 2d712fb9-648d-418a-a5de-54d72c35271b
+        - ref!! c390f2ae-dd0c-4250-bccd-b0da0890e929
+        - ref!! c392f952-51b2-4dde-aad9-9449a33be394
+        - ref!! bb66c45b-34d7-4b3c-b0c1-33133ee0f7db
+        - ref!! f7181193-0904-41a9-9615-1ae4e56b9627
+        - ref!! f1abb6b2-1dfd-414e-831c-7972150839d4
+        - ref!! 5e301371-56f7-4e2a-8da8-fd2c34cbe11f
+        - ref!! 023c2453-9702-4f6e-99e0-7ab35d850d7e
+        - ref!! 4c5af260-634c-4009-bbf3-4d36845a85d5
+        - ref!! 73a14e08-d551-43cd-b43c-084776a89c1c
+        - ref!! 994a64a4-fae3-48c7-a68c-50c3ab61ba04
     Parts:
         -   Entity:
                 Id: 023c2453-9702-4f6e-99e0-7ab35d850d7e
@@ -695,7 +695,7 @@ Hierarchy:
                         Id: 2d3c6f87-3797-4988-95bd-0c6964dd3579
                         Name: null
                         Projection: Perspective
-                        Slot: {Index: 0}
+                        Slot: 3217b71f-b48d-4321-bab1-7cb4da999c19
                     293cc85b2678d649a70b5c6f5b9f20ee: !ParticlesSample.CameraOrbitScript,ParticlesSample.Game
                         Id: 5bc83c29-7826-49d6-a70b-5c6f5b9f20ee
                     1c34f9bc127f5742bbf9b3bd97b7e131: !ParticlesSample.NextSceneScript,ParticlesSample.Game

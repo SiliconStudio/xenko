@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
@@ -34,7 +36,16 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             }
         }
 
-        public INodePresenter this[string childName] => children.First(x => string.Equals(x.Name, childName, StringComparison.Ordinal));
+        public INodePresenter this[string childName]
+        {
+            get
+            {
+                var firstChild = children.FirstOrDefault(x => string.Equals(x.Name, childName, StringComparison.Ordinal));
+                if (firstChild == null)
+                    throw new KeyNotFoundException($"Key {childName} not found in {nameof(INodePresenter)}");
+                return firstChild;
+            }
+        } 
 
         public INodePresenter Root => Parent?.Root ?? Parent ?? this;
 

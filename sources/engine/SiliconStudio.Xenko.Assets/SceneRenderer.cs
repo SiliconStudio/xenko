@@ -1,3 +1,5 @@
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Contents;
@@ -5,6 +7,7 @@ using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Font;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Fonts;
 using SiliconStudio.Xenko.UI;
@@ -58,21 +61,36 @@ namespace SiliconStudio.Xenko.Assets
             // Initialize services
             Services = new ServiceRegistry();
             ContentManager = new ContentManager(Services);
+            Services.AddService(typeof(IContentManager), ContentManager);
+            Services.AddService(typeof(ContentManager), ContentManager);
 
             var renderingSettings = gameSettings.GetOrCreate<RenderingSettings>();
             GraphicsDevice = GraphicsDevice.New(DeviceCreationFlags.Debug, new[] { renderingSettings.DefaultGraphicsProfile });
 
             var graphicsDeviceService = new GraphicsDeviceServiceLocal(Services, GraphicsDevice);
+            Services.AddService(typeof(IGraphicsDeviceService), graphicsDeviceService);
             EffectSystem = new EffectSystem(Services);
+            Services.AddService(typeof(EffectSystem), EffectSystem);
+
             GraphicsContext = new GraphicsContext(GraphicsDevice);
             Services.AddService(typeof(GraphicsContext), GraphicsContext);
 
             SceneSystem = new SceneSystem(Services);
+            Services.AddService(typeof(SceneSystem), SceneSystem);
 
             // Create game systems
             GameSystems = new GameSystemCollection(Services);
-            GameSystems.Add(new GameFontSystem(Services));
-            GameSystems.Add(new UISystem(Services));
+            Services.AddService(typeof(IGameSystemCollection), GameSystems);
+
+            var gameFontSystem = new GameFontSystem(Services);
+            Services.AddService(typeof(FontSystem), gameFontSystem.FontSystem);
+            Services.AddService(typeof(IFontFactory), gameFontSystem.FontSystem);
+            GameSystems.Add(gameFontSystem);
+
+            var uiSystem = new UISystem(Services);
+            Services.AddService(typeof(UISystem), uiSystem);
+            GameSystems.Add(uiSystem);
+
             GameSystems.Add(EffectSystem);
             GameSystems.Add(SceneSystem);
             GameSystems.Initialize();

@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System.Runtime.CompilerServices;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using SiliconStudio.Xenko.Effects;

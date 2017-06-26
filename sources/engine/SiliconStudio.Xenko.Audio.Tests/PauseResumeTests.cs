@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Xenko.Games;
@@ -23,8 +23,8 @@ namespace SiliconStudio.Xenko.Audio.Tests
 
             music = Content.Load<Sound>("MusicFishLampMp3").CreateInstance(Audio.AudioEngine.DefaultListener);
             effect = Content.Load<Sound>("EffectBip").CreateInstance(Audio.AudioEngine.DefaultListener);
-            music.IsLooped = true;
-            effect.IsLooped = true;
+            music.IsLooping = true;
+            effect.IsLooping = true;
             music.Play();
             effect.Play();
         }
@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
 
             foreach (var pointerEvent in Input.PointerEvents)
             {
-                if (pointerEvent.State == PointerState.Up)
+                if (pointerEvent.EventType == PointerEventType.Released)
                 {
                     music.Stop();
                     music.Play();

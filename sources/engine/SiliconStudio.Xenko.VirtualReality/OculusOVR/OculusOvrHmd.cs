@@ -1,4 +1,6 @@
-﻿#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 
 using System;
 using System.Collections.Generic;
@@ -14,6 +16,7 @@ namespace SiliconStudio.Xenko.VirtualReality
     internal class OculusOvrHmd : VRDevice
     {
         private static bool initDone;
+
         //private static readonly Guid dx12ResourceGuid = new Guid("696442be-a72e-4059-bc79-5b5c98040fad");
         internal static readonly Guid Dx11Texture2DGuid = new Guid("6f15aaf2-d208-4e89-9ab4-489535d34f9c");
 
@@ -29,6 +32,20 @@ namespace SiliconStudio.Xenko.VirtualReality
         {
             SupportsOverlays = true;
             VRApi = VRApi.Oculus;
+        }
+
+        public override void Dispose()
+        {
+            foreach (var oculusOverlay in overlays)
+            {
+                oculusOverlay.Dispose();
+            }
+
+            if (ovrSession != IntPtr.Zero)
+            {
+                OculusOvr.DestroySession(ovrSession);
+                ovrSession = IntPtr.Zero;
+            }
         }
 
         public override void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool requireMirror, int mirrorWidth, int mirrorHeight)
@@ -187,6 +204,7 @@ namespace SiliconStudio.Xenko.VirtualReality
         {
             var index = OculusOvr.GetCurrentTargetIndex(ovrSession);
             commandList.Copy(renderFrame, textures[index]);
+            overlayPtrs = overlays.Where(x => x.Enabled).Select(x => x.OverlayPtr).ToArray();
             OculusOvr.CommitFrame(ovrSession, overlayPtrs.Length, overlayPtrs);
         }
 
@@ -194,7 +212,6 @@ namespace SiliconStudio.Xenko.VirtualReality
         {
             var overlay = new OculusOverlay(ovrSession, graphicsDevice, width, height, mipLevels, sampleCount);
             overlays.Add(overlay);
-            overlayPtrs = overlays.Select(x => x.OverlayPtr).ToArray();
             return overlay;
         }
 
@@ -203,7 +220,6 @@ namespace SiliconStudio.Xenko.VirtualReality
             var oculusOverlay = (OculusOverlay)overlay;
             oculusOverlay.Dispose();
             overlays.Remove(oculusOverlay);
-            overlayPtrs = overlays.Select(x => x.OverlayPtr).ToArray();
         }
     }
 }

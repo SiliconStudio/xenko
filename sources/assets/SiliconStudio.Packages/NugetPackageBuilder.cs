@@ -1,10 +1,11 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using NuGet;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -96,7 +97,7 @@ namespace SiliconStudio.Packages
         /// </summary>
         public bool DevelopmentDependency => Builder.DevelopmentDependency;
 
-        public Collection<IPackageFile> Files => Builder.Files;
+        public IEnumerable<PackageFile> Files => Builder.Files.Select(x => new PackageFile(x));
 
         public IEnumerable<FrameworkAssemblyReference> FrameworkAssemblies => Builder.FrameworkAssemblies;
 
@@ -190,6 +191,14 @@ namespace SiliconStudio.Packages
         public void PopulateFiles(UDirectory rootDirectory, List<ManifestFile> files)
         {
             ((PackageBuilder)Builder).PopulateFiles(rootDirectory, ToManifestFiles(files));
+        }
+
+        /// <summary>
+        /// Removes the files previously added by <see cref="PopulateFiles"/>.
+        /// </summary>
+        public void ClearFiles()
+        {
+            Builder.Files.Clear();
         }
 
         /// <summary>

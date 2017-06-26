@@ -1,5 +1,8 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Linq;
+using Mono.Cecil.Rocks;
 using SiliconStudio.AssemblyProcessor.Serializers;
 
 namespace SiliconStudio.AssemblyProcessor
@@ -11,7 +14,7 @@ namespace SiliconStudio.AssemblyProcessor
     {
         public void ProcessSerializers(CecilSerializerContext context)
         {
-            foreach (var type in context.Assembly.EnumerateTypes())
+            foreach (var type in context.Assembly.MainModule.GetAllTypes())
             {
                 foreach (var dataContractAttribute in type.CustomAttributes.Where(x => x.AttributeType.FullName == "SiliconStudio.Core.DataContractAttribute" || x.AttributeType.FullName == "SiliconStudio.Core.DataAliasAttribute"))
                 {

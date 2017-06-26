@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,17 +15,17 @@ namespace SiliconStudio.BuildEngine
     public static class BuildStepExtensions
     {
         /// <summary>
-        /// Enumerates this build step, and all its inner build steps recursively when they are themselves <see cref="EnumerableBuildStep"/>.
+        /// Enumerates this build step, and all its inner build steps recursively when they are themselves <see cref="ListBuildStep"/>.
         /// </summary>
         /// <param name="buildStep">The build step to enumerates with its inner build steps</param>
         /// <returns>An <see cref="IEnumerable{BuildStep}"/> object enumerating this build step, and all its inner build steps recursively.</returns>
         public static IEnumerable<BuildStep> EnumerateRecursively(this BuildStep buildStep)
         {
-            var enumerableBuildStep = buildStep as EnumerableBuildStep;
+            var enumerableBuildStep = buildStep as ListBuildStep;
             if (enumerableBuildStep == null)
                 return buildStep.Yield();
 
-            return enumerableBuildStep.Steps.SelectDeep(x => x is EnumerableBuildStep && ((EnumerableBuildStep)x).Steps != null ? ((EnumerableBuildStep)x).Steps : Enumerable.Empty<BuildStep>());
+            return enumerableBuildStep.Steps.SelectDeep(x => x is ListBuildStep && ((ListBuildStep)x).Steps != null ? ((ListBuildStep)x).Steps : Enumerable.Empty<BuildStep>());
         }
 
         public static void Print(this BuildStep buildStep, TextWriter stream = null)
@@ -36,7 +36,7 @@ namespace SiliconStudio.BuildEngine
         private static void PrintRecursively(this BuildStep buildStep, int offset, TextWriter stream)
         {
             stream.WriteLine("".PadLeft(offset) + buildStep);
-            var enumerable = buildStep as EnumerableBuildStep;
+            var enumerable = buildStep as ListBuildStep;
             if (enumerable != null)
             {
                 foreach (var child in enumerable.Steps)

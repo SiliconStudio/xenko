@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -39,6 +39,8 @@ namespace SiliconStudio.Xenko.Assets.Sprite
             var renderingSettings = gameSettingsAsset.GetOrCreate<RenderingSettings>(context.Platform);
 
             result.BuildSteps = new ListBuildStep();
+
+            var prereqSteps = new Queue<BuildStep>();
             
             // create the registry containing the sprite assets texture index association
             var imageToTextureUrl = new Dictionary<SpriteInfo, string>();
@@ -87,22 +89,30 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     // add the texture build command.
                     var textureConvertParameters = new TextureConvertParameters(assetSource, textureAsset, context.Platform, context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.GetOrCreate<TextureSettings>().TextureQuality, colorSpace);
                     var textureConvertCommand = new TextureAssetCompiler.TextureConvertCommand(textureUrl, textureConvertParameters, assetItem.Package);
-                    result.BuildSteps.Add(new AssetBuildStep(new AssetItem(textureUrl, textureAsset))
+                    var assetBuildStep = new AssetBuildStep(new AssetItem(textureUrl, textureAsset))
                     {
                         textureConvertCommand
-                    });
+                    };
+                    prereqSteps.Enqueue(assetBuildStep);
+                    result.BuildSteps.Add(assetBuildStep);
                 }
             }
 
             if (!result.HasErrors)
             {
-                result.BuildSteps.Add(new WaitBuildStep());
-
                 var parameters = new SpriteSheetParameters(asset, imageToTextureUrl, context.Platform, context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.GetOrCreate<TextureSettings>().TextureQuality, colorSpace);
-                result.BuildSteps.Add(new AssetBuildStep(assetItem)
+
+                var assetBuildStep = new AssetBuildStep(assetItem)
                 {
                     new SpriteSheetCommand(targetUrlInStorage, parameters, assetItem.Package)
-                });
+                };
+                result.BuildSteps.Add(assetBuildStep);
+
+                while (prereqSteps.Count > 0)
+                {
+                    var prereq = prereqSteps.Dequeue();
+                    BuildStep.LinkBuildSteps(prereq, assetBuildStep);
+                }
             }
         }
 

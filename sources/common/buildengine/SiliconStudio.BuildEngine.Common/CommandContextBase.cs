@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.Collections.Generic;
 using SiliconStudio.Core.Storage;
 using System.Threading.Tasks;
@@ -19,23 +19,15 @@ namespace SiliconStudio.BuildEngine
 
         protected internal readonly CommandResultEntry ResultEntry;
 
-        protected abstract Task<ResultStatus> ScheduleAndExecuteCommandInternal(Command command);
-
         public abstract IEnumerable<IDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups();
 
-        internal protected abstract ObjectId ComputeInputHash(UrlType type, string filePath);
+        protected internal abstract ObjectId ComputeInputHash(UrlType type, string filePath);
 
         protected CommandContextBase(Command command, BuilderContext builderContext)
         {
             CurrentCommand = command;
             BuildParameters = builderContext.Parameters;
             ResultEntry = new CommandResultEntry();
-        }
-
-        public Task<ResultStatus> ScheduleAndExecuteCommand(Command command)
-        {
-            ResultEntry.SpawnedCommands.Add(command);
-            return ScheduleAndExecuteCommandInternal(command);
         }
 
         public void RegisterInputDependency(ObjectUrl url)
@@ -59,11 +51,6 @@ namespace SiliconStudio.BuildEngine
         public void AddTag(ObjectUrl url, TagSymbol tagSymbol)
         {
             ResultEntry.TagSymbols.Add(new KeyValuePair<ObjectUrl, string>(url, tagSymbol.Name));
-        }
-
-        public void RegisterSpawnedCommandWithoutScheduling(Command command)
-        {
-            ResultEntry.SpawnedCommands.Add(command);
         }
     }
 }

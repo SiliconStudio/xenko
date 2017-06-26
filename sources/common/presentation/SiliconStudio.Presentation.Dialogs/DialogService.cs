@@ -1,7 +1,8 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
 using SiliconStudio.Core.Annotations;
@@ -94,20 +95,44 @@ namespace SiliconStudio.Presentation.Dialogs
             return DialogHelper.BlockingCheckedMessageBox(Dispatcher, message, ApplicationName, isChecked, checkboxMessage, buttons, image);
         }
 
-        public void CloseMainWindow(Action onClosed)
+        public async Task CloseMainWindow(Action onClosed)
         {
             var window = Application.Current.MainWindow;
             if (window != null)
             {
-                onClosedAction = onClosed;
-                window.Closed -= MainWindowClosed;
-                window.Closed += MainWindowClosed;
-                window.Close();
+                var asyncClosable = window as IAsyncClosableWindow;
+                if (asyncClosable != null)
+                {
+                    var closed = await asyncClosable.TryClose();
+                    if (closed)
+                    {
+                        onClosed?.Invoke();
+                    }
+                }
+                else
+                {
+                    onClosedAction = onClosed;
+                    window.Closing -= MainWindowClosing;
+                    window.Closing += MainWindowClosing;
+                    window.Closed -= MainWindowClosed;
+                    window.Closed += MainWindowClosed;
+                    window.Close();
+                }
+            }
+        }
+
+        private void MainWindowClosing(object sender, CancelEventArgs e)
+        {
+            ((Window)sender).Closing -= MainWindowClosing;
+            if (e.Cancel)
+            {
+                ((Window)sender).Closed -= MainWindowClosed;
             }
         }
 
         private void MainWindowClosed(object sender, EventArgs e)
         {
+            ((Window)sender).Closed -= MainWindowClosed;
             onClosedAction?.Invoke();
         }
     }

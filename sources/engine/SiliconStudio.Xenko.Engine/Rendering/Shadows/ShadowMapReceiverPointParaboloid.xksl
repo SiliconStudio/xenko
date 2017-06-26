@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 namespace SiliconStudio.Xenko.Rendering.Shadows
 {
@@ -18,9 +18,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             float2 DepthParameters[TLightCount];
         };
         
-        override void ComputeShadow(int lightIndex)
+        override float3 ComputeShadow(float3 position, int lightIndex)
         {
-            float4 lightSpace = mul(float4(streams.PositionWS.xyz, 1), View[lightIndex]);
+            float4 lightSpace = mul(float4(position, 1), View[lightIndex]);
             
             // Store length and normalize
             float distanceToLight = length(lightSpace.xyz);
@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             }
             
             // Compare distance to light to value inside of the shadow map
-            streams.shadowColor = FilterShadow(samplePosition, distanceToLight);
+            return FilterShadow(samplePosition, distanceToLight);
         }
     };
 }

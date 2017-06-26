@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under MIT License. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 // Source: http://stackoverflow.com/questions/4968755/mono-cecil-call-generic-base-class-method-from-other-assembly
 using System;
 using System.Collections.Generic;
@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Text;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Mono.Cecil.Rocks;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Storage;
 
@@ -18,18 +19,6 @@ namespace SiliconStudio.AssemblyProcessor
     {
         // Not sure why Cecil made ContainsGenericParameter internal, but let's work around it by reflection.
         private static readonly MethodInfo containsGenericParameterGetMethod = typeof(MemberReference).GetProperty("ContainsGenericParameter", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).GetMethod;
-
-        public static IEnumerable<TypeDefinition> EnumerateTypes(this AssemblyDefinition assembly)
-        {
-            foreach (var type in assembly.MainModule.Types)
-            {
-                yield return type;
-                foreach (var nestedType in type.NestedTypes)
-                {
-                    yield return nestedType;
-                }
-            }
-        }
 
         public static TypeReference MakeGenericType(this TypeReference self, params TypeReference[] arguments)
         {

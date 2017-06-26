@@ -117,6 +117,9 @@
   </ItemGroup>
   <!-- Files for Direct3D  -->
   <ItemGroup>
+    <Compile Include="..\..\common\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="AppContextType.cs" />
     <Compile Include="BatchBase.cs" />
     <Compile Include="BufferPool.cs" />
@@ -125,7 +128,10 @@
     <Compile Include="CompiledCommandList.cs" />
     <Compile Include="DefaultCommandListLock.cs" />
     <Compile Include="Direct3D12\CompiledCommandList.Direct3D12.cs" />
+    <Compile Include="Direct3D12\QueryPool.Direct3D12.cs" />
+    <Compile Include="Direct3D\QueryPool.Direct3D.cs" />
     <Compile Include="Direct3D\SharpDXInterop.cs" />
+    <Compile Include="FastTextRenderer.cs" />
     <Compile Include="Font\SignedDistanceFieldSpriteFont.cs" />
     <Compile Include="Null\CommandList.Null.cs" />
     <Compile Include="Null\DescriptorPool.Null.cs" />
@@ -139,7 +145,10 @@
     <Compile Include="Font\SignedDistanceFieldSpriteFontContentSerializer.cs" />
     <Compile Include="OpenGL\MappedResource.OpenGL.cs" />
     <Compile Include="Font\SignedDistanceFieldSpriteFontSerializer.cs" />
+    <Compile Include="OpenGL\QueryPool.OpenGL.cs" />
     <Compile Include="PipelineStateDescriptionWithHash.cs" />
+    <Compile Include="QueryPool.cs" />
+    <Compile Include="QueryType.cs" />
     <Compile Include="RenderingSettings.cs" />
     <Compile Include="Data\TextureContentSerializer.cs" />
     <Compile Include="DescriptorPool.cs" />
@@ -450,6 +459,7 @@
     <Compile Include="Vulkan\GraphicsResourceBase.Vulkan.cs" />
     <Compile Include="Vulkan\MappedResource.Vulkan.cs" />
     <Compile Include="Vulkan\PipelineState.Vulkan.cs" />
+    <Compile Include="Vulkan\QueryPool.Vulkan.cs" />
     <Compile Include="Vulkan\SamplerState.Vulkan.cs" />
     <Compile Include="Vulkan\SwapChainGraphicsPresenter.Vulkan.cs" />
     <Compile Include="Vulkan\Texture.Vulkan.cs" />
@@ -480,9 +490,6 @@
     <Compile Include="OpenGL\Texture.OpenGL.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="Buffer.Argument.cs" />
     <Compile Include="Buffer.Constant.cs" />
     <Compile Include="Buffer.Index.cs" />

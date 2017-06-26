@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
 // 
@@ -108,9 +108,12 @@ namespace SiliconStudio.Xenko.Games
 
             // Content manager
             Content = new ContentManager(Services);
+            Services.AddService(typeof(IContentManager), Content);
+            Services.AddService(typeof(ContentManager), Content);
 
             LaunchParameters = new LaunchParameters();
             GameSystems = new GameSystemCollection(Services);
+            Services.AddService(typeof(IGameSystemCollection), GameSystems);
 
             // Create Platform
             gamePlatform = GamePlatform.Create(this);
@@ -121,6 +124,7 @@ namespace SiliconStudio.Xenko.Games
 
             // Setup registry
             Services.AddService(typeof(IGame), this);
+            Services.AddService(typeof(IGraphicsDeviceFactory), gamePlatform);
             Services.AddService(typeof(IGamePlatform), gamePlatform);
 
             IsActive = true;
@@ -752,12 +756,8 @@ namespace SiliconStudio.Xenko.Games
                     }
                 }
 
-                // Reset allocator
-                if (GraphicsContext != null)
-                {
-                    GraphicsContext.CommandList.Dispose();
-                    GraphicsContext = null;
-                }
+                // Reset graphics context
+                GraphicsContext = null;
 
                 var disposableGraphicsManager = graphicsDeviceManager as IDisposable;
                 if (disposableGraphicsManager != null)

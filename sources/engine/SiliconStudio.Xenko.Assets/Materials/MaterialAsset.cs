@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
         /// <summary>
         /// The default file extension used by the <see cref="MaterialAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xkmat;.pdxmat";
+        public const string FileExtension = ".xkmat";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialAsset"/> class.

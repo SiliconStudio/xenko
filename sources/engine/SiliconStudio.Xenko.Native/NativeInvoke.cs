@@ -1,11 +1,12 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Xenko.Native
@@ -35,6 +36,10 @@ namespace SiliconStudio.Xenko.Native
         [SuppressUnmanagedCodeSecurity]
         [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
         public static extern void UpdateBufferValuesFromElementInfo(IntPtr drawInfo, IntPtr vertexPtr, IntPtr indexPtr, int vertexOffset);
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void xnGraphicsFastTextRendererGenerateVertices(RectangleF constantInfos, RectangleF renderInfos, string text, out IntPtr textLength, out IntPtr vertexBufferPointer);
     }
 
     internal class Module

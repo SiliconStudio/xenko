@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -99,6 +99,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             GraphicsContext.CommandList.SetRenderTargetAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
             GraphicsContext.CommandList.SetViewport(new Viewport(width / 2, 0, width / 2, height / 2));
+            GraphicsContext.CommandList.ResourceBarrierTransition(offlineTarget0, GraphicsResourceState.PixelShaderResource);
             GraphicsContext.DrawTexture(offlineTarget0);
 
             // 2 intermediate RTs
@@ -108,10 +109,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             GraphicsContext.CommandList.Clear(depthBuffer, DepthStencilClearOptions.DepthBuffer);
             GraphicsContext.CommandList.SetRenderTargetAndViewport(depthBuffer, offlineTarget2);
+            GraphicsContext.CommandList.ResourceBarrierTransition(offlineTarget1, GraphicsResourceState.PixelShaderResource);
             GraphicsContext.DrawTexture(offlineTarget1);
 
             GraphicsContext.CommandList.SetRenderTargetAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
             GraphicsContext.CommandList.SetViewport(new Viewport(0, height / 2, width / 2, height / 2));
+            GraphicsContext.CommandList.ResourceBarrierTransition(offlineTarget2, GraphicsResourceState.PixelShaderResource);
             GraphicsContext.DrawTexture(offlineTarget2);
 
             // draw quad on screen

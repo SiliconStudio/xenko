@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
     /// <summary>
@@ -14,6 +14,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         compose IMaterialSpecularMicrofacetVisibilityFunction geometricShadowingFunction;
 
         compose IMaterialSpecularMicrofacetNormalDistributionFunction normalDistributionFunction;
+
+        compose IMaterialSpecularMicrofacetEnvironmentFunction environmentFunction;
 
         override float3 ComputeDirectLightContribution()
         {
@@ -34,7 +36,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             // TODO: Allow plugability of this function (pb is that it is a combination of fresnel, visibility and NDF)
             //return specularColor * streams.envLightSpecularColor;
-            return EnvironmentLightingDFG_GGX_Fresnel_SmithSchlickGGX(specularColor, streams.alphaRoughness, streams.NdotV) * streams.envLightSpecularColor;
+            return environmentFunction.Compute(specularColor, streams.alphaRoughness, streams.NdotV) * streams.envLightSpecularColor;
         }
     };
 }

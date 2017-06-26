@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2016-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -27,13 +27,13 @@ namespace SiliconStudio.Xenko.Assets.Navigation
     [AssetCompiler(typeof(NavigationMeshAsset), typeof(AssetCompilationContext))]
     class NavigationMeshAssetCompiler : AssetCompilerBase
     { 
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
         {
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SceneAsset), BuildDependencyType.CompileAsset);
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(ColliderShapeAsset), BuildDependencyType.CompileContent);
         }
 
-        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
         {
             var asset = (NavigationMeshAsset)assetItem.Asset;
             if (asset.Scene != null)
@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 if(sceneAsset == null)
                     yield break;
 
-                var sceneEntities = sceneAsset.Hierarchy.Parts.Select(x => x.Entity).ToList();
+                var sceneEntities = sceneAsset.Hierarchy.Parts.Select(x => x.Value.Entity).ToList();
                 foreach (var entity in sceneEntities)
                 {
                     var collider = entity.Get<StaticColliderComponent>();
@@ -78,7 +78,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             {
                 new NavmeshBuildCommand(targetUrlInStorage, assetItem, asset, context)
                 {
-                    InputFilesGetter = () => GetInputFiles(context, assetItem)
+                    InputFilesGetter = () => GetInputFiles(assetItem)
                 }
             };
         }
@@ -109,6 +109,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 gameSettingsAsset = context.GetGameSettingsAsset();
                 asset = value;
                 assetUrl = url;
+                
+                Version = 1; // Removed separate debug model stored in the navigation mesh
             }
 
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
@@ -250,7 +252,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                         clonedSceneAsset = (SceneAsset)AssetCloner.Clone(sceneAsset);
 
                         // Turn the entire entity hierarchy into a single list
-                        var sceneEntities = clonedSceneAsset.Hierarchy.Parts.Select(x => x.Entity).ToList();
+                        var sceneEntities = clonedSceneAsset.Hierarchy.Parts.Select(x => x.Value.Entity).ToList();
 
                         sceneHash = 0;
                         foreach (var entity in sceneEntities)

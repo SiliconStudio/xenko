@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 shader ComputeColorSaturation : ComputeColor
 {
     compose ComputeColor color1;
@@ -22,11 +22,13 @@ shader ComputeColorSaturation : ComputeColor
 
         float3 color;
         float backSaturation = HSVUtils.GetSaturation(backColor.rgb);
-        if( backSaturation == 0.0f)
-            color = float3(HSVUtils.GetValue(backColor.rgb));
-        else
+        if( backSaturation == 0.0f) {
+			float colorValue = HSVUtils.GetValue(backColor.rgb);
+            color = float3(colorValue, colorValue, colorValue);
+		} else {
             color = HSVUtils.ToRGB(float3(HSVUtils.GetHue(backColor.rgb), HSVUtils.GetSaturation(frontColor.rgb), HSVUtils.GetValue(backColor.rgb)));
-
+		}
+		
         return float4(color, BlendUtils.BasicAlphaBlend(backColor.a, frontColor.a));
     }
 };

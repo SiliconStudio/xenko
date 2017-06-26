@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using NUnit.Framework;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.BuildEngine.Tests.Commands;
@@ -151,8 +151,6 @@ namespace SiliconStudio.BuildEngine.Tests
             builder.Run(Builder.Mode.Build);
             builder.WriteIndexFile(false);
 
-            Assert.That(step.SpawnedSteps.Count(), Is.EqualTo(1));
-
             var indexMap = ContentIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
             indexMap.UseTransaction = true;
             indexMap.LoadNewValues();
@@ -160,33 +158,6 @@ namespace SiliconStudio.BuildEngine.Tests
             ObjectId outputId;
             bool objectIdFound = indexMap.TryGetValue("/db/url2", out outputId);
             Assert.IsTrue(objectIdFound);
-            Assert.That(step.SpawnedSteps.First().Result.OutputObjects[new ObjectUrl(UrlType.ContentLink, "/db/url2")], Is.EqualTo(outputId));
-        }
-
-        [Test, Ignore("Need check")]
-        public void TestRemoteSpawnCommandOutput()
-        {
-            Utils.CleanContext();
-            Utils.GenerateSourceFile("input1", "{BB42A922-ED1B-4837-98D2-189EFAF6BF42}");
-            Utils.GenerateSourceFile("input2", "{8B212FA9-5F0D-4D29-A68B-01D87FF04AF4}");
-
-            var builder = Utils.CreateBuilder(false);
-            var command = new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.File, Utils.GetSourcePath("input1")), OutputUrl = "/db/url1", ExecuteRemotely = true };
-            command.CommandsToSpawn.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.File, Utils.GetSourcePath("input2")), OutputUrl = "/db/url2" });
-            CommandBuildStep step = builder.Root.Add(command);
-            builder.Run(Builder.Mode.Build);
-            builder.WriteIndexFile(false);
-
-            Assert.That(step.SpawnedSteps.Count(), Is.EqualTo(1));
-
-            var indexMap = ContentIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
-            indexMap.UseTransaction = true;
-            indexMap.LoadNewValues();
-
-            ObjectId outputId;
-            bool objectIdFound = indexMap.TryGetValue("/db/url2", out outputId);
-            Assert.IsTrue(objectIdFound);
-            Assert.That(step.SpawnedSteps.First().Result.OutputObjects[new ObjectUrl(UrlType.ContentLink, "/db/url2")], Is.EqualTo(outputId));
         }
 
         [Test]
@@ -223,14 +194,12 @@ namespace SiliconStudio.BuildEngine.Tests
 
             var builder1 = Utils.CreateBuilder(false);
             CommandBuildStep step = builder1.Root.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.File, Utils.GetSourcePath("input1")), OutputUrl = "/db/url1" });
-            builder1.Root.Add(new WaitBuildStep());
             CommandBuildStep childStep = builder1.Root.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.ContentLink, "/db/url1"), OutputUrl = "/db/url2" });
             BuildStep.LinkBuildSteps(step, childStep);
             builder1.Run(Builder.Mode.Build);
 
             var builder2 = Utils.CreateBuilder(true);
             step = builder2.Root.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.File, Utils.GetSourcePath("input1")), OutputUrl = "/db/url1" });
-            builder2.Root.Add(new WaitBuildStep());
             childStep = builder2.Root.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.ContentLink, "/db/url1"), OutputUrl = "/db/url2" });
             BuildStep.LinkBuildSteps(step, childStep);
             builder2.Run(Builder.Mode.Build);
@@ -314,7 +283,6 @@ namespace SiliconStudio.BuildEngine.Tests
 
             var builder = Utils.CreateBuilder(false);
             CommandBuildStep step = builder.Root.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.File, Utils.GetSourcePath("input1")), OutputUrl = "/db/url1", InputDependencies = { inputDep } });
-            builder.Root.Add(new WaitBuildStep());
             CommandBuildStep concurrencyStep1 = builder.Root.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.ContentLink, "/db/url1"), OutputUrl = "/db/url1", InputDependencies = { inputDep } });
             CommandBuildStep concurrencyStep2 = builder.Root.Add(new InputOutputTestCommand { Delay = 150, Source = new ObjectUrl(UrlType.ContentLink, "/db/url1"), OutputUrl = "/db/url2", InputDependencies = { inputDep } });
             BuildStep.LinkBuildSteps(step, concurrencyStep1);

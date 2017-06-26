@@ -1,9 +1,10 @@
-﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.IO;
 using System.Text;
+using SiliconStudio.Assets.TextAccessors;
 using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
@@ -22,7 +23,7 @@ namespace SiliconStudio.Assets.Serializers
             var type = AssetRegistry.GetAssetTypeFromFileExtension(assetFileExtension);
             var asset = (SourceCodeAsset)Activator.CreateInstance(type);
 
-            var textAccessor = asset.TextAccessor as SourceCodeAsset.DefaultTextAccessor;
+            var textAccessor = asset.TextAccessor as DefaultTextAccessor;
             if (textAccessor != null)
             {
                 // Don't load the file if we have the file path

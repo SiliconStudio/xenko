@@ -1,8 +1,11 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Assets.Compiler;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Assets.Analysis
 {
@@ -10,7 +13,7 @@ namespace SiliconStudio.Assets.Analysis
     /// Build dependency manager
     /// Basically is a container of BuildAssetNode
     /// </summary>
-    public sealed class BuildDependencyManager
+    public class BuildDependencyManager
     {
         public struct BuildNodeDesc
         {
@@ -83,8 +86,29 @@ namespace SiliconStudio.Assets.Analysis
                 node = new BuildAssetNode(item, dependencyType, this);
                 nodes.TryAdd(nodeDesc, node);
             }
-            
+            else if (!ReferenceEquals(node.AssetItem, item))
+            {               
+                node = new BuildAssetNode(item, dependencyType, this);
+                nodes[nodeDesc] = node;
+            }
+
             return node;
+        }
+
+        private static void AnalyzeNode([NotNull] BuildAssetNode node, AssetCompilerContext context)
+        {
+            node.Analyze(context);
+            foreach (var buildAssetNode in node.References)
+            {
+                AnalyzeNode(buildAssetNode, context);
+            }
+        }
+
+        public void AssetChanged(AssetItem sender)
+        {
+            var node = FindOrCreateNode(sender, BuildDependencyType.Runtime); // update only runtime ones ( as they are root )
+            var context = new AssetCompilerContext();
+            AnalyzeNode(node, context);
         }
 
         /// <summary>
@@ -104,6 +128,12 @@ namespace SiliconStudio.Assets.Analysis
             BuildAssetNode node;
             if (!nodes.TryGetValue(nodeDesc, out node))
             {
+                return null;
+            }
+
+            if (!ReferenceEquals(node.AssetItem, item))
+            {
+                nodes.TryRemove(nodeDesc, out node);
                 return null;
             }
 

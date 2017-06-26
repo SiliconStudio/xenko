@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 
@@ -7,6 +7,11 @@ namespace SiliconStudio.BuildEngine
 {
     public abstract class SingleFileImportCommand : IndexFileCommand
     {
+        /// <summary>
+        /// This is useful if the asset binary format has changed and we want to bump the version to force re-evaluation/compilation of the command
+        /// </summary>
+        protected int Version;
+
         protected SingleFileImportCommand()
         {
         }
@@ -32,6 +37,8 @@ namespace SiliconStudio.BuildEngine
         protected override void ComputeParameterHash(BinarySerializationWriter writer)
         {
             base.ComputeParameterHash(writer);
+
+            writer.Write(Version);
 
             writer.Write(SourcePath);
             writer.Write(Location);

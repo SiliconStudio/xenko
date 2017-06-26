@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under MIT License. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 //  This file is part of YamlDotNet - A .NET library for YAML.
 //  Copyright (c) 2008, 2009, 2010, 2011, 2012, 2013 Antoine Aubry
@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Assets
 	#region Format definition
 	[Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = AssetObjectDefinitions.AnchorClassificationName)]
-	[Name("Xenko.YamlAnchorFormat")]
+	[Name(AssetObjectDefinitions.AnchorClassificationName)]
 	[UserVisible(true)] //this should be visible to the end user
 	[Order(Before = Priority.Default)] //set the priority to be after the default classifiers
     [BaseDefinition(PredefinedClassificationTypeNames.SymbolReference)]
@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Assets
 
 	[Export(typeof(EditorFormatDefinition))]
 	[ClassificationType(ClassificationTypeNames = AssetObjectDefinitions.AliasClassificationName)]
-    [Name("Xenko.YamlAliasFormat")]
+    [Name(AssetObjectDefinitions.AliasClassificationName)]
     [UserVisible(true)] //this should be visible to the end user
 	[Order(Before = Priority.Default)] //set the priority to be after the default classifiers
     [BaseDefinition(PredefinedClassificationTypeNames.Literal)]
@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Assets
 
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = AssetObjectDefinitions.KeyClassificationName)]
-    [Name("Xenko.YamlKeyFormat")]
+    [Name(AssetObjectDefinitions.KeyClassificationName)]
     [UserVisible(true)] //this should be visible to the end user
     [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
     [BaseDefinition(PredefinedClassificationTypeNames.Keyword)]
@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Assets
 
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = AssetObjectDefinitions.NumberClassificationName)]
-    [Name("Xenko.YamlNumberFormat")]
+    [Name(AssetObjectDefinitions.NumberClassificationName)]
     [UserVisible(true)] //this should be visible to the end user
     [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
     [BaseDefinition(PredefinedClassificationTypeNames.Number)]
@@ -104,7 +104,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Assets
 
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = AssetObjectDefinitions.ErrorClassificationName)]
-    [Name("Xenko.YamlErrorFormat")]
+    [Name(AssetObjectDefinitions.ErrorClassificationName)]
     [UserVisible(true)] //this should be visible to the end user
     [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
     [BaseDefinition(PredefinedClassificationTypeNames.Other)]

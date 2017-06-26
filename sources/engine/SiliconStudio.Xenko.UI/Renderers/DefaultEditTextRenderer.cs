@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
@@ -18,6 +18,56 @@ namespace SiliconStudio.Xenko.UI.Renderers
         public DefaultEditTextRenderer(IServiceRegistry services)
             : base(services)
         {
+        }
+
+        private void RenderSelection(EditText editText, UIRenderingContext context, int start, int length, Color color, out float offsetTextStart, out float offsetAlignment, out float selectionSize)
+        {
+            // calculate the size of the text region by removing padding
+            var textRegionSize = new Vector2(editText.ActualWidth - editText.Padding.Left - editText.Padding.Right,
+                                                editText.ActualHeight - editText.Padding.Top - editText.Padding.Bottom);
+
+            var font = editText.Font;
+
+            // determine the image to draw in background of the edit text
+            var fontScale = editText.LayoutingContext.RealVirtualResolutionRatio;
+            var provider = editText.IsSelectionActive ? editText.ActiveImage : editText.MouseOverState == MouseOverState.MouseOverElement ? editText.MouseOverImage : editText.InactiveImage;
+            var image = provider?.GetSprite();
+
+            var fontSize = new Vector2(fontScale.Y * editText.ActualTextSize);
+            offsetTextStart = font.MeasureString(editText.TextToDisplay, ref fontSize, start).X;
+            selectionSize = font.MeasureString(editText.TextToDisplay, ref fontSize, start + length).X - offsetTextStart;
+            var lineSpacing = font.GetTotalLineSpacing(editText.ActualTextSize);
+            if (font.FontType == SpriteFontType.Dynamic)
+            {
+                offsetTextStart /= fontScale.X;
+                selectionSize /= fontScale.X;
+            }
+
+            var scaleRatio = editText.ActualTextSize / font.Size;
+            if (font.FontType == SpriteFontType.SDF)
+            {
+                offsetTextStart *= scaleRatio;
+                selectionSize *= scaleRatio;
+                lineSpacing *= editText.ActualTextSize / font.Size;
+            }
+
+
+            offsetAlignment = -textRegionSize.X / 2f;
+            if (editText.TextAlignment != TextAlignment.Left)
+            {
+                var textWidth = font.MeasureString(editText.TextToDisplay, ref fontSize).X;
+                if (font.FontType == SpriteFontType.Dynamic)
+                    textWidth /= fontScale.X;
+                if (font.FontType == SpriteFontType.SDF)
+                    textWidth *= scaleRatio;
+
+                offsetAlignment = editText.TextAlignment == TextAlignment.Center ? -textWidth / 2 : -textRegionSize.X / 2f + (textRegionSize.X - textWidth);
+            }
+
+            var selectionWorldMatrix = editText.WorldMatrixInternal;
+            selectionWorldMatrix.M41 += offsetTextStart + selectionSize / 2 + offsetAlignment;
+            var selectionScaleVector = new Vector3(selectionSize, editText.LineCount * lineSpacing, 0);
+            Batch.DrawRectangle(ref selectionWorldMatrix, ref selectionScaleVector, ref color, context.DepthBias + 1);
         }
 
         public override void RenderColor(UIElement element, UIRenderingContext context)
@@ -45,51 +95,23 @@ namespace SiliconStudio.Xenko.UI.Renderers
                                                 editText.ActualHeight - editText.Padding.Top - editText.Padding.Bottom);
 
             var font = editText.Font;
-            var selectionColor = editText.RenderOpacity * editText.SelectionColor;
             var caretColor = editText.RenderOpacity * editText.CaretColor;
 
             var offsetTextStart = 0f;
             var offsetAlignment = 0f;
             var selectionSize = 0f;
-            
-            // Draw the selection
-            if(editText.IsSelectionActive)
+
+            // Draw the composition selection
+            if (editText.Composition.Length > 0)
             {
-                var fontSize = new Vector2(fontScale.Y * editText.ActualTextSize);
-                offsetTextStart = font.MeasureString(editText.TextToDisplay, ref fontSize, editText.SelectionStart).X;
-                selectionSize = font.MeasureString(editText.TextToDisplay, ref fontSize, editText.SelectionStart + editText.SelectionLength).X - offsetTextStart;
-                var lineSpacing = font.GetTotalLineSpacing(editText.ActualTextSize);
-                if (font.FontType == SpriteFontType.Dynamic)
-                {
-                    offsetTextStart /= fontScale.X;
-                    selectionSize /= fontScale.X;
-                }
-
-                var scaleRatio = editText.ActualTextSize / font.Size;
-                if (font.FontType == SpriteFontType.SDF)
-                {
-                    offsetTextStart *= scaleRatio;
-                    selectionSize   *= scaleRatio;
-                    lineSpacing *= editText.ActualTextSize / font.Size;
-                }
-
-
-                offsetAlignment = -textRegionSize.X / 2f;
-                if (editText.TextAlignment != TextAlignment.Left)
-                {
-                    var textWidth = font.MeasureString(editText.TextToDisplay, ref fontSize).X;
-                    if (font.FontType == SpriteFontType.Dynamic)
-                        textWidth /= fontScale.X;
-                    if (font.FontType == SpriteFontType.SDF)
-                        textWidth *= scaleRatio;
-
-                    offsetAlignment = editText.TextAlignment == TextAlignment.Center ? -textWidth / 2 : -textRegionSize.X / 2f + (textRegionSize.X - textWidth);
-                }
-
-                var selectionWorldMatrix = element.WorldMatrixInternal;
-                selectionWorldMatrix.M41 += offsetTextStart + selectionSize / 2 + offsetAlignment;
-                var selectionScaleVector = new Vector3(selectionSize, editText.LineCount * lineSpacing, 0);
-                Batch.DrawRectangle(ref selectionWorldMatrix, ref selectionScaleVector, ref selectionColor, context.DepthBias + 1);
+                var imeSelectionColor = editText.RenderOpacity * editText.IMESelectionColor;
+                RenderSelection(editText, context, editText.SelectionStart, editText.Composition.Length, imeSelectionColor, out offsetTextStart, out offsetAlignment, out selectionSize);
+            }
+            // Draw the regular selection
+            else if (editText.IsSelectionActive)
+            {
+                var selectionColor = editText.RenderOpacity * editText.SelectionColor;
+                RenderSelection(editText, context, editText.SelectionStart, editText.SelectionLength, selectionColor, out offsetTextStart, out offsetAlignment, out selectionSize);
             }
 
             // create the text draw command

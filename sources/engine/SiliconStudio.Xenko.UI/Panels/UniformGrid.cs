@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.ComponentModel;
@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <remarks>The value is coerced in the range [1, <see cref="int.MaxValue"/>].</remarks>
         /// <userdoc>The number of rows.</userdoc>
         [DataMember]
-        [DataMemberRange(1, int.MaxValue)]
+        [DataMemberRange(1, 0)]
         [Display(category: LayoutCategory)]
         [DefaultValue(1)]
         public int Rows
@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <remarks>The value is coerced in the range [1, <see cref="int.MaxValue"/>].</remarks>
         /// <userdoc>The number of columns.</userdoc>
         [DataMember]
-        [DataMemberRange(1, int.MaxValue)]
+        [DataMemberRange(1, 0)]
         [Display(category: LayoutCategory)]
         [DefaultValue(1)]
         public int Columns
@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <remarks>The value is coerced in the range [1, <see cref="int.MaxValue"/>].</remarks>
         /// <userdoc>The number of layers.</userdoc>
         [DataMember]
-        [DataMemberRange(1, int.MaxValue)]
+        [DataMemberRange(1, 0)]
         [Display(category: LayoutCategory)]
         [DefaultValue(1)]
         public int Layers

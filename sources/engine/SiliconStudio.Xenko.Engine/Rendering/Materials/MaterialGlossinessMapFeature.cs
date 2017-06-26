@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <value>The smoothness map.</value>
         [Display("Glossiness Map")]
         [NotNull]
-        [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
         public IComputeScalar GlossinessMap { get; set; }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [DefaultValue(false)]
         public bool Invert { get; set; }
 
-        public override void VisitFeature(MaterialGeneratorContext context)
+        public override void GenerateShader(MaterialGeneratorContext context)
         {
             if (GlossinessMap != null)
             {

@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -1130,14 +1130,19 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 {
                     var variable = new Variable(streamVar.Type, streamVar.Name) { Span = streamVar.Span };
                     if (useSem)
+                    {
                         foreach (var qualifier in streamVar.Qualifiers.OfType<Semantic>())
                             variable.Qualifiers |= qualifier;
+                    }
+
+                    foreach (var qualifier in streamVar.Qualifiers.OfType<InterpolationQualifier>())
+                        variable.Qualifiers |= qualifier;
 
                     if (useSem && addAutoSem)
                     {
                         var semantic = variable.Qualifiers.Values.OfType<Semantic>().FirstOrDefault();
                         if (semantic == null)
-                            variable.Qualifiers |= new Semantic(variable.Name.Text.ToUpper() + "_SEM");
+                            variable.Qualifiers |= new Semantic(variable.Name.Text.ToUpperInvariant() + "_SEM");
                     }
 
                     tempStruct.Fields.Add(variable);

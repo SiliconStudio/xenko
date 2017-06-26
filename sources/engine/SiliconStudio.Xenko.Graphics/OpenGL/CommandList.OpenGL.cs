@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 
 using System;
@@ -15,6 +15,7 @@ using OpenTK.Graphics.ES30;
 using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
 using PrimitiveTypeGl = OpenTK.Graphics.ES30.PrimitiveType;
 using DebugSourceExternal = OpenTK.Graphics.ES30.All;
+using QueryCounterTarget = OpenTK.Graphics.ES30.All;
 #else
 using OpenTK.Graphics.OpenGL;
 using PrimitiveTypeGl = OpenTK.Graphics.OpenGL.PrimitiveType;
@@ -922,6 +923,24 @@ namespace SiliconStudio.Xenko.Graphics
                     GL.PopDebugGroup();
             }
 #endif
+        }
+
+        /// <summary>
+        /// Submit a timestamp query.
+        /// </summary>
+        /// <param name="queryPool">The QueryPool owning the query.</param>
+        /// <param name="index">The query index.</param>
+        public void WriteTimestamp(QueryPool queryPool, int index)
+        {
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_IOS
+            GL.Ext.QueryCounter(queryPool.NativeQueries[index], QueryCounterTarget.TimestampExt);
+#elif !SILICONSTUDIO_PLATFORM_IOS
+            GL.QueryCounter(queryPool.NativeQueries[index], QueryCounterTarget.Timestamp);
+#endif
+        }
+
+        public void ResetQueryPool(QueryPool queryPool)
+        {
         }
 
         public MappedResource MapSubresource(GraphicsResource resource, int subResourceIndex, MapMode mapMode, bool doNotWait = false, int offsetInBytes = 0, int lengthInBytes = 0)

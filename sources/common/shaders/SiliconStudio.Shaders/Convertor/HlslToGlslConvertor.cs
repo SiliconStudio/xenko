@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -1358,6 +1358,7 @@ namespace SiliconStudio.Shaders.Convertor
                     case "SampleGrad":
                     case "SampleLevel":
                     case "SampleCmp":
+                    case "SampleCmpLevelZero":
                         {
                             string methodName = "texture";
 
@@ -1403,10 +1404,15 @@ namespace SiliconStudio.Shaders.Convertor
                                 methodName += "Grad";
                             }
 
-                            if (memberReferenceExpression.Member == "SampleLevel")
+                            if (memberReferenceExpression.Member == "SampleLevel" || memberReferenceExpression.Member == "SampleCmpLevelZero")
                             {
                                 baseParameterCount++;
                                 methodName += "Lod";
+
+                                if (memberReferenceExpression.Member == "SampleCmpLevelZero")
+                                {
+                                    methodInvocationExpression.Arguments.Add(new LiteralExpression(0.0f));
+                                }
                             }
 
                             if (isLoad)
@@ -1417,7 +1423,7 @@ namespace SiliconStudio.Shaders.Convertor
                                     methodName = "texelFetch";
                             }
 
-                            if (memberReferenceExpression.Member == "SampleCmp")
+                            if (memberReferenceExpression.Member == "SampleCmp" || memberReferenceExpression.Member == "SampleCmpLevelZero")
                             {
                                 // Need to convert texture.SampleCmp(texcoord, compareValue) to texture(vec3(texcoord, compareValue))
                                 var texcoord = methodInvocationExpression.Arguments[1];
@@ -1426,7 +1432,7 @@ namespace SiliconStudio.Shaders.Convertor
                                     methodInvocationExpression.Arguments[1],
                                     methodInvocationExpression.Arguments[2]
                                     );
-                                methodInvocationExpression.Arguments.RemoveAt(methodInvocationExpression.Arguments.Count - 1);
+                                methodInvocationExpression.Arguments.RemoveAt(2);
                             }
 
                             if (methodInvocationExpression.Arguments.Count == baseParameterCount + 1)
@@ -2996,7 +3002,7 @@ namespace SiliconStudio.Shaders.Convertor
             // http://msdn.microsoft.com/en-us/library/bb219850%28v=vs.85%29.aspx
             foreach (var semanticModifier in SemanticModifiers)
             {
-                if (semantic.ToLower().EndsWith(semanticModifier))
+                if (semantic.ToLowerInvariant().EndsWith(semanticModifier))
                 {
                     // Console.WriteLine("Warning, unsupported semantic modifier [{0}] for semantic [{1}]", semanticModifier, semantic);
                     semantic = semantic.Substring(0, semantic.Length - semanticModifier.Length);

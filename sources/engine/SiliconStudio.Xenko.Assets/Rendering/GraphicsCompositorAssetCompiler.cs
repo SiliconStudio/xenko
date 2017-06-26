@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -18,10 +18,17 @@ namespace SiliconStudio.Xenko.Assets.Rendering
     [AssetCompiler(typeof(GraphicsCompositorAsset), typeof(AssetCompilationContext))]
     public class GraphicsCompositorAssetCompiler : AssetCompilerBase
     {
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
         {
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(RenderTextureAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileAsset);
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(TextureAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileAsset);
+        }
+
+        public override bool AlwaysCheckRuntimeTypes { get; } = true; //compositor is special, we always want to visit what the renderers
+
+        public override IEnumerable<Type> GetRuntimeTypes(AssetItem assetItem)
+        {
+            yield return typeof(RendererCoreBase);
         }
 
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)

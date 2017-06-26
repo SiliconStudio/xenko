@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
@@ -61,6 +63,9 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         public Slot Source { get; set; }
 
         public Slot Target { get; set; }
+
+        /// <inheritdoc/>
+        IIdentifiable IAssetPartDesign.Part => this;
 
         /// <inheritdoc/>
         Link IAssetPartDesign<Link>.Part { get { return this; } set { throw new InvalidOperationException(); } }

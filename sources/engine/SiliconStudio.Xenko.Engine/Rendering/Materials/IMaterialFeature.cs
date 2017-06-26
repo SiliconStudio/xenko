@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     public interface IMaterialFeature : IMaterialShaderGenerator
     {
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="IGraphicsRenderer"/> is enabled.
+        /// Gets or sets a value indicating whether this <see cref="IMaterialFeature"/> is enabled.
         /// </summary>
         /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
         bool Enabled { get; set; }

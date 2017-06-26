@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,7 +15,7 @@ using SiliconStudio.Xenko.Rendering;
 namespace SiliconStudio.Xenko.Assets.Models
 {
     [DataContract("Model")]
-    [AssetDescription(FileExtension, AllowArchetype = false)]
+    [AssetDescription(FileExtension, AllowArchetype = true)]
     [AssetContentType(typeof(Model))]
     [Display(1900, "Model")]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
@@ -46,16 +46,18 @@ namespace SiliconStudio.Xenko.Assets.Models
         public UFile Source { get; set; } = new UFile("");
 
         /// <summary>
-        /// Gets or sets the pivot position, that will be used as center of object.
+        /// Gets or sets the pivot position, that will be used as center of object. If a Skeleton is set, its value will be used instead.
         /// </summary>
+        /// <userdoc>
+        /// The root (pivot) of the animation will be offset by this distance. If a Skeleton is set, its value will be used instead.
+        /// </userdoc>
         [DataMember(10)]
         public Vector3 PivotPosition { get; set; }
 
         /// <summary>
-        /// Gets or sets the scale import.
+        /// Gets or sets the scale import. If a Skeleton is set, its value will be used instead.
         /// </summary>
-        /// <value>The scale import.</value>
-        /// <userdoc>The scale applied when importing a model.</userdoc>
+        /// <userdoc>The scale applied when importing a model. If a Skeleton is set, its value will be used instead.</userdoc>
         [DataMember(15)]
         [DefaultValue(1.0f)]
         public float ScaleImport { get; set; } = 1.0f;

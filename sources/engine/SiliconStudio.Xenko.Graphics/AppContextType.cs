@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2012 SharpDX - Alexandre Mutel
 // 
@@ -54,9 +54,14 @@ namespace SiliconStudio.Xenko.Games
         Android,
 
         /// <summary>
-        /// Game running on UWP in a SwapChainPanel.
+        /// Game running on UWP in a Xaml SwapChainPanel.
         /// </summary>
-        UWP,
+        UWPXaml,
+
+        /// <summary>
+        /// Game running on UWP in a CoreWindow.
+        /// </summary>
+        UWPCoreWindow,
 
         /// <summary>
         /// Game running on iOS in a iPhoneOSGameView.

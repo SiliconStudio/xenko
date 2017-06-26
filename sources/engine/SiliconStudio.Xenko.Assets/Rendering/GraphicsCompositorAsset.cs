@@ -1,12 +1,17 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Compositing;
 
@@ -35,9 +40,10 @@ namespace SiliconStudio.Xenko.Assets.Rendering
 #else
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
 #endif
+    [AssetUpgrader(XenkoConfig.PackageName, "2.0.0.0", "2.1.0.2", typeof(FXAAEffectDefaultQualityUpgrader))]
     public class GraphicsCompositorAsset : Asset
     {
-        private const string CurrentVersion = "2.0.0.0";
+        private const string CurrentVersion = "2.1.0.2";
 
         /// <summary>
         /// The default file extension used by the <see cref="GraphicsCompositorAsset"/>.
@@ -80,7 +86,7 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         /// <userdoc>
         /// The renderer used by the game at runtime. It requires a properly set camera from the scene, found in the Cameras list.
         /// </userdoc>
-        [DisplayName("Game renderer")]
+        [Display("Game renderer")]
         public ISceneRenderer Game { get; set; }
 
         /// <summary>
@@ -89,7 +95,7 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         /// <userdoc>
         /// The utility renderer is used for rendering cubemaps, light maps, render-to-texture, etc. It should be a single-only view renderer with no post-processing. It doesn't require camera or render target, because they are supplied by the caller.
         /// </userdoc>
-        [DisplayName("Utility renderer")]
+        [Display("Utility renderer")]
         public ISceneRenderer SingleView { get; set; }
 
         /// <summary>
@@ -98,8 +104,14 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         /// <userdoc>
         /// The renderer used by the game studio while editing the scene. It can share the forward renderer with the game entry or not. It doesn't require a camera and uses the camera in the game studio instead.
         /// </userdoc>
-        [DisplayName("Editor renderer")]
+        [Display("Editor renderer")]
         public ISceneRenderer Editor { get; set; }
+
+        /// <summary>
+        /// The positions of the blocks of the compositor in the editor canvas.
+        /// </summary>
+        [Display(Browsable = false)]
+        public Dictionary<Guid, Vector2> BlockPositions { get; } = new Dictionary<Guid, Vector2>();
 
         public GraphicsCompositor Compile(bool copyRenderers)
         {
@@ -119,6 +131,21 @@ namespace SiliconStudio.Xenko.Assets.Rendering
             }
 
             return graphicsCompositor;
+        }
+
+        private class FXAAEffectDefaultQualityUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                var rootNode = (YamlNode)asset.Node;
+
+                foreach (var fxaaEffectNode in rootNode.AllNodes.OfType<YamlMappingNode>().Where(x => x.Tag == "!FXAAEffect").Select(x => new DynamicYamlMapping(x)))
+                {
+                    // We could remap quality but probably not worth the code complexity (esp. since previous quality slider from 10 to 39 was not "continuous", user probably didn't set it up properly anyway)
+                    // Simply remove it so that it goes back to default value
+                    fxaaEffectNode.RemoveChild("Quality");
+                }
+            }
         }
     }
 }

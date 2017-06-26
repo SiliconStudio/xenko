@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -10,6 +12,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.TypeConverters;
 using SiliconStudio.Presentation.Collections;
 using SiliconStudio.Presentation.Commands;
 using SiliconStudio.Presentation.Core;
@@ -36,6 +39,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         private bool isReadOnly;
         private string displayName;
         private bool isHighlighted;
+        private bool valueChanging;
 
 #if DEBUG
         private static bool DebugQuantumPropertyChanges = true;
@@ -66,6 +70,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             {
                 nodePresenter.ValueChanging += ValueChanging;
                 nodePresenter.ValueChanged += ValueChanged;
+                nodePresenter.AttachedProperties.PropertyUpdated += AttachedPropertyUpdated;
             }
 
             UpdateViewModelProperties();
@@ -79,6 +84,8 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             {
                 nodePresenter.ValueChanging -= ValueChanging;
                 nodePresenter.ValueChanged -= ValueChanged;
+                nodePresenter.AttachedProperties.PropertyUpdated -= AttachedPropertyUpdated;
+                nodePresenter.Dispose();
             }
             base.Destroy();
         }
@@ -464,11 +471,33 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
 
         private void ValueChanging(object sender, ValueChangingEventArgs valueChangingEventArgs)
         {
+            OnValueChanging();
+        }
+
+        private void ValueChanged(object sender, ValueChangedEventArgs valueChangedEventArgs)
+        {
+            OnValueChanged();
+        }
+
+        private void AttachedPropertyUpdated(ref PropertyContainer propertycontainer, PropertyKey propertykey, object newvalue, object oldvalue)
+        {
+            // This is the only legit scenario where we don't want re-entrancy. valueChanging should not be tested directly in one
+            // of those methods, because other cases could actually be problem.
+            if (!valueChanging)
+            {
+                OnValueChanging();
+                OnValueChanged();
+            }
+        }
+
+        private void OnValueChanging()
+        {
+            valueChanging = true;
             Parent?.NotifyPropertyChanging(Name);
             OnPropertyChanging(nameof(NodeValue));
         }
 
-        private void ValueChanged(object sender, ValueChangedEventArgs valueChangedEventArgs)
+        private void OnValueChanged()
         {
             Parent?.NotifyPropertyChanged(Name);
 
@@ -483,24 +512,19 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             OnPropertyChanged(nameof(VisibleChildrenCount));
 
             OnPropertyChanged(nameof(NodeValue));
-            owner.NotifyNodeChanged(Path);
+            owner.NotifyNodeChanged(this);
+
+            valueChanging = false;
         }
 
         private object ConvertValue(object value)
         {
-            if (Type.IsInstanceOfType(value))
-                return value;
-
-            if (value is IConvertible)
-            {
-                var typeCode = Type.GetTypeCode(Type);
-                if (typeCode != TypeCode.Empty && typeCode != TypeCode.Object)
-                {
-                    return Convert.ChangeType(value, Type);
-                }
-            }
-
-            return TypeDescriptor.GetConverter(Type).ConvertFrom(value);
+            if (value == null)
+                return null;
+            object convertedValue;
+            if (!TypeConverterHelper.TryConvert(value, Type, out convertedValue))
+                throw new InvalidOperationException("Can not convert value to the required type");
+            return convertedValue;
         }
 
         private void AddChild([NotNull] NodeViewModel child) => ChangeAndNotify(() => { child.Parent = this; ((ICollection<NodeViewModel>)initializingChildren ?? children).Add(child); }, $"{GraphViewModel.HasChildPrefix}{child.Name}", child.Name);

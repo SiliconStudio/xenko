@@ -1,19 +1,19 @@
 !SceneAsset
 Id: d23da80d-8ef3-4400-9f16-190a9c6bd3b3
-SerializedVersion: {Xenko: 2.0.0.0}
+SerializedVersion: {Xenko: 2.1.0.1}
 Tags: []
 ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
-    RootPartIds:
-        - 0b04edaf-f330-4ae1-9d93-517d967fbe95
-        - 76d096d5-6b97-4d29-bb4c-0d3a35317d5d
-        - d295a972-b9cf-48e5-a4ff-767eb25cddef
-        - d4867e32-71f8-4d81-a742-2d99ef6e5060
-        - 590ac468-5d53-43d9-81a6-2d43c1c06bc5
-        - cf253c4b-ccf0-4a8a-85e6-0019307e4cac
-        - 2a05c636-e91f-42e6-93ed-69415d19fe2f
-        - 629bf924-6828-46d6-a813-63d56a0f95b9
+    RootParts:
+        - ref!! 0b04edaf-f330-4ae1-9d93-517d967fbe95
+        - ref!! 76d096d5-6b97-4d29-bb4c-0d3a35317d5d
+        - ref!! d295a972-b9cf-48e5-a4ff-767eb25cddef
+        - ref!! d4867e32-71f8-4d81-a742-2d99ef6e5060
+        - ref!! 590ac468-5d53-43d9-81a6-2d43c1c06bc5
+        - ref!! cf253c4b-ccf0-4a8a-85e6-0019307e4cac
+        - ref!! 2a05c636-e91f-42e6-93ed-69415d19fe2f
+        - ref!! 629bf924-6828-46d6-a813-63d56a0f95b9
     Parts:
         -   Entity:
                 Id: 0b04edaf-f330-4ae1-9d93-517d967fbe95
@@ -30,7 +30,7 @@ Hierarchy:
                         Name: null
                         Projection: Orthographic
                         NearClipPlane: 1.0
-                        Slot: {Index: 0}
+                        Slot: 20be0aae-ab04-4f48-a08a-7e8ae0718d7d
         -   Entity:
                 Id: 2a05c636-e91f-42e6-93ed-69415d19fe2f
                 Name: Background

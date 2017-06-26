@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -20,11 +20,18 @@ namespace SiliconStudio.Xenko.Assets.Materials
     [AssetCompiler(typeof(MaterialAsset), typeof(AssetCompilationContext))]
     internal class MaterialAssetCompiler : AssetCompilerBase
     {
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
         {
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(TextureAsset), BuildDependencyType.Runtime);
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MaterialAsset), BuildDependencyType.CompileAsset);
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(GameSettingsAsset), BuildDependencyType.CompileAsset);
+        }
+
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
+        {
+            // Note: might not be needed in all cases, but let's not bother for now (they are only 9kb)
+            yield return new ObjectUrl(UrlType.Content, "XenkoEnvironmentLightingDFGLUT16");
+            yield return new ObjectUrl(UrlType.Content, "XenkoEnvironmentLightingDFGLUT8");
         }
 
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
@@ -40,6 +47,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
         {
             private readonly AssetItem assetItem;
 
+            private readonly GraphicsProfile graphicsProfile;
             private readonly ColorSpace colorSpace;
 
             private UFile assetUrl;
@@ -47,9 +55,12 @@ namespace SiliconStudio.Xenko.Assets.Materials
             public MaterialCompileCommand(string url, AssetItem assetItem, MaterialAsset value, AssetCompilerContext context)
                 : base(url, value, assetItem.Package)
             {
+                Version = 2;
                 this.assetItem = assetItem;
                 colorSpace = context.GetColorSpace();
                 assetUrl = new UFile(url);
+
+                graphicsProfile = context.GetGameSettingsAsset().GetOrCreate<RenderingSettings>(context.Platform).DefaultGraphicsProfile;
             }
 
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
@@ -58,7 +69,8 @@ namespace SiliconStudio.Xenko.Assets.Materials
 
                 writer.Serialize(ref assetUrl, ArchiveMode.Serialize);
 
-                // Write the 
+                // Write graphics profile and color space
+                writer.Write(graphicsProfile);
                 writer.Write(colorSpace);
 
                 foreach (var compileTimeDependency in ((MaterialAsset)assetItem.Asset).FindMaterialReferences())
@@ -104,6 +116,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
                 var assetManager = new ContentManager();
                 var materialContext = new MaterialGeneratorContext
                 {
+                    GraphicsProfile = graphicsProfile,
                     Content = assetManager,
                     ColorSpace = colorSpace
                 };

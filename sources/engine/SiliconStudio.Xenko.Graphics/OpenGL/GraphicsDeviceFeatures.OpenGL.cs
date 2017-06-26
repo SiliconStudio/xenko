@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 // Copyright (c) 2010-2012 SharpDX - Alexandre Mutel
 // 
@@ -77,6 +77,7 @@ namespace SiliconStudio.Xenko.Graphics
             deviceRoot.HasVAO = isOpenGLES3 || SupportedExtensions.Contains("GL_OES_vertex_array_object");
             deviceRoot.HasTextureRG = isOpenGLES3 || SupportedExtensions.Contains("GL_EXT_texture_rg");
             deviceRoot.HasKhronosDebug = deviceRoot.currentVersion >= 320 || SupportedExtensions.Contains("GL_KHR_debug");
+            deviceRoot.HasTimerQueries = SupportedExtensions.Contains("GL_EXT_disjoint_timer_query");
 
             // Either 3.2+, or 3.1+ with GL_EXT_texture_buffer
             // TODO: For now we don't have proper ES3 bindings on Android (and possibly iOS)
@@ -104,6 +105,7 @@ namespace SiliconStudio.Xenko.Graphics
             deviceRoot.HasDXT = SupportedExtensions.Contains("GL_EXT_texture_compression_s3tc");
             deviceRoot.HasTextureBuffers = true;
             deviceRoot.HasKhronosDebug = deviceRoot.currentVersion >= 430 || SupportedExtensions.Contains("GL_KHR_debug");
+            deviceRoot.HasTimerQueries = deviceRoot.version >= 320;
 
             // Compute shaders available in OpenGL 4.3
             HasComputeShaders = deviceRoot.version >= 430;

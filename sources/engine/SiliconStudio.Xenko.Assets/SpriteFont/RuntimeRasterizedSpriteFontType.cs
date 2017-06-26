@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.ComponentModel;
 using SiliconStudio.Core;
@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     {
         /// <inheritdoc/>
         [DataMember(30)]
-        [DataMemberRange(MathUtil.ZeroTolerance, float.MaxValue)]
+        [DataMemberRange(MathUtil.ZeroTolerance, 2)]
         [DefaultValue(20)]
         [Display("Default Size")]
         public override float Size { get; set; } = 20;

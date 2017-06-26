@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 
@@ -135,21 +135,26 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 pipelineState.State.BlendState = blendState;
 
                 var renderTargetCount = OutputCount;
-                
-                // Special case: texture cube
-                var isTextureCube = GetOutput(0).Dimension == TextureDimension.TextureCube;
-                if (isTextureCube)
+                if (renderTargetCount > 0)
                 {
-                    renderTargetCount = 6;
+                    // Special case: texture cube
+                    var isTextureCube = GetOutput(0).Dimension == TextureDimension.TextureCube;
+                    if (isTextureCube)
+                    {
+                        renderTargetCount = 6;
+                    }
+
+                    // Capture output state manually (since render targets might not be bound if delaySetRenderTargets is set to true)
+                    pipelineState.State.Output.RenderTargetCount = renderTargetCount;
+                    fixed (PixelFormat* pixelFormatStart = &pipelineState.State.Output.RenderTargetFormat0)
+                    for (int i = 0; i < renderTargetCount; ++i)
+                    {
+                        pixelFormatStart[i] = GetOutput(isTextureCube ? 0 : i).ViewFormat;
+                    }
                 }
 
-                // Capture output state manually (since render targets might not be bound if delaySetRenderTargets is set to true)
-                pipelineState.State.Output.RenderTargetCount = renderTargetCount;
-                fixed (PixelFormat* pixelFormatStart = &pipelineState.State.Output.RenderTargetFormat0)
-                for (int i = 0; i < renderTargetCount; ++i)
-                {
-                    pixelFormatStart[i] = GetOutput(isTextureCube ? 0 : i).ViewFormat;
-                }
+                if (HasDepthStencilOutput)
+                    pipelineState.State.Output.DepthStencilFormat = DepthStencil.Format;
 
                 pipelineState.Update();
                 pipelineStateDirty = false;

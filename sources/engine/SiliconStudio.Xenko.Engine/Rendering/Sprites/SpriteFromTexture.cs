@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.ComponentModel;
@@ -157,6 +157,10 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             }
             // Note: This "isDirty" system is needed because the texture size is not valid 
             // when the texture is set for the first time by the serializer (texture are loaded in two times)
+
+            // Workaround for deserialized texures. Keep dirty while the texture is not fully deserialized.
+            if (texture?.Size == Size3.Zero)
+                isSpriteDirty = true;
 
             return sprite;
         }

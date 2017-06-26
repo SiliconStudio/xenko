@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
@@ -7,9 +7,9 @@ using SiliconStudio.Xenko.Engine.Network;
 using SiliconStudio.Xenko.Games.Testing.Requests;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
-using SiliconStudio.Xenko.Input.Extensions;
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -28,11 +28,22 @@ namespace SiliconStudio.Xenko.Games.Testing
         private readonly ConcurrentQueue<Action> drawActions = new ConcurrentQueue<Action>();
         private SocketMessageLayer socketMessageLayer;
 
+        private InputSourceSimulated inputSourceSimulated;
+        private KeyboardSimulated keyboardSimulated;
+        private MouseSimulated mouseSimulated;
+
         public GameTestingSystem(IServiceRegistry registry) : base(registry)
         {
             DrawOrder = int.MaxValue;
             Enabled = true;
             Visible = true;
+            
+            // Switch to simulated input
+            InputManager input = (InputManager)registry.GetService(typeof(InputManager));
+            input.Sources.Clear();
+            input.Sources.Add(inputSourceSimulated = new InputSourceSimulated());
+            keyboardSimulated = inputSourceSimulated.AddKeyboard();
+            mouseSimulated = inputSourceSimulated.AddMouse();
         }
 
         public override async void Initialize()
@@ -47,32 +58,25 @@ namespace SiliconStudio.Xenko.Games.Testing
 
             socketMessageLayer.AddPacketHandler<KeySimulationRequest>(request =>
             {
-                if (request.Down)
+                drawActions.Enqueue(() =>
                 {
-                    game.Input.SimulateKeyDown(request.Key);
-                }
-                else
-                {
-                    game.Input.SimulateKeyUp(request.Key);
-                }
+                    if (request.Down)
+                    {
+                        keyboardSimulated.SimulateDown(request.Key);
+                    }
+                    else
+                    {
+                        keyboardSimulated.SimulateUp(request.Key);
+                    }
+                });
             });
 
             socketMessageLayer.AddPacketHandler<TapSimulationRequest>(request =>
             {
-                switch (request.State)
+                drawActions.Enqueue(() =>
                 {
-                    case PointerState.Down:
-                        game.Input.SimulateTapDown(request.Coords);
-                        break;
-
-                    case PointerState.Up:
-                        game.Input.SimulateTapUp(request.Coords, request.CoordsDelta, request.Delta);
-                        break;
-
-                    case PointerState.Move:
-                        game.Input.SimulateTapMove(request.Coords, request.CoordsDelta, request.Delta);
-                        break;
-                }
+                    mouseSimulated.SimulatePointer(request.EventType, request.Coords);
+                });
             });
 
             socketMessageLayer.AddPacketHandler<ScreenshotRequest>(request =>

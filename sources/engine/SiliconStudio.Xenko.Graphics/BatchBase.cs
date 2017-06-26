@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2012 SharpDX - Alexandre Mutel
 // 
@@ -395,7 +395,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             // Sets the texture for this sprite effect.
             // Use an optimized version in order to avoid to reapply the sprite effect here just to change texture
-            // We are calling directly the PixelShaderStage. We assume that the texture is on slot 0 as it is
+            // We are calling the PixelShaderStage directly. We assume that the texture is on slot 0 as it is
             // setup in the original BasicEffect.fx shader.
             if (textureUpdater.HasValue)
                 Effect.Parameters.Set(textureUpdater.Value, texture);

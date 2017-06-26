@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -84,9 +84,9 @@ namespace SiliconStudio.Xenko.Navigation.Processors
             result.Normal = queryResult.Normal;
             return result;
         }
-        
+
         /// <summary>
-        /// Finds a path from point <see cref="start"/> to <see cref="end"/>
+        /// Finds a path from point <paramref cref="start"/> to <paramref cref="end"/>
         /// </summary>
         /// <param name="start">The starting location of the pathfinding query</param>
         /// <param name="end">The ending location of the pathfinding query</param>

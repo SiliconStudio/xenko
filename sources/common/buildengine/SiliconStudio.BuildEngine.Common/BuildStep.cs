@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Core.Diagnostics;
 using System;
@@ -79,13 +79,6 @@ namespace SiliconStudio.BuildEngine
         public HashSet<BuildStep> PrerequisiteSteps => prerequisiteSteps;
 
         private readonly HashSet<BuildStep> prerequisiteSteps = new HashSet<BuildStep>();
-
-        /// <summary>
-        /// List of commands that needs this command to be successfully executed before being processed
-        /// </summary>
-        public IEnumerable<CommandBuildStep> SpawnedSteps => SpawnedStepsList;
-
-        protected readonly List<CommandBuildStep> SpawnedStepsList = new List<CommandBuildStep>();
 
         /// <summary>
         /// The parent build step, which will be the instigator of the step
@@ -212,7 +205,7 @@ namespace SiliconStudio.BuildEngine
             var currentBuildStep = this;
             while (currentBuildStep != null)
             {
-                var enumBuildStep = currentBuildStep as EnumerableBuildStep;
+                var enumBuildStep = currentBuildStep as ListBuildStep;
                 if (enumBuildStep != null)
                     yield return enumBuildStep.OutputObjects;
 

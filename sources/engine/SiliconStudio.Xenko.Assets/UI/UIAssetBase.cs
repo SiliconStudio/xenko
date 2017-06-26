@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Assets.UI
         {
             if (part == null) throw new ArgumentNullException(nameof(part));
             var parent = GetParent(part);
-            return parent?.VisualChildren.IndexOf(x => x == part) ?? Hierarchy.RootPartIds.IndexOf(part.Id);
+            return parent?.VisualChildren.IndexOf(x => x == part) ?? Hierarchy.RootParts.IndexOf(part);
         }
 
         /// <inheritdoc/>

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -8,14 +8,14 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
 {
     public class NodeViewModelValueChangedArgs : EventArgs
     {
-        public NodeViewModelValueChangedArgs(GraphViewModel viewModel, string nodePath)
+        public NodeViewModelValueChangedArgs(GraphViewModel viewModel, NodeViewModel node)
         {
             ViewModel = viewModel;
-            NodePath = nodePath;
+            Node = node;
         }
 
         public GraphViewModel ViewModel { get; private set; }
 
-        public string NodePath { get; private set; }
+        public NodeViewModel Node { get; private set; }
     }
 }

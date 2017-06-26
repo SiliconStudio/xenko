@@ -1,5 +1,5 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using SiliconStudio.Core.Collections;
@@ -250,7 +250,9 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
                 // Update the shadow camera. The calculation of the eye position assumes RH coordinates.
                 var viewMatrix = Matrix.LookAtRH(target - direction * cascadeMaxBoundLS.Z, target, upDirection); // View;;
-                var projectionMatrix = Matrix.OrthoOffCenterRH(cascadeMinBoundLS.X, cascadeMaxBoundLS.X, cascadeMinBoundLS.Y, cascadeMaxBoundLS.Y, 0.0f, cascadeMaxBoundLS.Z - cascadeMinBoundLS.Z); // Projection
+                var nearClip = 0.0f;
+                var farClip = cascadeMaxBoundLS.Z - cascadeMinBoundLS.Z;
+                var projectionMatrix = Matrix.OrthoOffCenterRH(cascadeMinBoundLS.X, cascadeMaxBoundLS.X, cascadeMinBoundLS.Y, cascadeMaxBoundLS.Y, nearClip, farClip); // Projection
                 Matrix viewProjectionMatrix;
                 Matrix.Multiply(ref viewMatrix, ref projectionMatrix, out viewProjectionMatrix);
 
@@ -306,8 +308,11 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 shadowRenderView.ShadowMapTexture = lightShadowMap;
                 shadowRenderView.Rectangle = shadowMapRectangle;
                 shadowRenderView.View = viewMatrix;
+                shadowRenderView.ViewSize = new Vector2(shadowMapRectangle.Width, shadowMapRectangle.Height);
                 shadowRenderView.Projection = projectionMatrix;
                 shadowRenderView.ViewProjection = viewProjectionMatrix;
+                shadowRenderView.NearClipPlane = nearClip;
+                shadowRenderView.FarClipPlane = farClip;
 
                 // Add the render view for the current frame
                 context.RenderSystem.Views.Add(shadowRenderView);

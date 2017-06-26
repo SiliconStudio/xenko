@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -65,7 +65,6 @@ namespace SiliconStudio.Xenko.Rendering
         public EffectSystem(IServiceRegistry services)
             : base(services)
         {
-            Services.AddService(typeof(EffectSystem), this);
         }
 
         public override void Initialize()
@@ -120,6 +119,9 @@ namespace SiliconStudio.Xenko.Rendering
                 directoryWatcher = null;
             }
 #endif
+
+            Compiler?.Dispose();
+            Compiler = null;
 
             base.Destroy();
         }
@@ -461,6 +463,11 @@ namespace SiliconStudio.Xenko.Rendering
                 {
                     // Create a remote compiler
                     compiler = new RemoteEffectCompiler(shaderCompilerTarget);
+                }
+                else
+                {
+                    // Otherwise, EffectSystem takes ownership of shaderCompilerTarget
+                    shaderCompilerTarget.DisposeBy(effectSystem);
                 }
             }
 

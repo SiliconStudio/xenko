@@ -1,5 +1,6 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+
 using System;
 using System.Runtime.InteropServices;
 
@@ -8,17 +9,12 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
-    /// Describes the state of a gamepad.
+    /// Describes the state of a typical gamepad.
     /// </summary>
-    /// <seealso cref="InputManager.GetGamePad"/>
+    /// <seealso cref="IGamePadDevice.State"/>
     [StructLayout(LayoutKind.Sequential)]
     public struct GamePadState : IEquatable<GamePadState>
     {
-        /// <summary>
-        /// A boolean indicating the connect status of this gamepad. <c>true</c> if connected, otherwise <c>false</c>.
-        /// </summary>
-        public bool IsConnected;
-
         /// <summary>
         /// Bitmask of the gamepad buttons.
         /// </summary>
@@ -57,7 +53,7 @@ namespace SiliconStudio.Xenko.Input
         /// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
         public bool Equals(GamePadState other)
         {
-            return IsConnected.Equals(other.IsConnected) && Buttons.Equals(other.Buttons) && LeftThumb.Equals(other.LeftThumb) && RightThumb.Equals(other.RightThumb) && LeftTrigger.Equals(other.LeftTrigger) && RightTrigger.Equals(other.RightTrigger);
+            return Buttons.Equals(other.Buttons) && LeftThumb.Equals(other.LeftThumb) && RightThumb.Equals(other.RightThumb) && LeftTrigger.Equals(other.LeftTrigger) && RightTrigger.Equals(other.RightTrigger);
         }
 
         public override bool Equals(object obj)
@@ -70,8 +66,7 @@ namespace SiliconStudio.Xenko.Input
         {
             unchecked
             {
-                int hashCode = IsConnected.GetHashCode();
-                hashCode = (hashCode * 397) ^ Buttons.GetHashCode();
+                int hashCode = Buttons.GetHashCode();
                 hashCode = (hashCode * 397) ^ LeftThumb.GetHashCode();
                 hashCode = (hashCode * 397) ^ RightThumb.GetHashCode();
                 hashCode = (hashCode * 397) ^ LeftTrigger.GetHashCode();
@@ -104,7 +99,89 @@ namespace SiliconStudio.Xenko.Input
 
         public override string ToString()
         {
-            return string.Format("IsConnected: {0}, Buttons: {1}, LeftThumb: {2}, RightThumb: {3}, LeftTrigger: {4}, RightTrigger: {5}", IsConnected, Buttons, LeftThumb, RightThumb, LeftTrigger, RightTrigger);
+            return $"Buttons: {Buttons}, LeftThumb: {LeftThumb}, RightThumb: {RightThumb}, LeftTrigger: {LeftTrigger}, RightTrigger: {RightTrigger}";
+        }
+
+        /// <summary>
+        /// Updates the state from any gamepad events received that have mapped buttons
+        /// </summary>
+        /// <param name="evt">The gamepad event to process</param>
+        /// <returns><c>true</c> if the event made any changes</returns>
+        public bool Update(InputEvent evt)
+        {
+            var buttonEvent = evt as GamePadButtonEvent;
+            if (buttonEvent != null)
+            {
+                return Update(buttonEvent);
+            }
+
+            var axisEvent = evt as GamePadAxisEvent;
+            if (axisEvent != null)
+            {
+                return Update(axisEvent);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Updates the state from any gamepad events received that have mapped buttons
+        /// </summary>
+        /// <param name="buttonEvent">The gamepad event to process</param>
+        /// <returns><c>true</c> if the event made any changes</returns>
+        public bool Update(GamePadButtonEvent buttonEvent)
+        {
+            if (buttonEvent.IsDown)
+            {
+                if ((Buttons & buttonEvent.Button) != 0)
+                    return false;
+
+                Buttons |= buttonEvent.Button; // Set bits
+            }
+            else
+            {
+                if ((Buttons & buttonEvent.Button) == 0)
+                    return false;
+
+                Buttons &= ~buttonEvent.Button; // Clear bits
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Updates the state from any gamepad events received that have mapped buttons
+        /// </summary>
+        /// <param name="axisEvent">The gamepad event to process</param>
+        /// <returns><c>true</c> if the event made any changes</returns>
+        public bool Update(GamePadAxisEvent axisEvent)
+        {
+            switch (axisEvent.Axis)
+            {
+                case GamePadAxis.LeftThumbX:
+                    return UpdateFloat(ref LeftThumb.X, axisEvent);
+                case GamePadAxis.LeftThumbY:
+                    return UpdateFloat(ref LeftThumb.Y, axisEvent);
+                case GamePadAxis.RightThumbX:
+                    return UpdateFloat(ref RightThumb.X, axisEvent);
+                case GamePadAxis.RightThumbY:
+                    return UpdateFloat(ref RightThumb.Y, axisEvent);
+                case GamePadAxis.LeftTrigger:
+                    return UpdateFloat(ref LeftTrigger, axisEvent);
+                case GamePadAxis.RightTrigger:
+                    return UpdateFloat(ref RightTrigger, axisEvent);
+            }
+            return false;
+        }
+
+        private bool UpdateFloat(ref float a, GamePadAxisEvent evt)
+        {
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
+            if (a == evt.Value)
+                return false;
+
+            a = evt.Value;
+            return true;
         }
     }
 }

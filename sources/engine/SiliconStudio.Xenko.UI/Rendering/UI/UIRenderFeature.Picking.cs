@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             {
                 var pointerEvent = input.PointerEvents[index];
 
-                if (pointerEvent.State != PointerState.Move)
+                if (pointerEvent.EventType != PointerEventType.Moved)
                 {
                     aggregatedTranslation = Vector2.Zero;
                     compactedPointerEvents.Add(pointerEvent.Clone());
@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
                 aggregatedTranslation += pointerEvent.DeltaPosition;
 
-                if (index + 1 >= input.PointerEvents.Count || input.PointerEvents[index + 1].State != PointerState.Move)
+                if (index + 1 >= input.PointerEvents.Count || input.PointerEvents[index + 1].EventType != PointerEventType.Moved)
                 {
                     var compactedMoveEvent = pointerEvent.Clone();
                     compactedMoveEvent.DeltaPosition = aggregatedTranslation;
@@ -74,12 +74,6 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
         private void ClearPointerEvents()
         {
-            // collect back pointer event not used anymore
-            lock (PointerEvent.Pool)
-            {
-                foreach (var pointerEvent in compactedPointerEvents)
-                    PointerEvent.Pool.Enqueue(pointerEvent);
-            }
             compactedPointerEvents.Clear();
         }
 
@@ -148,7 +142,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             {
                 // performance optimization: skip all the events that started outside of the UI
                 var lastTouchedElement = state.LastTouchedElement;
-                if (lastTouchedElement == null && pointerEvent.State != PointerState.Down)
+                if (lastTouchedElement == null && pointerEvent.EventType != PointerEventType.Pressed)
                     continue;
 
                 var time = gameTime.Total;
@@ -166,7 +160,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                     currentTouchedElement = GetElementAtScreenPosition(rootElement, ref uiRay, ref worldViewProj, ref intersectionPoint);
                 }
 
-                if (pointerEvent.State == PointerState.Down || pointerEvent.State == PointerState.Up)
+                if (pointerEvent.EventType == PointerEventType.Pressed || pointerEvent.EventType == PointerEventType.Released)
                     state.LastIntersectionPoint = intersectionPoint;
 
                 // TODO: add the pointer type to the event args?
@@ -180,14 +174,14 @@ namespace SiliconStudio.Xenko.Rendering.UI
                     WorldTranslation = intersectionPoint - state.LastIntersectionPoint
                 };
 
-                switch (pointerEvent.State)
+                switch (pointerEvent.EventType)
                 {
-                    case PointerState.Down:
+                    case PointerEventType.Pressed:
                         touchEvent.Action = TouchAction.Down;
                         currentTouchedElement?.RaiseTouchDownEvent(touchEvent);
                         break;
 
-                    case PointerState.Up:
+                    case PointerEventType.Released:
                         touchEvent.Action = TouchAction.Up;
 
                         // generate enter/leave events if we passed from an element to another without move events
@@ -198,7 +192,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                         currentTouchedElement?.RaiseTouchUpEvent(touchEvent);
                         break;
 
-                    case PointerState.Move:
+                    case PointerEventType.Moved:
                         touchEvent.Action = TouchAction.Move;
 
                         // first notify the move event (even if the touched element changed in between it is still coherent in one of its parents)
@@ -209,8 +203,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                             ThrowEnterAndLeaveTouchEvents(currentTouchedElement, lastTouchedElement, touchEvent);
                         break;
 
-                    case PointerState.Out:
-                    case PointerState.Cancel:
+                    case PointerEventType.Canceled:
                         touchEvent.Action = TouchAction.Move;
 
                         // generate enter/leave events if we passed from an element to another without move events

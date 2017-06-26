@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -16,13 +16,13 @@ namespace SiliconStudio.Xenko.Assets.Models
     [AssetCompiler(typeof(ModelAsset), typeof(AssetCompilationContext))]
     public class ModelAssetCompiler : AssetCompilerBase
     {
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
         {
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SkeletonAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MaterialAsset), BuildDependencyType.Runtime);
         }
 
-        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
         {
             var modelAsset = (ModelAsset)assetItem.Asset;
 
@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 return;
             }
 
-            importModelCommand.InputFilesGetter = () => GetInputFiles(context, assetItem);
+            importModelCommand.InputFilesGetter = () => GetInputFiles(assetItem);
             importModelCommand.Mode = ImportModelCommand.ExportMode.Model;
             importModelCommand.SourcePath = assetSource;
             importModelCommand.Location = targetUrlInStorage;
@@ -76,7 +76,15 @@ namespace SiliconStudio.Xenko.Assets.Models
             importModelCommand.Materials = asset.Materials;
             importModelCommand.ScaleImport = asset.ScaleImport;
             importModelCommand.PivotPosition = asset.PivotPosition;
-            importModelCommand.SkeletonUrl = skeleton?.Location;
+
+            if (skeleton != null)
+            {
+                importModelCommand.SkeletonUrl = skeleton.Location;
+                // Note: skeleton override values
+                importModelCommand.ScaleImport = ((SkeletonAsset)skeleton.Asset).ScaleImport;
+                importModelCommand.PivotPosition = ((SkeletonAsset)skeleton.Asset).PivotPosition;
+            }
+
             importModelCommand.Package = assetItem.Package;
 
             result.BuildSteps = new AssetBuildStep(assetItem) { importModelCommand };

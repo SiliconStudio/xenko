@@ -1,10 +1,11 @@
 !GraphicsCompositorAsset
 Id: e571b655-a83d-4c90-b560-d3b182426fc7
-SerializedVersion: {Xenko: 2.0.0.0}
+SerializedVersion: {Xenko: 2.1.0.2}
 Tags: []
-Archetype: 823a81bf-bac0-4552-9267-aeed499c40df:Compositing/DefaultGraphicsCompositorLevel10
+Archetype: 823a81bf-bac0-4552-9267-aeed499c40df:DefaultGraphicsCompositorLevel10
 Cameras:
     de2e75c3b2b23e54162686363f3f138e:
+        Id: 39e59472-e064-4463-9097-403dadbc041e
         Name: Main
 RenderStages:
     47116750c1a5d449b4ad3625f71439b3:
@@ -179,9 +180,17 @@ SharedRenderers:
                     Enabled: false
                     Color: {R: 0.0, G: 0.0, B: 0.0}
         Antialiasing: !FXAAEffect {}
+    ee80a20a9bd99f2d70711114e15fe7ca: !SiliconStudio.Xenko.Rendering.Compositing.DebugRenderer,SiliconStudio.Xenko.Engine
+        Id: dae8d18d-399f-4dd6-b868-311692e60675
+        DebugRenderStages: {}
 Game: !SiliconStudio.Xenko.Rendering.Compositing.SceneCameraRenderer,SiliconStudio.Xenko.Engine
     Id: 76fe87cf-f574-4ad6-85b8-e9a9586be0e2
-    Camera: {Index: 0}
-    Child: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
+    Camera: ref!! 39e59472-e064-4463-9097-403dadbc041e
+    Child: !SiliconStudio.Xenko.Rendering.Compositing.SceneRendererCollection,SiliconStudio.Xenko.Engine
+        Id: 82568e46-92e7-421a-8dca-114a74e0cd69
+        Children:
+            d39c5ddbf8b7d5ca02bafb6496b1cc3c: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
+            01d338078e9b21121ead0868932613dd: !SiliconStudio.Xenko.Rendering.Compositing.DebugRenderer,SiliconStudio.Xenko.Engine ref!! dae8d18d-399f-4dd6-b868-311692e60675
 SingleView: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! b41f7807-0a56-4c00-ad86-fdf2d8d39d74
 Editor: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
+BlockPositions: {}

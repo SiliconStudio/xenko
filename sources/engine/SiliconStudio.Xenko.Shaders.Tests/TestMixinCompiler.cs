@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -91,7 +91,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             var context = new MaterialGeneratorContext { FindAsset = reference => fakeAsset };
             var result = MaterialGenerator.Generate(new MaterialDescriptor { Attributes = materialAsset.Attributes, Layers = materialAsset.Layers }, context, "TestMaterial");
 
-            compilerParameters.Set(MaterialKeys.PixelStageSurfaceShaders, result.Material.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders));
+            compilerParameters.Set(MaterialKeys.PixelStageSurfaceShaders, result.Material.Passes[0].Parameters.Get(MaterialKeys.PixelStageSurfaceShaders));
             var directionalLightGroup = new ShaderClassSource("LightDirectionalGroup", 1);
             compilerParameters.Set(LightingKeys.DirectLightGroups, new ShaderSourceCollection { directionalLightGroup });
             //compilerParameters.Set(LightingKeys.CastShadows, false);

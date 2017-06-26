@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -30,7 +32,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// The width in pixel.
         /// </summary>
         [DefaultValue(512)]
-        [DataMemberRange(0, 10000, 1, 10)]
         [Display(null, "Size")]
         public int Width { get; set; } = 512;
 
@@ -38,7 +39,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// The height in pixel.
         /// </summary>
         [DefaultValue(512)]
-        [DataMemberRange(0, 10000, 1, 10)]
         [Display(null, "Size")]
         public int Height { get; set; } = 512;
 

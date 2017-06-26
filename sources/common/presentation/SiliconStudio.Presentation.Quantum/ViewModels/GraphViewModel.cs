@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -104,26 +104,9 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// </summary>
         public event EventHandler<NodeViewModelValueChangedArgs> NodeValueChanged;
 
-        [Pure]
-        public NodeViewModel ResolveNode(string path)
+        internal void NotifyNodeChanged(NodeViewModel node)
         {
-            var members = path.Split('.');
-            if (members[0] != RootNode.Name)
-                return null;
-
-            var currentNode = RootNode;
-            foreach (var member in members.Skip(1))
-            {
-                currentNode = currentNode.Children.FirstOrDefault(x => x.Name == member);
-                if (currentNode == null)
-                    return null;
-            }
-            return currentNode;
-        }
-
-        internal void NotifyNodeChanged(string nodePath)
-        {
-            NodeValueChanged?.Invoke(this, new NodeViewModelValueChangedArgs(this, nodePath));
+            NodeValueChanged?.Invoke(this, new NodeViewModelValueChangedArgs(this, node));
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>The scrolling speed of the text. The unit is in virtual pixels.</userdoc>
         [DataMember]
-        [DataMemberRange(0.0f, float.MaxValue)]
+        [DataMemberRange(0.0f, 3)]
         [Display(category: BehaviorCategory)]
         [DefaultValue(40.0f)]
         public float ScrollingSpeed

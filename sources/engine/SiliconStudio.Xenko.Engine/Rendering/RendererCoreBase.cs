@@ -1,11 +1,12 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-
+using System.Reflection;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Graphics;
@@ -20,6 +21,9 @@ namespace SiliconStudio.Xenko.Rendering
     [DataContract]
     public abstract class RendererCoreBase : ComponentBase, IGraphicsRendererCore
     {
+        [DataMemberIgnore]
+        public readonly ProfilingKey ProfilingKey;
+
         private bool isInDrawCore;
         private readonly List<GraphicsResource> scopedResources = new List<GraphicsResource>();
         private readonly List<IGraphicsRendererCore> subRenderersToUnload;
@@ -42,6 +46,7 @@ namespace SiliconStudio.Xenko.Rendering
             Enabled = true;
             subRenderersToUnload = new List<IGraphicsRendererCore>();
             Profiling = true;
+            ProfilingKey = new ProfilingKey(name ?? nameof(RendererCoreBase));
         }
 
         /// <summary>
@@ -224,7 +229,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             if (Name != null && Profiling)
             {
-                context.CommandList.BeginProfile(Color.Green, Name);
+                context.QueryManager.BeginProfile(Color.Green, ProfilingKey);
             }
 
             PreDrawCore(context);
@@ -256,7 +261,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             if (Name != null && Profiling)
             {
-                context.CommandList.EndProfile();
+                context.QueryManager.EndProfile(ProfilingKey);
             }
         }
     }

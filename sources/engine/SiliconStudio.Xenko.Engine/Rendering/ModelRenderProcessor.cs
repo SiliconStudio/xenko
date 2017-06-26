@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+
+using System;
+using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
@@ -84,39 +88,37 @@ namespace SiliconStudio.Xenko.Rendering
             var modelViewHierarchy = modelComponent.Skeleton;
             var nodeTransformations = modelViewHierarchy.NodeTransformations;
 
-            var modelComponentMaterials = modelComponent.Materials;
-            var modelMaterials = renderModel.ModelComponent.Model.Materials;
-
-            for (int meshIndex = 0; meshIndex < renderModel.Meshes.Length; meshIndex++)
+            for (int sourceMeshIndex = 0; sourceMeshIndex < renderModel.Materials.Length; sourceMeshIndex++)
             {
-                var renderMesh = renderModel.Meshes[meshIndex];
-                var mesh = renderMesh.Mesh;
-                var meshInfo = modelComponent.MeshInfos[meshIndex];
+                var passes = renderModel.Materials[sourceMeshIndex].MeshCount;
+                // Note: indices in RenderModel.Meshes and Model.Meshes are different (due to multipass materials)
+                var meshIndex = renderModel.Materials[sourceMeshIndex].MeshStartIndex;
 
-                renderMesh.Enabled = modelComponent.Enabled;
-
-                if (renderMesh.Enabled)
+                for (int pass = 0; pass < passes; ++pass, ++meshIndex)
                 {
-                    // Update material
-                    var materialIndex = mesh.MaterialIndex;
-                    var materialOverride = modelComponentMaterials.SafeGet(materialIndex);
-                    var modelMaterialInstance = modelMaterials.GetItemOrNull(materialIndex);
-                    UpdateMaterial(renderMesh, materialOverride, modelMaterialInstance, modelComponent);
+                    var renderMesh = renderModel.Meshes[meshIndex];
 
-                    // Copy world matrix
-                    var nodeIndex = mesh.NodeIndex;
-                    renderMesh.World = nodeTransformations[nodeIndex].WorldMatrix;
-                    renderMesh.IsScalingNegative = nodeTransformations[nodeIndex].IsScalingNegative;
-                    renderMesh.BoundingBox = new BoundingBoxExt(meshInfo.BoundingBox);
+                    renderMesh.Enabled = modelComponent.Enabled;
                     renderMesh.RenderGroup = modelComponent.RenderGroup;
-                    renderMesh.BlendMatrices = meshInfo.BlendMatrices;
+
+                    if (modelComponent.Enabled)
+                    {
+                        // Copy world matrix
+                        var mesh = renderModel.Model.Meshes[sourceMeshIndex];
+                        var meshInfo = modelComponent.MeshInfos[sourceMeshIndex];
+                        var nodeIndex = mesh.NodeIndex;
+                        renderMesh.World = nodeTransformations[nodeIndex].WorldMatrix;
+                        renderMesh.IsScalingNegative = nodeTransformations[nodeIndex].IsScalingNegative;
+                        renderMesh.BoundingBox = new BoundingBoxExt(meshInfo.BoundingBox);
+                        renderMesh.BlendMatrices = meshInfo.BlendMatrices;
+                    }
                 }
             }
         }
 
-        private void UpdateMaterial(RenderMesh renderMesh, Material materialOverride, MaterialInstance modelMaterialInstance, ModelComponent modelComponent)
+        private void UpdateMaterial(RenderMesh renderMesh, MaterialPass materialPass, MaterialInstance modelMaterialInstance, ModelComponent modelComponent)
         {
-            renderMesh.Material = materialOverride ?? modelMaterialInstance?.Material ?? fallbackMaterial;
+            renderMesh.MaterialPass = materialPass;
 
             renderMesh.IsShadowCaster = modelComponent.IsShadowCaster;
             if (modelMaterialInstance != null)
@@ -125,13 +127,55 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
+        private Material FindMaterial(Material materialOverride, MaterialInstance modelMaterialInstance)
+        {
+            return materialOverride ?? modelMaterialInstance?.Material ?? fallbackMaterial;
+        }
+
         private void CheckMeshes(RenderModel renderModel)
         {
             // Check if model changed
-            var model = renderModel.ModelComponent.Model;
+            var modelComponent = renderModel.ModelComponent;
+            var model = modelComponent.Model;
             if (renderModel.Model == model)
-                return;
+            {
+                // Check if any material pass count changed
+                if (model != null)
+                {
+                    // Number of meshes changed in the model?
+                    if (model.Meshes.Count != renderModel.Meshes.Length)
+                        goto RegenerateMeshes;
 
+                    if (modelComponent.Enabled)
+                    {
+                        // Check materials
+                        var modelComponentMaterials = modelComponent.Materials;
+                        for (int sourceMeshIndex = 0; sourceMeshIndex < model.Meshes.Count; sourceMeshIndex++)
+                        {
+                            ref var material = ref renderModel.Materials[sourceMeshIndex];
+                            var materialIndex = model.Meshes[sourceMeshIndex].MaterialIndex;
+
+                            var newMaterial = FindMaterial(modelComponentMaterials.SafeGet(materialIndex), model.Materials.GetItemOrNull(materialIndex));
+
+                            // If material changed or its number of pass changed, trigger a full regeneration of RenderMeshes (note: we could do partial later)
+                            if ((newMaterial?.Passes.Count ?? 1) != material.MeshCount)
+                                goto RegenerateMeshes;
+
+                            // Update materials
+                            material.Material = newMaterial;
+                            int meshIndex = material.MeshStartIndex;
+                            for (int pass = 0; pass < material.MeshCount; ++pass, ++meshIndex)
+                            {
+                                UpdateMaterial(renderModel.Meshes[meshIndex], newMaterial?.Passes[pass], model.Materials.GetItemOrNull(materialIndex), modelComponent);
+                            }
+                        }
+                    }
+                }
+
+                return;
+            }
+
+        RegenerateMeshes:
             renderModel.Model = model;
 
             // Remove old meshes
@@ -150,23 +194,39 @@ namespace SiliconStudio.Xenko.Rendering
             if (model == null)
                 return;
 
-            // Create render meshes
-            var renderMeshes = new RenderMesh[model.Meshes.Count];
-            var modelComponent = renderModel.ModelComponent;
-            for (int index = 0; index < model.Meshes.Count; index++)
+            // Count meshes
+            var materialMeshCount = 0;
+            renderModel.Materials = new RenderModel.MaterialInfo[model.Meshes.Count];
+            for (int sourceMeshIndex = 0; sourceMeshIndex < model.Meshes.Count; sourceMeshIndex++)
             {
-                var mesh = model.Meshes[index];
+                var materialIndex = model.Meshes[sourceMeshIndex].MaterialIndex;
+                var material = FindMaterial(modelComponent.Materials.SafeGet(materialIndex), model.Materials.GetItemOrNull(materialIndex));
+                var meshCount = material?.Passes.Count ?? 1;
+                renderModel.Materials[sourceMeshIndex] = new RenderModel.MaterialInfo { Material = material, MeshStartIndex = materialMeshCount, MeshCount = meshCount };
+                materialMeshCount += meshCount;
+            }
 
-                // TODO: Somehow, if material changed we might need to remove/add object in render system again (to evaluate new render stage subscription)
-                var materialIndex = mesh.MaterialIndex;
-                renderMeshes[index] = new RenderMesh
+            // Create render meshes
+            var renderMeshes = new RenderMesh[materialMeshCount];
+            for (int sourceMeshIndex = 0; sourceMeshIndex < model.Meshes.Count; sourceMeshIndex++)
+            {
+                var mesh = model.Meshes[sourceMeshIndex];
+                ref var material = ref renderModel.Materials[sourceMeshIndex];
+                int meshIndex = material.MeshStartIndex;
+
+                for (int pass = 0; pass < material.MeshCount; ++pass, ++meshIndex)
                 {
-                    RenderModel = renderModel,
-                    Mesh = mesh,
-                };
+                    // TODO: Somehow, if material changed we might need to remove/add object in render system again (to evaluate new render stage subscription)
+                    var materialIndex = mesh.MaterialIndex;
+                    renderMeshes[meshIndex] = new RenderMesh
+                    {
+                        RenderModel = renderModel,
+                        Mesh = mesh,
+                    };
 
-                // Update material
-                UpdateMaterial(renderMeshes[index], modelComponent.Materials.SafeGet(materialIndex), model.Materials.GetItemOrNull(materialIndex), modelComponent);
+                    // Update material
+                    UpdateMaterial(renderMeshes[meshIndex], material.Material?.Passes[pass], model.Materials.GetItemOrNull(materialIndex), modelComponent);
+                }
             }
 
             renderModel.Meshes = renderMeshes;

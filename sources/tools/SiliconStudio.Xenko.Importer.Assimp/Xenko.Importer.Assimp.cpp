@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 #include "stdafx.h"
 #include "../SiliconStudio.Xenko.Assimp.Translation/Extension.h"
 #include "../SiliconStudio.Xenko.Importer.Common/ImporterUtils.h"
@@ -160,6 +160,7 @@ private:
 		*/
 		
 		std::string unmanaged = msclr::interop::marshal_as<std::string>(inputFilename);
+
 		return importer->ReadFile(unmanaged, flags);
 	}
 
@@ -374,6 +375,10 @@ private:
 				auto normalPointer = ((Vector3*)(vbPointer + normalOffset));
 				*normalPointer = aiVector3ToVector3(mesh->mNormals[i]);
 				Vector3::TransformNormal(*normalPointer, rootTransform, *normalPointer);
+				if (isnan(normalPointer->X) || isnan(normalPointer->Y) || isnan(normalPointer->Z))
+					*normalPointer = Vector3(1, 0, 0);
+				else
+					normalPointer->Normalize();
 			}
 
 			for (unsigned int uvChannel = 0; uvChannel < mesh->GetNumUVChannels(); ++uvChannel)
@@ -390,8 +395,26 @@ private:
 
 			if (mesh->HasTangentsAndBitangents())
 			{
-				*((Vector3*)(vbPointer + tangentOffset)) = aiVector3ToVector3(mesh->mTangents[i]);
-				*((Vector3*)(vbPointer + bitangentOffset)) = aiVector3ToVector3(mesh->mBitangents[i]);
+				auto tangentPointer = ((Vector3*)(vbPointer + tangentOffset));
+				auto bitangentPointer = ((Vector3*)(vbPointer + bitangentOffset));
+				*tangentPointer = aiVector3ToVector3(mesh->mTangents[i]);
+				*bitangentPointer = aiVector3ToVector3(mesh->mBitangents[i]);
+				if (isnan(tangentPointer->X) || isnan(tangentPointer->Y) || isnan(tangentPointer->Z) ||
+					isnan(bitangentPointer->X) || isnan(bitangentPointer->Y) || isnan(bitangentPointer->Z))
+				{
+					//assert(mesh->HasNormals());
+					auto normalPointer = ((Vector3*)(vbPointer + normalOffset));
+					Vector3 c1 = Vector3::Cross(*normalPointer, Vector3(0.0, 0.0, 1.0));
+					Vector3 c2 = Vector3::Cross(*normalPointer, Vector3(0.0, 1.0, 0.0));
+
+					if (c1.LengthSquared() > c2.LengthSquared())
+						*tangentPointer = c1;
+					else
+						*tangentPointer = c2;
+					*bitangentPointer = Vector3::Cross(*normalPointer, *tangentPointer);
+				}
+				tangentPointer->Normalize();
+				bitangentPointer->Normalize();
 			}
 
 			if (vertexIndexToBoneIdWeight.size() > 0)
@@ -449,7 +472,8 @@ private:
 		}
 
 		// Build the mesh data
-		auto vertexBufferBinding = VertexBufferBinding(GraphicsSerializerExtensions::ToSerializableVersion(gcnew BufferData(BufferFlags::VertexBuffer, vertexBuffer)), gcnew VertexDeclaration(vertexElements->ToArray()), mesh->mNumVertices, 0, 0);
+		auto vertexDeclaration = gcnew VertexDeclaration(vertexElements->ToArray());
+		auto vertexBufferBinding = VertexBufferBinding(GraphicsSerializerExtensions::ToSerializableVersion(gcnew BufferData(BufferFlags::VertexBuffer, vertexBuffer)), vertexDeclaration, mesh->mNumVertices, vertexDeclaration->VertexStride, 0);
 		auto indexBufferBinding = gcnew IndexBufferBinding(GraphicsSerializerExtensions::ToSerializableVersion(gcnew BufferData(BufferFlags::IndexBuffer, indexBuffer)), is32BitIndex, nbIndices, 0);
 
 		auto drawData = gcnew MeshDraw();

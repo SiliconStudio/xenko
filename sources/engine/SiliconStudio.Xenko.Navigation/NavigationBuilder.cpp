@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 // Contains modified code from Sample_TileMesh.cpp from the recast/detour sample
 // With the following copyright notification:
@@ -257,9 +257,6 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	}
 
 	// Generate native navmesh format and store the data pointers in the return structure
-	GenerateNavMeshVertices();
-	ret->navmeshVertices = m_navmeshVertices.data();
-	ret->numNavmeshVertices = m_navmeshVertices.size();
 	if (!CreateDetourMesh())
 		return ret;
 	ret->navmeshData = m_navmeshData;
@@ -273,37 +270,6 @@ void NavigationBuilder::SetSettings(BuildSettings buildSettings)
 {
 	// Copy this to have access to original settings
 	m_buildSettings = buildSettings;
-}
-void NavigationBuilder::GenerateNavMeshVertices()
-{
-	rcPolyMesh& mesh = *m_pmesh;
-	if (!m_pmesh)
-		return;
-
-	Vector3 origin = m_buildSettings.boundingBox.minimum;
-
-	m_navmeshVertices.clear();
-	for (int i = 0; i < m_pmesh->npolys; i++)
-	{
-		const unsigned short* p = &mesh.polys[i * mesh.nvp * 2];
-
-		unsigned short vi[3];
-		for (int j = 2; j < mesh.nvp; ++j)
-		{
-			if (p[j] == RC_MESH_NULL_IDX) break;
-			vi[0] = p[0];
-			vi[1] = p[j - 1];
-			vi[2] = p[j];
-			for (int k = 0; k < 3; ++k)
-			{
-				const unsigned short* v = &mesh.verts[vi[k] * 3];
-				const float x = origin.X + (float)v[0] * m_buildSettings.cellSize;
-				const float y = origin.Y + (float)(v[1] + 1) * m_buildSettings.cellHeight;
-				const float z = origin.Z + (float)v[2] * m_buildSettings.cellSize;
-				m_navmeshVertices.push_back(Vector3{x, y, z});
-			}
-		}
-	}
 }
 bool NavigationBuilder::CreateDetourMesh()
 {

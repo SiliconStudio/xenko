@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -22,6 +22,4 @@ using System.Runtime.InteropServices;
 #pragma warning disable 436 // SiliconStudio.PublicKeys is defined in multiple assemblies
 
 [assembly: InternalsVisibleTo("SiliconStudio.Xenko.Engine" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Input.Serializers" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Xenko.UI.Tests" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudioXenkoUITests" + SiliconStudio.PublicKeys.Default)] // iOS removes dot
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.UI" + SiliconStudio.PublicKeys.Default)]

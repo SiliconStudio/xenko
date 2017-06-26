@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,6 +8,7 @@ using System.Windows.Threading;
 using NUnit.Framework;
 using NUnitAsync;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Tests.WPF;
 using SiliconStudio.Presentation.Windows;
 
@@ -87,50 +90,61 @@ namespace SiliconStudio.Presentation.Tests
                 foreach (var step in steps)
                 {
                     TestWindow window;
-                    var stepCompleted = new TaskCompletionSource<int>();
+                    var windowsEvent = new TaskCompletionSource<int>();
+                    Task windowsManagerTask;
+                    Task dispatcherTask;
                     switch (step)
                     {
                         case Step.ShowMain:
                             Assert.IsNull(mainWindow);
-                            window = dispatcher.Invoke(() => new TestWindow());
-                            window.Shown += (sender, e) => { mainWindow = window; stepCompleted.SetResult(0); };
-                            dispatcher.Invoke(() => WindowManager.ShowMainWindow(window));
+                            windowsManagerTask = WindowManagerHelper.NextWindowShown;
+                            window = dispatcher.Invoke(() => new TestWindow("MainWindow"));
+                            window.Shown += (sender, e) => { mainWindow = window; windowsEvent.SetResult(0); };
+                            dispatcherTask = dispatcher.InvokeAsync(() => WindowManager.ShowMainWindow(window)).Task;
                             break;
                         case Step.ShowModal:
                             Assert.IsNull(modalWindow);
-                            window = dispatcher.Invoke(() => new TestWindow());
-                            window.Shown += (sender, e) => { modalWindow = window; stepCompleted.SetResult(0); };
-                            dispatcher.InvokeAsync(() => window.ShowDialog());
+                            windowsManagerTask = WindowManagerHelper.NextWindowShown;
+                            window = dispatcher.Invoke(() => new TestWindow("ModalWindow"));
+                            window.Shown += (sender, e) => { modalWindow = window; windowsEvent.SetResult(0); };
+                            dispatcherTask = dispatcher.InvokeAsync(() => window.ShowDialog()).Task;
                             break;
                         case Step.ShowBlocking:
                             Assert.IsNull(blockingWindow);
-                            window = dispatcher.Invoke(() => new TestWindow());
-                            window.Shown += (sender, e) => { blockingWindow = window; stepCompleted.SetResult(0); };
-                            dispatcher.Invoke(() => WindowManager.ShowBlockingWindow(window));
+                            windowsManagerTask = WindowManagerHelper.NextWindowShown;
+                            window = dispatcher.Invoke(() => new TestWindow("BlockingWindow"));
+                            window.Shown += (sender, e) => { blockingWindow = window; windowsEvent.SetResult(0); };
+                            dispatcherTask = dispatcher.InvokeAsync(() => WindowManager.ShowBlockingWindow(window)).Task;
                             break;
                         case Step.HideMain:
                             Assert.IsNotNull(mainWindow);
+                            windowsManagerTask = WindowManagerHelper.NextWindowHidden;
                             window = mainWindow;
-                            window.Closed += (sender, e) => { mainWindow = null; blockingWindow = null; stepCompleted.SetResult(0); };
-                            dispatcher.Invoke(() => window.Close());
+                            window.Closed += (sender, e) => { mainWindow = null; blockingWindow = null; windowsEvent.SetResult(0); };
+                            dispatcherTask = dispatcher.InvokeAsync(() => window.Close()).Task;
                             break;
                         case Step.HideModal:
                             Assert.IsNotNull(modalWindow);
+                            windowsManagerTask = WindowManagerHelper.NextWindowHidden;
                             window = modalWindow;
-                            window.Closed += (sender, e) => { modalWindow = null; stepCompleted.SetResult(0); };
-                            dispatcher.Invoke(() => window.Close());
+                            window.Closed += (sender, e) => { modalWindow = null; windowsEvent.SetResult(0); };
+                            dispatcherTask = dispatcher.InvokeAsync(() => window.Close()).Task;
                             break;
                         case Step.HideBlocking:
                             Assert.IsNotNull(blockingWindow);
+                            windowsManagerTask = WindowManagerHelper.NextWindowHidden;
                             window = blockingWindow;
-                            window.Closed += (sender, e) => { blockingWindow = null; stepCompleted.SetResult(0); };
-                            dispatcher.Invoke(() => window.Close());
+                            window.Closed += (sender, e) => { blockingWindow = null; windowsEvent.SetResult(0); };
+                            dispatcherTask = dispatcher.InvokeAsync(() => window.Close()).Task;
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
-                    await stepCompleted.Task;
-                    await dispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle);
+                    dispatcherTask.Forget();
+                    await windowsEvent.Task;
+                    await windowsManagerTask;
+                    // Wait one more "frame" to be sure everything has been run.
+                    await dispatcher.InvokeAsync(() => { }, DispatcherPriority.Background);
                     dispatcher.Invoke(() => AssertStep(step, mainWindow, modalWindow, blockingWindow));
                 }
             }

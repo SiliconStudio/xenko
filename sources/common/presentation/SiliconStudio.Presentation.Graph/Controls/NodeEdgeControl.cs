@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -63,6 +63,19 @@ namespace SiliconStudio.Presentation.Graph.Controls
         {
             this.Loaded += OnLoaded;
         }
+        #endregion
+
+        #region Overriden Methods
+
+        public override void Clean()
+        {
+            if (Source != null)
+                ((NodeVertexControl)Source).Connectors.CollectionChanged -= UpdateSourceConnectors;
+            if (Target != null)
+                ((NodeVertexControl)Target).Connectors.CollectionChanged -= UpdateTargetConnectors;
+            base.Clean();
+        }
+
         #endregion
 
         #region Event Handlers
@@ -146,6 +159,7 @@ namespace SiliconStudio.Presentation.Graph.Controls
                 {
                     // Somehow the slot is not loaded yet
                     // Let's wait for a change in the Connectors collection and trigger UpdateEdge() again
+                    ((NodeVertexControl)Source).Connectors.CollectionChanged -= UpdateSourceConnectors;
                     ((NodeVertexControl)Source).Connectors.CollectionChanged += UpdateSourceConnectors;
                     Visibility = Visibility.Collapsed;
                     return;
@@ -170,6 +184,7 @@ namespace SiliconStudio.Presentation.Graph.Controls
                 }
                 else
                 {
+                    ((NodeVertexControl)Target).Connectors.CollectionChanged -= UpdateTargetConnectors;
                     ((NodeVertexControl)Target).Connectors.CollectionChanged += UpdateTargetConnectors;
                     Visibility = Visibility.Collapsed;
                     return;

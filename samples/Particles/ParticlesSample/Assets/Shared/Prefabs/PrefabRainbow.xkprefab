@@ -1,16 +1,16 @@
 !PrefabAsset
 Id: ea4228c5-d4d5-4258-867c-aae5aff0f779
-SerializedVersion: {Xenko: 2.0.0.0}
+SerializedVersion: {Xenko: 2.1.0.1}
 Tags: []
 Hierarchy:
-    RootPartIds:
-        - 73b67cca-fec1-4630-87d1-113a8ec9036b
-        - a66e56d6-e76e-4191-b5a6-00200b487d8b
-        - ce139d1e-bcd7-4765-9faa-4af3022ed0b4
-        - 8fdefa23-cb2a-461b-8547-50d7a9542d39
-        - 2a042bd2-6fef-45ea-9e08-26bd54a57eca
-        - e1522175-24cc-4825-8c10-e91aeec3f83f
-        - 2fec7160-55a7-4af2-91c8-210d91bfbbec
+    RootParts:
+        - ref!! 73b67cca-fec1-4630-87d1-113a8ec9036b
+        - ref!! a66e56d6-e76e-4191-b5a6-00200b487d8b
+        - ref!! ce139d1e-bcd7-4765-9faa-4af3022ed0b4
+        - ref!! 8fdefa23-cb2a-461b-8547-50d7a9542d39
+        - ref!! 2a042bd2-6fef-45ea-9e08-26bd54a57eca
+        - ref!! e1522175-24cc-4825-8c10-e91aeec3f83f
+        - ref!! 2fec7160-55a7-4af2-91c8-210d91bfbbec
     Parts:
         -   Entity:
                 Id: 2a042bd2-6fef-45ea-9e08-26bd54a57eca

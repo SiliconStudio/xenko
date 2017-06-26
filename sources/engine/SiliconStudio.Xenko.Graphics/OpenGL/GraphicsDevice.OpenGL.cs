@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 using System;
 using System.Collections.Generic;
@@ -107,6 +107,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal bool HasTextureBuffers;
         internal bool HasKhronosDebug;
+        internal bool HasTimerQueries;
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         internal bool HasKhronosDebugKHR;
@@ -191,6 +192,11 @@ namespace SiliconStudio.Xenko.Graphics
         };
 
         internal Buffer SquareBuffer;
+
+        /// <summary>
+        /// The tick frquency of timestamp queries in Hertz.
+        /// </summary>
+        public long TimestampFrequency { get; } = 1000_000_000L;
 
         /// <summary>
         /// Gets the status of this device.
@@ -930,7 +936,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (severity == DebugSeverity.DebugSeverityHigh)
             {
                 string msg = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(message);
-                Log.Error("[GL] {0}; {1}; {2}; {3}; {4}", source, type, id, severity, msg);
+                Log.Error($"[GL] {source}; {type}; {id}; {severity}; {msg}");
             }
         }
 
@@ -982,7 +988,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal void TagResource(GraphicsResourceLink resourceLink)
         {
-            resourceLink.Resource.DiscardNextMap = true;
+            if (resourceLink.Resource is GraphicsResource resource)
+                resource.DiscardNextMap = true;
         }
 
         internal void InitDefaultRenderTarget(PresentationParameters presentationParameters)

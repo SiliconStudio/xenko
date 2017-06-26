@@ -1,10 +1,10 @@
-!TemplateAssetFactory
+﻿!TemplateAssetFactory
 Id: 488D909E-E1A4-449A-ADC2-4E325A44F4A0
 AssetTypeName: SpriteStudioAnimationAsset
-Name: Sprite Studio animation
+Name: Sprite Studio® animation
 Scope: Asset
-Description: An empty Sprite Studio animation.
-Group: Sprite Studio
+Description: A sprite animation created with Sprite Studio® imported from a source file.
+Group: Sprites
 Order: -80
 Icon: ..\.xktpl\SpriteStudioAnimation.png
 DefaultOutputName: SpriteStudioModel

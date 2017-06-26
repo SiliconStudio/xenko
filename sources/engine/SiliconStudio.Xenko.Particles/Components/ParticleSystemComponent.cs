@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.ComponentModel;
 using SiliconStudio.Core;
@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.Particles.Components
         /// The speed scale at which this Particle System runs the simulation. Set it to 0 to pause it
         /// </userdoc>
         [DataMember(5)]
-        [DataMemberRange(0, 10, 0.01, 1)]
+        [DataMemberRange(0, 10, 0.01, 1, 3)]
         [Display("Speed Scale")]
         public float Speed { get; set; } = 1f;
 

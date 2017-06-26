@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -152,6 +154,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             drawLightingKey = ((RootEffectRenderFeature)RootRenderFeature).CreateDrawLogicalGroup("Lighting");
         }
 
+        protected override void Destroy()
+        {
+            prepareThreadLocals.Dispose();
+
+            base.Destroy();
+        }
+
         public override void Unload()
         {
             // Unload light renderers
@@ -276,7 +285,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             {
                 var renderMesh = (RenderMesh)renderObject;
 
-                if (!renderMesh.Material.IsLightDependent)
+                if (!renderMesh.MaterialPass.IsLightDependent)
                     return;
 
                 var staticObjectNode = renderMesh.StaticObjectNode;
@@ -389,7 +398,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     if (viewLighting.Hash == ObjectId.Empty)
                         continue;
 
-                    Debug.Assert(viewLighting.Hash == firstViewLighting.Hash, "PerView Lighting layout differs between different RenderObject in the same RenderView");
+                    if (viewLighting.Hash != firstViewLighting.Hash)
+                        throw new InvalidOperationException("PerView Lighting layout differs between different RenderObject in the same RenderView");
 
                     var resourceGroup = viewLayout.Entries[view.Index].Resources;
 

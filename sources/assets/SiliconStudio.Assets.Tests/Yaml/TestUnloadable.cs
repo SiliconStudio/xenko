@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -37,10 +39,6 @@ ObjectMember: !UnknownType value0
 ObjectList:
     01000000010000000100000001000000: value0
     02000000020000000200000002000000: !UnknownType value1
-";
-
-        private const string YamlInvalidTokens = @"!UnloadableContainerInvalidType
-ObjectMember: { value0
 ";
 
         private static string Serialize(object instance)
@@ -135,20 +133,6 @@ ObjectMember: { value0
             Assert.IsInstanceOf<IUnloadable>(obj.ObjectList[1]);
 
             // It shouldn't be stable since a member is gone
-            Assert.AreNotEqual(YamlInvalidType, Serialize(obj));
-        }
-
-        [Test]
-        public void TestInvalidTokens()
-        {
-            var obj = Deserialize<UnloadableContainer>(YamlInvalidMemberType);
-
-            // Check it's not an unloadable object
-            Assert.IsNotInstanceOf<IUnloadable>(obj);
-            // But it's member should be
-            Assert.IsInstanceOf<IUnloadable>(obj.ObjectMember);
-
-            // It should be stable since a member is gone
             Assert.AreNotEqual(YamlInvalidType, Serialize(obj));
         }
     }

@@ -27,7 +27,7 @@
     </When>
   </Choose>
   <ItemGroup>
-    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+    <Compile Include="..\..\common\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="DirectInput\XInputChecker.cs" />
@@ -47,12 +47,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <SiliconStudioContent Include="SiliconStudio.Xenko.Native.dll.config"/>
+    <SiliconStudioContent Include="SiliconStudio.Xenko.Native.dll.config" />
     <None Include="Xenko.Native.Libs.targets">
       <SubType>Designer</SubType>
     </None>
     <None Include="XenkoNative.h" />
     <None Include="LinuxAllocator.cpp" />
+	<None Include="FastTextRenderer\FastTextRenderer.c" />
     <None Include="Sprite\SpriteBatchNative.c" />
     <None Include="DirectInput\XInputChecker.cpp" />
     <None Include="Lightprobes\predicates.c" />

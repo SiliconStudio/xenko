@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 
@@ -17,6 +17,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         private readonly Texture[] inputTextures;
         private int maxInputTextureIndex;
 
+        private Texture outputDepthStencilView;
         private Texture outputRenderTargetView;
         private Texture[] outputRenderTargetViews;
         private Texture[] createdOutputRenderTargetViews;
@@ -31,7 +32,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         protected ImageEffect(string name, bool supersample = false)
             : base(name)
         {
-            inputTextures = new Texture[128];
+            inputTextures = new Texture[16];
             maxInputTextureIndex = -1;
             EnableSetRenderTargets = true;
             SamplingPattern = supersample ? SamplingPattern.Expanded : SamplingPattern.Linear;
@@ -71,7 +72,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         public void SetInput(int slot, Texture texture)
         {
             if (slot < 0 || slot >= inputTextures.Length)
-                throw new ArgumentOutOfRangeException("slot", "slot must be in the range [0, 128[");
+                throw new ArgumentOutOfRangeException(nameof(slot), "slot must be in the range [0, 15]");
 
             inputTextures[slot] = texture;
             if (slot > maxInputTextureIndex)
@@ -89,6 +90,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             maxInputTextureIndex = -1;
             Array.Clear(inputTextures, 0, inputTextures.Length);
+            outputDepthStencilView = null;
             outputRenderTargetView = null;
             outputRenderTargetViews = null;
         }
@@ -114,6 +116,30 @@ namespace SiliconStudio.Xenko.Rendering.Images
             if (views == null) throw new ArgumentNullException("views");
 
             SetOutputInternal(views);
+        }
+
+        /// <summary>
+        /// Sets the render target output.
+        /// </summary>
+        /// <param name="depthStencilView">The depth stencil output view.</param>
+        /// <param name="renderTargetView">The render target output view.</param>
+        public void SetDepthOutput(Texture depthStencilView, Texture renderTargetView)
+        {
+            outputDepthStencilView = depthStencilView;
+            outputRenderTargetView = renderTargetView;
+            outputRenderTargetViews = null;
+        }
+
+        /// <summary>
+        /// Sets the render target outputs.
+        /// </summary>
+        /// <param name="depthStencilView">The depth stencil output view.</param>
+        /// <param name="renderTargetViews">The render target output views.</param>
+        public void SetDepthOutput(Texture depthStencilView, params Texture[] renderTargetViews)
+        {
+            outputDepthStencilView = depthStencilView;
+            outputRenderTargetView = null;
+            outputRenderTargetViews = renderTargetViews;
         }
 
         /// <summary>
@@ -148,6 +174,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     context.CommandList.ResourceBarrierTransition(inputTextures[i], GraphicsResourceState.PixelShaderResource);
             }
 
+            if(outputDepthStencilView != null)
+                context.CommandList.ResourceBarrierTransition(outputDepthStencilView, GraphicsResourceState.DepthWrite);
+
             if (outputRenderTargetView != null)
             {
                 // Transition render target
@@ -161,11 +190,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     for (int i = 0; i < createdOutputRenderTargetViews.Length; i++)
                         createdOutputRenderTargetViews[i] = outputRenderTargetView.ToTextureView(ViewType.Single, i, 0);
 
-                    context.CommandList.SetRenderTargetsAndViewport(createdOutputRenderTargetViews);
+                    context.CommandList.SetRenderTargetsAndViewport(outputDepthStencilView, createdOutputRenderTargetViews);
                 }
                 else
                 {
-                    context.CommandList.SetRenderTargetAndViewport(null, outputRenderTargetView);
+                    context.CommandList.SetRenderTargetAndViewport(outputDepthStencilView, outputRenderTargetView);
                 }
             }
             else if (outputRenderTargetViews != null)
@@ -174,7 +203,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 foreach (var renderTarget in outputRenderTargetViews)
                     context.CommandList.ResourceBarrierTransition(renderTarget, GraphicsResourceState.RenderTarget);
 
-                context.CommandList.SetRenderTargetsAndViewport(outputRenderTargetViews);
+                context.CommandList.SetRenderTargetsAndViewport(outputDepthStencilView, outputRenderTargetViews);
+            }
+            else if(outputDepthStencilView != null)
+            {
+                context.CommandList.SetRenderTargetsAndViewport(outputDepthStencilView, null);
             }
 
             if (viewport.HasValue)
@@ -251,6 +284,22 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             return input;
         }
+
+        /// <summary>
+        /// Gets the output depth stencil texture.
+        /// </summary>
+        /// <value>
+        /// The depth stencil output.
+        /// </value>
+        protected Texture DepthStencil => outputDepthStencilView;
+
+        /// <summary>
+        /// Gets a value indicating whether this effect has depth stencil output texture binded.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance has depth stencil output; otherwise, <c>false</c>.
+        /// </value>
+        protected bool HasDepthStencilOutput => outputDepthStencilView != null;
 
         /// <summary>
         /// Gets the number of output render target.
@@ -348,6 +397,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         private void SetOutputInternal(Texture view)
         {
             // TODO: Do we want to handle the output the same way we handle the input textures?
+            outputDepthStencilView = null;
             outputRenderTargetView = view;
             outputRenderTargetViews = null;
         }
@@ -355,6 +405,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         private void SetOutputInternal(params Texture[] views)
         {
             // TODO: Do we want to handle the output the same way we handle the input textures?
+            outputDepthStencilView = null;
             outputRenderTargetView = null;
             outputRenderTargetViews = views;
         }

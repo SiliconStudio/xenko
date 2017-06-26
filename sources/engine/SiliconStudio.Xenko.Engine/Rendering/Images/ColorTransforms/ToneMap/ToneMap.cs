@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -16,8 +16,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
     [DataContract("ToneMap")]
     public class ToneMap : ColorTransform
     {
-        // Note: could be static if we use a lock
-        private readonly Dictionary<ParameterKey, ParameterKey> tonemapKeys = new Dictionary<ParameterKey, ParameterKey>();
         private float previousLuminance;
 
         private readonly Stopwatch timer;
@@ -54,10 +52,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [NotNull]
         public ToneMapOperator Operator
         {
-            get
-            {
-                return Parameters.Get(ToneMapKeys.Operator);
-            }
+            get => Parameters.Get(ToneMapKeys.Operator);
             set
             {
                 Parameters.Set(ToneMapKeys.Operator, value);
@@ -73,10 +68,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [DefaultValue(true)]
         public bool AutoKeyValue
         {
-            get
-            {
-                return Parameters.Get(ToneMapKeys.AutoKey);
-            }
+            get => Parameters.Get(ToneMapKeys.AutoKey);
             set
             {
                 Parameters.Set(ToneMapKeys.AutoKey, value);
@@ -100,10 +92,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [DefaultValue(true)]
         public bool AutoExposure
         {
-            get
-            {
-                return Parameters.Get(ToneMapKeys.AutoExposure);
-            }
+            get => Parameters.Get(ToneMapKeys.AutoExposure);
             set
             {
                 Parameters.Set(ToneMapKeys.AutoExposure, value);
@@ -117,10 +106,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <value>The exposure value.</value>
         [DataMember(32)]
         [DefaultValue(0.0f)]
-        public float Exposure
-        {
-            get; set;
-        }
+        public float Exposure { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to update the luminance progressively based on the current time.
@@ -140,6 +126,21 @@ namespace SiliconStudio.Xenko.Rendering.Images
         public float AdaptationRate { get; set; }
 
         /// <summary>
+        /// Indicates if the luminance in the neighborhood of a pixel is used in addition to the overall luminance of the input.
+        /// </summary>
+        [DataMember(45)]
+        [DefaultValue(false)]
+        public bool UseLocalLuminance
+        {
+            get => Parameters.Get(ToneMapKeys.UseLocalLuminance);
+            set
+            {
+                Parameters.Set(ToneMapKeys.UseLocalLuminance, value);
+                Group?.NotifyPermutationChange();
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the luminance local factor. 0.0: No local influence, only global influence, 1.0: No global influence, Only local influence.
         /// </summary>
         /// <value>The luminance local factor.</value>
@@ -148,14 +149,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
         public float LuminanceLocalFactor
         {
-            get
-            {
-                return Parameters.Get(ToneMapShaderKeys.LuminanceLocalFactor);
-            }
-            set
-            {
-                Parameters.Set(ToneMapShaderKeys.LuminanceLocalFactor, value);
-            }
+            get => Parameters.Get(ToneMapShaderKeys.LuminanceLocalFactor);
+            set => Parameters.Set(ToneMapShaderKeys.LuminanceLocalFactor, value);
         }
 
         /// <summary>
@@ -166,14 +161,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [DefaultValue(0f)]
         public float Contrast
         {
-            get
-            {
-                return Parameters.Get(ToneMapShaderKeys.Contrast);
-            }
-            set
-            {
-                Parameters.Set(ToneMapShaderKeys.Contrast, value);
-            }
+            get => Parameters.Get(ToneMapShaderKeys.Contrast);
+            set => Parameters.Set(ToneMapShaderKeys.Contrast, value);
         }
 
         /// <summary>
@@ -184,14 +173,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [DefaultValue(0f)]
         public float Brightness
         {
-            get
-            {
-                return Parameters.Get(ToneMapShaderKeys.Brightness);
-            }
-            set
-            {
-                Parameters.Set(ToneMapShaderKeys.Brightness, value);
-            }
+            get => Parameters.Get(ToneMapShaderKeys.Brightness);
+            set => Parameters.Set(ToneMapShaderKeys.Brightness, value);
         }
 
         public override void PrepareParameters(ColorTransformContext context, ParameterCollection parentCollection, string keyRoot)

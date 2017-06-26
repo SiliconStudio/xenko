@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.Globalization;
 
@@ -755,8 +755,8 @@ namespace SiliconStudio.BuildEngine
                 return;
             }
 
-            // NOTE: We assume that only EnumerableBuildStep is the base class for sub-steps and that ContentReferencable BuildStep are accessible from them (not through dynamic build step)
-            var enumerateBuildStep = step as EnumerableBuildStep;
+            // NOTE: We assume that only ListBuildStep is the base class for sub-steps and that ContentReferencable BuildStep are accessible from them (not through dynamic build step)
+            var enumerateBuildStep = step as ListBuildStep;
             if (enumerateBuildStep?.Steps != null)
             {
                 foreach (var subStep in enumerateBuildStep.Steps)
@@ -812,7 +812,7 @@ namespace SiliconStudio.BuildEngine
             }
 
             // NOTE: We assume that only EnumerableBuildStep is the base class for sub-steps and that ContentReferencable BuildStep are accessible from them (not through dynamic build step)
-            var enumerateBuildStep = step as EnumerableBuildStep;
+            var enumerateBuildStep = step as ListBuildStep;
             if (enumerateBuildStep?.Steps != null)
             {
                 foreach (var subStep in enumerateBuildStep.Steps)

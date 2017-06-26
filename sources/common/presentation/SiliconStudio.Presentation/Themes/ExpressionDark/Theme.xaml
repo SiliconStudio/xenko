@@ -38,6 +38,7 @@
 
   <SolidColorBrush x:Key="BackgroundBrush" Color="#FF434343"/>
   <SolidColorBrush x:Key="TextBrush" Color="#FFE0E0E0" />
+  <SolidColorBrush x:Key="HyperlinkBrush" Color="#FF00A0FF" />
   <SolidColorBrush x:Key="NormalBrush" Color="#FF595959" />
   <SolidColorBrush x:Key="NormalBorderBrush" Color="#FF333333" />
   <SolidColorBrush x:Key="HoverBrush" Color="{StaticResource HoverColor}" />
@@ -267,12 +268,14 @@
       </Setter.Value>
     </Setter>
   </Style>
-  <Style TargetType="{x:Type FlowDocument}" x:Key="{x:Static local:XamlMarkdown.DocumentStyleKey}">
+  <Style TargetType="{x:Type FlowDocument}">
     <Setter Property="FontFamily" Value="{DynamicResource {x:Static SystemFonts.MessageFontFamilyKey}}" />
     <Setter Property="FontSize" Value="{DynamicResource {x:Static SystemFonts.MessageFontSizeKey}}" />
     <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-    <Setter Property="PagePadding" Value="2,0" />
     <Setter Property="TextAlignment" Value="Left" />
+  </Style>
+  <Style x:Key="{x:Static local:XamlMarkdown.DocumentStyleKey}" TargetType="{x:Type FlowDocument}" BasedOn="{StaticResource {x:Type FlowDocument}}">
+    <Setter Property="PagePadding" Value="2,0" />
   </Style>
   <Style TargetType="{x:Type Inline}" x:Key="{x:Static local:XamlMarkdown.CodeStyleKey}">
     <Setter Property="FontFamily" Value="Courier New, Consolas" />
@@ -376,13 +379,13 @@
   </Style>
 
   <Style TargetType="Hyperlink">
+    <Setter Property="Foreground" Value="{StaticResource HyperlinkBrush}"/>
+    <Setter Property="TextBlock.TextDecorations" Value="{x:Null}" />
     <Style.Triggers>
       <Trigger Property="IsMouseOver" Value="True">
-        <Setter Property="Foreground" Value="{StaticResource SelectedBackgroundBrush}" />
+        <Setter Property="TextDecorations" Value="Underline"/>
       </Trigger>
     </Style.Triggers>
-    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-    <Setter Property="TextBlock.TextDecorations" Value="{x:Null}" />
   </Style>
 
   <Style x:Key="NuclearScrollViewer" TargetType="{x:Type ScrollViewer}" BasedOn="{x:Null}">
@@ -3915,9 +3918,10 @@
                                      WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
-            <ToggleButton x:Name="PART_ToggleButton" Grid.Column="4" Margin="2,0,0,0" Padding="0" Width="16" Height="16" Background="Transparent"
+            <!-- TODO: fix this button (need to be re-implemented differently, view-model side -->
+            <!--<ToggleButton x:Name="PART_ToggleButton" Grid.Column="4" Margin="2,0,0,0" Padding="0" Width="16" Height="16" Background="Transparent"
                           ClickMode="Release" IsThreeState="True"
-                          IsChecked="{Binding EditingMode, Converter={cvt:VectorEditingModeToBool}, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay}"/>
+                          IsChecked="{Binding EditingMode, Converter={cvt:VectorEditingModeToBool}, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay}"/>-->
           </Grid>
         </ControlTemplate>
       </Setter.Value>
@@ -3984,9 +3988,10 @@
                                      WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
-            <ToggleButton x:Name="PART_ToggleButton" Grid.Column="6" Margin="2,0,0,0" Padding="0" Width="16" Height="16" Background="Transparent"
+            <!-- TODO: fix this button (need to be re-implemented differently, view-model side -->
+            <!--<ToggleButton x:Name="PART_ToggleButton" Grid.Column="6" Margin="2,0,0,0" Padding="0" Width="16" Height="16" Background="Transparent"
                           ClickMode="Release" IsThreeState="True"
-                          IsChecked="{Binding EditingMode, Converter={cvt:VectorEditingModeToBool}, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay}"/>
+                          IsChecked="{Binding EditingMode, Converter={cvt:VectorEditingModeToBool}, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay}"/>-->
           </Grid>
         </ControlTemplate>
       </Setter.Value>
@@ -4067,9 +4072,10 @@
                                      WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
-            <ToggleButton x:Name="PART_ToggleButton" Grid.Column="8" Margin="2,0,0,0" Padding="0" Width="16" Height="16" Background="Transparent"
+            <!-- TODO: fix this button (need to be re-implemented differently, view-model side -->
+            <!--<ToggleButton x:Name="PART_ToggleButton" Grid.Column="8" Margin="2,0,0,0" Padding="0" Width="16" Height="16" Background="Transparent"
                           ClickMode="Release" IsThreeState="True"
-                          IsChecked="{Binding EditingMode, Converter={cvt:VectorEditingModeToBool}, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay}"/>
+                          IsChecked="{Binding EditingMode, Converter={cvt:VectorEditingModeToBool}, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay}"/>-->
           </Grid>
         </ControlTemplate>
       </Setter.Value>
@@ -4449,10 +4455,11 @@
                                      WatermarkContentTemplate="{Binding WatermarkContentTemplate, RelativeSource={RelativeSource Mode=TemplatedParent}}"/>
               </DockPanel>
             </Border>
-            <Button Grid.Column="6" Margin="2,0,0,0" x:Name="ResetButton" Width="16" Height="16" Background="Transparent"
+            <!-- TODO: this button is disabled to match the vector editor in term of style, remove it completely if the button are not restored -->
+            <!--<Button Grid.Column="6" Margin="2,0,0,0" x:Name="ResetButton" Width="16" Height="16" Background="Transparent"
                     Command="{x:Static commands:ControlCommands.ResetValueCommand}" ToolTip="Reset value">
               <Image Width="16" Height="16" Margin="-1" Source="{StaticResource ImageReset}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
-            </Button>
+            </Button>-->
           </Grid>
         </ControlTemplate>
       </Setter.Value>
@@ -4748,6 +4755,28 @@
               <Setter TargetName="content" Property="ContentPresenter.ContentTemplateSelector" 
                       Value="{Binding TemplateSelectorEdit, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ctrl:TreeViewItem}, AncestorLevel=1}}"/>
               <Setter Property="Padding" Value="0" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="TransparentButtonStyle" TargetType="{x:Type ButtonBase}">
+    <Setter Property="Foreground" Value="White"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ButtonBase}">
+          <Grid x:Name="Grid" Opacity="0.8">
+            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}"
+                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" />
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="true">
+              <Setter Property="Opacity" TargetName="Grid" Value="1.0" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="false">
+              <Setter Property="Opacity" TargetName="Grid" Value="0.5" />
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>

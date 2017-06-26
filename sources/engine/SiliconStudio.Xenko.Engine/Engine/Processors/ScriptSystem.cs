@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
     /// </summary>
     public sealed class ScriptSystem : GameSystemBase
     {
-        private const long UpdateBit = 1 << 32;
+        private const long UpdateBit = 1L << 32;
 
         internal readonly static Logger Log = GlobalLogger.GetLogger("ScriptSystem");
 
@@ -50,7 +50,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
             Enabled = true;
             Scheduler = new Scheduler();
             Scheduler.ActionException += Scheduler_ActionException;
-            Services.AddService(typeof(ScriptSystem), this);
         }
 
         protected override void Destroy()
@@ -96,7 +95,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             {
                 // Update priority
                 var updateSchedulerNode = syncScript.UpdateSchedulerNode;
-                updateSchedulerNode.Value.Priority = syncScript.Priority & UpdateBit;
+                updateSchedulerNode.Value.Priority = syncScript.Priority | UpdateBit;
 
                 // Schedule
                 Scheduler.Schedule(updateSchedulerNode, ScheduleMode.Last);

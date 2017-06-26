@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Core.Mathematics;
 using System;
@@ -244,6 +244,8 @@ namespace SiliconStudio.Xenko.Physics
                 processor.RenderColliderShapes(value);
             }
         }
+
+        public RenderGroup ColliderShapesRenderGroup { get; set; } = RenderGroup.Group0;
 
         internal void AddCollider(PhysicsComponent component, CollisionFilterGroupFlags group, CollisionFilterGroupFlags mask)
         {
@@ -1232,7 +1234,7 @@ namespace SiliconStudio.Xenko.Physics
                 var component1 = (PhysicsComponent)obj1.UserObject;
 
                 //disable static-static
-                if (component0 is StaticColliderComponent && component1 is StaticColliderComponent)
+                if (component0 is StaticColliderComponent && component1 is StaticColliderComponent || !component0.Enabled || !component1.Enabled)
                     continue;
 
                 currentFrameContacts.Add(new ContactPoint

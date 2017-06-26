@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -19,7 +21,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         public RenderDrawContext(IServiceRegistry services, RenderContext renderContext, GraphicsContext graphicsContext)
         {
-            if (services == null) throw new ArgumentNullException("services");
+            if (services == null) throw new ArgumentNullException(nameof(services));
 
             RenderContext = renderContext;
             ResourceGroupAllocator = graphicsContext.ResourceGroupAllocator;
@@ -27,6 +29,7 @@ namespace SiliconStudio.Xenko.Rendering
             GraphicsContext = graphicsContext;
             CommandList = graphicsContext.CommandList;
             Resolver = new ResourceResolver(this);
+            QueryManager = new QueryManager(CommandList, renderContext.Allocator);
         }
 
         /// <summary>
@@ -42,13 +45,15 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Gets the command list.
         /// </summary>
-        public CommandList CommandList { get; private set; }
+        public CommandList CommandList { get; }
 
-        public GraphicsContext GraphicsContext { get; private set; }
+        public GraphicsContext GraphicsContext { get; }
 
-        public GraphicsDevice GraphicsDevice { get; private set; }
+        public GraphicsDevice GraphicsDevice { get; }
 
-        public ResourceResolver Resolver { get; private set; }
+        public ResourceResolver Resolver { get; }
+
+        public QueryManager QueryManager { get; }
 
         /// <summary>
         /// Locks the command list until <see cref="IDisposable.Dispose()"/> is called on the returned value type.

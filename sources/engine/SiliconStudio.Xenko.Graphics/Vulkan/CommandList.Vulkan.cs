@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
 using System;
 using System.Collections.Generic;
@@ -222,13 +222,6 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             scissorsDirty = false;
-        }
-
-        /// <summary>
-        ///     Unsets the read/write buffers.
-        /// </summary>
-        public void UnsetReadWriteBuffers()
-        {
         }
 
         /// <summary>
@@ -634,7 +627,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             GraphicsDevice.FrameDrawCalls++;
         }
-
+        
         /// <summary>
         /// Begins profiling.
         /// </summary>
@@ -668,6 +661,20 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 GraphicsAdapterFactory.GetInstance(GraphicsDevice.IsDebugMode).EndDebugMarker(currentCommandList.NativeCommandBuffer);
             }
+        }
+        /// <summary>
+        /// Submit a timestamp query.
+        /// </summary>
+        /// <param name="queryPool">The QueryPool owning the query.</param>
+        /// <param name="query">The timestamp query.</param>
+        public void WriteTimestamp(QueryPool queryPool, int index)
+        {
+            currentCommandList.NativeCommandBuffer.WriteTimestamp(PipelineStageFlags.AllCommands, queryPool.NativeQueryPool, (uint)index);
+        }
+
+        public void ResetQueryPool(QueryPool queryPool)
+        {
+            currentCommandList.NativeCommandBuffer.ResetQueryPool(queryPool.NativeQueryPool, 0, (uint)queryPool.QueryCount);
         }
 
         /// <summary>

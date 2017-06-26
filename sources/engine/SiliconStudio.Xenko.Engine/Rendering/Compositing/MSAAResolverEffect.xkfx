@@ -1,11 +1,10 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 namespace SiliconStudio.Xenko.Rendering.Compositing
 {
     params MSAAResolverParams
     {
-        int InputQuality;
         int MSAASamples;
         int ResolveFilterType;
         float ResolveFilterDiameter;
@@ -15,7 +14,15 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     {
         using params MSAAResolverParams;
                 
-        mixin macro INPUT_MSAA_SAMPLES = MSAAResolverParams.InputQuality;
+        mixin macro INPUT_MSAA_SAMPLES = MSAAResolverParams.MSAASamples;
         mixin MSAAResolverShader<MSAAResolverParams.MSAASamples, MSAAResolverParams.ResolveFilterType, MSAAResolverParams.ResolveFilterDiameter>;
+    };
+
+    effect MSAADepthResolverEffect
+    {
+        using params MSAAResolverParams;
+                
+        mixin macro INPUT_MSAA_SAMPLES = MSAAResolverParams.MSAASamples;
+        mixin MSAADepthResolverShader;
     };
 }

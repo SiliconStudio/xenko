@@ -1,10 +1,11 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Serializers;
+using SiliconStudio.Assets.Tracking;
 using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -22,6 +23,7 @@ namespace SiliconStudio.Assets
         private UFile location;
         private Asset asset;
         private bool isDirty;
+        private HashSet<UFile> sourceFiles;
 
         /// <summary>
         /// The default comparer use only the id of an assetitem to match assets.
@@ -254,6 +256,7 @@ namespace SiliconStudio.Assets
                 }
 
                 Interlocked.Increment(ref version);
+                sourceFiles?.Clear();
 
                 var oldValue = isDirty;
                 isDirty = value;
@@ -293,25 +296,6 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// This methods returns all assets that would be changed when trying to change this asset.
-        /// </summary>
-        /// <param name="path">The path.</param>
-        /// <param name="action">The action.</param>
-        /// <param name="value">The value.</param>
-        /// <returns>LoggerResult.</returns>
-        /// <exception cref="ArgumentNullException">path</exception>
-        [NotNull]
-        public List<AssetItem> FindAssetsFromChange([NotNull] MemberPath path, MemberPathAction action, object value)
-        {
-            if (path == null) throw new ArgumentNullException(nameof(path));
-
-            var result = new List<AssetItem>();
-
-            FindAssetsFromChange(path, action, value, result);
-            return result;
-        }
-
-        /// <summary>
         /// In case <see cref="SourceFolder"/> or <see cref="SourceProject"/> were null, generates them.
         /// </summary>
         public void UpdateSourceFolders()
@@ -319,28 +303,16 @@ namespace SiliconStudio.Assets
             Package.UpdateSourceFolders(new[] { this });
         }
 
-        private void FindAssetsFromChange(MemberPath path, MemberPathAction action, object value, List<AssetItem> items)
+        public ISet<UFile> RetrieveCompilationInputFiles()
         {
-            object oldValue;
-            var pathSucceeded = path.TryGetValue(Asset, out oldValue);
-
-            // If the path exists and value changed or we are doing another operation (remove key...etc.)
-            // then add the items as a list of item to change
-            if (pathSucceeded && (action != MemberPathAction.ValueSet || value != oldValue))
+            if (sourceFiles == null)
             {
-                items.Add(this);
+                var collector = new SourceFilesCollector();
+                sourceFiles = collector.GetCompilationInputFiles(Asset);
             }
 
-            if (Package?.Session != null)
-            {
-                var itemsToDetect = Package.Session.DependencyManager.FindAssetsInheritingFrom(Id);
-                foreach (var item in itemsToDetect)
-                {
-                    item.FindAssetsFromChange(path, action, value, items);
-                }
-            }
+            return sourceFiles;
         }
-
         private class AssetItemComparerById : IEqualityComparer<AssetItem>
         {
             public bool Equals(AssetItem x, AssetItem y)

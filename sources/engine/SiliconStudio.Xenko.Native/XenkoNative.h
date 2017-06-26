@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 #pragma once
 
@@ -297,6 +297,13 @@ typedef struct VertexPositionColorTextureSwizzle
 	Vector2 TextureCoordinate;
 	float Swizzle;
 } VertexPositionColorTextureSwizzle;
+
+typedef struct VertexPositionNormalTexture
+{
+	Vector3 Position;
+	Vector3 Normal;
+	Vector2 TextureCoordinate;
+} VertexPositionNormalTexture;
 #pragma pack(pop)
 
 #pragma pack(push, 8)

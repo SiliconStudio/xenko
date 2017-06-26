@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -88,6 +90,9 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
             return null;
         }
+
+        /// <inheritdoc/>
+        IIdentifiable IAssetPartDesign.Part => this;
 
         /// <inheritdoc/>
         Block IAssetPartDesign<Block>.Part { get { return this; } set { throw new InvalidOperationException(); } }

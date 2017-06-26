@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -50,14 +50,14 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var result = MaterialGenerator.Generate(materialDesc, context, "simple_diffuse");
             Assert.False(result.HasErrors);
 
-            var material = result.Material;
-            Assert.Null(material.Parameters.Get(MaterialKeys.VertexStageSurfaceShaders));
-            Assert.Null(material.Parameters.Get(MaterialKeys.DomainStageSurfaceShaders));
+            var materialPass = result.Material.Passes[0];
+            Assert.Null(materialPass.Parameters.Get(MaterialKeys.VertexStageSurfaceShaders));
+            Assert.Null(materialPass.Parameters.Get(MaterialKeys.DomainStageSurfaceShaders));
 
             // Check that the color is correctly store in the shader parameters
-            Assert.AreEqual(new Color4(Color.Red), material.Parameters.Get(MaterialKeys.DiffuseValue));
+            Assert.AreEqual(new Color4(Color.Red), materialPass.Parameters.Get(MaterialKeys.DiffuseValue));
 
-            var pixelShaders = material.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders);
+            var pixelShaders = materialPass.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders);
 
             var expected = @"!ShaderMixinSource
 Mixins:
@@ -130,14 +130,14 @@ Compositions:
             var result = MaterialGenerator.Generate(materialDesc, context, "mix_diffuse");
             Assert.False(result.HasErrors);
 
-            var material = result.Material;
-            Assert.Null(material.Parameters.Get(MaterialKeys.VertexStageSurfaceShaders));
-            Assert.Null(material.Parameters.Get(MaterialKeys.DomainStageSurfaceShaders));
+            var materialPass = result.Material.Passes[0];
+            Assert.Null(materialPass.Parameters.Get(MaterialKeys.VertexStageSurfaceShaders));
+            Assert.Null(materialPass.Parameters.Get(MaterialKeys.DomainStageSurfaceShaders));
 
             // Check that the color is correctly store in the shader parameters
-            Assert.AreEqual(new Color4(Color.Red), material.Parameters.Get(MaterialKeys.DiffuseValue));
+            Assert.AreEqual(new Color4(Color.Red), materialPass.Parameters.Get(MaterialKeys.DiffuseValue));
 
-            var pixelShaders = material.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders);
+            var pixelShaders = materialPass.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders);
 
             var expected = @"!ShaderMixinSource
 Mixins:
@@ -248,14 +248,14 @@ Compositions:
             var result = MaterialGenerator.Generate(materialDesc, context, "diffuse_and_specular");
             Assert.False(result.HasErrors);
 
-            var material = result.Material;
-            Assert.Null(material.Parameters.Get(MaterialKeys.VertexStageSurfaceShaders));
-            Assert.Null(material.Parameters.Get(MaterialKeys.DomainStageSurfaceShaders));
+            var materialPass = result.Material.Passes[0];
+            Assert.Null(materialPass.Parameters.Get(MaterialKeys.VertexStageSurfaceShaders));
+            Assert.Null(materialPass.Parameters.Get(MaterialKeys.DomainStageSurfaceShaders));
 
             // Check that the color is correctly store in the shader parameters
-            Assert.AreEqual(new Color4(Color.Red), material.Parameters.Get(MaterialKeys.DiffuseValue));
+            Assert.AreEqual(new Color4(Color.Red), materialPass.Parameters.Get(MaterialKeys.DiffuseValue));
 
-            var pixelShaders = material.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders);
+            var pixelShaders = materialPass.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders);
 
             var expected = @"!ShaderMixinSource
 Mixins:
@@ -322,6 +322,8 @@ Compositions:
                                                 Mixins:
                                                     -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                                 Compositions:
+                                                    environmentFunction: !ShaderClassSource
+                                                        ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                                     fresnelFunction: !ShaderClassSource
                                                         ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                                     geometricShadowingFunction: !ShaderClassSource
@@ -377,14 +379,14 @@ Compositions:
             var result = MaterialGenerator.Generate(materialDesc, context, "diffuse_and_specular");
             Assert.False(result.HasErrors);
 
-            var material = result.Material;
-            Assert.Null(material.Parameters.Get(MaterialKeys.VertexStageSurfaceShaders));
-            Assert.Null(material.Parameters.Get(MaterialKeys.DomainStageSurfaceShaders));
+            var materialPass = result.Material.Passes[0];
+            Assert.Null(materialPass.Parameters.Get(MaterialKeys.VertexStageSurfaceShaders));
+            Assert.Null(materialPass.Parameters.Get(MaterialKeys.DomainStageSurfaceShaders));
 
             // Check that the color is correctly store in the shader parameters
-            Assert.AreEqual(new Color4(Color.Red), material.Parameters.Get(MaterialKeys.DiffuseValue));
+            Assert.AreEqual(new Color4(Color.Red), materialPass.Parameters.Get(MaterialKeys.DiffuseValue));
 
-            var pixelShaders = material.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders);
+            var pixelShaders = materialPass.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders);
 
             var expected = @"!ShaderMixinSource
 Mixins:
@@ -473,6 +475,8 @@ Compositions:
                                                 Mixins:
                                                     -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                                 Compositions:
+                                                    environmentFunction: !ShaderClassSource
+                                                        ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                                     fresnelFunction: !ShaderClassSource
                                                         ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                                     geometricShadowingFunction: !ShaderClassSource
@@ -555,14 +559,14 @@ Compositions:
             var result = MaterialGenerator.Generate(materialDesc, context, "diffuse_and_specularx2");
             Assert.False(result.HasErrors);
 
-            var material = result.Material;
-            Assert.Null(material.Parameters.Get(MaterialKeys.VertexStageSurfaceShaders));
-            Assert.Null(material.Parameters.Get(MaterialKeys.DomainStageSurfaceShaders));
+            var materialPass = result.Material.Passes[0];
+            Assert.Null(materialPass.Parameters.Get(MaterialKeys.VertexStageSurfaceShaders));
+            Assert.Null(materialPass.Parameters.Get(MaterialKeys.DomainStageSurfaceShaders));
 
             // Check that the color is correctly store in the shader parameters
-            Assert.AreEqual(new Color4(Color.Red), material.Parameters.Get(MaterialKeys.DiffuseValue));
+            Assert.AreEqual(new Color4(Color.Red), materialPass.Parameters.Get(MaterialKeys.DiffuseValue));
 
-            var pixelShaders = material.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders);
+            var pixelShaders = materialPass.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders);
 
             var expected = @"!ShaderMixinSource
 Mixins:
@@ -685,6 +689,8 @@ Compositions:
                                                 Mixins:
                                                     -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                                 Compositions:
+                                                    environmentFunction: !ShaderClassSource
+                                                        ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                                     fresnelFunction: !ShaderClassSource
                                                         ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                                     geometricShadowingFunction: !ShaderClassSource
@@ -745,14 +751,14 @@ Compositions:
             var result = MaterialGenerator.Generate(materialDesc, context, "diffuse_and_specular_and_emissive");
             Assert.False(result.HasErrors);
 
-            var material = result.Material;
-            Assert.Null(material.Parameters.Get(MaterialKeys.VertexStageSurfaceShaders));
-            Assert.Null(material.Parameters.Get(MaterialKeys.DomainStageSurfaceShaders));
+            var materialPass = result.Material.Passes[0];
+            Assert.Null(materialPass.Parameters.Get(MaterialKeys.VertexStageSurfaceShaders));
+            Assert.Null(materialPass.Parameters.Get(MaterialKeys.DomainStageSurfaceShaders));
 
             // Check that the color is correctly store in the shader parameters
-            Assert.AreEqual(new Color4(Color.Red), material.Parameters.Get(MaterialKeys.DiffuseValue));
+            Assert.AreEqual(new Color4(Color.Red), materialPass.Parameters.Get(MaterialKeys.DiffuseValue));
 
-            var pixelShaders = material.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders);
+            var pixelShaders = materialPass.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders);
 
             var expected = @"!ShaderMixinSource
 Mixins:
@@ -807,6 +813,8 @@ Compositions:
                                                 Mixins:
                                                     -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                                 Compositions:
+                                                    environmentFunction: !ShaderClassSource
+                                                        ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                                     fresnelFunction: !ShaderClassSource
                                                         ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                                     geometricShadowingFunction: !ShaderClassSource

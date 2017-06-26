@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -24,6 +24,20 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
             CurrentVersion = 1;
+        }
+
+        [Test]
+        public void TestCalculateMipMapCount()
+        {
+            Assert.AreEqual(1, Texture.CalculateMipMapCount(MipMapCount.Auto, 0));
+            Assert.AreEqual(1, Texture.CalculateMipMapCount(MipMapCount.Auto, 1));
+            Assert.AreEqual(2, Texture.CalculateMipMapCount(MipMapCount.Auto, 2));
+            Assert.AreEqual(3, Texture.CalculateMipMapCount(MipMapCount.Auto, 4));
+            Assert.AreEqual(4, Texture.CalculateMipMapCount(MipMapCount.Auto, 8));
+            Assert.AreEqual(9, Texture.CalculateMipMapCount(MipMapCount.Auto, 256, 256));
+            Assert.AreEqual(10, Texture.CalculateMipMapCount(MipMapCount.Auto, 1023));
+            Assert.AreEqual(11, Texture.CalculateMipMapCount(MipMapCount.Auto, 1024));
+            Assert.AreEqual(10, Texture.CalculateMipMapCount(MipMapCount.Auto, 615, 342));
         }
 
         [Test]
@@ -169,7 +183,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         [Test]
         public void TestTexture2DUnorderedAccess()
         {
-            IgnoreGraphicPlatform(GraphicsPlatform.Direct3D12);
             IgnoreGraphicPlatform(GraphicsPlatform.OpenGL);
             IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
 

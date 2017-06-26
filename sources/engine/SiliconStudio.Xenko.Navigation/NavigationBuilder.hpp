@@ -1,9 +1,8 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 #pragma once
 #include "../../../deps/Recast/include/Recast.h"
-#include "../../../deps/NativePath/TINYSTL/vector.h"
 
 class NavigationBuilder
 {
@@ -16,8 +15,6 @@ class NavigationBuilder
 	BuildSettings m_buildSettings;
 	rcContext* m_context;
 
-	// Calculated navmesh vertices
-	tinystl::vector<Vector3> m_navmeshVertices;
 	// Detour returned navigation mesh data
 	// free with dtFree()
 	uint8_t* m_navmeshData = nullptr;
@@ -32,6 +29,5 @@ public:
 	void SetSettings(BuildSettings buildSettings);
 
 private:
-	void GenerateNavMeshVertices();
 	bool CreateDetourMesh();
 };

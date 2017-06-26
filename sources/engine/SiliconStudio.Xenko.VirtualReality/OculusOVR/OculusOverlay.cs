@@ -1,4 +1,6 @@
-﻿#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 
 using System;
 using SharpDX.Direct3D11;
@@ -40,7 +42,7 @@ namespace SiliconStudio.Xenko.VirtualReality
         }
 
         public override void Dispose()
-        {            
+        {
         }
 
         public override void UpdateSurface(CommandList commandList, Texture texture)

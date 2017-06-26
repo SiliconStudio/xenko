@@ -1,96 +1,53 @@
-Xenko
+![Xenko](https://xenko.com/images/external/xenko-logo-side.png)
 =======
 
-This is the source code for Xenko Game Engine (http://xenko.com/).
+Welcome to the Xenko source code repository!
+
+Xenko is an open-source C# game engine for realistic rendering and VR. 
+The engine is highly modular and aims at giving game makers more flexibility in their development.
+Xenko comes with an editor that allows you create and manage the content of your games or applications in a visual and intuitive way.
+
+![Xenko Editor](https://xenko.com/images/external/script-editor.png)
+
+To learn more about Xenko, visit [xenko.com](https://xenko.com/).
 
 ## License
 
-* [Licensing and Contributions](LICENSE.md)
+Before downloading, using or contributing to Xenko, please carefully read the license agreements below. 
 
-## Community
-
-* Chat with the community at [![Join the chat at https://gitter.im/SiliconStudio/xenko](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/SiliconStudio/xenko?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-* Ask and answer questions on our QA website: http://answers.xenko.com/
-* Discuss on our forums: http://forums.xenko.com/
+By downloading or using files in this repository, you affirm that you have read, understood and agreed to the terms below.
+* [End User License Agreement](LICENSE.md)
+* [Contribution License Agreement](doc/ContributorLicenseAgreement.md)
 
 ## Documentation
 
-* [Build Instructions](doc/GettingStarted.md)
-* [Git LFS](doc/GitLFS.md): read about our recent switch to LFS (if you need to upgrade a non-LFS Xenko repository or an existing non-LFS Xenko branch)
-* [API Reference](http://doc.xenko.com/latest/api/SiliconStudio.Assets.html)
-* [Documentation](http://doc.xenko.com/latest)
+Find explanations and information about Xenko:
+* [Xenko Manual](https://doc.xenko.com/latest/manual/index.html)
+* [API Reference](https://doc.xenko.com/latest/api/SiliconStudio.Assets.html)
+* [Release Notes](https://doc.xenko.com/latest/ReleaseNotes/index.html)
 
-## Assemblies
+## Community
 
-[Assembly diagram](http://doc.xenko.com/latest/manual/engine/assemblies-diagrams.html)
+Ask for help or report issues:
+* [Chat with the community](https://gitter.im/SiliconStudio/xenko?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+* [Ask and answer questions](http://answers.xenko.com/)
+* [Discuss topics on our forums](http://forums.xenko.com/)
+* [Report engine issues](https://github.com/SiliconStudio/xenko/issues)
 
-* [__SiliconStudio.Xenko.Graphics__](http://doc.xenko.com/latest/manual/graphics/index.html):
-   Platform-indepdenent D3D11-like rendering API. Implementations for Direct3D 11 (with feature levels 9.1 and 10), OpenGL 4 and OpenGL ES 2.0.
-* __SiliconStudio.Xenko.Games__:
-   Windows and game loop management.
-* [__SiliconStudio.Xenko.Input__](http://doc.xenko.com/latest/manual/input/index.html):
-   Input management, including keyboard, joystick, mouse, touch, gestures.
-* __SiliconStudio.Xenko.Engine__:
-   Effect system, entity system, particle system, high-level audio engine, etc...
-* [__SiliconStudio.Xenko.UI__](http://doc.xenko.com/latest/manual/ui/index.html):
-   In-game UI library, similar to WPF (including many UI Controls).
-* [__SiliconStudio.Xenko.Shaders__](http://doc.xenko.com/latest/manual/graphics/graphics-reference/effects-and-shaders-reference/shading-language/index.html):
-   Xenko shader language, including many new language constructs to make shader programming much more easy/modular.
-* [__SiliconStudio.Xenko.Audio__](http://doc.xenko.com/latest/manual/audio/index.html):
-   Low-level audio engine.
-* __SiliconStudio.Assets__:
-   Modular asset project management and pipeline system.
-* __SiliconStudio.Xenko.GameStudio__:
-   Asset editor for Xenko. Allow asset browsing and editing, and Xenko Asset project editing.
-   
-We currently do not provide sources for:
-* SiliconStudio.Xenko.GameStudio due to a licensed third party library that we use, Telerik. That might be lifted in the future.
-* Autodesk Max and Maya plugin (which will be released in the future) due to SDK licensing restrictions.
-   
-----------
+## Building from source
 
-Silicon Studio .NET
-===================
+### Prerequisites
 
-SiliconStudio .NET is a collection of shared C#/.NET code that is project independent. It is located inside [sources/common](sources/common) subfolder.
+1. [Git](https://git-scm.com/downloads) with Git LFS option, or install [Git LFS](https://git-lfs.github.com/) separately.
+2. [Visual Studio 2017](https://www.visualstudio.com/downloads/) with the following workloads:
+  * .NET desktop development
+  * Desktop development with C++ (with "C++/CLI" and "Windows 8.1 SDK and UCRT SDK" optional components)
+3. [FBX SDK 2017.0.1 VS2015](http://usa.autodesk.com/adsk/servlet/pc/item?siteID=123112&id=25408427)
 
-## Folders and projects layout
+### Build Xenko
 
-###core###
-
-* __SiliconStudio.Core__:
-   Reference counting, dependency property system (PropertyContainer/PropertyKey), low-level serialization, low-level memory operations (Utilities and NativeStream).
-* __SiliconStudio.Core.Mathematics__:
-   Mathematics library (despite its name, no dependencies on SiliconStudio.Core).
-* __SiliconStudio.Core.IO__:
-   Virtual File System.
-* __SiliconStudio.Core.Serialization__:
-   High-level serialization and git-like CAS storage system.
-* __SiliconStudio.MicroThreading__:
-   Micro-threading library based on C# 5.0 async (a.k.a. stackless programming)
-* __SiliconStudio.AssemblyProcessor__:
-   Internal tool used to patch assemblies to add various features, such as Serialization auto-generation, various memory/pinning operations, module initializers, etc...
-   
-###presentation###
-
-* __SiliconStudio.Presentation__: WPF UI library (themes, controls such as propertygrid, behaviors, etc...)
-* __SiliconStudio.SampleApp__: Simple property grid example.
-* __SiliconStudio.Quantum__: Advanced ViewModel library that gives ability to synchronize view-models over network (w/ diff), and at requested time intervals. That way, view models can be defined within engine without any UI dependencies.
-
-###buildengine###
-
-* __SiliconStudio.BuildEngine.Common__:
-   Common parts of the build engine. It can be reused to add new build steps, build commands, and also to build a new custom build engine client.
-* __SiliconStudio.BuildEngine__: Default implementation of build engine tool (executable)
-* __SiliconStudio.BuildEngine.Monitor__: WPF Display live results of build engine (similar to IncrediBuild)
-* __SiliconStudio.BuildEngine.Editor__: WPF Build engine rules editor
-and used by most projects.
-
-###shaders###
-
-* __Irony__: Parsing library, used by SiliconStudio.Shaders. Should later be replaced by ANTLR4.
-* __SiliconStudio.Shaders__: Shader parsing, type analysis and conversion library (used by HLSL->GLSL and Xenko Shader Language)
-
-###targets###
-
-* MSBuild target files to create easily cross-platform solutions (Android, iOS, WinRT, WinPhone, etc...), and define behaviors and targets globally. Extensible.
+1. Clone Xenko with LFS: `git lfs clone https://git.xenko.com/xenko/Xenko-Runtime.git`
+2. Set *SiliconStudioXenkoDir* environment variable to point to your `<XenkoDir>`
+3. Open `<XenkoDir>\build\Xenko.sln` with Visual Studio 2017, and build.
+4. Open `<XenkoDir>\samples\XenkoSamples.sln` and play with the samples.
+5. Optionally, open and build `Xenko.Android.sln`, `Xenko.iOS.sln`, etc...

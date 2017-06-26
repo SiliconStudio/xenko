@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections;
@@ -12,7 +12,7 @@ using System.ServiceModel;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using SiliconStudio.VisualStudio.Debugging;
+using SiliconStudio.VisualStudio;
 using Binding = System.ServiceModel.Channels.Binding;
 
 namespace SiliconStudio.ExecServer
@@ -142,7 +142,8 @@ namespace SiliconStudio.ExecServer
             host.AddServiceEndpoint(typeof(IExecServerRemote), new NetNamedPipeBinding(NetNamedPipeSecurityMode.None)
             {
                 MaxReceivedMessageSize = int.MaxValue,
-                // TODO: Check if we need to tweak timeouts
+                SendTimeout = TimeSpan.FromHours(1),
+                ReceiveTimeout = TimeSpan.FromHours(1),
             }, address);
 
             try
@@ -419,7 +420,7 @@ namespace SiliconStudio.ExecServer
             }
 
             // NOTE: We are not using Process.Start as it is for some unknown reasons blocking the process calling this process on Process.ExitProcess
-            // Handling directly the creation of the process with Win32 function solves this. Not sure why.
+            // Handling the creation of the process with Win32 function directly solves this. Not sure why.
             // TODO: We might want the process to not inherit environment
             var result = ProcessHelper.LaunchProcess(finalExecServerPath, $"/server \"{Assembly.GetEntryAssembly()?.Location}\" \"{executablePath}\" {serverInstanceIndex}", out processHandle, out processId);
             return result;

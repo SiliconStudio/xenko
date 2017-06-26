@@ -25,7 +25,7 @@
     </When>
   </Choose>
   <ItemGroup>
-    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+    <Compile Include="..\..\common\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Controls\Border.cs" />
@@ -122,6 +122,7 @@
     <Compile Include="StripDefinitionCollection.cs" />
     <Compile Include="StripType.cs" />
     <Compile Include="Style.cs" />
+    <Compile Include="TextEventArgs.cs" />
     <Compile Include="Thickness.cs" />
     <Compile Include="ToggleState.cs" />
     <Compile Include="TouchAction.cs" />

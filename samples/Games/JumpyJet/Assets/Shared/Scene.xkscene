@@ -1,16 +1,16 @@
 !SceneAsset
 Id: 286382bf-b1c4-41b4-b566-949b1ad1e443
-SerializedVersion: {Xenko: 2.0.0.0}
+SerializedVersion: {Xenko: 2.1.0.1}
 Tags: []
 ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
-    RootPartIds:
-        - 6ec17338-026d-4ad3-9615-4975281cf3ba
-        - fb0a2c4b-0ae0-47c0-a222-089448e7890c
-        - d87ce433-90b0-4819-8f55-9d08330b581d
-        - ab6a210f-cea3-4f03-8b5d-af95e4a4fb44
-        - 47550ad3-4887-4173-95e0-d98048465edd
+    RootParts:
+        - ref!! 6ec17338-026d-4ad3-9615-4975281cf3ba
+        - ref!! fb0a2c4b-0ae0-47c0-a222-089448e7890c
+        - ref!! d87ce433-90b0-4819-8f55-9d08330b581d
+        - ref!! ab6a210f-cea3-4f03-8b5d-af95e4a4fb44
+        - ref!! 47550ad3-4887-4173-95e0-d98048465edd
     Parts:
         -   Entity:
                 Id: 47550ad3-4887-4173-95e0-d98048465edd
@@ -49,7 +49,7 @@ Hierarchy:
                         OrthographicSize: 11.36
                         NearClipPlane: 1.0
                         AspectRatio: 0.56338
-                        Slot: {Index: 0}
+                        Slot: 3fdcf6a2-9504-426d-a9f6-d682e7cdac79
         -   Entity:
                 Id: ab6a210f-cea3-4f03-8b5d-af95e4a4fb44
                 Name: BackgroundScript

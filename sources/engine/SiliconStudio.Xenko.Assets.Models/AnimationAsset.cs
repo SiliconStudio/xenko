@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// <summary>
         /// The default file extension used by the <see cref="AnimationAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xkanim;.pdxanim";
+        public const string FileExtension = ".xkanim";
 
         public static readonly TimeSpan LongestTimeSpan = TimeSpan.FromMinutes(30);  // Avoid TimeSpan.MaxValue because it results in overflow exception when used in some calculations
 
@@ -81,21 +81,18 @@ namespace SiliconStudio.Xenko.Assets.Models
         public TimeSpan AnimationTimeMaximum { get; set; }
 
         /// <summary>
-        /// Gets or sets the pivot position, that will be used as center of object.
+        /// Gets or sets the pivot position, that will be used as center of object. If a Skeleton is set, its value will be used instead.
         /// </summary>
         /// <userdoc>
-        /// The root (pivot) of the animation will be offset by this distance.
+        /// The root (pivot) of the animation will be offset by this distance. If a Skeleton is set, its value will be used instead.
         /// </userdoc>
         [DataMember(10)]
         public Vector3 PivotPosition { get; set; }
 
         /// <summary>
-        /// Gets or sets the scale import.
+        /// Gets or sets the scale import. If a Skeleton is set, its value will be used instead.
         /// </summary>
-        /// <value>The scale import.</value>
-        /// <userdoc>
-        /// The scale factor to apply to the imported animation.
-        /// </userdoc>
+        /// <userdoc>The scale applied to the imported animation. If a Skeleton is set, its value will be used instead.</userdoc>
         [DataMember(15)]
         [DefaultValue(1.0f)]
         public float ScaleImport { get; set; } = 1.0f;

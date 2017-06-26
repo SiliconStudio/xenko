@@ -1,3 +1,5 @@
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Mathematics;
@@ -29,8 +31,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
             // Create default camera
             var cameraEntity = new Entity(CameraEntityName) { new CameraComponent { Projection = CameraProjectionMode.Perspective } };
-            cameraEntity.Transform.Position = new Vector3(-1.0f, 1.2f, 2.7f);
-            cameraEntity.Transform.Rotation = Quaternion.RotationX(MathUtil.DegreesToRadians(-10)) * Quaternion.RotationY(MathUtil.DegreesToRadians(-20));
+            cameraEntity.Transform.Position = new Vector3(2.6f, 0.6f, -1.0f);
+            cameraEntity.Transform.Rotation = Quaternion.RotationX(MathUtil.DegreesToRadians(0)) * Quaternion.RotationY(MathUtil.DegreesToRadians(112.0f));
 
             // Create default light (with shadows)
             var lightEntity = new Entity(SunEntityName) { new LightComponent
@@ -47,18 +49,18 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 }
             } };
             lightEntity.Transform.Position = new Vector3(0, 2.0f, 0);
-            lightEntity.Transform.Rotation = Quaternion.RotationX(MathUtil.DegreesToRadians(-70)) * Quaternion.RotationY(MathUtil.DegreesToRadians(30));
+            lightEntity.Transform.Rotation = Quaternion.RotationX(MathUtil.DegreesToRadians(-30.0f)) * Quaternion.RotationY(MathUtil.DegreesToRadians(-180.0f));
 
             var sceneAsset = new SceneAsset();
 
             sceneAsset.Hierarchy.Parts.Add(new EntityDesign(cameraEntity));
-            sceneAsset.Hierarchy.RootPartIds.Add(cameraEntity.Id);
+            sceneAsset.Hierarchy.RootParts.Add(cameraEntity);
 
             sceneAsset.Hierarchy.Parts.Add(new EntityDesign(lightEntity));
-            sceneAsset.Hierarchy.RootPartIds.Add(lightEntity.Id);
+            sceneAsset.Hierarchy.RootParts.Add(lightEntity);
 
             sceneAsset.Hierarchy.Parts.Add(new EntityDesign(skyboxEntity));
-            sceneAsset.Hierarchy.RootPartIds.Add(skyboxEntity.Id);
+            sceneAsset.Hierarchy.RootParts.Add(skyboxEntity);
 
             return sceneAsset;
         }
@@ -68,8 +70,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
     {
         private const string AmbientEntityName = "Ambient light";
         private const float SkyIntensity = 1.0f;
-        private const float AmbientIntensity = 0.05f;
-        private const float SuntIntensity = 0.8f;
+        private const float AmbientIntensity = 0.1f;
+        private const float SuntIntensity = 1.0f;
 
         public static SceneAsset Create()
         {
@@ -81,13 +83,13 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     new LightComponent
                     {
                         Intensity = AmbientIntensity,
-                        Type = new LightAmbient { Color = new ColorRgbProvider(new Color(196, 215, 255)) }
+                        Type = new LightAmbient { Color = new ColorRgbProvider(Color.FromBgra(0xA5C9F0)) }
                     }
                 };
             ambientLight.Transform.Position = new Vector3(-2.0f, 2.0f, 0.0f);
 
             sceneAsset.Hierarchy.Parts.Add(new EntityDesign(ambientLight));
-            sceneAsset.Hierarchy.RootPartIds.Add(ambientLight.Id);
+            sceneAsset.Hierarchy.RootParts.Add(ambientLight);
 
             return sceneAsset;
         }
@@ -100,18 +102,18 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
     public class SceneHDRFactory : SceneBaseFactory
     {
-        private const float SkyIntensity = 3.0f;
-        private const float SunIntensity = 5.0f;
+        private const float SkyIntensity = 1.0f;
+        private const float SunIntensity = 20.0f;
 
         public static SceneAsset Create()
         {
             var sceneAsset = CreateBase(SkyIntensity, SunIntensity);
 
             // Add a sky light to the scene
-            var skyboxEntity = sceneAsset.Hierarchy.Parts.Select(x => x.Entity).Single(x => x.Name == SkyboxEntityName);
+            var skyboxEntity = sceneAsset.Hierarchy.Parts.Select(x => x.Value.Entity).Single(x => x.Name == SkyboxEntityName);
             skyboxEntity.Add(new LightComponent
             {
-                Intensity = 0.25f,
+                Intensity = 1.0f,
                 Type = new LightSkybox(),
             });
 

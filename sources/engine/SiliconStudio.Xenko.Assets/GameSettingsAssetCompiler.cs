@@ -1,4 +1,7 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -12,8 +15,10 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Data;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Compositing;
 
 namespace SiliconStudio.Xenko.Assets
 {
@@ -28,6 +33,12 @@ namespace SiliconStudio.Xenko.Assets
             {
                 new GameSettingsCompileCommand(targetUrlInStorage, assetItem.Package, context.Platform, context.GetCompilationMode(), asset),
             };
+        }
+
+        public override IEnumerable<Type> GetRuntimeTypes(AssetItem assetItem)
+        {
+            yield return typeof(Scene);
+            yield return typeof(GraphicsCompositor);
         }
 
         private class GameSettingsCompileCommand : AssetCommand<GameSettingsAsset>
@@ -64,6 +75,8 @@ namespace SiliconStudio.Xenko.Assets
                     PackageName = Package.Meta.Name,
                     DefaultSceneUrl = Parameters.DefaultScene != null ? AttachedReferenceManager.GetUrl(Parameters.DefaultScene) : null,
                     DefaultGraphicsCompositorUrl = Parameters.GraphicsCompositor != null ? AttachedReferenceManager.GetUrl(Parameters.GraphicsCompositor) : null,
+                    SplashScreenUrl = Parameters.SplashScreenTexture != null && (compilationMode == CompilationMode.Release || compilationMode == CompilationMode.AppStore) ? AttachedReferenceManager.GetUrl(Parameters.SplashScreenTexture) : null,
+                    SplashScreenColor = Parameters.SplashScreenColor,
                     EffectCompilation = Package.UserSettings.GetValue(GameUserSettings.Effect.EffectCompilation),
                     RecordUsedEffects = Package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects),
                     Configurations = new PlatformConfigurations(),

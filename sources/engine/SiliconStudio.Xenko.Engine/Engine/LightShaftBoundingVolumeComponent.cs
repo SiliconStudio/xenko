@@ -1,72 +1,52 @@
-﻿using System.Collections.Generic;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+
+using System;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
-using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Engine
 {
-    public class LightShaftBoundingVolumeData
-    {
-        public Matrix World;
-        public Model Model;
-    }
-
-    public class LightShaftBoundingVolumeProcessor : EntityProcessor<LightShaftBoundingVolumeComponent, LightShaftBoundingVolumeComponent>
-    {
-        private Dictionary<LightShaftComponent, List<LightShaftBoundingVolumeData>> volumesPerLightShaft = new Dictionary<LightShaftComponent, List<LightShaftBoundingVolumeData>>();
-        
-        public override void Update(GameTime time)
-        {
-            base.Update(time);
-            volumesPerLightShaft.Clear();
-
-            // TODO: Make this more efficient
-            foreach (var pair in ComponentDatas)
-            {
-                if (!pair.Key.Enabled)
-                    continue;
-
-                var world = pair.Key.Entity.Transform.WorldMatrix;
-
-                var lightShaft = pair.Key.LightShaft;
-                if (lightShaft == null)
-                    continue;
-
-                List<LightShaftBoundingVolumeData> data;
-                if (!volumesPerLightShaft.TryGetValue(lightShaft, out data))
-                    volumesPerLightShaft.Add(lightShaft, data = new List<LightShaftBoundingVolumeData>());
-
-                data.Add(new LightShaftBoundingVolumeData
-                {
-                    World = world,
-                    Model = pair.Key.Model
-                });
-            }
-        }
-
-        public IReadOnlyList<LightShaftBoundingVolumeData> GetBoundingVolumesForComponent(LightShaftComponent component)
-        {
-            List<LightShaftBoundingVolumeData> data;
-            if (!volumesPerLightShaft.TryGetValue(component, out data))
-                return null;
-            return data;
-        }
-
-        protected override LightShaftBoundingVolumeComponent GenerateComponentData(Entity entity, LightShaftBoundingVolumeComponent component)
-        {
-            return component;
-        }
-    }
-
-    [Display("Light Shaft Bounding Volume")]
+    /// <summary>
+    /// A bounding volume for light shafts to be rendered in, can take any <see cref="Model"/> as a volume
+    /// </summary>
+    [Display("Light Shaft Bounding Volume", Expand = ExpandRule.Always)]
     [DataContract("LightShaftBoundingVolumeComponent")]
     [DefaultEntityComponentProcessor(typeof(LightShaftBoundingVolumeProcessor))]
     public class LightShaftBoundingVolumeComponent : ActivableEntityComponent
     {
-        public Model Model { get; set; }
+        private Model model;
+        private LightShaftComponent lightShaft;
+        private bool enabled = true;
 
-        public LightShaftComponent LightShaft { get; set; }
+        public override bool Enabled
+        {
+            get { return enabled; }
+            set { enabled = value; EnabledChanged?.Invoke(this, null); }
+        }
+
+        /// <summary>
+        /// The model used to define the bounding volume
+        /// </summary>
+        public Model Model
+        {
+            get { return model; }
+            set { model = value; ModelChanged?.Invoke(this, null); }
+        }
+
+        /// <summary>
+        /// The light shaft to which the bounding volume applies
+        /// </summary>
+        public LightShaftComponent LightShaft
+        {
+            get { return lightShaft; }
+            set { lightShaft = value; LightShaftChanged?.Invoke(this, null); }
+        }
+
+        public event EventHandler LightShaftChanged;
+        public event EventHandler ModelChanged;
+        public event EventHandler EnabledChanged;
     }
 }

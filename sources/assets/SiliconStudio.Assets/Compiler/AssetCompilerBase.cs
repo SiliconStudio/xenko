@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,19 +16,26 @@ namespace SiliconStudio.Assets.Compiler
     public abstract class AssetCompilerBase : IAssetCompiler
     {
         /// <inheritdoc/>
-        public virtual IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
+        public virtual IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
         {
             yield break;
         }
 
         /// <inheritdoc/>
-        public virtual IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        public virtual IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
         {
             yield break;
         }
 
         /// <inheritdoc/>
-        public virtual IEnumerable<Type> GetInputTypesToExclude(AssetCompilerContext context, AssetItem assetItem)
+        public virtual IEnumerable<Type> GetInputTypesToExclude(AssetItem assetItem)
+        {
+            yield break;
+        }
+
+        public virtual bool AlwaysCheckRuntimeTypes { get; } = false;
+
+        public virtual IEnumerable<Type> GetRuntimeTypes(AssetItem assetItem)
         {
             yield break;
         }

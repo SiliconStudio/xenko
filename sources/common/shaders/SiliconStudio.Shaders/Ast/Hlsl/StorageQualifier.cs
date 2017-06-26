@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 
 namespace SiliconStudio.Shaders.Ast.Hlsl
@@ -10,11 +10,6 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     public static class StorageQualifier
     {
         #region Constants and Fields
-
-        /// <summary>
-        ///   Centroid modifier, only valid for structure field.
-        /// </summary>
-        public static readonly Qualifier Centroid = new Qualifier("centroid");
 
         /// <summary>
         ///   ColumnMajor modifier.
@@ -32,21 +27,6 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
         public static readonly Qualifier Groupshared = new Qualifier("groupshared");
 
         /// <summary>
-        ///   Linear modifier, only valid for structure field.
-        /// </summary>
-        public static readonly Qualifier Linear = new Qualifier("linear");
-
-        /// <summary>
-        ///   NoPerspective modifier, only valid for structure field.
-        /// </summary>
-        public static readonly Qualifier NoPerspective = new Qualifier("noperspective");
-
-        /// <summary>
-        ///   Nointerpolation modifier.
-        /// </summary>
-        public static readonly Qualifier Nointerpolation = new Qualifier("nointerpolation");
-
-        /// <summary>
         ///   Precise modifier.
         /// </summary>
         public static readonly Qualifier Precise = new Qualifier("precise");
@@ -55,11 +35,6 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
         ///   RowMajor modifier.
         /// </summary>
         public static readonly Qualifier RowMajor = new Qualifier("row_major");
-
-        /// <summary>
-        ///   Sample modifier, only valid for structure field.
-        /// </summary>
-        public static readonly Qualifier Sample = new Qualifier("sample");
 
         /// <summary>
         ///   Shared modifier.
@@ -101,28 +76,18 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
         /// </returns>
         public static Qualifier Parse(string enumName)
         {
-            if (enumName == (string)Centroid.Key)
-                return Centroid;
             if (enumName == (string)ColumnMajor.Key)
                 return ColumnMajor;
             if (enumName == (string)Extern.Key)
                 return Extern;
             if (enumName == (string)Groupshared.Key)
                 return Groupshared;
-            if (enumName == (string)Linear.Key)
-                return Linear;
-            if (enumName == (string)NoPerspective.Key)
-                return NoPerspective;
-            if (enumName == (string)Nointerpolation.Key)
-                return Nointerpolation;
             if (enumName == (string)Precise.Key)
                 return Precise;
             if (enumName == (string)Precise.Key)
                 return Precise;
             if (enumName == (string)RowMajor.Key)
                 return RowMajor;
-            if (enumName == (string)Sample.Key)
-                return Sample;
             if (enumName == (string)Shared.Key)
                 return Shared;
             if (enumName == (string)Static.Key)
@@ -133,6 +98,11 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
                 return Unsigned;
             if (enumName == (string)Volatile.Key)
                 return Volatile;
+
+            // Fallback to parameter interpolation qualifiers
+            var result = InterpolationQualifier.Parse(enumName);
+            if (result != null)
+                return result;
 
             // Fallback to shared parameter qualifiers
             return Ast.StorageQualifier.Parse(enumName);

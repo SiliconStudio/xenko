@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.ServiceModel;
@@ -47,13 +47,6 @@ namespace SiliconStudio.BuildEngine
             commandContext.Logger.Log(new LogMessage(message.Module, message.Type, message.Text));
             if (message.ExceptionInfo != null)
                 commandContext.Logger.Log(new LogMessage(message.Module, message.Type, message.ExceptionInfo.ToString()));
-        }
-
-        public async Task<ResultStatus> SpawnCommand(Command command)
-        {
-            Task<ResultStatus> task = commandContext.ScheduleAndExecuteCommand(command);
-            commandContext.Step.AwaitSpawnedCommand(task);
-            return await task;
         }
 
         public ObjectId ComputeInputHash(UrlType type, string filePath)

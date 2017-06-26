@@ -1,9 +1,8 @@
-!GameSettingsAsset
+﻿!GameSettingsAsset
 Id: d30b7c7f-960d-4c4d-960a-325de65d33bf
 SerializedVersion: {Xenko: 1.11.0.0}
 Tags: []
 DefaultScene: 6df0e4b8-ed18-4c60-8a5d-43e5d0a97ba6:MainScene
-GraphicsCompositor: 2347700f-a8e6-4631-b5b2-633e6692c9bc:GraphicsCompositor
 Defaults:
     - !SiliconStudio.Xenko.Graphics.RenderingSettings,SiliconStudio.Xenko.Graphics
         DefaultBackBufferWidth: 1280

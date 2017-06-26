@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,25 +37,28 @@ namespace SiliconStudio.Xenko.Engine.Network
         /// Requests a specific server.
         /// </summary>
         /// <returns></returns>
-        public static async Task<SimpleSocket> RequestServer(string serverUrl)
+        public static async Task<SimpleSocket> RequestServer(string serverUrl, CancellationToken cancellationToken = default(CancellationToken))
         {
             var socketContext = await InitiateConnectionToRouter();
 
-            await socketContext.WriteStream.WriteInt16Async((short)ClientRouterMessage.RequestServer);
-            await socketContext.WriteStream.WriteStringAsync(serverUrl);
-            await socketContext.WriteStream.FlushAsync();
-
-            var result = (ClientRouterMessage)await socketContext.ReadStream.ReadInt16Async();
-            if (result != ClientRouterMessage.ServerStarted)
+            using (cancellationToken.Register(() => socketContext.Dispose()))
             {
-                throw new SimpleSocketException("Could not connect to server");
-            }
+                await socketContext.WriteStream.WriteInt16Async((short)ClientRouterMessage.RequestServer);
+                await socketContext.WriteStream.WriteStringAsync(serverUrl);
+                await socketContext.WriteStream.FlushAsync();
 
-            var errorCode = await socketContext.ReadStream.ReadInt32Async();
-            if (errorCode != 0)
-            {
-                var errorMessage = await socketContext.ReadStream.ReadStringAsync();
-                throw new SimpleSocketException(errorMessage);
+                var result = (ClientRouterMessage)await socketContext.ReadStream.ReadInt16Async();
+                if (result != ClientRouterMessage.ServerStarted)
+                {
+                    throw new SimpleSocketException("Could not connect to server");
+                }
+
+                var errorCode = await socketContext.ReadStream.ReadInt32Async();
+                if (errorCode != 0)
+                {
+                    var errorMessage = await socketContext.ReadStream.ReadStringAsync();
+                    throw new SimpleSocketException(errorMessage);
+                }
             }
 
             return socketContext;

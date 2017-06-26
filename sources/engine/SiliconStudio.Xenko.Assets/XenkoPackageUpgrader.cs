@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -27,15 +27,19 @@ namespace SiliconStudio.Xenko.Assets
 #endif
     public class XenkoPackageUpgrader : PackageUpgrader
     {
-        public const string CurrentVersion = "2.0.0.0";
+        public const string CurrentVersion = "2.0.0.2";
 
         public static readonly string DefaultGraphicsCompositorLevel9Url = "DefaultGraphicsCompositorLevel9";
         public static readonly string DefaultGraphicsCompositorLevel10Url = "DefaultGraphicsCompositorLevel10";
 
+        public static readonly Guid DefaultGraphicsCompositorLevel9CameraSlot = new Guid("bbfef2cb-8c63-4cab-9caf-6ae48f44a8ba");
+        public static readonly Guid DefaultGraphicsCompositorLevel10CameraSlot = new Guid("d0a6bf72-b3cd-4bd4-94ca-69952999d537");
+
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
         {
+#if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
             // Graphics Compositor asset
-            if (dependency.Version.MinVersion < new PackageVersion("1.10.0-alpha02"))
+            if (dependency.Version.MinVersion < new PackageVersion("1.11.0.0"))
             {
                 // Find game settings (if there is none, it's not a game and nothing to do)
                 var gameSettings = assetFiles.FirstOrDefault(x => x.AssetLocation == GameSettingsAsset.GameSettingsLocation);
@@ -66,6 +70,7 @@ namespace SiliconStudio.Xenko.Assets
 
                         // Add graphics compositor asset by creating a derived asset of Compositing/DefaultGraphicsCompositor.xkgfxcomp
                         var graphicsCompositorUrl = graphicsProfile >= GraphicsProfile.Level_10_0 ? DefaultGraphicsCompositorLevel10Url : DefaultGraphicsCompositorLevel9Url;
+
                         var defaultGraphicsCompositor = dependencyPackage.Assets.Find(graphicsCompositorUrl);
                         if (defaultGraphicsCompositor == null)
                         {
@@ -138,6 +143,132 @@ namespace SiliconStudio.Xenko.Assets
                     UpgradeNavigationMeshGroups(navigationMeshAssets, gameSettingsAsset);
                 }
             }
+
+            if (dependency.Version.MinVersion < new PackageVersion("2.0.0.2"))
+            {
+                RunAssetUpgradersUntilVersion(log, dependentPackage, dependency.Name, assetFiles, new PackageVersion("2.0.0.0"));
+
+                Guid defaultCompositorId = Guid.Empty;
+                var defaultGraphicsCompositorCameraSlot = Guid.Empty;
+
+                // Step one: find the default compositor, that will be the reference one to patch scenes
+                var gameSettings = assetFiles.FirstOrDefault(x => x.AssetLocation == GameSettingsAsset.GameSettingsLocation);
+                if (gameSettings != null)
+                {
+                    using (var gameSettingsYaml = gameSettings.AsYamlAsset())
+                    {
+                        dynamic asset = gameSettingsYaml.DynamicRootNode;
+                        string compositorReference = asset.GraphicsCompositor?.ToString();
+                        var guidString = compositorReference?.Split(':').FirstOrDefault();
+                        Guid.TryParse(guidString, out defaultCompositorId);
+
+                        // Figure out graphics profile; default is Level_10_0 (which is same as GraphicsCompositor default)
+                        var graphicsProfile = GraphicsProfile.Level_10_0;
+                        try
+                        {
+                            foreach (var mapping in gameSettingsYaml.DynamicRootNode.Defaults)
+                            {
+                                if (mapping.Node.Tag == "!SiliconStudio.Xenko.Graphics.RenderingSettings,SiliconStudio.Xenko.Graphics")
+                                {
+                                    if (mapping.DefaultGraphicsProfile != null)
+                                        Enum.TryParse((string)mapping.DefaultGraphicsProfile, out graphicsProfile);
+                                    break;
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            // If something goes wrong, keep going with the default value
+                        }
+
+                        // store the camera slot of the default graphics compositor, because the one from the project will be empty since upgrade relies on reconcile with base, which happens after
+                        defaultGraphicsCompositorCameraSlot = graphicsProfile >= GraphicsProfile.Level_10_0 ? DefaultGraphicsCompositorLevel10CameraSlot : DefaultGraphicsCompositorLevel9CameraSlot;
+                    }
+                }
+
+                // Step two: add an Guid for each item in the SceneCameraSlotCollection of each graphics compositor
+                Dictionary<int, Guid> slotIds = new Dictionary<int, Guid>();
+
+                // This upgrades a projects that already had a graphics compositor before (ie. a project created with public 1.10)
+                // In this case, the compositor that has been created above is empty, and the upgrade relies on reconciliation with base
+                // to fill it properly, which means that for now we have no camera slot. Fortunately, we know the camera slot id from the archetype.
+                slotIds.Add(0, defaultGraphicsCompositorCameraSlot);
+
+                var graphicsCompositorAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkgfxcomp");
+                foreach (var graphicsCompositorAsset in graphicsCompositorAssets)
+                {
+                    using (var yamlAsset = graphicsCompositorAsset.AsYamlAsset())
+                    {
+                        dynamic asset = yamlAsset.DynamicRootNode;
+                        int i = 0;
+                        var localSlotIds = new Dictionary<int, Guid>();
+                        if (asset.Cameras != null)
+                        {
+                            // This upgrades a projects that already had a graphics compositor before (ie. an internal project created with 1.11)
+                            foreach (dynamic cameraSlot in asset.Cameras)
+                            {
+                                var guid = Guid.NewGuid();
+                                Guid assetId;
+                                if (Guid.TryParse(asset.Id.ToString(), out assetId) && assetId == defaultCompositorId)
+                                {
+                                    slotIds[i] = guid;
+                                }
+                                localSlotIds.Add(i, guid);
+                                cameraSlot.Value.Id = guid;
+                                ++i;
+                            }
+                            var indexString = asset.Game?.Camera?.Index?.ToString();
+                            int index;
+                            int.TryParse(indexString, out index);
+                            if (localSlotIds.ContainsKey(index) && asset.Game?.Camera != null)
+                            {
+                                asset.Game.Camera = $"ref!! {localSlotIds[index]}";
+                            }
+                        }
+                        else
+                        {
+                            asset.Cameras = new YamlMappingNode();
+                            asset.Cameras.de2e75c3b2b23e54162686363f3f138e = new YamlMappingNode();
+                            asset.Cameras.de2e75c3b2b23e54162686363f3f138e.Id = defaultGraphicsCompositorCameraSlot;
+                            asset.Cameras.de2e75c3b2b23e54162686363f3f138e.Name = "Main";
+                        }
+                    }
+                }
+
+                // Step three: patch every CameraComponent to reference the Guid instead of an index
+                var entityHierarchyAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkscene" || f.FilePath.GetFileExtension() == ".xkprefab");
+                foreach (var entityHierarchyAsset in entityHierarchyAssets)
+                {
+                    using (var yamlAsset = entityHierarchyAsset.AsYamlAsset())
+                    {
+                        dynamic asset = yamlAsset.DynamicRootNode;
+                        foreach (var entity in asset.Hierarchy.Parts)
+                        {
+                            foreach (var component in entity.Entity.Components)
+                            {
+                                if (component.Value.Node.Tag == "!CameraComponent")
+                                {
+                                    var indexString = component.Value.Slot?.Index?.ToString() ?? "0";
+                                    int index;
+                                    if (int.TryParse(indexString, out index))
+                                    {
+                                        if (slotIds.ContainsKey(index))
+                                        {
+                                            component.Value.Slot = slotIds[index].ToString();
+                                        }
+                                        else
+                                        {
+                                            component.Value.Slot = Guid.Empty.ToString();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+#endif
+            // Put any new upgrader after this #endif
 
             return true;
         }
@@ -476,73 +607,33 @@ namespace SiliconStudio.Xenko.Assets
 
             private void AddComponent(dynamic componentsNode, YamlMappingNode node, Guid id)
             {
-                try
-                {
-                    // New format (1.9)
-                    DynamicYamlMapping mapping = (DynamicYamlMapping)componentsNode;
-                    mapping.AddChild(new YamlScalarNode(Guid.NewGuid().ToString("N")), node);
-                    node.Add("Id", id.ToString("D"));
-                }
-                catch (Exception)
-                {
-                    // Old format (<= 1.8)
-                    DynamicYamlArray array = (DynamicYamlArray)componentsNode;
-                    node.Add("~Id", id.ToString("D")); // TODO
-                    array.Add(node);
-                }
+                // New format (1.9)
+                DynamicYamlMapping mapping = (DynamicYamlMapping)componentsNode;
+                mapping.AddChild(new YamlScalarNode(Guid.NewGuid().ToString("N")), node);
+                node.Add("Id", id.ToString("D"));
             }
 
             private void RemoveComponent(dynamic componentsNode, dynamic componentsEntry)
             {
-                try
-                {
-                    // New format (1.9)
-                    DynamicYamlMapping mapping = (DynamicYamlMapping)componentsNode;
-                    mapping.RemoveChild(componentsEntry.Key);
-                }
-                catch (Exception)
-                {
-                    // Old format (<= 1.8)
-                    DynamicYamlArray array = (DynamicYamlArray)componentsNode;
-                    for (int i = 0; i < array.Count; i++)
-                    {
-                        if (componentsNode[i].Node == componentsEntry.Node)
-                        {
-                            array.RemoveAt(i);
-                            return;
-                        }
-                    }
-                }
+                // New format (1.9)
+                DynamicYamlMapping mapping = (DynamicYamlMapping)componentsNode;
+                mapping.RemoveChild(componentsEntry.Key);
             }
 
             private DynamicYamlArray GetPartsArray(dynamic asset)
             {
                 var hierarchy = asset.Hierarchy;
-                if (hierarchy.Parts != null)
-                    return (DynamicYamlArray)hierarchy.Parts; // > 1.6.0
-                return (DynamicYamlArray)hierarchy.Entities; // <= 1.6.0
+                return (DynamicYamlArray)hierarchy.Parts; // > 1.6.0
             }
             
             private ComponentInfo GetComponentInfo(dynamic componentNode)
             {
-                if(componentNode.Key != null && componentNode.Value != null)
+                // New format (1.9)
+                return new ComponentInfo
                 {
-                    // New format (1.9)
-                    return new ComponentInfo
-                    {
-                        Id = (string)componentNode.Key,
-                        Component = componentNode.Value
-                    };
-                }
-                else
-                {
-                    // Old format (<= 1.8)
-                    return new ComponentInfo
-                    {
-                        Id = (string)componentNode["~Id"], // TODO
-                        Component = componentNode
-                    };
-                }
+                    Id = (string)componentNode.Key,
+                    Component = componentNode.Value
+                };
             }
 
             private struct SkyboxAssetInfo

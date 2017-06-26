@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -85,11 +85,6 @@ namespace SiliconStudio.BuildEngine
                 if(buildStep.Processed)
                     continue;
 
-                if (buildStep is WaitBuildStep)
-                {
-                    throw new InvalidOperationException("WaitBuildStep are not supported as direct child of DynamicBuildStep");
-                }
-
                 // Schedule build step
                 executeContext.ScheduleBuildStep(buildStep);
                 buildStepsToWait.Add(buildStep);
@@ -131,7 +126,7 @@ namespace SiliconStudio.BuildEngine
 
             // wait for completion of all its spawned and dependent steps
             // (probably instant most of the time, but it would be good to have a better ExecutedAsync to check that together as well)
-            await EnumerableBuildStep.WaitCommands(new List<BuildStep> { completeBuildStep });
+            await ListBuildStep.WaitCommands(new List<BuildStep> { completeBuildStep });
 
             // Remove from list of build step to wait
             buildStepsToWait.Remove(completeBuildStep);

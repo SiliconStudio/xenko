@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using SiliconStudio.Core.Collections;
@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
         }
 
         /// <summary>
-        /// Updates only the coefficients of the light probes.
+        /// Updates only the coefficients of the light probes (from <see cref="LightProbeComponent.Coefficients"/> to <see cref="LightProbeRuntimeData.Coefficients"/>).
         /// </summary>
         public void UpdateLightProbeCoefficients()
         {

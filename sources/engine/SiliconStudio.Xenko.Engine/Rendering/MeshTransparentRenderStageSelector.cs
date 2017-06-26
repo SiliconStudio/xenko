@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.ComponentModel;
 using SiliconStudio.Xenko.Engine;
 
@@ -11,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 var renderMesh = (RenderMesh)renderObject;
 
-                var renderStage = renderMesh.Material.HasTransparency ? TransparentRenderStage : OpaqueRenderStage;
+                var renderStage = renderMesh.MaterialPass.HasTransparency ? TransparentRenderStage : OpaqueRenderStage;
                 if (renderStage != null)
                     renderObject.ActiveRenderStages[renderStage.Index] = new ActiveRenderStage(EffectName);
             }

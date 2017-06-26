@@ -40,7 +40,7 @@
     </When>
   </Choose>
   <ItemGroup>
-    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+    <Compile Include="..\..\common\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Animations\AnimationCurveEvaluatorDirectBlittableGroup.cs" />
@@ -102,7 +102,9 @@
     <Compile Include="Engine\LightComponentExtensions.cs" />
     <Compile Include="Engine\LightProbeComponent.cs" />
     <Compile Include="Engine\LightShaftBoundingVolumeComponent.cs" />
+    <Compile Include="Engine\Processors\LightShaftBoundingVolumeProcessor.cs" />
     <Compile Include="Engine\LightShaftComponent.cs" />
+    <Compile Include="Engine\Processors\LightShaftProcessor.cs" />
     <Compile Include="Engine\ModelNodeTransformLink.cs" />
     <Compile Include="Engine\ModelViewHierarchyTransformOperation.cs" />
     <Compile Include="Engine\Network\ClientRouterMessage.cs" />
@@ -141,6 +143,8 @@
     </Compile>
     <Compile Include="Rendering\BackToFrontSortMode.cs" />
     <Compile Include="Rendering\Compositing\ClearRenderer.cs" />
+    <Compile Include="Rendering\Compositing\CompositingProfilingKeys.cs" />
+    <Compile Include="Rendering\Compositing\DebugRenderer.cs" />
     <Compile Include="Rendering\Compositing\EditorTopLevelCompositor.cs" />
     <Compile Include="Rendering\Compositing\DelegateSceneRenderer.cs" />
     <Compile Include="Rendering\Compositing\ForceAspectRatioSceneRenderer.cs" />
@@ -148,9 +152,20 @@
     <Compile Include="Rendering\Compositing\ForwardRenderer.LightProbes.cs" />
     <Compile Include="Rendering\Compositing\ForwardRenderer.VRUtils.cs" />
     <Compile Include="Rendering\Compositing\GraphicsCompositor.cs" />
+    <Compile Include="Rendering\Compositing\GraphicsCompositorHelper.cs" />
     <Compile Include="Rendering\Compositing\IRenderTargetSemantic.cs" />
+    <Compile Include="Rendering\Compositing\MSAADepthResolverShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MSAADepthResolverShader.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Compositing\MSAAResolver.cs" />
     <None Include="packages.config" />
+    <None Include="Rendering\Compositing\MSAADepthResolverShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MSAADepthResolverShader.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Compositing\MSAAResolverEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MSAAResolverEffect.cs</LastGenOutput>
@@ -170,6 +185,7 @@
     <Compile Include="Rendering\Compositing\RenderTargetDescription.cs" />
     <Compile Include="Rendering\Compositing\RenderTextureSceneRenderer.cs" />
     <Compile Include="Rendering\Compositing\SceneCameraRenderer.cs" />
+    <Compile Include="Rendering\Compositing\SceneExternalCameraRenderer.cs" />
     <Compile Include="Rendering\Compositing\SceneRendererCollection.cs" />
     <Compile Include="Rendering\Compositing\SingleStageRenderer.cs" />
     <Compile Include="Rendering\CameraCullingMode.cs" />
@@ -207,12 +223,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
-    <Compile Include="Rendering\Core\NormalUpdate.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>NormalUpdate.xksl</DependentUpon>
-    </Compile>
+    <Compile Include="Rendering\QueryManager.cs" />
+    <Compile Include="Rendering\Images\ImageEffectProfilingKeys.cs" />
     <Compile Include="Rendering\Images\ImageScaler\SamplingPattern.cs" />
     <Compile Include="Rendering\Images\LocalReflections\LocalReflections.cs" />
     <Compile Include="Rendering\Images\LocalReflections\SSLRBlurPass.cs">
@@ -264,12 +276,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>PostEffectBoundingRay.xksl</DependentUpon>
     </Compile>
-    <Compile Include="Rendering\Images\LightShafts\PostEffectMinMax.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>PostEffectMinMax.xksl</DependentUpon>
-    </Compile>
     <Compile Include="Rendering\Images\PostProcessingEffects.cs" />
     <Compile Include="Rendering\Images\LightShafts\AdditiveLightShader.cs">
       <AutoGen>True</AutoGen>
@@ -292,18 +298,64 @@
     </Compile>
     <Compile Include="Rendering\Compositing\RenderOutputValidator.cs" />
     <Compile Include="Rendering\LightProbes\LightProbeProcessor.cs" />
-	<Compile Include="Rendering\Materials\Shaders\GBufferOutputNormals.cs">
+    <Compile Include="Rendering\Materials\IEnergyConservativeDiffuseModelFeature.cs" />
+    <Compile Include="Rendering\MaterialPass.cs" />
+    <Compile Include="Rendering\MaterialPassCollection.cs" />
+    <Compile Include="Rendering\Materials\IMaterialSpecularMicrofacetEnvironmentFunction.cs" />
+    <Compile Include="Rendering\Materials\MaterialSpecularMicrofacetEnvironmentGGXLUT.cs" />
+    <Compile Include="Rendering\Materials\MaterialSpecularMicrofacetEnvironmentThinGlass.cs" />
+    <Compile Include="Rendering\Materials\MaterialSpecularThinGlassModelFeature.cs" />
+    <Compile Include="Rendering\Materials\MaterialSpecularMicrofacetEnvironmentGGXPolynomial.cs" />
+    <Compile Include="Rendering\Materials\MaterialSpecularMicrofacetFresnelThinGlass.cs" />
+    <Compile Include="Rendering\Materials\Shaders\IMaterialSpecularMicrofacetEnvironmentFunction.cs">
+      <DependentUpon>IMaterialSpecularMicrofacetEnvironmentFunction.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>GBufferOutputNormals.xksl</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Materials\Shaders\GBufferOutputSpecularColorRoughness.cs">
+    <Compile Include="Rendering\Materials\Shaders\MaterialSpecularMicrofacetEnvironmentGGXLUT.cs">
+      <DependentUpon>MaterialSpecularMicrofacetEnvironmentGGXLUT.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>GBufferOutputSpecularColorRoughness.xksl</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Rendering\Materials\Shaders\MaterialSpecularMicrofacetEnvironmentThinGlass.cs">
+      <DependentUpon>MaterialSpecularMicrofacetEnvironmentThinGlass.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Materials\Shaders\MaterialSpecularMicrofacetFresnelThinGlass.cs">
+      <DependentUpon>MaterialSpecularMicrofacetFresnelThinGlass.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Materials\Shaders\MaterialSpecularMicrofacetEnvironmentGGXPolynomial.cs">
+      <DependentUpon>MaterialSpecularMicrofacetEnvironmentGGXPolynomial.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Materials\Shaders\MaterialTransmittanceReflectanceStream.cs">
+      <DependentUpon>MaterialTransmittanceReflectanceStream.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Materials\Shaders\MaterialSurfaceTransmittanceShading.cs">
+      <DependentUpon>MaterialSurfaceTransmittanceShading.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Materials\Shaders\MaterialSurfaceNormalStreamShading.cs">
+      <DependentUpon>MaterialSurfaceNormalStreamShading.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Materials\ShadingModelShaderBuilder.cs" />
     <Compile Include="Rendering\RenderViewFlags.cs" />
     <Compile Include="Rendering\Skyboxes\CubemapSceneRenderer.cs" />
     <Compile Include="Rendering\Lights\LightPointShadowMap.cs" />
@@ -361,6 +413,14 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MSAAResolverShader.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\Images\LightShafts\AdditiveLightEffect.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>AdditiveLightEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\LightShafts\LightShaftsEffect.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>LightShaftsEffect.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Core\NormalUpdate.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>NormalUpdate.cs</LastGenOutput>
@@ -410,10 +470,6 @@
     <None Include="Rendering\Images\LightShafts\PostEffectBoundingRay.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>PostEffectBoundingRay.cs</LastGenOutput>
-    </None>
-    <None Include="Rendering\Images\LightShafts\PostEffectMinMax.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>PostEffectMinMax.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Images\LightShafts\VolumeMinMaxShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
@@ -793,13 +849,37 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeSphericalHarmonics.cs</LastGenOutput>
     </None>
-	<None Include="Rendering\Materials\Shaders\GBufferOutputNormals.xksl">
+    <None Include="Rendering\Materials\Shaders\IMaterialSpecularMicrofacetEnvironmentFunction.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>GBufferOutputNormals.cs</LastGenOutput>
+      <LastGenOutput>IMaterialSpecularMicrofacetEnvironmentFunction.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\Materials\Shaders\GBufferOutputSpecularColorRoughness.xksl">
+    <None Include="Rendering\Materials\Shaders\MaterialSpecularMicrofacetEnvironmentGGXLUT.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>GBufferOutputSpecularColorRoughness.cs</LastGenOutput>
+      <LastGenOutput>MaterialSpecularMicrofacetEnvironmentGGXLUT.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\Shaders\MaterialSpecularMicrofacetEnvironmentThinGlass.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSpecularMicrofacetEnvironmentThinGlass.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\Shaders\MaterialSpecularMicrofacetFresnelThinGlass.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSpecularMicrofacetFresnelThinGlass.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\Shaders\MaterialSpecularMicrofacetEnvironmentGGXPolynomial.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSpecularMicrofacetEnvironmentGGXPolynomial.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\Shaders\MaterialTransmittanceReflectanceStream.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialTransmittanceReflectanceStream.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\Shaders\MaterialSurfaceTransmittanceShading.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSurfaceTransmittanceShading.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\Shaders\MaterialSurfaceNormalStreamShading.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSurfaceNormalStreamShading.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Shadows\ShadowMapCasterCubeMap.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
@@ -989,7 +1069,7 @@
     <Compile Include="Engine\Processors\CameraProjectionMode.cs" />
     <Compile Include="Rendering\Compositing\SceneCameraSlot.cs" />
     <Compile Include="Rendering\Compositing\SceneCameraSlotCollection.cs" />
-    <Compile Include="Rendering\Compositing\SceneCameraSlotIndex.cs" />
+    <Compile Include="Rendering\Compositing\SceneCameraSlotId.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorSubtract.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorSubtract1.cs">
       <AutoGen>True</AutoGen>
@@ -2721,12 +2801,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Utils\MinMaxBounding.cs">
-      <DependentUpon>MinMaxBounding.xksl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Rendering\Utils\NormalPack.cs">
       <DependentUpon>NormalPack.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -3844,6 +3918,7 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>PickingShader.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\XenkoDefaultSplashScreen.xktex" />
     <None Include="Rendering\XenkoDefaultFont.xkfnt" />
     <None Include="Rendering\XenkoWireframeShadingEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
@@ -4035,10 +4110,6 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>Math.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\Utils\MinMaxBounding.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>MinMaxBounding.cs</LastGenOutput>
-    </None>
     <None Include="Rendering\Utils\NormalPack.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>NormalPack.cs</LastGenOutput>
@@ -4077,7 +4148,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Rendering\Gizmos\" />
-    <Folder Include="Rendering\Lightshafts\" />
     <Folder Include="Rendering\Lights\obsolete\" />
     <Folder Include="Rendering\Shadows\obsolete\" />
   </ItemGroup>
@@ -4158,6 +4228,12 @@
     <Reference Include="System.Threading.Tasks.Dataflow, Version=4.6.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\build\packages\System.Threading.Tasks.Dataflow.4.6.0\lib\netstandard1.1\System.Threading.Tasks.Dataflow.dll</HintPath>
     </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Rendering\XenkoDefaultSplashScreen.jpg" />
   </ItemGroup>
   <Import Project="..\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems" Label="Shared" />
   <Choose>

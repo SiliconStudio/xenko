@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 #pragma warning disable 162 // Unreachable code detected (due to useCacheFonts)
 using System;
 using System.Collections.Generic;
@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     {
         private static readonly FontDataFactory FontDataFactory = new FontDataFactory();
 
-        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
         {
             var asset = (SpriteFontAsset)assetItem.Asset;
             var fontTypeStatic = asset.FontType as OfflineRasterizedSpriteFontType;
@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                     {
                         new OfflineRasterizedFontCommand(targetUrlInStorage, assetClone, colorSpace, assetItem.Package)
                         {
-                            InputFilesGetter = () => GetInputFiles(context, assetItem)
+                            InputFilesGetter = () => GetInputFiles(assetItem)
                         }
                     };
                 }

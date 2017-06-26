@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [DataMember(20)]
         public IComputeColor Tint { get; set; }
 
-        public override void VisitFeature(MaterialGeneratorContext context)
+        public override void GenerateShader(MaterialGeneratorContext context)
         {
             var alpha = Alpha ?? new ComputeFloat(0.5f);
             var tint = Tint ?? new ComputeColor(Color.White);
@@ -59,8 +59,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             alpha.ClampFloat(0, 1);
 
             // Use pre-multiplied alpha to support both additive and alpha blending
-            var blendDesc = new BlendStateDescription(Blend.One, Blend.InverseSourceAlpha);
-            context.Material.HasTransparency = true;
+            if (context.MaterialPass.BlendState == null)
+                context.MaterialPass.BlendState = BlendStates.AlphaBlend;
+            context.MaterialPass.HasTransparency = true;
             // TODO GRAPHICS REFACTOR
             //context.Parameters.SetResourceSlow(Effect.BlendStateKey, BlendState.NewFake(blendDesc));
 

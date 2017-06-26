@@ -1,4 +1,6 @@
-﻿#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
@@ -26,6 +28,7 @@ namespace SiliconStudio.Xenko.VirtualReality
         public OpenVRHmd()
         {
             VRApi = VRApi.OpenVR;
+            SupportsOverlays = true;
         }
 
         public override void Enable(GraphicsDevice device, GraphicsDeviceManager graphicsDeviceManager, bool requireMirror, int mirrorWidth, int mirrorHeight)
@@ -52,6 +55,12 @@ namespace SiliconStudio.Xenko.VirtualReality
             rightHandController = new OpenVRTouchController(TouchControllerHand.Right);
         }
 
+        public override VROverlay CreateOverlay(int width, int height, int mipLevels, int sampleCount)
+        {
+            var overlay = new OpenVROverlay();
+            return overlay;
+        }
+
         public override void Draw(GameTime gameTime)
         {
             OpenVR.UpdatePoses();
@@ -74,7 +83,7 @@ namespace SiliconStudio.Xenko.VirtualReality
             OpenVR.GetEyeToHead(eye == Eyes.Left ? 0 : 1, out eyeMat);
             OpenVR.GetProjection(eye == Eyes.Left ? 0 : 1, near, far, out projection);
 
-            eyeMat = eyeMat * currentHead * Matrix.Scaling(ViewScaling) * Matrix.Translation(cameraPosition) * cameraRotation;
+            eyeMat = eyeMat * currentHead * Matrix.Scaling(ViewScaling) * cameraRotation * Matrix.Translation(cameraPosition);
             eyeMat.Decompose(out scale, out rot, out pos);
             var finalUp = Vector3.TransformCoordinate(new Vector3(0, 1, 0), rot);
             var finalForward = Vector3.TransformCoordinate(new Vector3(0, 0, -1), rot);
@@ -115,6 +124,11 @@ namespace SiliconStudio.Xenko.VirtualReality
         public override Size2 ActualRenderFrameSize { get; protected set; }
 
         public override Size2 OptimalRenderFrameSize => new Size2(2160, 1200);
+
+        public override void Dispose()
+        {
+            OpenVR.Shutdown();
+        }
     }
 }
 

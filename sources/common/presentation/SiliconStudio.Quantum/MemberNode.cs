@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Reflection;
@@ -59,7 +59,15 @@ namespace SiliconStudio.Quantum
         public event EventHandler<MemberNodeChangeEventArgs> ValueChanged;
 
         /// <inheritdoc/>
-        protected sealed override object Value { get { if (Parent.Retrieve() == null) throw new InvalidOperationException("Container's value is null"); return MemberDescriptor.Get(Parent.Retrieve()); } }
+        protected sealed override object Value
+        {
+            get
+            {
+                var container = Parent.Retrieve();
+                if (container == null) throw new InvalidOperationException("Container's value is null");
+                return MemberDescriptor.Get(container);
+            }
+        }
 
         /// <inheritdoc/>
         public void Update(object newValue)
@@ -102,12 +110,12 @@ namespace SiliconStudio.Quantum
                 args = new MemberNodeChangeEventArgs(this, oldValue, newValue);
                 NotifyContentChanging(args);
             }
-            if (Parent.Retrieve() == null)
-                throw new InvalidOperationException("Container's value is null");
             var containerValue = Parent.Retrieve();
+            if (containerValue == null)
+                throw new InvalidOperationException("Container's value is null");
             MemberDescriptor.Set(containerValue, newValue);
 
-            if (Parent.Retrieve().GetType().GetTypeInfo().IsValueType)
+            if (containerValue.GetType().GetTypeInfo().IsValueType)
                 ((GraphNodeBase)Parent).UpdateFromMember(containerValue, Index.Empty);
 
             UpdateReferences();

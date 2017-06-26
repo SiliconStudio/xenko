@@ -1,5 +1,6 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+
 namespace SiliconStudio.Xenko.Rendering.LightProbes
 {
     /// <summary>
@@ -9,7 +10,6 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
     {
         cbuffer PerView.LightProbes
         {
-            stage bool Enabled;
             stage int IgnoredProbeStart;
         }
         rgroup PerView.LightProbes
@@ -44,8 +44,7 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
 
         override void PrepareEnvironmentLight()
         {
-            if (!Enabled)
-                return;
+            base.PrepareEnvironmentLight();
 
             var ambientAccessibility = streams.matAmbientOcclusion;
 
@@ -76,15 +75,6 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
             // Zero all the barycentric coordinates that reference probes past IgnoredProbeStart (the one far away)
             tetrahedronFactors4 = lerp(tetrahedronFactors4, 0.0f, probeIndices >= IgnoredProbeStart ? float4(1.0f, 1.0f, 1.0f, 1.0f) : float4(0.0f, 0.0f, 0.0f, 0.0f));
 
-            //if (probeIndices.x >= IgnoredProbeStart)
-            //    tetrahedronFactors4.x = 0.0f;
-            //if (probeIndices.y >= IgnoredProbeStart)
-            //    tetrahedronFactors4.y = 0.0f;
-            //if (probeIndices.z >= IgnoredProbeStart)
-            //    tetrahedronFactors4.z = 0.0f;
-            //if (probeIndices.w >= IgnoredProbeStart)
-            //    tetrahedronFactors4.w = 0.0f;
-
             // Renormalize barycentric coordinates
             var totalSum = tetrahedronFactors4.x + tetrahedronFactors4.y + tetrahedronFactors4.z + tetrahedronFactors4.w;
             if (totalSum > 0.0f)
@@ -93,23 +83,6 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
             float3 sphericalColors[TOrder * TOrder];
             for (int i = 0; i < TOrder * TOrder; ++i)
                 sphericalColors[i] = 0.0f;
-
-            /*if (tetrahedronFactors4.x > tetrahedronFactors4.y && tetrahedronFactors4.x > tetrahedronFactors4.z && tetrahedronFactors4.x > tetrahedronFactors4.w)
-            {
-                tetrahedronFactors4 = float4(1, 0, 0, 0);
-            }
-            else if (tetrahedronFactors4.y > tetrahedronFactors4.x && tetrahedronFactors4.y > tetrahedronFactors4.z && tetrahedronFactors4.y > tetrahedronFactors4.w)
-            {
-                tetrahedronFactors4 = float4(0, 1, 0, 0);
-            }
-            else if (tetrahedronFactors4.z > tetrahedronFactors4.x && tetrahedronFactors4.z > tetrahedronFactors4.y && tetrahedronFactors4.z > tetrahedronFactors4.w)
-            {
-                tetrahedronFactors4 = float4(0, 0, 1, 0);
-            }
-            else
-            {
-                tetrahedronFactors4 = float4(0, 0, 0, 1);
-            }*/
 
             FetchLightProbe(sphericalColors, probeIndices.x, tetrahedronFactors4.x);
             FetchLightProbe(sphericalColors, probeIndices.y, tetrahedronFactors4.y);
@@ -121,12 +94,6 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
             //streams.envLightDiffuseColor = LightProbeCube.Sample(Texturing.LinearSampler, sampleDirection).rgb * ambientAccessibility * streams.matDiffuseSpecularAlphaBlend.y;
             //streams.envLightDiffuseColor = tetrahedronFactors3;
             //streams.envLightDiffuseColor = float4(tetrahedronIndex.xxx * 0.2, 1.0);
-
-            // TODO: If we really want to do specular, we need to compute specular spherical coefficients too
-            sampleDirection = reflect( -streams.viewWS, streams.normalWS );
-            sampleDirection = float3(sampleDirection.xy, -sampleDirection.z);
-
-            //streams.envLightSpecularColor = EvaluateSphericalHarmonics(sphericalColors, sampleDirection).rgb * 5.0f * ambientAccessibility * streams.matDiffuseSpecularAlphaBlend.y;
         }
     };
 }

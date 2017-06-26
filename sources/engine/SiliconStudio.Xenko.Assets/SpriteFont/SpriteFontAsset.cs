@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.ComponentModel;
 using SiliconStudio.Assets;
@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// <summary>
         /// The default file extension used by the <see cref="SpriteFontAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xkfnt;.pdxfnt";
+        public const string FileExtension = ".xkfnt";
 
         [NotNull]
         [DataMember(10)]
@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </userdoc>
         [DataMember(130)]
         [DefaultValue(0.0f)]
-        [DataMemberRange(-500, 500, 1, 10)]
+        [DataMemberRange(-500, 500, 1, 10, 2)]
         [Display(null, "Rendering")]
         public float Spacing { get; set; }
 
@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </userdoc>
         [DataMember(140)]
         [DefaultValue(0.0f)]
-        [DataMemberRange(-500, 500, 1, 10)]
+        [DataMemberRange(-500, 500, 1, 10, 2)]
         [Display(null, "Rendering")]
         public float LineSpacing { get; set; }
 
@@ -95,7 +95,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </userdoc>
         [DataMember(150)]
         [DefaultValue(1.0f)]
-        [DataMemberRange(-500, 500, 1, 10)]
+        [DataMemberRange(-500, 500, 1, 10, 2)]
         [Display(null, "Rendering")]
         public float LineGapFactor { get; set; } = 1.0f;
 
@@ -114,7 +114,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </userdoc>
         [DataMember(160)]
         [DefaultValue(1.0f)]
-        [DataMemberRange(-500, 500, 1, 10)]
+        [DataMemberRange(-500, 500, 1, 10, 2)]
         [Display(null, "Rendering")]
         public float LineGapBaseLineFactor { get; set; } = 1.0f;
     }

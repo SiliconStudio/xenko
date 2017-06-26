@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -196,7 +198,7 @@ namespace SpriteStudioDemo
             if (Input.PointerEvents.Any())
             {
                 var lastPointer = Input.PointerEvents.Last();
-                isPointerDown = lastPointer.State != PointerState.Up;
+                isPointerDown = lastPointer.EventType != PointerEventType.Released;
                 pointerState = lastPointer;
             }
 

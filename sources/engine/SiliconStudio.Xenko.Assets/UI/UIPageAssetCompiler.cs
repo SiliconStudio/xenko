@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Assets.UI
     [AssetCompiler(typeof(UIPageAsset), typeof(AssetCompilationContext))]
     public sealed class UIPageAssetCompiler : UIAssetCompilerBase<UIPageAsset>
     {
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
         {
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SpriteFontAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(PrecompiledSpriteFontAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
@@ -37,9 +37,7 @@ namespace SiliconStudio.Xenko.Assets.UI
             {
                 return new Engine.UIPage
                 {
-                    RootElement = Parameters.Hierarchy.RootPartIds.Count == 1
-                        ? Parameters.Hierarchy.Parts[Parameters.Hierarchy.RootPartIds[0]].UIElement
-                        : null,
+                    RootElement = Parameters.Hierarchy.RootParts.Count == 1 ? Parameters.Hierarchy.RootParts[0] : null
                 };
             }
         }

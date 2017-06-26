@@ -65,10 +65,14 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+    <Compile Include="..\..\common\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssetBaseToDerivedRegistry.cs" />
+    <Compile Include="AssetCloningHelper.cs" />
+    <Compile Include="AssetCompositeHierarchyPropertyGraphDefinition.cs" />
+    <Compile Include="AssetPropertyGraphDefinition.cs" />
+    <Compile Include="AssetPropertyGraphDefinitionAttribute.cs" />
     <Compile Include="IAssetMemberNode.cs" />
     <Compile Include="IAssetObjectNode.cs" />
     <Compile Include="Internal\AssetBoxedNode.cs" />
@@ -151,16 +155,6 @@
     <ProjectReference Include="..\..\common\presentation\SiliconStudio.Quantum\SiliconStudio.Quantum.csproj">
       <Project>{1D4210BD-FA51-4709-951B-50647617F97E}</Project>
       <Name>SiliconStudio.Quantum</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
-      <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
-      <Name>SiliconStudio.Xenko.Graphics</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
-      <Project>{72390339-B2A1-4F61-A800-31ED0975B515}</Project>
-      <Name>SiliconStudio.Xenko</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Assets\SiliconStudio.Assets.csproj">

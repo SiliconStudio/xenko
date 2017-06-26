@@ -143,7 +143,7 @@
     <!--This variable can be overriden by a platform specific targets (in case the executable is located into an assembly dll )-->
     <SiliconStudioIsExecutable Condition=" '$(OutputType)' == 'Exe'">true</SiliconStudioIsExecutable>
     <SiliconStudioIsExecutable Condition=" '$(OutputType)' == 'WinExe'">true</SiliconStudioIsExecutable>
-    <SiliconStudioAssemblyProcessorPath>$(SiliconStudioPackageXenko)\deps\AssemblyProcessor\SiliconStudio.AssemblyProcessor.exe</SiliconStudioAssemblyProcessorPath>
+    <SiliconStudioAssemblyProcessorPath>$(SiliconStudioPackageXenko)\deps\AssemblyProcessor\SiliconStudio.AssemblyProcessor.Packed.exe</SiliconStudioAssemblyProcessorPath>
   </PropertyGroup>
 
   <!-- Include platform specific targets -->
@@ -255,7 +255,7 @@
     </PrepareForRunDependsOn>
 
     <!--asset BuildPath for all platforms (same as package)-->
-    <SiliconStudioCompileAssetBuildPath Condition="'$(SiliconStudioCompileAssetBuildPath)' == ''">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\obj\data</SiliconStudioCompileAssetBuildPath>
+    <SiliconStudioCompileAssetBuildPath Condition="'$(SiliconStudioCompileAssetBuildPath)' == ''">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\Cache\data</SiliconStudioCompileAssetBuildPath>
 
     <!--asset OutputPath for Android.-->
     <SiliconStudioCompileAssetOutputPath Condition="'$(SiliconStudioCompileAssetOutputPath)' == '' and '$(SiliconStudioPlatform)' == 'Android'">$(ProjectDir)$(MonoAndroidAssetsDirIntermediate)\data</SiliconStudioCompileAssetOutputPath>

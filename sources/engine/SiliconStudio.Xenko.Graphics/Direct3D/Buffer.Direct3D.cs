@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 using System;
 using System.Collections.Generic;
@@ -230,8 +230,8 @@ namespace SiliconStudio.Xenko.Graphics
             if ((bufferFlags & BufferFlags.StructuredBuffer) != 0)
             {
                 desc.OptionFlags |= ResourceOptionFlags.BufferStructured;
-                if (bufferDescription.StructureByteStride == 0)
-                    throw new ArgumentException("Element size cannot be set to 0 for structured buffer");
+                if (bufferDescription.StructureByteStride <= 0)
+                    throw new ArgumentException("Element size cannot be less or equal 0 for structured buffer");
             }
 
             if ((bufferFlags & BufferFlags.RawBuffer) == BufferFlags.RawBuffer)

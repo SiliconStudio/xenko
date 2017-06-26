@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using BulletSharp;
 using SiliconStudio.Core.Mathematics;
@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Physics
 
             switch (orientation)
             {
-                case ShapeOrientation.UpX:
+                case ShapeOrientation.UpZ:
                     shape = new CapsuleShapeZ(radius, length)
                     {
                         LocalScaling = CachedScaling
@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Physics
                     rotation = Matrix.Identity;
                     break;
 
-                case ShapeOrientation.UpZ:
+                case ShapeOrientation.UpX:
                     shape = new CapsuleShapeX(radius, length)
                     {
                         LocalScaling = CachedScaling

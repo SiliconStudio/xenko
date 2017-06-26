@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Linq;
@@ -94,6 +94,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 shadowRenderView.Rectangle = lightShadowMap.GetRectangle(i);
                 shadowRenderView.NearClipPlane = 0.0f;
                 shadowRenderView.FarClipPlane = GetShadowMapFarPlane(lightShadowMap);
+                shadowRenderView.ViewSize = new Vector2(lightShadowMap.GetRectangle(i).Width, lightShadowMap.GetRectangle(i).Height);
 
                 // Compute view parameters
                 // Note: we only need view here since we are doing paraboloid projection in the vertex shader

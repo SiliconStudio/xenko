@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 namespace SiliconStudio.Xenko.Rendering.Lights
 {
     /// <summary>
@@ -29,6 +29,17 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             data.Color = Lights[lightIndex].Color;
 
             ProcessLight(data);
+        }
+
+        override float ComputeAttenuation(float3 position, int lightIndex)
+        {
+            // TODO: Workaraound for SPIR-V compiler. Revert later
+            PointLightDataInternal data;
+            data.PositionWS = Lights[lightIndex].PositionWS;
+            data.InvSquareRadius = Lights[lightIndex].InvSquareRadius;
+
+            float3 lightVectorNorm;
+            return ComputeAttenuation(data, position, lightVectorNorm);
         }
     };
 }

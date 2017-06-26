@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
 
             if (Input.PointerEvents.Count > 0)
             {
-                if (Input.PointerEvents.Any(x => x.State == PointerState.Up))
+                if (Input.PointerEvents.Any(x => x.EventType == PointerEventType.Released))
                 {
                     if (count % 5 == 0)
                         effect48kHz.CreateInstance(Audio.AudioEngine.DefaultListener).Play();

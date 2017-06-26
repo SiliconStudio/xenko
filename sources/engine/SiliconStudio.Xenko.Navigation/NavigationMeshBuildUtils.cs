@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2016-2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -91,7 +91,7 @@ namespace SiliconStudio.Xenko.Navigation
         }
 
         /// <summary>
-        /// Generates vertices and indices for an infinite size, limited by the <see cref="size"/> parameter
+        /// Generates vertices and indices for an infinite size, limited by the <paramref cref="size"/> parameter
         /// </summary>
         /// <param name="plane"></param>
         /// <param name="size">the amount from the origin the plane points are placed</param>

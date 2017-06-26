@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -21,7 +21,7 @@ namespace SiliconStudio.Assets.Analysis
             where TAssetPart : class, IIdentifiable
         {
             var baseInstanceMapping = new Dictionary<Guid, Guid>();
-            foreach (var part in hierarchy.Parts)
+            foreach (var part in hierarchy.Parts.Values)
             {
                 if (part.Base == null)
                     continue;

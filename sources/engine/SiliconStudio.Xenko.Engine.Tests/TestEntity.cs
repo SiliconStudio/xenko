@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -106,6 +106,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
             // Check that CustomEntityComponent can be added multiple times
             Assert.True(EntityComponentAttributes.Get<CustomEntityComponent>().AllowMultipleComponents);
+
+            // Check that DerivedEntityComponentBase can be added multiple times
+            Assert.True(EntityComponentAttributes.Get<DerivedEntityComponent>().AllowMultipleComponents);
 
             var entity = new Entity();
 
@@ -252,6 +255,15 @@ namespace SiliconStudio.Xenko.Engine.Tests
         public Entity Link { get; set; }
 
         public object CustomObject { get; set; }
+    }
+
+    [AllowMultipleComponents]
+    public class MultipleEntityComponentBase : CustomEntityComponentBase
+    {
+    }
+
+    public sealed class DerivedEntityComponent : MultipleEntityComponentBase
+    {
     }
 
     [DataContract()]

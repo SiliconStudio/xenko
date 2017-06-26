@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Storage;
@@ -14,8 +14,6 @@ namespace SiliconStudio.BuildEngine
         LoggerResult Logger { get; }
         BuildParameterCollection BuildParameters { get; }
 
-        Task<ResultStatus> ScheduleAndExecuteCommand(Command command);
-
         IEnumerable<IDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups();
 
         void RegisterInputDependency(ObjectUrl url);
@@ -23,7 +21,5 @@ namespace SiliconStudio.BuildEngine
         void RegisterCommandLog(IEnumerable<ILogMessage> logMessages);
 
         void AddTag(ObjectUrl url, TagSymbol tagSymbol);
-
-        void RegisterSpawnedCommandWithoutScheduling(Command command);
     }
 }

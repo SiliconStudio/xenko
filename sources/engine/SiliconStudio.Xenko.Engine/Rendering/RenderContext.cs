@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -20,6 +20,7 @@ namespace SiliconStudio.Xenko.Rendering
     {
         private const string SharedImageEffectContextKey = "__SharedRenderContext__";
         private readonly ThreadLocal<RenderDrawContext> threadContext;
+        private readonly object threadContextLock = new object();
 
         // Used for API that don't support multiple command lists
         internal CommandList SharedCommandList;
@@ -37,7 +38,13 @@ namespace SiliconStudio.Xenko.Rendering
             GraphicsDevice = services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
             Allocator = services.GetServiceAs<GraphicsContext>().Allocator ?? new GraphicsResourceAllocator(GraphicsDevice).DisposeBy(GraphicsDevice);
 
-            threadContext = new ThreadLocal<RenderDrawContext>(() => new RenderDrawContext(Services, this, new GraphicsContext(GraphicsDevice, Allocator)), true);
+            threadContext = new ThreadLocal<RenderDrawContext>(() =>
+            {
+                lock (threadContextLock)
+                {
+                    return new RenderDrawContext(Services, this, new GraphicsContext(GraphicsDevice, Allocator));
+                }
+            }, true);
         }
 
         /// <summary>
@@ -104,6 +111,17 @@ namespace SiliconStudio.Xenko.Rendering
         /// The current render view.
         /// </summary>
         public RenderView RenderView { get; set; }
+
+        protected override void Destroy()
+        {
+            foreach (var renderDrawContext in threadContext.Values)
+            {
+                renderDrawContext.Dispose();
+            }
+            threadContext.Dispose();
+
+            base.Destroy();
+        }
 
         /// <summary>
         /// Gets a global shared context.
@@ -172,6 +190,7 @@ namespace SiliconStudio.Xenko.Rendering
             foreach (var context in threadContext.Values)
             {
                 context.ResourceGroupAllocator.Flush();
+                context.QueryManager.Flush();
             }
         }
 

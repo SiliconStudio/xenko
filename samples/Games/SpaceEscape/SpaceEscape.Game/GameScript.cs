@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
@@ -31,9 +33,6 @@ namespace SpaceEscape
         {
             // Enable visual of mouse in the game
             Game.Window.IsMouseVisible = true;
-
-            // Disable multi-touch input for the game, since there is no need
-            Input.MultiTouchEnabled = false;
 
             // Update the distance displayed in the UI
             BackgroundScript.DistanceUpdated += SetDistanceInUI;

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     {
         private static readonly FontDataFactory FontDataFactory = new FontDataFactory();
 
-        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
         {
             var asset = (PrecompiledSpriteFontAsset)assetItem.Asset;
             yield return new ObjectUrl(UrlType.File, asset.FontDataFile);
@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             {
                 new PrecompiledSpriteFontCommand(targetUrlInStorage, asset, assetItem.Package)
                 {
-                    InputFilesGetter = () => GetInputFiles(context, assetItem)
+                    InputFilesGetter = () => GetInputFiles(assetItem)
         }
             };
         }

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Games;
@@ -19,8 +19,6 @@ namespace SiliconStudio.Xenko.Rendering.Fonts
         {
             Visible = true;
             FontSystem = new FontSystem();
-            Services.AddService(typeof(FontSystem), FontSystem);
-            Services.AddService(typeof(IFontFactory), FontSystem);
         }
 
         public override void Draw(GameTime gameTime)

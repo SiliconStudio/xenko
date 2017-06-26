@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 
@@ -30,14 +30,18 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             Skybox = skybox;
             Services = new ServiceRegistry();
             Content = new ContentManager(Services);
+            Services.AddService(typeof(IContentManager), Content);
+            Services.AddService(typeof(ContentManager), Content);
 
             GraphicsDevice = GraphicsDevice.New();
             GraphicsDeviceService = new GraphicsDeviceServiceLocal(Services, GraphicsDevice);
+            Services.AddService(typeof(IGraphicsDeviceService), GraphicsDeviceService);
 
             var graphicsContext = new GraphicsContext(GraphicsDevice);
             Services.AddService(typeof(GraphicsContext), graphicsContext);
 
             EffectSystem = new EffectSystem(Services);
+            Services.AddService(typeof(EffectSystem), EffectSystem);
             EffectSystem.Initialize();
             ((IContentable)EffectSystem).LoadContent();
             ((EffectCompilerCache)EffectSystem.Compiler).CompileEffectAsynchronously = false;

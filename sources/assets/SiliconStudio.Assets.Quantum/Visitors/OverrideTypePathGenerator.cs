@@ -1,4 +1,6 @@
-﻿using SiliconStudio.Assets.Quantum.Internal;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using SiliconStudio.Assets.Quantum.Internal;
 using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;

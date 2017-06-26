@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
 // 
@@ -128,10 +128,6 @@ namespace SiliconStudio.Xenko.Games
                     GraphicsProfile.Level_9_2, 
                     GraphicsProfile.Level_9_1, 
                 };
-
-            // Register the services to the registry
-            game.Services.AddService(typeof(IGraphicsDeviceManager), this);
-            game.Services.AddService(typeof(IGraphicsDeviceService), this);
 
             graphicsDeviceFactory = (IGraphicsDeviceFactory)game.Services.GetService(typeof(IGraphicsDeviceFactory));
             if (graphicsDeviceFactory == null)
@@ -681,15 +677,18 @@ namespace SiliconStudio.Xenko.Games
                 preferredParameters.PreferredBackBufferHeight = resizedBackBufferHeight;
             }
 
-            GraphicsProfile availableGraphicsProfile;
-            if (!IsPreferredProfileAvailable(preferredParameters.PreferredGraphicsProfile, out availableGraphicsProfile))
-            {
-                throw new InvalidOperationException($"Graphics profiles [{string.Join(", ", preferredParameters.PreferredGraphicsProfile)}] are not supported by the device. The highest available profile is [{availableGraphicsProfile}].");
-            }
-
             var devices = graphicsDeviceFactory.FindBestDevices(preferredParameters);
             if (devices.Count == 0)
             {
+                // Nothing was found; first, let's check if graphics profile was actually supported
+                // Note: we don't do this preemptively because in some cases it seems to take lot of time (happened on a test machine, several seconds freeze on ID3D11Device.Release())
+                GraphicsProfile availableGraphicsProfile;
+                if (!IsPreferredProfileAvailable(preferredParameters.PreferredGraphicsProfile, out availableGraphicsProfile))
+                {
+                    throw new InvalidOperationException($"Graphics profiles [{string.Join(", ", preferredParameters.PreferredGraphicsProfile)}] are not supported by the device. The highest available profile is [{availableGraphicsProfile}].");
+                }
+
+                // Otherwise, there was just no screen mode
                 throw new InvalidOperationException("No screen modes found");
             }
 

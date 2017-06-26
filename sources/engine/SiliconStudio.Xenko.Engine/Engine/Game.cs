@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Globalization;
@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Audio;
@@ -43,6 +44,8 @@ namespace SiliconStudio.Xenko.Engine
         private readonly GameFontSystem gameFontSystem;
 
         private readonly LogListener logListener;
+
+        private DatabaseFileProvider databaseFileProvider;
 
         /// <summary>
         /// Readonly game settings as defined in the GameSettings asset
@@ -189,18 +192,37 @@ namespace SiliconStudio.Xenko.Engine
             // Create all core services, except Input which is created during `Initialize'.
             // Registration takes place in `Initialize'.
             Script = new ScriptSystem(Services);
+            Services.AddService(typeof(ScriptSystem), Script);
+
             SceneSystem = new SceneSystem(Services);
+            Services.AddService(typeof(SceneSystem), SceneSystem);
+
             Audio = new AudioSystem(Services);
+            Services.AddService(typeof(AudioSystem), Audio);
+            Services.AddService(typeof(IAudioEngineProvider), Audio);
+
             gameFontSystem = new GameFontSystem(Services);
+            Services.AddService(typeof(FontSystem), gameFontSystem.FontSystem);
+            Services.AddService(typeof(IFontFactory), gameFontSystem.FontSystem);
+
             SpriteAnimation = new SpriteAnimationSystem(Services);
+            Services.AddService(typeof(SpriteAnimationSystem), SpriteAnimation);
+
             DebugConsoleSystem = new DebugConsoleSystem(Services);
+            Services.AddService(typeof(DebugConsoleSystem), DebugConsoleSystem);
+
             ProfilerSystem = new GameProfilingSystem(Services);
+            Services.AddService(typeof(GameProfilingSystem), ProfilerSystem);
+
             VRDeviceSystem = new VRDeviceSystem(Services);
+            Services.AddService(typeof(VRDeviceSystem), VRDeviceSystem);
 
             Content.Serializer.LowLevelSerializerSelector = ParameterContainerExtensions.DefaultSceneSerializerSelector;
 
             // Creates the graphics device manager
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
+            Services.AddService(typeof(IGraphicsDeviceManager), GraphicsDeviceManager);
+            Services.AddService(typeof(IGraphicsDeviceService), GraphicsDeviceManager);
 
             AutoLoadDefaultSettings = true;
         }
@@ -209,6 +231,8 @@ namespace SiliconStudio.Xenko.Engine
         protected override void Destroy()
         {
             OnGameDestroyed(this);
+
+            DestroyAssetDatabase();
 
             base.Destroy();
             
@@ -224,7 +248,7 @@ namespace SiliconStudio.Xenko.Engine
             // Init assets
             if (Context.InitializeDatabase)
             {
-                InitializeAssetDatabase();
+                databaseFileProvider = InitializeAssetDatabase();
 
                 var renderingSettings = new RenderingSettings();
                 if (Content.Exists(GameSettings.AssetUrl))
@@ -257,6 +281,8 @@ namespace SiliconStudio.Xenko.Engine
                     deviceManager.PreferredColorSpace = renderingSettings.ColorSpace;
                     SceneSystem.InitialSceneUrl = Settings?.DefaultSceneUrl;
                     SceneSystem.InitialGraphicsCompositorUrl = Settings?.DefaultGraphicsCompositorUrl;
+                    SceneSystem.SplashScreenUrl = Settings?.SplashScreenUrl;
+                    SceneSystem.SplashScreenColor = Settings?.SplashScreenColor ?? Color4.Black;
                 }
             }
         }
@@ -301,16 +327,19 @@ namespace SiliconStudio.Xenko.Engine
 
         protected override void Initialize()
         {
-            base.Initialize();
-
             // ---------------------------------------------------------
             // Add common GameSystems - Adding order is important
             // (Unless overriden by gameSystem.UpdateOrder)
             // ---------------------------------------------------------
 
             // Add the input manager
-            Input = InputManagerFactory.NewInputManager(Services, Context);
+            // Add it first so that it can obtained by the UI system
+            Input = new InputManager(Services);
+            Services.AddService(typeof(InputManager), Input);
             GameSystems.Add(Input);
+
+            // Initialize the systems
+            base.Initialize();
 
             // Add the scheduler system
             // - Must be after Input, so that scripts are able to get latest input
@@ -328,6 +357,7 @@ namespace SiliconStudio.Xenko.Engine
             GameSystems.Add(ProfilerSystem);
 
             EffectSystem = new EffectSystem(Services);
+            Services.AddService(typeof(EffectSystem), EffectSystem);
 
             // If requested in game settings, compile effects remotely and/or notify new shader requests
             if (Settings != null)
@@ -348,13 +378,10 @@ namespace SiliconStudio.Xenko.Engine
             // TODO: data-driven?
             Content.Serializer.RegisterSerializer(new ImageSerializer());
 
-            // enable multi-touch by default
-            Input.MultiTouchEnabled = true;
-
             OnGameStarted(this);
         }
 
-        internal static void InitializeAssetDatabase()
+        internal static DatabaseFileProvider InitializeAssetDatabase()
         {
             using (Profiler.Begin(GameProfilingKeys.ObjectDatabaseInitialize))
             {
@@ -363,9 +390,21 @@ namespace SiliconStudio.Xenko.Engine
                 
                 // Only set a mount path if not mounted already
                 var mountPath = VirtualFileSystem.ResolveProviderUnsafe("/asset", true).Provider == null ? "/asset" : null;
-                var databaseFileProvider = new DatabaseFileProvider(objDatabase, mountPath);
+                var result = new DatabaseFileProvider(objDatabase, mountPath);
 
-                ContentManager.GetFileProvider = () => databaseFileProvider;
+                ContentManager.GetFileProvider = () => result;
+
+                return result;
+            }
+        }
+
+        private void DestroyAssetDatabase()
+        {
+            if (databaseFileProvider != null)
+            {
+                ContentManager.GetFileProvider = null;
+                databaseFileProvider.Dispose();
+                databaseFileProvider = null;
             }
         }
 

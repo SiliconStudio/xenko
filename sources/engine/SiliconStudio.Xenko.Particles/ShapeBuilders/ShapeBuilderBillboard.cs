@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -144,7 +144,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// <returns>Screenspace rotation in radians, positive is clockwise</returns>
         protected unsafe float GetParticleRotation(Particle particle, ParticleFieldAccessor<float> rotationField, ParticleFieldAccessor<float> lifeField)
         {
-            var particleRotation = rotationField.IsValid() ? particle.Get(rotationField) : 1f;
+            var particleRotation = rotationField.IsValid() ? particle.Get(rotationField) : 0f;
 
             if (SamplerRotation == null)
                 return particleRotation;

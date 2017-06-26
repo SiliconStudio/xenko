@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -14,13 +14,13 @@ namespace SiliconStudio.Xenko.Navigation
     /// </summary>
     [DataContract]
     [DefaultEntityComponentProcessor(typeof(BoundingBoxProcessor), ExecutionMode = ExecutionMode.All)]
-    [Display("Navigation bounding box")]
+    [Display("Navigation Bounding Box")]
     public class NavigationBoundingBoxComponent : EntityComponent
     {
         /// <summary>
         /// The size of one edge of the bounding box
         /// </summary>
         [DataMember(0)]
-        public Vector3 Size;
+        public Vector3 Size { get; set; } = Vector3.One;
     }
 }

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -65,7 +65,7 @@ namespace SiliconStudio.Assets
                 return fileExtension;
             }
 
-            fileExtension = fileExtension.ToLower();
+            fileExtension = fileExtension.ToLowerInvariant();
             if (fileExtension.StartsWith("."))
             {
                 return fileExtension;
@@ -82,7 +82,7 @@ namespace SiliconStudio.Assets
         public static HashSet<string> GetFileExtensionsAsSet(string fileExtensions)
         {
             if (fileExtensions == null) throw new ArgumentNullException(nameof(fileExtensions));
-            var fileExtensionArray = fileExtensions.Split(new[] { ',', ';' }).Select(fileExt => fileExt.Trim().ToLower()).ToList();
+            var fileExtensionArray = fileExtensions.Split(new[] { ',', ';' }).Select(fileExt => fileExt.Trim().ToLowerInvariant()).ToList();
             var filteredExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (var fileExtension in fileExtensionArray.Select(NormalizeFileExtension))
             {

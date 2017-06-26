@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 #if SILICONSTUDIO_PLATFORM_UWP
 using System;
 using System.Diagnostics;
@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     {
         private static EditText activeEditText;
         private Windows.UI.Xaml.Controls.TextBox editText;
-        private GameContextUWP gameContext;
+        private GameContextUWPXaml gameContext;
 
         private static void InitializeStaticImpl()
         {
@@ -47,15 +47,18 @@ namespace SiliconStudio.Xenko.UI.Controls
                 if (game == null)
                     throw new ArgumentException("Provided services need to contain a provider for the IGame interface.");
 
-                Debug.Assert(game.Context is GameContextUWP, "There is only one possible descendant of GameContext for Windows Store.");
-
-                gameContext = (GameContextUWP)game.Context;
-                var swapChainPanel = gameContext.Control;
-
                 // Detach previous EditText (if any)
                 if (activeEditText != null)
                     activeEditText.IsSelectionActive = false;
                 activeEditText = this;
+
+                // Handle only GameContextUWPXaml for now
+                // TODO: Implement EditText for GameContextUWPCoreWindow
+                gameContext = game.Context as GameContextUWPXaml;
+                if (gameContext == null)
+                    return;
+
+                var swapChainPanel = gameContext.Control;
 
                 // Make sure it doesn't have a parent (another text box being edited)
                 editText = gameContext.EditTextBox;
@@ -111,7 +114,9 @@ namespace SiliconStudio.Xenko.UI.Controls
                 editText.KeyDown -= EditText_KeyDown;
                 var stackPanel = (Windows.UI.Xaml.Controls.Panel)editText.Parent;
                 stackPanel.Children.Remove(editText);
-                gameContext.Control.Children.Remove(stackPanel);
+
+                var swapChainControl = gameContext?.Control;
+                swapChainControl?.Children.Remove(stackPanel);
 
                 editText = null;
                 activeEditText = null;
@@ -150,6 +155,14 @@ namespace SiliconStudio.Xenko.UI.Controls
                 return;
 
             editText.Select(selectionStart, selectionStop - selectionStart);
+        }
+
+        private void OnTouchDownImpl(TouchEventArgs args)
+        {
+        }
+
+        private void OnTouchMoveImpl(TouchEventArgs args)
+        {
         }
 
         internal GameBase GetGame()

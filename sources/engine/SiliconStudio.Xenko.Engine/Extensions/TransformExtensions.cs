@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -86,8 +86,9 @@ namespace SiliconStudio.Xenko.Extensions
                     // Transform normals
                     foreach (var vertexElement in vertexElementsToTransform2)
                     {
-                        var elementPointer = bufferPointer + vertexElement.Offset;
-                        Vector3.TransformNormal(ref *(Vector3*)elementPointer, ref inverseTransposeMatrix, out *(Vector3*)elementPointer);
+                        var elementPointer = (Vector3*)(bufferPointer + vertexElement.Offset);
+                        Vector3.TransformNormal(ref *elementPointer, ref inverseTransposeMatrix, out *elementPointer);
+                        elementPointer->Normalize();
                     }
 
                     // Correct handedness

@@ -1,9 +1,12 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SiliconStudio.Xenko.Assets.Scripts
@@ -36,7 +39,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             // TODO: Out/ref
             // Other cases should have been handled by context.RegisterLocalVariable during code generation
             // It's also possible that this block is actually not executed and used as input, so we issue a warning anyway
-            context.Log.Error(nameof(MethodCallBlock), $"No value found for slot {slot}. Note that out/ref slots are not implemented yet.");
+            context.Log.Error($"No value found for slot {slot}. Note that out/ref slots are not implemented yet.", CallerInfo.Get());
             return null;
         }
 

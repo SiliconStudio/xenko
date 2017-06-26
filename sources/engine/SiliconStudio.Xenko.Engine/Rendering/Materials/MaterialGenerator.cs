@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -26,23 +26,32 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             var result = new MaterialShaderResult();
             context.Log = result;
 
-            var material = context.Material;
             result.Material = context.Material;
 
-            context.Parameters = material.Parameters;
-            context.PushMaterial(materialDescriptor, rootMaterialFriendlyName);
-            context.PushLayer(null);
+            context.Step = MaterialGeneratorStep.PassesEvaluation;
             materialDescriptor.Visit(context);
-            context.PopLayer();
-            context.PopMaterial();
 
-            material.Parameters.Set(MaterialKeys.VertexStageSurfaceShaders, context.ComputeShaderSource(MaterialShaderStage.Vertex));
-            material.Parameters.Set(MaterialKeys.DomainStageSurfaceShaders, context.ComputeShaderSource(MaterialShaderStage.Domain));
-            material.Parameters.Set(MaterialKeys.PixelStageSurfaceShaders, context.ComputeShaderSource(MaterialShaderStage.Pixel));
+            context.Step = MaterialGeneratorStep.GenerateShader;
+            for (int pass = 0; pass < context.PassCount; ++pass)
+            {
+                var materialPass = context.PushPass();
 
-            material.Parameters.Set(MaterialKeys.VertexStageStreamInitializer, context.GenerateStreamInitializers(MaterialShaderStage.Vertex));
-            material.Parameters.Set(MaterialKeys.DomainStageStreamInitializer, context.GenerateStreamInitializers(MaterialShaderStage.Domain));
-            material.Parameters.Set(MaterialKeys.PixelStageStreamInitializer, context.GenerateStreamInitializers(MaterialShaderStage.Pixel));
+                context.PushMaterial(materialDescriptor, rootMaterialFriendlyName);
+                context.PushLayer(null);
+                materialDescriptor.Visit(context);
+                context.PopLayer();
+                context.PopMaterial();
+
+                materialPass.Parameters.Set(MaterialKeys.VertexStageSurfaceShaders, context.ComputeShaderSource(MaterialShaderStage.Vertex));
+                materialPass.Parameters.Set(MaterialKeys.DomainStageSurfaceShaders, context.ComputeShaderSource(MaterialShaderStage.Domain));
+                materialPass.Parameters.Set(MaterialKeys.PixelStageSurfaceShaders, context.ComputeShaderSource(MaterialShaderStage.Pixel));
+
+                materialPass.Parameters.Set(MaterialKeys.VertexStageStreamInitializer, context.GenerateStreamInitializers(MaterialShaderStage.Vertex));
+                materialPass.Parameters.Set(MaterialKeys.DomainStageStreamInitializer, context.GenerateStreamInitializers(MaterialShaderStage.Domain));
+                materialPass.Parameters.Set(MaterialKeys.PixelStageStreamInitializer, context.GenerateStreamInitializers(MaterialShaderStage.Pixel));
+
+                context.PopPass();
+            }
 
             return result;
         }

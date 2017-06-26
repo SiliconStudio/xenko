@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -138,43 +138,43 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public void Draw1()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.4f, 0.6f)));
+            AddPointerEvent(PointerEventType.Pressed, new Vector2(0.4f, 0.6f));
+            Input.Update(new GameTime());
         }
 
         public void Draw2()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.4f, 0.6f)));
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.6f, 0.4f)));
+            AddPointerEvent(PointerEventType.Released, new Vector2(0.4f, 0.6f));
+            AddPointerEvent(PointerEventType.Pressed, new Vector2(0.6f, 0.4f));
+            Input.Update(new GameTime());
         }
 
         public void Draw3()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.6f, 0.4f)));
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.4f, 0.6f)));
+            AddPointerEvent(PointerEventType.Released, new Vector2(0.6f, 0.4f));
+            AddPointerEvent(PointerEventType.Pressed, new Vector2(0.4f, 0.6f));
+            Input.Update(new GameTime());
         }
 
         public void Draw4()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.4f, 0.6f)));
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.4f, 0.4f)));
+            AddPointerEvent(PointerEventType.Released, new Vector2(0.4f, 0.6f));
+            AddPointerEvent(PointerEventType.Pressed, new Vector2(0.4f, 0.4f));
+            Input.Update(new GameTime());
         }
 
         public void Draw5()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.4f, 0.6f)));
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.27625f, 0.5667f)));
+            AddPointerEvent(PointerEventType.Released, new Vector2(0.4f, 0.6f));
+            AddPointerEvent(PointerEventType.Pressed, new Vector2(0.27625f, 0.5667f));
+            Input.Update(new GameTime());
         }
 
         public void Draw6()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.348f, 0.231f)));
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.441f, 0.418f)));
+            AddPointerEvent(PointerEventType.Released, new Vector2(0.348f, 0.231f));
+            AddPointerEvent(PointerEventType.Pressed, new Vector2(0.441f, 0.418f));
+            Input.Update(new GameTime());
         }
 
         [Test]

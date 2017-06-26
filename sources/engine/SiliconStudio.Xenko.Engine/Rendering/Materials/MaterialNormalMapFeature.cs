@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,7 +19,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     [Display("Normal Map")]
     public class MaterialNormalMapFeature : MaterialFeature, IMaterialSurfaceFeature, IMaterialStreamProvider
     {
-        private static readonly MaterialStreamDescriptor NormalStream = new MaterialStreamDescriptor("Normal", "matNormal", MaterialKeys.NormalValue.PropertyType);
+        private static readonly MaterialStreamDescriptor NormalStream = new MaterialStreamDescriptor("Normal (Tangent)", "matNormal", MaterialKeys.NormalValue.PropertyType, true);
+        private static readonly MaterialStreamDescriptor NormalStreamWorld = new MaterialStreamDescriptor("Normal (World)", "NormalStream.normalWS", new ShaderClassSource("MaterialSurfaceNormalStreamShading"));
 
         private static readonly Color DefaultNormalColor = new Color(0x80, 0x80, 0xFF, 0xFF);
 
@@ -76,7 +77,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [Display("Reconstruct Z")]
         public bool IsXYNormal { get; set; }
 
-        public override void VisitFeature(MaterialGeneratorContext context)
+        public override void GenerateShader(MaterialGeneratorContext context)
         {
             if (NormalMap != null)
             {
@@ -128,6 +129,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         public IEnumerable<MaterialStreamDescriptor> GetStreams()
         {
             yield return NormalStream;
+            yield return NormalStreamWorld;
         }
     }
 }

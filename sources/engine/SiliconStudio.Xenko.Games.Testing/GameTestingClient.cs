@@ -1,5 +1,5 @@
-// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
@@ -92,7 +92,8 @@ namespace SiliconStudio.Xenko.Games.Testing
                 Platform = (int)platform, Tester = true, Cmd = cmd, GameAssembly = gameName
             }).Wait();
 
-            var waitMs = 30000;
+            // Wait up to one minute
+            var waitMs = 60 * 1000;
             switch (platform)
             {
                 case PlatformType.Android:
@@ -130,18 +131,18 @@ namespace SiliconStudio.Xenko.Games.Testing
 
         public void Tap(Vector2 coords, TimeSpan timeDown)
         {
-            socketMessageLayer.Send(new TapSimulationRequest { State = PointerState.Down, Coords = coords }).Wait();
+            socketMessageLayer.Send(new TapSimulationRequest { EventType = PointerEventType.Pressed, Coords = coords }).Wait();
             Console.WriteLine(@"Simulating tap down {0}.", coords);
 
             Thread.Sleep(timeDown);
 
-            socketMessageLayer.Send(new TapSimulationRequest { State = PointerState.Up, Coords = coords, Delta = timeDown }).Wait();
+            socketMessageLayer.Send(new TapSimulationRequest { EventType = PointerEventType.Released, Coords = coords, Delta = timeDown }).Wait();
             Console.WriteLine(@"Simulating tap up {0}.", coords);
         }
 
         public void Drag(Vector2 from, Vector2 target, TimeSpan timeToTarget, TimeSpan timeDown)
         {
-            socketMessageLayer.Send(new TapSimulationRequest { State = PointerState.Down, Coords = from }).Wait();
+            socketMessageLayer.Send(new TapSimulationRequest { EventType = PointerEventType.Pressed, Coords = from }).Wait();
             Console.WriteLine(@"Simulating tap down {0}.", from);
 
             //send 15 events per second?
@@ -163,7 +164,7 @@ namespace SiliconStudio.Xenko.Games.Testing
 
                 var delta = current - prev;
 
-                socketMessageLayer.Send(new TapSimulationRequest { State = PointerState.Move, Coords = current, Delta = sleepTime, CoordsDelta = delta }).Wait();
+                socketMessageLayer.Send(new TapSimulationRequest { EventType = PointerEventType.Moved, Coords = current, Delta = sleepTime, CoordsDelta = delta }).Wait();
                 Console.WriteLine(@"Simulating tap update {0}.", current);
 
                 prev = current;
@@ -173,7 +174,7 @@ namespace SiliconStudio.Xenko.Games.Testing
 
             Thread.Sleep(timeDown);
 
-            socketMessageLayer.Send(new TapSimulationRequest { State = PointerState.Up, Coords = target, Delta = watch.Elapsed, CoordsDelta = target - from }).Wait();
+            socketMessageLayer.Send(new TapSimulationRequest { EventType = PointerEventType.Released, Coords = target, Delta = watch.Elapsed, CoordsDelta = target - from }).Wait();
             Console.WriteLine(@"Simulating tap up {0}.", target);
         }
 

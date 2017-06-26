@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.ComponentModel;
 
@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <userdoc>The intensity of the background color</userdoc>
         [DataMember(20)]
         [DefaultValue(1.0f)]
-        [DataMemberRange(0.0, 100.0, 0.01f, 1.0f)]
+        [DataMemberRange(0.0, 100.0, 0.01f, 1.0f, 2)]
         public float Intensity { get; set; }
 
         /// <summary>

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -167,6 +167,11 @@ namespace SiliconStudio.Core.Diagnostics
             EmitEvent(ProfilingMessageType.Begin, null, value0, value1, value2, value3);
         }
 
+        public void Begin(long timeStamp)
+        {
+            EmitEvent(ProfilingMessageType.Begin, null, timeStamp);
+        }
+
         /// <summary>
         /// Emits a Mark event.
         /// </summary>
@@ -271,6 +276,40 @@ namespace SiliconStudio.Core.Diagnostics
         public void End(ProfilingCustomValue? value0, ProfilingCustomValue? value1 = null, ProfilingCustomValue? value2 = null, ProfilingCustomValue? value3 = null)
         {
             EmitEvent(ProfilingMessageType.End, null, value0, value1, value2, value3);
+        }
+
+        public void End(long timeStamp)
+        {
+            EmitEvent(ProfilingMessageType.End, null, timeStamp);
+        }
+
+        private void EmitEvent(ProfilingMessageType profilingType, string text, long timeStamp)
+        {
+            // Perform a Mark event only if the profiling is running
+            if (!isEnabled) return;
+            
+            // In the case of begin/end, reuse the text from the `begin`event 
+            // if the text is null for `end` event.
+            if (text == null && profilingType != ProfilingMessageType.Mark)
+                text = beginText;
+
+            if (profilingType == ProfilingMessageType.Begin)
+            {
+                startTime = timeStamp;
+                beginText = text;
+            }
+            else if (profilingType == ProfilingMessageType.End)
+            {
+                beginText = null;
+                isEnabled = false;
+            }
+
+            // Create profiler event
+            // TODO ideally we should make a copy of the attributes
+            var profilerEvent = new ProfilingEvent(ProfilingId, ProfilingKey, profilingType, timeStamp, timeStamp - startTime, text, attributes);
+
+            // Send profiler event to Profiler
+            Profiler.ProcessEvent(ref profilerEvent);
         }
 
         private void EmitEvent(ProfilingMessageType profilingType, string text = null)

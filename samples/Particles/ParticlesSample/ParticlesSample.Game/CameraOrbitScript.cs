@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Xenko.Engine;
@@ -36,7 +38,7 @@ namespace ParticlesSample
 
                 // determine if the user is currently touching the screen.
                 if (Input.PointerEvents.Count > 0)
-                    userIsTouchingScreen = Input.PointerEvents.Last().State != PointerState.Up;
+                    userIsTouchingScreen = Input.Pointer.DownPointers.Any(x=>x.IsDown);
 
                 // calculate the current speed of the camera
                 if (userIsTouchingScreen)

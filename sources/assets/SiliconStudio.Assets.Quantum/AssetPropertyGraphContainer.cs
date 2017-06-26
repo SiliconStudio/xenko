@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Annotations;
@@ -30,11 +32,9 @@ namespace SiliconStudio.Assets.Quantum
             return graph;
         }
 
-        [CanBeNull]
-        public AssetPropertyGraph GetGraph(AssetId assetId)
+        public AssetPropertyGraph TryGetGraph(AssetId assetId)
         {
-            AssetPropertyGraph graph;
-            registeredGraphs.TryGetValue(assetId, out graph);
+            registeredGraphs.TryGetValue(assetId, out var graph);
             return graph;
         }
 

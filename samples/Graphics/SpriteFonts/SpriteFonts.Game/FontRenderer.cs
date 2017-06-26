@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
@@ -347,7 +349,7 @@ at full size and full measure";
         private void UpdateInput()
         {
             // Toggle play/not play
-            if (input.IsKeyPressed(Keys.Space) || input.PointerEvents.Any(pointerEvent => pointerEvent.State == PointerState.Down))
+            if (input.IsKeyPressed(Keys.Space) || input.PointerEvents.Any(pointerEvent => pointerEvent.EventType == PointerEventType.Pressed))
             {
                 isPlaying = !isPlaying;
             }

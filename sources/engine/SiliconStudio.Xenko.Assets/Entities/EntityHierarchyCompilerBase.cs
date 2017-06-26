@@ -1,23 +1,26 @@
-using System.Linq;
-using System.Threading.Tasks;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+
+using System;
+using System.Collections.Generic;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
-using SiliconStudio.BuildEngine;
-using SiliconStudio.Core;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Extensions;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
     public abstract class EntityHierarchyCompilerBase<T> : AssetCompilerBase where T : EntityHierarchyAssetBase
     {
+        public override IEnumerable<Type> GetRuntimeTypes(AssetItem assetItem)
+        {
+            yield return typeof(Entity);
+        }
+
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (T)assetItem.Asset;
-            foreach (var entityData in asset.Hierarchy.Parts)
+            foreach (var entityData in asset.Hierarchy.Parts.Values)
             {
                 // TODO: How to make this code pluggable?
                 var modelComponent = entityData.Entity.Components.Get<ModelComponent>();                
@@ -39,12 +42,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
                             result.Error($"The entity [{targetUrlInStorage}:{entityData.Entity.Name}] is referencing an unreachable model.");
                         }
                     }
-                }
-
-                var spriteComponent = entityData.Entity.Components.Get<SpriteComponent>();
-                if (spriteComponent != null && spriteComponent.SpriteProvider.GetSprite() == null)
-                {
-                    result.Warning($"The entity [{targetUrlInStorage}:{entityData.Entity.Name}] has a sprite component that does not reference any sprite group.");
                 }
 
                 var nodeLinkComponent = entityData.Entity.Components.Get<ModelNodeLinkComponent>();

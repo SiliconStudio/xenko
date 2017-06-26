@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,6 +21,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
 
         public struct PackageInfo
         {
+            public string StorePath;
             public string SdkPath;
 
             public Version ExpectedVersion;
@@ -308,6 +309,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
             // If we are in a dev directory, assume we have the right version
             if (File.Exists(Path.Combine(xenkoSdkDir, "build\\Xenko.sln")))
             {
+                packageInfo.StorePath = xenkoSdkDir;
                 packageInfo.SdkPath = xenkoSdkDir;
                 packageInfo.LoadedVersion = packageInfo.ExpectedVersion;
                 return packageInfo;
@@ -334,6 +336,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
                 // Return the loaded version and the sdk path
                 var packageDirectory = store.GetPackageDirectory(xenkoPackage);
                 packageInfo.LoadedVersion = GetVersion(xenkoPackage);
+                packageInfo.StorePath = xenkoSdkDir;
                 packageInfo.SdkPath = Path.Combine(xenkoSdkDir, store.RepositoryPath, packageDirectory);
             }
 

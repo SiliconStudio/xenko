@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using SiliconStudio.Core;
@@ -13,18 +13,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// </summary>
     [DataContract("MaterialDiffuseCelShadingModelFeature")]
     [Display("Cel Shading")]
-    public class MaterialDiffuseCelShadingModelFeature : MaterialFeature, IMaterialDiffuseModelFeature, IEquatable<MaterialDiffuseCelShadingModelFeature>
+    public class MaterialDiffuseCelShadingModelFeature : MaterialFeature, IMaterialDiffuseModelFeature, IEquatable<MaterialDiffuseCelShadingModelFeature>, IEnergyConservativeDiffuseModelFeature
     {
-        public bool IsLightDependent
-        {
-            get
-            {
-                return true;
-            }
-        }
-
         [DataMemberIgnore]
-        internal bool IsEnergyConservative { get; set; }
+        bool IEnergyConservativeDiffuseModelFeature.IsEnergyConservative { get; set; }
+
+        private bool IsEnergyConservative => ((IEnergyConservativeDiffuseModelFeature)this).IsEnergyConservative;
 
         /// <summary>
         /// When positive, the dot product between N and L will be modified to account for light intensity with the specified value as a factor
@@ -38,7 +32,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [NotNull]
         public IMaterialCelShadingLightFunction RampFunction { get; set; } = new MaterialCelShadingLightDefault();
 
-        public override void VisitFeature(MaterialGeneratorContext context)
+        public override void GenerateShader(MaterialGeneratorContext context)
         {
             var shaderSource = new ShaderMixinSource();
             shaderSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceShadingDiffuseCelShading", IsEnergyConservative, FakeNDotL));
@@ -47,7 +41,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 shaderSource.AddComposition("celLightFunction", RampFunction.Generate(context));
             }
 
-            context.AddShading(this, shaderSource);
+            var shaderBuilder = context.AddShading(this);
+            shaderBuilder.LightDependentSurface = shaderSource;
         }
 
         public bool Equals(MaterialDiffuseCelShadingModelFeature other)

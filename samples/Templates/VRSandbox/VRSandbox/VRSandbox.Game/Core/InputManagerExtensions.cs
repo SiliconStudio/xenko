@@ -1,4 +1,6 @@
-﻿using SiliconStudio.Core.Mathematics;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Input;
 
 namespace VRSandbox.Core
@@ -7,30 +9,47 @@ namespace VRSandbox.Core
     {
         public static bool IsGamePadButtonDown(this InputManager input, GamePadButton button, int index)
         {
-            if (input.GamePadCount < index)
+            var gamepad = input.GetGamePadByIndex(index);
+            if (gamepad == null)
                 return false;
 
-            return (input.GetGamePad(index).Buttons & button) == button;
+            return (gamepad.State.Buttons & button) == button;
         }
 
         public static Vector2 GetLeftThumb(this InputManager input, int index)
         {
-            return input.GamePadCount >= index ? input.GetGamePad(index).LeftThumb : Vector2.Zero;
+            var gamepad = input.GetGamePadByIndex(index);
+            if (gamepad == null)
+                return Vector2.Zero;
+
+            return gamepad.State.LeftThumb;
         }
 
         public static Vector2 GetRightThumb(this InputManager input, int index)
         {
-            return input.GamePadCount >= index ? input.GetGamePad(index).RightThumb : Vector2.Zero;
+            var gamepad = input.GetGamePadByIndex(index);
+            if (gamepad == null)
+                return Vector2.Zero;
+
+            return gamepad.State.RightThumb;
         }
 
         public static float GetLeftTrigger(this InputManager input, int index)
         {
-            return input.GamePadCount >= index ? input.GetGamePad(index).LeftTrigger : 0.0f;
+            var gamepad = input.GetGamePadByIndex(index);
+            if (gamepad == null)
+                return 0.0f;
+
+            return gamepad.State.LeftTrigger;
         }
 
         public static float GetRightTrigger(this InputManager input, int index)
         {
-            return input.GamePadCount >= index ? input.GetGamePad(index).RightTrigger : 0.0f;
+            var gamepad = input.GetGamePadByIndex(index);
+            if (gamepad == null)
+                return 0.0f;
+
+            return gamepad.State.RightTrigger;
         }
     }
 }

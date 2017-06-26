@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -51,8 +51,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <exception cref="System.ArgumentNullException">session</exception>
         internal AssetDependencyManager(PackageSession session)
         {
-            if (session == null) throw new ArgumentNullException(nameof(session));
-            this.session = session;
+            this.session = session ?? throw new ArgumentNullException(nameof(session));
             this.session.Packages.CollectionChanged += Packages_CollectionChanged;
             session.AssetDirtyChanged += Session_AssetDirtyChanged;
             AssetsWithMissingReferences = new Dictionary<AssetId, AssetDependencies>();
@@ -85,51 +84,9 @@ namespace SiliconStudio.Assets.Analysis
 
             isDisposed = true;
         }
-
-        /// <inheritdoc />
-        public List<AssetItem> FindAssetInheritances(AssetId assetId, AssetInheritanceSearchOptions searchOptions = AssetInheritanceSearchOptions.All)
-        {
-            var list = new List<AssetItem>();
-            lock (Initialize())
-            {
-                ContentLinkType searchType = 0;
-                if ((searchOptions & AssetInheritanceSearchOptions.Base) != 0)
-                    searchType |= ContentLinkType.Inheritance;
-                if ((searchOptions & AssetInheritanceSearchOptions.Composition) != 0)
-                    searchType |= ContentLinkType.CompositionInheritance;
-
-                AssetDependencies dependencies;
-                if (Dependencies.TryGetValue(assetId, out dependencies))
-                {
-                    list.AddRange(dependencies.LinksOut.Where(p => (p.Type & searchType) != 0).Select(p => p.Item.Clone(true)));
-                }
-            }
-            return list;
-        }
         
         /// <inheritdoc />
-        public List<AssetItem> FindAssetsInheritingFrom(AssetId assetId, AssetInheritanceSearchOptions searchOptions = AssetInheritanceSearchOptions.All)
-        {
-            var list = new List<AssetItem>();
-            lock (Initialize())
-            {
-                ContentLinkType searchType = 0;
-                if((searchOptions & AssetInheritanceSearchOptions.Base) != 0)
-                    searchType |= ContentLinkType.Inheritance;
-                if((searchOptions & AssetInheritanceSearchOptions.Composition) != 0)
-                    searchType |= ContentLinkType.CompositionInheritance;
-
-                AssetDependencies dependencies;
-                if (Dependencies.TryGetValue(assetId, out dependencies))
-                {
-                    list.AddRange(dependencies.LinksIn.Where(p => (p.Type & searchType) != 0).Select(p => p.Item.Clone(true)));
-                }
-            }
-            return list;
-        }
-
-        /// <inheritdoc />
-        public AssetDependencies ComputeDependencies(AssetId assetId, AssetDependencySearchOptions dependenciesOptions = AssetDependencySearchOptions.All, ContentLinkType linkTypes = ContentLinkType.All, HashSet<AssetId> visited = null)
+        public AssetDependencies ComputeDependencies(AssetId assetId, AssetDependencySearchOptions dependenciesOptions = AssetDependencySearchOptions.All, ContentLinkType linkTypes = ContentLinkType.Reference, HashSet<AssetId> visited = null)
         {
             bool recursive = (dependenciesOptions & AssetDependencySearchOptions.Recursive) != 0;
             if (visited == null && recursive)
@@ -165,52 +122,6 @@ namespace SiliconStudio.Assets.Analysis
 
         }
 
-        /// <summary>
-        /// Gets a value indicating whether there is any missing references.
-        /// </summary>
-        /// <value><c>true</c> if this instance has missing references; otherwise, <c>false</c>.</value>
-        public bool HasMissingReferences
-        {
-            get
-            {
-                lock (Initialize())
-                {
-                    return AssetsWithMissingReferences.Count > 0;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Finds the assets with missing references.
-        /// </summary>
-        /// <returns>An enumeration of asset id that have missing references.</returns>
-        public IEnumerable<AssetId> FindAssetsWithMissingReferences()
-        {
-            lock (Initialize())
-            {
-                return AssetsWithMissingReferences.Keys.ToList();
-            }
-        }
-
-        /// <summary>
-        /// Finds the missing references for a particular asset.
-        /// </summary>
-        /// <param name="assetId">The asset identifier.</param>
-        /// <returns>IEnumerable{IReference}.</returns>
-        /// <exception cref="System.ArgumentNullException">item</exception>
-        public IEnumerable<IReference> FindMissingReferences(AssetId assetId)
-        {
-            lock (Initialize())
-            {
-                AssetDependencies dependencies;
-                if (AssetsWithMissingReferences.TryGetValue(assetId, out dependencies))
-                {
-                    return dependencies.BrokenLinksOut.Select(x => x.Element).ToList();
-                }
-            }
-
-            return Enumerable.Empty<IReference>();
-        }
 
         private object Initialize()
         {
@@ -786,17 +697,7 @@ namespace SiliconStudio.Assets.Analysis
             public IEnumerable<IContentLink> GetDependencies(AssetItem item)
             {
                 dependencies = new AssetDependencies(item);
-
                 Visit(item.Asset);
-
-                // composition inheritances
-                var assetComposite = item.Asset as IAssetComposite;
-                if (assetComposite != null)
-                {
-                    foreach (var compositionBase in assetComposite.CollectParts().Select(x => x.Base).NotNull())
-                        dependencies.AddBrokenLinkOut(compositionBase.BasePartAsset, ContentLinkType.CompositionInheritance);
-                }
-
                 return dependencies.BrokenLinksOut;
             }
 
@@ -825,7 +726,7 @@ namespace SiliconStudio.Assets.Analysis
             {
                 if (typeof(Asset).IsAssignableFrom(member.DeclaringType) && member.Name == nameof(Asset.Archetype) && value != null)
                 {
-                    dependencies.AddBrokenLinkOut((AssetReference)value, ContentLinkType.Inheritance | ContentLinkType.Reference);
+                    dependencies.AddBrokenLinkOut((AssetReference)value, ContentLinkType.Reference);
                     return;
                 }
 

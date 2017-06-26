@@ -100,7 +100,7 @@
     </When>
   </Choose>
   <ItemGroup>
-    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+    <Compile Include="..\..\common\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="DeviceState.cs" />
@@ -112,6 +112,7 @@
     <Compile Include="GoogleVR\GoogleVrHmd.cs" />
     <Compile Include="OculusOVR\OculusOverlay.cs" />
     <Compile Include="OculusOVR\OculusTouchController.cs" />
+    <Compile Include="OpenVR\OpenVROverlay.cs" />
     <Compile Include="VRDevice.cs" />
     <Compile Include="VRApi.cs" />
     <Compile Include="NativeInvoke.cs" />
@@ -126,6 +127,7 @@
     <Compile Include="TouchControllerButton.cs" />
     <Compile Include="TouchControllerHand.cs" />
     <Compile Include="VRDeviceSystem.cs" />
+    <Compile Include="VROverlay.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">

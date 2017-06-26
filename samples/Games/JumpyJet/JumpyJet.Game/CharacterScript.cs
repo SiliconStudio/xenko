@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -149,7 +151,7 @@ namespace JumpyJet
 
         private bool UserTappedScreen()
         {
-            return Input.PointerEvents.Any(pointerEvent => pointerEvent.State == PointerState.Down);
+            return Input.PointerEvents.Any(pointerEvent => pointerEvent.EventType == PointerEventType.Pressed);
         }
 
         private void UpdateAgentAnimation()

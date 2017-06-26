@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -78,8 +78,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
             if (!Platform.IsWindowsDesktop)
             {
-                Input.ActivatedGestures.Add(new GestureConfigDrag());
-                Input.ActivatedGestures.Add(new GestureConfigTap { RequiredNumberOfTaps = 2 });
+                Input.Gestures.Add(new GestureConfigDrag());
+                Input.Gestures.Add(new GestureConfigTap { RequiredNumberOfTaps = 2 });
             }
 
             while (true)
@@ -111,10 +111,12 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             if (Input.IsMouseButtonPressed(MouseButton.Right))
             {
                 Input.LockMousePosition();
+                Game.IsMouseVisible = false;
             }
             else if (Input.IsMouseButtonReleased(MouseButton.Right))
             {
                 Input.UnlockMousePosition();
+                Game.IsMouseVisible = true;
             }
 
             // Update rotation according to mouse deltas

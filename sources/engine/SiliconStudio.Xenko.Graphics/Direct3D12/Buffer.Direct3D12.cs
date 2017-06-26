@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
 using System;
 using System.Collections.Generic;
@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using SharpDX;
 using SharpDX.DXGI;
 using SharpDX.Direct3D12;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -87,18 +88,11 @@ namespace SiliconStudio.Xenko.Graphics
             if ((bufferFlags & BufferFlags.ShaderResource) != 0)
                 NativeResourceState |= ResourceStates.PixelShaderResource | ResourceStates.NonPixelShaderResource;
 
-            if ((bufferFlags & BufferFlags.UnorderedAccess) != 0)
-                NativeResourceState |= ResourceStates.UnorderedAccess;
-
             if ((bufferFlags & BufferFlags.StructuredBuffer) != 0)
             {
-                throw new NotImplementedException();
-                if (bufferDescription.StructureByteStride == 0)
-                    throw new ArgumentException("Element size cannot be set to 0 for structured buffer");
+                if (bufferDescription.StructureByteStride <= 0)
+                    throw new ArgumentException("Element size cannot be less or equal 0 for structured buffer");
             }
-
-            if ((bufferFlags & BufferFlags.RawBuffer) == BufferFlags.RawBuffer)
-                throw new NotImplementedException();
 
             if ((bufferFlags & BufferFlags.ArgumentBuffer) == BufferFlags.ArgumentBuffer)
                 NativeResourceState |= ResourceStates.IndirectArgument;
@@ -106,7 +100,11 @@ namespace SiliconStudio.Xenko.Graphics
             var heapType = HeapType.Default;
             if (Usage == GraphicsResourceUsage.Staging)
             {
-                throw new NotImplementedException();
+                if (dataPointer != IntPtr.Zero)
+                    throw new NotImplementedException("D3D12: Staging buffers can't be created with initial data.");
+
+                heapType = HeapType.Readback;
+                NativeResourceState = ResourceStates.CopyDestination;
             }
             else if (Usage == GraphicsResourceUsage.Dynamic)
             {
@@ -150,7 +148,8 @@ namespace SiliconStudio.Xenko.Graphics
                 }
             }
 
-            this.NativeShaderResourceView = GetShaderResourceView(ViewFormat);
+            NativeShaderResourceView = GetShaderResourceView(ViewFormat);
+            NativeUnorderedAccessView = GetUnorderedAccessView(ViewFormat);
         }
 
         /// <summary>
@@ -190,6 +189,37 @@ namespace SiliconStudio.Xenko.Graphics
             return srv;
         }
 
+        internal CpuDescriptorHandle GetUnorderedAccessView(PixelFormat viewFormat)
+        {
+            var uav = new CpuDescriptorHandle();
+            if ((ViewFlags & BufferFlags.UnorderedAccess) != 0)
+            {
+                var description = new UnorderedAccessViewDescription
+                {
+                    Format = (SharpDX.DXGI.Format)viewFormat,
+                    Dimension = SharpDX.Direct3D12.UnorderedAccessViewDimension.Buffer,
+                    Buffer =
+                    {
+                        ElementCount = this.ElementCount,
+                        FirstElement = 0,
+                        Flags = BufferUnorderedAccessViewFlags.None,
+                        StructureByteStride = StructureByteStride,
+                        CounterOffsetInBytes = 0,
+                    }
+                };
+
+                if ((ViewFlags & BufferFlags.RawBuffer) == BufferFlags.RawBuffer)
+                {
+                    description.Buffer.Flags |= BufferUnorderedAccessViewFlags.Raw;
+                    description.Format = Format.R32_Typeless;
+                }
+
+                uav = GraphicsDevice.UnorderedAccessViewAllocator.Allocate(1);
+                NativeDevice.CreateUnorderedAccessView(NativeResource, null, description, uav);
+            }
+            return uav;
+        }
+
         private void InitCountAndViewFormat(out int count, ref PixelFormat viewFormat)
         {
             if (Description.StructureByteStride == 0)
@@ -218,12 +248,16 @@ namespace SiliconStudio.Xenko.Graphics
 
         private static SharpDX.Direct3D12.ResourceDescription ConvertToNativeDescription(GraphicsDevice graphicsDevice, BufferDescription bufferDescription)
         {
+            var flags = ResourceFlags.None;
             var size = bufferDescription.SizeInBytes;
 
             // TODO D3D12 for now, ensure size is multiple of ConstantBufferDataPlacementAlignment (for cbuffer views)
-            size = (size + graphicsDevice.ConstantBufferDataPlacementAlignment - 1) / graphicsDevice.ConstantBufferDataPlacementAlignment * graphicsDevice.ConstantBufferDataPlacementAlignment;
+            size = MathUtil.AlignUp(size, graphicsDevice.ConstantBufferDataPlacementAlignment);
 
-            return SharpDX.Direct3D12.ResourceDescription.Buffer(size);
+            if ((bufferDescription.BufferFlags & BufferFlags.UnorderedAccess) != 0)
+                flags |= ResourceFlags.AllowUnorderedAccess;
+
+            return SharpDX.Direct3D12.ResourceDescription.Buffer(size, flags);
         }
     }
 } 

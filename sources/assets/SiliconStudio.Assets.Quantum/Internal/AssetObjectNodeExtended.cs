@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
@@ -331,7 +333,7 @@ namespace SiliconStudio.Assets.Quantum.Internal
             var baseNode = (AssetObjectNode)BaseNode;
             var removedId = ItemId.Empty;
             var isOverriding = baseNode != null && !PropertyGraph.UpdatingPropertyFromBase;
-            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(node.Retrieve());
+            var itemIds = CollectionItemIdHelper.GetCollectionItemIds(value);
             var collectionDescriptor = node.Descriptor as CollectionDescriptor;
             switch (e.ChangeType)
             {

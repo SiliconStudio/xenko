@@ -1,7 +1,8 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using SiliconStudio.Core;
@@ -28,39 +29,13 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public Material()
         {
-            Parameters = new ParameterCollection();
+            Passes = new MaterialPassCollection(this);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Material"/> class.
+        /// The passes contained in this material (usually one).
         /// </summary>
-        /// <param name="parameters">The parameters.</param>
-        public Material(ParameterCollection parameters)
-        {
-            Parameters = parameters;
-        }
-
-        /// <summary>
-        /// Gets or sets the parameters.
-        /// </summary>
-        /// <value>The parameters.</value>
-        public ParameterCollection Parameters { get; set; }
-
-        /// <summary>
-        /// Overrides the cullmode for this material.
-        /// </summary>
-        public CullMode? CullMode;
-
-        /// <summary>
-        /// The tessellation method used by the material.
-        /// </summary>
-        public XenkoTessellationMethod TessellationMethod;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether this instance has transparent.
-        /// </summary>
-        /// <value><c>true</c> if this instance has transparent; otherwise, <c>false</c>.</value>
-        public bool HasTransparency { get; set; }
+        public MaterialPassCollection Passes { get; }
 
         /// <summary>
         /// Gets or sets the descriptor (this field is null at runtime).
@@ -68,12 +43,6 @@ namespace SiliconStudio.Xenko.Rendering
         /// <value>The descriptor.</value>
         [DataMemberIgnore]
         public MaterialDescriptor Descriptor { get; set; }
-
-        /// <summary>
-        /// Determines if this material is affected by lighting.
-        /// </summary>
-        /// <value><c>true</c> if this instance affects lighting; otherwise, <c>false</c>.</value>
-        public bool IsLightDependent { get; set; }
 
         /// <summary>
         /// Creates a new material from the specified descriptor.
@@ -86,7 +55,10 @@ namespace SiliconStudio.Xenko.Rendering
         public static Material New(GraphicsDevice device, MaterialDescriptor descriptor)
         {
             if (descriptor == null) throw new ArgumentNullException("descriptor");
-            var context = new MaterialGeneratorContext(new Material());
+            var context = new MaterialGeneratorContext(new Material())
+            {
+                GraphicsProfile = device.Features.RequestedProfile,
+            };
             var result = MaterialGenerator.Generate(descriptor, context, string.Format("{0}:RuntimeMaterial", descriptor.MaterialId));
 
             if (result.HasErrors)
@@ -94,17 +66,7 @@ namespace SiliconStudio.Xenko.Rendering
                 throw new InvalidOperationException(string.Format("Error when creating the material [{0}]", result.ToText()));
             }
 
-            var material = result.Material;
-            // TODO GRAPHICS REFACTOR
-            //var blendState = material.Parameters.GetResourceSlow(Graphics.Effect.BlendStateKey);
-            //if (blendState != null && blendState.GraphicsDevice == null)
-            //{
-            //    var newState = BlendState.New(device, blendState.Description);
-            //    material.Parameters.SetResourceSlow(Effect.BlendStateKey, newState);
-            //}
-            // TODO: Add other states?
-
-            return material;
+            return result.Material;
         }
     }
 }

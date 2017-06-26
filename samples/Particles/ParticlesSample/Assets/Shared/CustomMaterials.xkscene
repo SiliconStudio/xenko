@@ -1,20 +1,20 @@
 !SceneAsset
 Id: d18360d9-08c6-41e6-a8f0-dcc78e9a723d
-SerializedVersion: {Xenko: 2.0.0.0}
+SerializedVersion: {Xenko: 2.1.0.1}
 Tags: []
 ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
-    RootPartIds:
-        - bd039944-bb68-4ba0-9e43-cb2aa842e202
-        - d872a69a-55ab-417f-bd26-1a4069c043e3
-        - 91ad542b-a198-45c7-b338-c541eaf10879
-        - 6e94af50-2da1-449e-bd03-f131494af639
-        - b75f11d1-b818-42fb-b015-5242238e96f0
-        - cec8cbd2-75a6-4610-83ca-6049954bf567
-        - 597e0d95-694f-4dcc-bfb0-e02806c7061f
-        - b6047a15-c66a-4a26-a3e1-d00ca3b9531e
-        - fa9006a9-662d-4805-81d5-0d11bd09cc80
+    RootParts:
+        - ref!! bd039944-bb68-4ba0-9e43-cb2aa842e202
+        - ref!! d872a69a-55ab-417f-bd26-1a4069c043e3
+        - ref!! 91ad542b-a198-45c7-b338-c541eaf10879
+        - ref!! 6e94af50-2da1-449e-bd03-f131494af639
+        - ref!! b75f11d1-b818-42fb-b015-5242238e96f0
+        - ref!! cec8cbd2-75a6-4610-83ca-6049954bf567
+        - ref!! 597e0d95-694f-4dcc-bfb0-e02806c7061f
+        - ref!! b6047a15-c66a-4a26-a3e1-d00ca3b9531e
+        - ref!! fa9006a9-662d-4805-81d5-0d11bd09cc80
     Parts:
         -   Entity:
                 Id: 597e0d95-694f-4dcc-bfb0-e02806c7061f
@@ -248,7 +248,7 @@ Hierarchy:
                         Id: a4fb7eba-4b60-434a-ad26-405bedb9bcef
                         Name: null
                         Projection: Perspective
-                        Slot: {Index: 0}
+                        Slot: 3217b71f-b48d-4321-bab1-7cb4da999c19
         -   Entity:
                 Id: cec8cbd2-75a6-4610-83ca-6049954bf567
                 Name: Two Textures Particle System

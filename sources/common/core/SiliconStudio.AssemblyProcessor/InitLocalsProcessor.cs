@@ -1,8 +1,9 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Linq;
+using Mono.Cecil.Rocks;
 
 namespace SiliconStudio.AssemblyProcessor
 {
@@ -11,7 +12,7 @@ namespace SiliconStudio.AssemblyProcessor
         public bool Process(AssemblyProcessorContext context)
         {
             bool changed = false;
-            foreach (var type in context.Assembly.EnumerateTypes())
+            foreach (var type in context.Assembly.MainModule.GetAllTypes())
             {
                 foreach (var method in type.Methods)
                 {

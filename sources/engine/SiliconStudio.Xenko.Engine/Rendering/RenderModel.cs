@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Xenko.Engine;
 
@@ -13,10 +13,18 @@ namespace SiliconStudio.Xenko.Rendering
         public readonly ModelComponent ModelComponent;
         public Model Model;
         public RenderMesh[] Meshes;
+        public MaterialInfo[] Materials;
 
         public RenderModel(ModelComponent modelComponent)
         {
             ModelComponent = modelComponent;
+        }
+
+        public struct MaterialInfo
+        {
+            public Material Material;
+            public int MeshStartIndex;
+            public int MeshCount;
         }
     }
 }

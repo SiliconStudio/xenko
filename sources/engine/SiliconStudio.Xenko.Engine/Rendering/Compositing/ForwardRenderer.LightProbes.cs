@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -44,8 +46,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                             continue;
 
                         var mappedCB = (LightProbeCBuffer*)(resourceGroup.ConstantBuffer.Data + logicalGroup.ConstantBufferOffset);
-                        mappedCB->Enabled = lightProbesData != null ? 1 : 0;
-                        mappedCB->UserVertexCount = lightProbesData?.UserVertexCount ?? 0;
+                        mappedCB->UserVertexCount = lightProbesData.UserVertexCount;
                     }
                 }
             }
@@ -64,7 +65,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             var renderView = context.RenderView;
 
             var lightProbesData = renderView.SceneInstance.GetProcessor<LightProbeProcessor>()?.RuntimeData;
-            if (lightProbesData == null)
+            if (lightProbesData == null || lightProbesData.Tetrahedra.Count == 0)
             {
                 // No lightprobes, we still set GPU resources (otherwise rendering might fetch invalid data)
                 goto SetGPUResources;
@@ -381,7 +382,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         [StructLayout(LayoutKind.Sequential)]
         struct LightProbeCBuffer
         {
-            public int Enabled;
             public int UserVertexCount;
         }
     }

@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.ComponentModel;
 using SiliconStudio.Xenko.Engine;
 
@@ -18,7 +20,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                 var renderMesh = (RenderMesh)renderObject;
 
                 // Only handle non-transparent meshes
-                if (!renderMesh.Material.HasTransparency)
+                if (!renderMesh.MaterialPass.HasTransparency)
                 {
                     if (renderMesh.IsShadowCaster)
                         renderMesh.ActiveRenderStages[ShadowMapRenderStage.Index] = new ActiveRenderStage(EffectName);

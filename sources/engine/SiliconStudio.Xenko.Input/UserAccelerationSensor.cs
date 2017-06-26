@@ -1,23 +1,19 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
 {
-    /// <summary>
-    /// This class represents a sensor of type user acceleration. It measures the acceleration applied by the user (no gravity) onto the device.
-    /// </summary>
-    public class UserAccelerationSensor : SensorBase
+    internal class UserAccelerationSensor : Sensor, IUserAccelerationSensor
     {
-        /// <summary>
-        /// Gets the current acceleration applied by the user (in meters/seconds^2).
-        /// </summary>
         public Vector3 Acceleration { get; internal set; }
-
-        internal override void ResetData()
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserAccelerationSensor"/> class.
+        /// </summary>
+        public UserAccelerationSensor(IInputSource source, string systemName) : base(source, systemName, "User Acceleration")
         {
-            Acceleration = Vector3.Zero;
         }
     }
 }

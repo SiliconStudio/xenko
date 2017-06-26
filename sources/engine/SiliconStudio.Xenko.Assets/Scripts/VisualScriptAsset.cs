@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -73,9 +75,9 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 yield return new AssetPart(function.Id, function.Base, newBase => function.Base = newBase);
                 foreach (var parmeter in function.Parameters)
                     yield return new AssetPart(parmeter.Id, parmeter.Base, newBase => parmeter.Base = newBase);
-                foreach (var block in function.Blocks)
+                foreach (var block in function.Blocks.Values)
                     yield return new AssetPart(block.Id, block.Base, newBase => block.Base = newBase);
-                foreach (var link in function.Links)
+                foreach (var link in function.Links.Values)
                     yield return new AssetPart(link.Id, link.Base, newBase => link.Base = newBase);
             }
         }
@@ -103,7 +105,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                         return true;
                 }
 
-                foreach (var block in method.Blocks)
+                foreach (var block in method.Blocks.Values)
                 {
                     foreach (var slot in block.Slots)
                     {
@@ -140,7 +142,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                         return parameter;
                 }
 
-                foreach (var block in method.Blocks)
+                foreach (var block in method.Blocks.Values)
                 {
                     foreach (var slot in block.Slots)
                     {

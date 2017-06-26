@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
 // 
@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Games
 
     public abstract class GameWindow<TK> : GameWindow
     {
-        internal sealed override void Initialize(GameContext gameContext)
+        protected internal sealed override void Initialize(GameContext gameContext)
         {
             var context = gameContext as GameContext<TK>;
             if (context != null)
@@ -192,7 +192,7 @@ namespace SiliconStudio.Xenko.Games
 
         #region Methods
 
-        internal abstract void Initialize(GameContext gameContext);
+        protected internal abstract void Initialize(GameContext gameContext);
 
         internal bool Exiting;
 

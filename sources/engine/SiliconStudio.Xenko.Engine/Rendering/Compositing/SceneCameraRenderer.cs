@@ -1,3 +1,6 @@
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
@@ -10,18 +13,18 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     /// <remarks>
     /// Since it sets a view, it is usually not shareable for multiple rendering.
     /// </remarks>
-    [Display("Render Camera")]
+    [Display("Camera Renderer")]
     public partial class SceneCameraRenderer : SceneRendererBase
     {
         [DataMemberIgnore]
         public RenderView RenderView { get; } = new RenderView();
-
+        
         /// <summary>
         /// Gets or sets the camera.
         /// </summary>
         /// <value>The camera.</value>
         /// <userdoc>The camera to use to render the scene.</userdoc>
-        public SceneCameraSlotIndex Camera { get; set; } = new SceneCameraSlotIndex(0);
+        public SceneCameraSlot Camera { get; set; }
 
         public ISceneRenderer Child { get; set; }
 
@@ -60,9 +63,14 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             }
         }
 
+        /// <summary>
+        /// Resolves camera to the one contained in slot <see cref="Camera"/>.
+        /// </summary>
         protected virtual CameraComponent ResolveCamera(RenderContext renderContext)
         {
-            return renderContext.GetCameraFromSlot(Camera);
+            var camera = Camera?.Camera;
+            if (camera == null) throw new InvalidOperationException($"A {nameof(SceneCameraRenderer)} in use has no camera set. Make sure the camera component to use is enabled and has its [{nameof(CameraComponent.Slot)}] property correctly set.");
+            return camera;
         }
 
         protected virtual void CollectInner(RenderContext renderContext)

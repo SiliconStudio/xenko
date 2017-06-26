@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.Threading.Tasks;
 
 using NUnit.Framework;
@@ -61,9 +61,9 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         private void Click()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.5f)));
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.5f)));
+            AddPointerEvent(PointerEventType.Pressed, new Vector2(0.5f));
+            AddPointerEvent(PointerEventType.Released, new Vector2(0.5f));
+            Input.Update(new GameTime());
         }
 
         [Test]

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -150,15 +150,15 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
                     game.Content.Load<Sound>("EffectToneA"),
                 };
 
-            emitComps[0].AttachSound(sounds[0]);
-            emitComps[0].AttachSound(sounds[1]);
-            emitComps[1].AttachSound(sounds[2]);
+            emitComps[0].Sounds["EffectBip"] = sounds[0];
+            emitComps[0].Sounds["EffectToneA"] = sounds[1];
+            emitComps[1].Sounds["EffectToneA"] = sounds[2];
 
             soundControllers = new List<AudioEmitterSoundController>
                 {
-                    emitComps[0].GetSoundController(sounds[0]),
-                    emitComps[0].GetSoundController(sounds[1]),
-                    emitComps[1].GetSoundController(sounds[2]),
+                    emitComps[0]["EffectBip"],
+                    emitComps[0]["EffectToneA"],
+                    emitComps[1]["EffectToneA"],
                 };
         }
 
@@ -284,8 +284,8 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             game.Audio.AddListener(listComps[2]);
             game.Audio.AddListener(listComps[0]);
 
-            soundControllers[0].IsLooped = true;
-            soundControllers[2].IsLooped = true;
+            soundControllers[0].IsLooping = true;
+            soundControllers[2].IsLooping = true;
         }
 
         private void TestRemoveListenerLoopImpl(Game game, int loopCount, int loopCountSum)
@@ -473,8 +473,8 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             game.Audio.AddListener(listComps[0]);
 
             sounds.Add(game.Content.Load<Sound>("EffectToneE"));
-            emitComps[0].AttachSound(sounds[3]);
-            soundControllers.Add(emitComps[0].GetSoundController(sounds[3]));
+            emitComps[0].Sounds["EffectToneE"] = sounds[3];
+            soundControllers.Add(emitComps[0]["EffectToneE"]);
         }
 
         private void TestSeveralControllersLoopImpl(Game game, int loopCount, int loopCountSum)
@@ -526,7 +526,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             game.Audio.AddListener(listComps[0]);
 
             //emitComps[0].DistanceScale = 200f;  // increase distance scale so that the sound can be heard from far away too
-            soundControllers[0].IsLooped = true;
+            soundControllers[0].IsLooping = true;
             soundControllers[0].Play();
         }
 
@@ -565,7 +565,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
 
             game.Audio.AddListener(listComps[0]);
 
-            soundControllers[0].IsLooped = true;
+            soundControllers[0].IsLooping = true;
             soundControllers[0].Play();
         }
 
@@ -582,7 +582,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
         }
 
         /// <summary>
-        /// Simple test to check that the audio system is localizing properly the sounds.
+        /// Simple test to check that the audio system is localizing the sounds properly.
         /// </summary>
         [Test, Ignore("TODO: UPDATE TO USE Scene and Graphics Composer")]
         public void TestLocalizationCoherency()
@@ -600,7 +600,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
 
             game.Audio.AddListener(listComps[0]);
 
-            soundControllers[0].IsLooped = true;
+            soundControllers[0].IsLooping = true;
             soundControllers[0].Play();
         }
 

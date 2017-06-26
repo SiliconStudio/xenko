@@ -1,88 +1,88 @@
 !SceneAsset
 Id: 98760599-6f0e-4c6b-9ba2-613e9d68d2e3
-SerializedVersion: {Xenko: 2.0.0.0}
+SerializedVersion: {Xenko: 2.1.0.1}
 Tags: []
 ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
-    RootPartIds:
-        - 27a91eaf-7622-42b4-89a2-3495a753b8d9
-        - e1d761e6-634d-4773-8d81-75dfc8e8b1c4
-        - 5fc52dcf-f9f8-4c6d-b32d-3fc989aea8ad
-        - 39790120-ebaf-43d5-8b06-e1aaa22d2f51
-        - 605ce261-0f03-4563-b2d4-4ed4a7d4cd89
-        - 3f6c30db-f1ee-4476-98fe-7f9a36be4874
-        - 7a23860a-4f5e-4559-ba3c-89f9d2c66dff
-        - f74b7b21-8928-4702-be11-947da30fd86d
-        - a6e6cffa-eee4-448d-b843-f7b8cb6e7d38
-        - 3336ef86-ddb7-4d8f-b993-1ffb444c28b1
-        - 58be24f3-f20a-4e8f-82a3-fee8a5094e9d
-        - 0725de5a-db71-407c-ad52-506b693c932e
-        - bd5f7af2-f7dc-446f-94c6-6aadba0aacb4
-        - 0c3bda49-f41b-4976-96a1-5379e0c8e818
-        - f5b98748-d372-4371-bfb9-3976bc5ec0bb
-        - 4f79d06e-7bb2-4f46-b4b1-0cf4251b674d
-        - 2a150fb3-ab90-452a-a19f-d896bb3c89c3
-        - f0c6fb81-17db-48c7-b05a-ecec414ba17e
-        - 6e73f571-60d8-43b2-8f46-42ef70842ce1
-        - e81d324b-017d-4f74-9521-c63e2e0dbea9
-        - 1d81ab64-07a4-4e25-9db7-a0b5fc917a80
-        - 9502fa7b-0ee0-419b-9c5f-931362bbae24
-        - 6e6069e9-61a5-45b1-b8cf-48ed02d39235
-        - d6ad96b7-a066-451c-b6a5-03f5e8038384
-        - 65e8a184-3f85-4b14-a650-78987b789449
-        - 0efda974-f4b7-4e11-be55-ee8dcb860cd6
-        - 763c04b0-c22a-4485-8a9b-9ae73a177d2a
-        - 9d1b2810-2c05-407d-b8bb-ad49d5c734fc
-        - 1db684ad-97dc-48d3-8a87-5561840a4aee
-        - d61da8f7-a54e-4e0c-b5c1-07241aa9e7ce
-        - 246b207f-0276-49df-be62-411448c2ebbc
-        - 10693b22-4c3a-4094-9c76-36cfeae495ed
-        - e03076e0-8d95-4b05-89b7-583c07f80f9d
-        - 0997d496-3d18-48fe-8f22-8cacf7afd358
-        - cd68a7d3-5bf4-4282-8fa9-8e727ba2c394
-        - d88222a4-d9b5-4497-ada4-3ef3a0264f72
-        - ab80ffd1-ddd3-4f6e-b860-622a9bda74bd
-        - 687b88f7-b73c-4f1c-aab1-c9dc0873f68b
-        - 345daf3e-1c2d-4b1a-b447-68e4dcb57651
-        - 1b03b12f-f4a8-435e-8efe-d311f2e10cbf
-        - 283b970c-a203-4753-a5fb-121a94f5bda4
-        - 18f53e81-f123-4235-811f-92226ad566ee
-        - 12730ec0-3380-4597-bbf3-0300dfd12286
-        - 79e614ff-e70b-4e1c-a4ff-49a72208d9af
-        - 18abac6d-1e59-42e1-b95c-677949a7b9db
-        - 7f96b6f2-32c6-4c3f-b72a-3e779ddc9622
-        - 56f4d87d-2632-4818-8067-91007acbe2d2
-        - 469d9627-230b-4103-9a32-76712acd6ce8
-        - 673c98ad-621c-481c-9da2-88992a469765
-        - 44fbd50a-0c03-4896-9b71-62dddc75ed8d
-        - e21d03c7-0a0e-4a4f-b1d8-4c56eb866706
-        - 9c0fa0b3-eaf4-4a9a-9631-51cf24b598a0
-        - 2c66a19e-36d7-4743-8c68-76f19c002f21
-        - 3eee0685-c355-49d3-9a4d-5de8c1442f08
-        - 53d7d957-63fa-4380-b82c-7f795d1d65b2
-        - efb97a37-10f1-49c7-8354-8273cba19f53
-        - e7333388-1c34-4faa-8464-8215dc13712b
-        - c58ce3b1-05ef-4414-9fdf-474e42deb8e5
-        - 3a338e29-3929-45de-ac03-da86f7ecd26e
-        - 41790a91-421d-4b85-84c8-4df802c40e62
-        - d0712ec2-3a44-4360-8739-9a351e1843f4
-        - ab8b22ae-d3d3-4f8b-86a1-5c8b17d23722
-        - a64c0c6e-a688-4a61-b889-9c8925a11157
-        - 6eb936a1-6346-4c23-b33b-dac689838fac
-        - 79b798e6-2b83-4716-8845-e569547eebb6
-        - 63ec8ffa-1489-4d84-8484-8574009bebc5
-        - d3903eba-10c6-4a0d-b363-b308c21154c6
-        - 9cb7f348-4b35-49b5-bd45-a24e21c66c9b
-        - 2b707cf8-8c33-4fdf-a95e-1d9033fc671a
-        - 7aac6559-0cef-4f23-b050-50a27353455f
-        - 13c7288f-20b4-47eb-bec7-412d3727b650
-        - 37ef05ea-dcaa-4701-86ee-b54579b9cbb0
-        - d2c94ef5-0eff-430c-b39c-82088ac927cf
-        - e719834e-b69b-4ffc-8e49-ed7f10d9da6d
-        - 5f548076-08bc-4ae8-ac9a-c391acdfd326
-        - 26a8a83d-1048-4830-8905-aa83c16df8e5
-        - 76771248-c30c-4247-a20e-69306cfdb1cd
+    RootParts:
+        - ref!! 27a91eaf-7622-42b4-89a2-3495a753b8d9
+        - ref!! e1d761e6-634d-4773-8d81-75dfc8e8b1c4
+        - ref!! 5fc52dcf-f9f8-4c6d-b32d-3fc989aea8ad
+        - ref!! 39790120-ebaf-43d5-8b06-e1aaa22d2f51
+        - ref!! 605ce261-0f03-4563-b2d4-4ed4a7d4cd89
+        - ref!! 3f6c30db-f1ee-4476-98fe-7f9a36be4874
+        - ref!! 7a23860a-4f5e-4559-ba3c-89f9d2c66dff
+        - ref!! f74b7b21-8928-4702-be11-947da30fd86d
+        - ref!! a6e6cffa-eee4-448d-b843-f7b8cb6e7d38
+        - ref!! 3336ef86-ddb7-4d8f-b993-1ffb444c28b1
+        - ref!! 58be24f3-f20a-4e8f-82a3-fee8a5094e9d
+        - ref!! 0725de5a-db71-407c-ad52-506b693c932e
+        - ref!! bd5f7af2-f7dc-446f-94c6-6aadba0aacb4
+        - ref!! 0c3bda49-f41b-4976-96a1-5379e0c8e818
+        - ref!! f5b98748-d372-4371-bfb9-3976bc5ec0bb
+        - ref!! 4f79d06e-7bb2-4f46-b4b1-0cf4251b674d
+        - ref!! 2a150fb3-ab90-452a-a19f-d896bb3c89c3
+        - ref!! f0c6fb81-17db-48c7-b05a-ecec414ba17e
+        - ref!! 6e73f571-60d8-43b2-8f46-42ef70842ce1
+        - ref!! e81d324b-017d-4f74-9521-c63e2e0dbea9
+        - ref!! 1d81ab64-07a4-4e25-9db7-a0b5fc917a80
+        - ref!! 9502fa7b-0ee0-419b-9c5f-931362bbae24
+        - ref!! 6e6069e9-61a5-45b1-b8cf-48ed02d39235
+        - ref!! d6ad96b7-a066-451c-b6a5-03f5e8038384
+        - ref!! 65e8a184-3f85-4b14-a650-78987b789449
+        - ref!! 0efda974-f4b7-4e11-be55-ee8dcb860cd6
+        - ref!! 763c04b0-c22a-4485-8a9b-9ae73a177d2a
+        - ref!! 9d1b2810-2c05-407d-b8bb-ad49d5c734fc
+        - ref!! 1db684ad-97dc-48d3-8a87-5561840a4aee
+        - ref!! d61da8f7-a54e-4e0c-b5c1-07241aa9e7ce
+        - ref!! 246b207f-0276-49df-be62-411448c2ebbc
+        - ref!! 10693b22-4c3a-4094-9c76-36cfeae495ed
+        - ref!! e03076e0-8d95-4b05-89b7-583c07f80f9d
+        - ref!! 0997d496-3d18-48fe-8f22-8cacf7afd358
+        - ref!! cd68a7d3-5bf4-4282-8fa9-8e727ba2c394
+        - ref!! d88222a4-d9b5-4497-ada4-3ef3a0264f72
+        - ref!! ab80ffd1-ddd3-4f6e-b860-622a9bda74bd
+        - ref!! 687b88f7-b73c-4f1c-aab1-c9dc0873f68b
+        - ref!! 345daf3e-1c2d-4b1a-b447-68e4dcb57651
+        - ref!! 1b03b12f-f4a8-435e-8efe-d311f2e10cbf
+        - ref!! 283b970c-a203-4753-a5fb-121a94f5bda4
+        - ref!! 18f53e81-f123-4235-811f-92226ad566ee
+        - ref!! 12730ec0-3380-4597-bbf3-0300dfd12286
+        - ref!! 79e614ff-e70b-4e1c-a4ff-49a72208d9af
+        - ref!! 18abac6d-1e59-42e1-b95c-677949a7b9db
+        - ref!! 7f96b6f2-32c6-4c3f-b72a-3e779ddc9622
+        - ref!! 56f4d87d-2632-4818-8067-91007acbe2d2
+        - ref!! 469d9627-230b-4103-9a32-76712acd6ce8
+        - ref!! 673c98ad-621c-481c-9da2-88992a469765
+        - ref!! 44fbd50a-0c03-4896-9b71-62dddc75ed8d
+        - ref!! e21d03c7-0a0e-4a4f-b1d8-4c56eb866706
+        - ref!! 9c0fa0b3-eaf4-4a9a-9631-51cf24b598a0
+        - ref!! 2c66a19e-36d7-4743-8c68-76f19c002f21
+        - ref!! 3eee0685-c355-49d3-9a4d-5de8c1442f08
+        - ref!! 53d7d957-63fa-4380-b82c-7f795d1d65b2
+        - ref!! efb97a37-10f1-49c7-8354-8273cba19f53
+        - ref!! e7333388-1c34-4faa-8464-8215dc13712b
+        - ref!! c58ce3b1-05ef-4414-9fdf-474e42deb8e5
+        - ref!! 3a338e29-3929-45de-ac03-da86f7ecd26e
+        - ref!! 41790a91-421d-4b85-84c8-4df802c40e62
+        - ref!! d0712ec2-3a44-4360-8739-9a351e1843f4
+        - ref!! ab8b22ae-d3d3-4f8b-86a1-5c8b17d23722
+        - ref!! a64c0c6e-a688-4a61-b889-9c8925a11157
+        - ref!! 6eb936a1-6346-4c23-b33b-dac689838fac
+        - ref!! 79b798e6-2b83-4716-8845-e569547eebb6
+        - ref!! 63ec8ffa-1489-4d84-8484-8574009bebc5
+        - ref!! d3903eba-10c6-4a0d-b363-b308c21154c6
+        - ref!! 9cb7f348-4b35-49b5-bd45-a24e21c66c9b
+        - ref!! 2b707cf8-8c33-4fdf-a95e-1d9033fc671a
+        - ref!! 7aac6559-0cef-4f23-b050-50a27353455f
+        - ref!! 13c7288f-20b4-47eb-bec7-412d3727b650
+        - ref!! 37ef05ea-dcaa-4701-86ee-b54579b9cbb0
+        - ref!! d2c94ef5-0eff-430c-b39c-82088ac927cf
+        - ref!! e719834e-b69b-4ffc-8e49-ed7f10d9da6d
+        - ref!! 5f548076-08bc-4ae8-ac9a-c391acdfd326
+        - ref!! 26a8a83d-1048-4830-8905-aa83c16df8e5
+        - ref!! 76771248-c30c-4247-a20e-69306cfdb1cd
     Parts:
         -   Entity:
                 Id: 003ea996-d3d5-46e1-8f7c-e934945032b4
@@ -5034,7 +5034,7 @@ Hierarchy:
                         Id: 65d1b71f-4862-4efc-b7c1-3c9d933979c7
                         Name: null
                         Projection: Perspective
-                        Slot: {Index: 0}
+                        Slot: 9aeac611-d1f6-46da-a235-e20cc154e170
                     cffbc9ddf95f8544a284e04ea2d27d8a: !ThirdPersonPlatformer.Camera.ThirdPersonCamera,ThirdPersonPlatformer.Game
                         Id: ddc9fbcf-5ff9-4485-a284-e04ea2d27d8a
                         DefaultDistance: 6.0

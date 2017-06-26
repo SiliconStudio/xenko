@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Games;
@@ -29,7 +29,6 @@ namespace SiliconStudio.Xenko.Physics
             : base(registry)
         {
             UpdateOrder = -1000; //make sure physics runs before everything
-            registry.AddService(typeof(IPhysicsSystem), this);
 
             Enabled = true; //enabled by default
         }

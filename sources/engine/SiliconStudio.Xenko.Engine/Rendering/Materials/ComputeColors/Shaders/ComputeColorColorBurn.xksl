@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 shader ComputeColorColorBurn : ComputeColor
 {
     compose ComputeColor color1;
@@ -12,7 +12,6 @@ shader ComputeColorColorBurn : ComputeColor
 
         // http://en.wikipedia.org/wiki/Blend_modes#Dodge_and_burn
         // The Color Burn mode divides the inverted bottom layer by the top layer, and then inverts the result
-
-         return 1.0f - BlendUtils.ColorDivide((1.0f - backColor), frontColor);
+         return float4(1.0f - BlendUtils.ColorDivide((1.0f - backColor.rgb), frontColor.rgb), 1.0f);
     }
 };

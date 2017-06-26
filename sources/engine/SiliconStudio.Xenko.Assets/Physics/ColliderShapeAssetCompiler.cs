@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
             NativeLibrary.PreloadLibrary("VHACD.dll");
         }
 
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
         {
             foreach (var type in AssetRegistry.GetAssetTypes(typeof(Model)))
             {
@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
             }
         }
 
-        public override IEnumerable<Type> GetInputTypesToExclude(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<Type> GetInputTypesToExclude(AssetItem assetItem)
         {
             foreach(var type in AssetRegistry.GetAssetTypes(typeof(Material)))
             {
@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
             yield return typeof(TextureAsset);
         }
 
-        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
         {
             var asset = (ColliderShapeAsset)assetItem.Asset;
             foreach (var convexHullDesc in

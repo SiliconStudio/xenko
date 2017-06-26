@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
@@ -74,7 +76,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         {
             if (executionSlot != null)
             {
-                var nextExecutionLink = method.Links.FirstOrDefault(x => x.Source == executionSlot && x.Target != null);
+                var nextExecutionLink = method.Links.Values.FirstOrDefault(x => x.Source == executionSlot && x.Target != null);
                 if (nextExecutionLink != null)
                 {
                     return GetOrCreateBasicBlock((ExecutionBlock)nextExecutionLink.Target.Owner);
@@ -86,12 +88,12 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         public IEnumerable<Link> FindOutputLinks(Slot outputSlot)
         {
-            return method.Links.Where(x => x.Source == outputSlot && x.Target != null);
+            return method.Links.Values.Where(x => x.Source == outputSlot && x.Target != null);
         }
 
         public Link FindInputLink(Slot inputSlot)
         {
-            return method.Links.FirstOrDefault(x => x.Target == inputSlot && x.Source != null);
+            return method.Links.Values.FirstOrDefault(x => x.Target == inputSlot && x.Source != null);
         }
 
         public ExpressionSyntax GenerateExpression(Slot slot)
@@ -100,7 +102,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             if (slot != null)
             {
                 // 1. First check if there is a link and use its expression
-                var sourceLink = method.Links.FirstOrDefault(x => x.Target == slot);
+                var sourceLink = method.Links.Values.FirstOrDefault(x => x.Target == slot);
                 if (sourceLink != null)
                 {
                     ExpressionSyntax expression;
@@ -120,11 +122,11 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                         switch (sourceExecutionState)
                         {
                             case ExecutionBlockLinkState.Never:
-                                Log.Error(nameof(VisualScriptCompiler), $"{slot} in block {slot.Owner} uses a value from execution block {sourceBlock}, however it is never executed. Slot will take default value instead.");
+                                Log.Error($"{slot} in block {slot.Owner} uses a value from execution block {sourceBlock}, however it is never executed. Slot will take default value instead.", CallerInfo.Get());
                                 sourceBlock = null;
                                 break;
                             case ExecutionBlockLinkState.Sometimes:
-                                Log.Error(nameof(VisualScriptCompiler), $"{slot} in block {slot.Owner} uses a value from execution block {sourceBlock}, however it is executed but not in all cases. Are you using result from a conditional branch? Slot will take default value instead.");
+                                Log.Error($"{slot} in block {slot.Owner} uses a value from execution block {sourceBlock}, however it is executed but not in all cases. Are you using result from a conditional branch? Slot will take default value instead.", CallerInfo.Get());
                                 // Note: we still let it generate code, so that the user can also see the error in the generated source code
                                 //sourceBlock = null;
                                 break;
@@ -171,7 +173,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             }
 
             // TODO: Issue an error
-            Log.Error(nameof(VisualScriptCompiler), $"{slot} in block {slot.Owner} could not be resolved.");
+            Log.Error($"{slot} in block {slot?.Owner} could not be resolved.", CallerInfo.Get());
             return IdentifierName("unknown").WithAdditionalAnnotations(GenerateAnnotation(CurrentBlock));
         }
 
@@ -179,7 +181,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         {
             if (executionSlot != null)
             {
-                var nextExecutionLink = method.Links.FirstOrDefault(x => x.Source == executionSlot && x.Target != null);
+                var nextExecutionLink = method.Links.Values.FirstOrDefault(x => x.Source == executionSlot && x.Target != null);
                 if (nextExecutionLink != null)
                 {
                     return ProcessInnerLoop((ExecutionBlock)nextExecutionLink.Target.Owner);
@@ -319,7 +321,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 var nextExecutionSlot = currentBlock.Slots.FirstOrDefault(x => x.Kind == SlotKind.Execution && x.Direction == SlotDirection.Output && x.Flags == SlotFlags.AutoflowExecution);
                 if (nextExecutionSlot != null)
                 {
-                    var nextExecutionLink = method.Links.FirstOrDefault(x => x.Source == nextExecutionSlot && x.Target != null);
+                    var nextExecutionLink = method.Links.Values.FirstOrDefault(x => x.Source == nextExecutionSlot && x.Target != null);
                     if (nextExecutionLink == null)
                     {
                         // Nothing connected, no need to generate a goto to an empty return
@@ -374,7 +376,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         private void BuildGlobalConnectivityCache()
         {
             // Collect execution connectivity information from links
-            foreach (var link in method.Links)
+            foreach (var link in method.Links.Values)
             {
                 if (link.Source.Kind == SlotKind.Execution)
                 {
@@ -528,7 +530,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             // Process each function
             foreach (var method in visualScriptAsset.Methods)
             {
-                var functionStartBlock = method.Blocks.OfType<FunctionStartBlock>().FirstOrDefault();
+                var functionStartBlock = method.Blocks.Values.OfType<FunctionStartBlock>().FirstOrDefault();
                 if (functionStartBlock == null)
                     continue;
 

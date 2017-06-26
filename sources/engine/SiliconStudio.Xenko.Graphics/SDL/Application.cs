@@ -1,5 +1,5 @@
-// Copyright (c) 2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2015-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 #if SILICONSTUDIO_XENKO_UI_SDL
 using System;
 using System.Collections.Generic;
@@ -175,6 +175,11 @@ namespace SiliconStudio.Xenko.Graphics.SDL
                     }
                     break;
                 }
+                case SDL.SDL_EventType.SDL_JOYDEVICEADDED:
+                case SDL.SDL_EventType.SDL_JOYDEVICEREMOVED:
+                    // Send these events to all the windows
+                    Windows.ForEach(x => x.ProcessEvent(e));
+                    break;
             }
             ctrl?.ProcessEvent(e);
         }

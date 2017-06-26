@@ -1,16 +1,16 @@
 !SceneAsset
 Id: a140a866-a7b3-4c89-8953-5f7adc428c0a
-SerializedVersion: {Xenko: 2.0.0.0}
+SerializedVersion: {Xenko: 2.1.0.1}
 Tags: []
 ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
-    RootPartIds:
-        - 820d34a8-2971-4381-abfa-2965d94ec672
-        - d9876ddf-0675-4113-8dc5-5d363fbae7f6
-        - 60ccfaa1-a808-415b-9fdf-d9a149bb964e
-        - 28270aa9-8a00-4a01-97ac-10adf1aa3b87
-        - 57b67568-c112-44f5-8d1a-589ca71f1900
+    RootParts:
+        - ref!! 820d34a8-2971-4381-abfa-2965d94ec672
+        - ref!! d9876ddf-0675-4113-8dc5-5d363fbae7f6
+        - ref!! 60ccfaa1-a808-415b-9fdf-d9a149bb964e
+        - ref!! 28270aa9-8a00-4a01-97ac-10adf1aa3b87
+        - ref!! 57b67568-c112-44f5-8d1a-589ca71f1900
     Parts:
         -   Entity:
                 Id: 28270aa9-8a00-4a01-97ac-10adf1aa3b87
@@ -205,10 +205,13 @@ Hierarchy:
                         Id: d676a1e3-287f-44e1-bccf-44d85bbd6588
                         Model: 55733c87-8e99-4d26-8eac-32a172399d18:Knight/knight
                         Materials: {}
-                    b64ad55d83b63142a5553396fa1fe1e8: !AnimationComponent
-                        Id: 5dd54ab6-b683-4231-a555-3396fa1fe1e8
+                    09aab9e5eda4fca6b98cb5345e47b2c5: !UIElementLink.AnimationStart,UIElementLink.Game
+                        Id: a0729174-95e1-4bfc-bcc1-ccd891e83fbe
                         Animations:
-                            02e43a0b0a19d6459045f27c12de752e~Default: 4fc92370-763a-4adc-b117-1874582a31d6:Knight/he03_run Animation
+                            a916f6afd21707aa6ae730974d2a96af:
+                                Clip: 4fc92370-763a-4adc-b117-1874582a31d6:Knight/he03_run Animation
+                                BlendOperation: LinearBlend
+                                StartTime: 0.0
         -   Entity:
                 Id: d9876ddf-0675-4113-8dc5-5d363fbae7f6
                 Name: UICamera
@@ -226,7 +229,7 @@ Hierarchy:
                         VerticalFieldOfView: 60.0
                         OrthographicSize: 720.0
                         AspectRatio: 1.777778
-                        Slot: {Index: 0}
+                        Slot: 39e59472-e064-4463-9097-403dadbc041e
         -   Entity:
                 Id: ef08d60e-261c-480b-abf4-c7b8ba929ca6
                 Name: Ball

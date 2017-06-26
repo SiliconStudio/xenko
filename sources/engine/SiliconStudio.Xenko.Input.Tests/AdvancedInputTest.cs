@@ -1,39 +1,22 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 using NUnit.Framework;
-
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Graphics.Regression;
 
 namespace SiliconStudio.Xenko.Input.Tests
 {
-    class AdvancedInputTest : GameTestBase
+    /// <summary>
+    /// Interactive test that displays the state of various input devices on the screen
+    /// </summary>
+    class AdvancedInputTest : InputTestBase
     {
-        private SpriteBatch spriteBatch;
-
-        private SpriteFont spriteFont11;
-
-        private Texture roundTexture;
-        private Vector2 roundTextureSize;
-
-        private readonly Color fontColor;
-
-        private const float TextSpaceY = 3;
-        private const float TextSubSectionOffsetX = 15;
-        private const string KeyboardSessionString = "Keyboard :";
-
-        private float textHeight;
-        private readonly Vector2 textLeftTopCorner = new Vector2(5, 5);
-
-        private Vector2 screenSize;
-
         // keyboard
         private string keyPressed;
         private string keyDown;
@@ -45,8 +28,6 @@ namespace SiliconStudio.Xenko.Input.Tests
         private string mouseButtonDown;
         private string mouseButtonReleased;
         private string mouseWheelDelta;
-
-        private readonly Color mouseColor;
 
         // pointers
         private readonly Queue<Tuple<Vector2, TimeSpan, int>> pointerPressed = new Queue<Tuple<Vector2, TimeSpan, int>>();
@@ -67,6 +48,11 @@ namespace SiliconStudio.Xenko.Input.Tests
         private Tuple<GestureEvent, TimeSpan> lastTapEvent = new Tuple<GestureEvent, TimeSpan>(null, TimeSpan.Zero);
 
         private readonly TimeSpan displayGestureDuration;
+        private VirtualButtonBinding b1;
+        private VirtualButtonBinding b2;
+        private VirtualButtonBinding b3;
+
+        private VirtualButtonConfig virtualButtonConfig;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Input"/> class.
@@ -74,48 +60,42 @@ namespace SiliconStudio.Xenko.Input.Tests
         public AdvancedInputTest()
         {
             CurrentVersion = 1;
-
-            // create and set the Graphic Device to the service register of the parent Game class
-            GraphicsDeviceManager.PreferredBackBufferWidth = 1280;
-            GraphicsDeviceManager.PreferredBackBufferHeight = 720;
-            GraphicsDeviceManager.PreferredDepthStencilFormat = PixelFormat.D24_UNorm_S8_UInt;
-            GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.None;
-            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_1 };
-
-            fontColor = Color.Black;
-            mouseColor = Color.Gray;
+            
+            DefaultTextColor = Color.Black;
 
             displayPointerDuration = TimeSpan.FromSeconds(1.5f);
             displayGestureDuration = TimeSpan.FromSeconds(1f);
         }
 
-        protected override Task LoadContent()
+        protected override async Task LoadContent()
         {
-            // Load the fonts
-            spriteFont11 = Content.Load<SpriteFont>("Arial");
-
-            // load the round texture 
-            roundTexture = Content.Load<Texture>("round");
-
-            // create the SpriteBatch used to render them
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // initialize parameters
-            textHeight = spriteFont11.MeasureString(KeyboardSessionString).Y;
-            screenSize = new Vector2(GraphicsDevice.Presenter.BackBuffer.Width, GraphicsDevice.Presenter.BackBuffer.Height);
-            roundTextureSize = new Vector2(roundTexture.Width, roundTexture.Height);
+            await base.LoadContent();
 
             // activate the gesture recognitions
-            Input.ActivatedGestures.Add(new GestureConfigDrag());
-            Input.ActivatedGestures.Add(new GestureConfigFlick());
-            Input.ActivatedGestures.Add(new GestureConfigLongPress());
-            Input.ActivatedGestures.Add(new GestureConfigComposite());
-            Input.ActivatedGestures.Add(new GestureConfigTap());
+            Input.Gestures.Add(new GestureConfigDrag());
+            Input.Gestures.Add(new GestureConfigFlick());
+            Input.Gestures.Add(new GestureConfigLongPress());
+            Input.Gestures.Add(new GestureConfigComposite());
+            Input.Gestures.Add(new GestureConfigTap());
 
             // add a task to the task scheduler that will be executed asynchronously 
             Script.AddTask(UpdateInputStates);
 
-            return Task.FromResult(0);
+            // Create a new VirtualButtonConfigSet if none exists. 
+            Input.VirtualButtonConfigSet = Input.VirtualButtonConfigSet ?? new VirtualButtonConfigSet();
+
+            //Bind "M" key, GamePad "Start" button and left mouse button to a virtual button "MyButton".
+            b1 = new VirtualButtonBinding("M Key", VirtualButton.Keyboard.M);
+            b2 = new VirtualButtonBinding("GamePad Start", VirtualButton.GamePad.Start);
+            b3 = new VirtualButtonBinding("Mouse Left Button", VirtualButton.Mouse.Left);
+
+            virtualButtonConfig = new VirtualButtonConfig();
+
+            virtualButtonConfig.Add(b1);
+            virtualButtonConfig.Add(b2);
+            virtualButtonConfig.Add(b3);
+
+            Input.VirtualButtonConfigSet.Add(virtualButtonConfig);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -127,24 +107,21 @@ namespace SiliconStudio.Xenko.Input.Tests
             GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
             GraphicsContext.CommandList.SetRenderTargetAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
-            spriteBatch.Begin(GraphicsContext);
+            BeginSpriteBatch();
 
             // render the keyboard key states
-            spriteBatch.DrawString(spriteFont11, KeyboardSessionString, textLeftTopCorner, fontColor);
-            spriteBatch.DrawString(spriteFont11, "Key pressed: " + keyPressed, textLeftTopCorner + new Vector2(TextSubSectionOffsetX, 1 * (textHeight + TextSpaceY)), fontColor);
-            spriteBatch.DrawString(spriteFont11, "Key down: " + keyDown, textLeftTopCorner + new Vector2(TextSubSectionOffsetX, 2 * (textHeight + TextSpaceY)), fontColor);
-            spriteBatch.DrawString(spriteFont11, "Key released: " + keyReleased, textLeftTopCorner + new Vector2(TextSubSectionOffsetX, 3 * (textHeight + TextSpaceY)), fontColor);
+            WriteLine("Keyboard:");
+            WriteLine("Key pressed: " + keyPressed, 1);
+            WriteLine("Key down: " + keyDown, 1);
+            WriteLine("Key released: " + keyReleased, 1);
 
             // render the mouse key states
-            spriteBatch.DrawString(spriteFont11, "Mouse :", textLeftTopCorner + new Vector2(0, 4 * (textHeight + TextSpaceY)), fontColor);
-            spriteBatch.DrawString(spriteFont11, "Mouse position: " + mousePosition, textLeftTopCorner + new Vector2(TextSubSectionOffsetX, 5 * (textHeight + TextSpaceY)), fontColor);
-            spriteBatch.DrawString(spriteFont11, "Mouse button pressed: " + mouseButtonPressed, textLeftTopCorner + new Vector2(TextSubSectionOffsetX, 6 * (textHeight + TextSpaceY)), fontColor);
-            spriteBatch.DrawString(spriteFont11, "Mouse button down: " + mouseButtonDown, textLeftTopCorner + new Vector2(TextSubSectionOffsetX, 7 * (textHeight + TextSpaceY)), fontColor);
-            spriteBatch.DrawString(spriteFont11, "Mouse button released: " + mouseButtonReleased, textLeftTopCorner + new Vector2(TextSubSectionOffsetX, 8 * (textHeight + TextSpaceY)), fontColor);
-            spriteBatch.DrawString(spriteFont11, "Mouse wheel delta: " + mouseWheelDelta, textLeftTopCorner + new Vector2(TextSubSectionOffsetX, 9 * (textHeight + TextSpaceY)), fontColor);
-
-            var mouseScreenPosition = new Vector2(mousePosition.X * screenSize.X, mousePosition.Y * screenSize.Y);
-            spriteBatch.Draw(roundTexture, mouseScreenPosition, mouseColor, 0, roundTextureSize / 2, 0.1f);
+            WriteLine("Mouse :");
+            WriteLine("Mouse position: " + mousePosition, 1);
+            WriteLine("Mouse button pressed: " + mouseButtonPressed, 1);
+            WriteLine("Mouse button down: " + mouseButtonDown, 1);
+            WriteLine("Mouse button released: " + mouseButtonReleased, 1);
+            WriteLine("Mouse wheel delta: " + mouseWheelDelta, 1);
 
             // render the pointer states
             foreach (var tuple in pointerPressed)
@@ -155,14 +132,34 @@ namespace SiliconStudio.Xenko.Input.Tests
                 DrawPointers(tuple, 2f, Color.Red);
 
             // render the gesture states
-            spriteBatch.DrawString(spriteFont11, "Gestures :", textLeftTopCorner + new Vector2(0, 10 * (textHeight + TextSpaceY)), fontColor);
-            spriteBatch.DrawString(spriteFont11, "Drag: " + dragEvent, textLeftTopCorner + new Vector2(TextSubSectionOffsetX, 11 * (textHeight + TextSpaceY)), fontColor);
-            spriteBatch.DrawString(spriteFont11, "Flick: " + flickEvent, textLeftTopCorner + new Vector2(TextSubSectionOffsetX, 12 * (textHeight + TextSpaceY)), fontColor);
-            spriteBatch.DrawString(spriteFont11, "LongPress: " + longPressEvent, textLeftTopCorner + new Vector2(TextSubSectionOffsetX, 13 * (textHeight + TextSpaceY)), fontColor);
-            spriteBatch.DrawString(spriteFont11, "Composite: " + compositeEvent, textLeftTopCorner + new Vector2(TextSubSectionOffsetX, 14 * (textHeight + TextSpaceY)), fontColor);
-            spriteBatch.DrawString(spriteFont11, "Tap: " + tapEvent, textLeftTopCorner + new Vector2(TextSubSectionOffsetX, 15 * (textHeight + TextSpaceY)), fontColor);
+            WriteLine("Gestures :");
+            WriteLine("Drag: " + dragEvent, 1);
+            WriteLine("Flick: " + flickEvent, 1);
+            WriteLine("LongPress: " + longPressEvent, 1);
+            WriteLine("Composite: " + compositeEvent, 1);
+            WriteLine("Tap: " + tapEvent, 1);
+            
+            WriteLine("Virtual Buttons :");
+            foreach (var btn in virtualButtonConfig)
+            {
+                WriteLine($"VirtualButton ({btn.Name}): {btn.GetValue(Input)}", 1);
+            }
 
-            spriteBatch.End();
+            WriteLine("Game Pads :");
+            foreach (var gp in Input.GamePads)
+            {
+                WriteLine($"{gp.Name} ({gp.GetType()}) [{gp.Index}]", 1);
+            }
+
+            WriteLine("Game Controllers :");
+            foreach (var gc in Input.GameControllers)
+            {
+                WriteLine($"{gc.Name} ({gc.GetType()})", 1);
+            }
+
+            DrawCursor();
+
+            EndSpriteBatch();
         }
 
         private void DrawPointers(Tuple<Vector2, TimeSpan, int> tuple, float baseScale, Color baseColor)
@@ -171,9 +168,9 @@ namespace SiliconStudio.Xenko.Input.Tests
             var duration = DrawTime.Total - tuple.Item2;
 
             var scale = (float)(0.2f * (1f - duration.TotalSeconds / displayPointerDuration.TotalSeconds));
-            var pointerScreenPosition = new Vector2(position.X * screenSize.X, position.Y * screenSize.Y);
+            var pointerScreenPosition = new Vector2(position.X * ScreenSize.X, position.Y * ScreenSize.Y);
 
-            spriteBatch.Draw(roundTexture, pointerScreenPosition, baseColor, 0, roundTextureSize / 2, scale * baseScale);
+            SpriteBatch.Draw(RoundTexture, pointerScreenPosition, baseColor, 0, RoundTextureSize / 2, scale * baseScale);
         }
 
         private async Task UpdateInputStates()
@@ -200,14 +197,9 @@ namespace SiliconStudio.Xenko.Input.Tests
                 // Keyboard
                 if (Input.HasKeyboard)
                 {
-                    foreach (var key in Input.KeyEvents.Where(keyEvent => keyEvent.Type == KeyEventType.Pressed))
-                        keyPressed += key + ", ";
-
-                    foreach (var key in Input.KeyDown)
-                        keyDown += key + ", ";
-
-                    foreach (var key in Input.KeyEvents.Where(keyEvent => keyEvent.Type == KeyEventType.Released))
-                        keyReleased += key + ", ";
+                    keyPressed = string.Join(", ", Input.KeyEvents.Where(keyEvent => keyEvent.IsDown));
+                    keyDown = string.Join(", ", Input.DownKeys);
+                    keyReleased = string.Join(", ", Input.KeyEvents.Where(keyEvent => !keyEvent.IsDown));
                 }
 
                 // Mouse
@@ -218,11 +210,23 @@ namespace SiliconStudio.Xenko.Input.Tests
                     {
                         var button = (MouseButton)i;
                         if (Input.IsMouseButtonPressed(button))
-                            mouseButtonPressed += button + ", ";
+                        {
+                            if (mouseButtonPressed.Length > 0)
+                                mouseButtonPressed += ", ";
+                            mouseButtonPressed += button;
+                        }
                         if (Input.IsMouseButtonDown(button))
-                            mouseButtonDown += button + ", ";
+                        {
+                            if (mouseButtonDown.Length > 0)
+                                mouseButtonDown += ", ";
+                            mouseButtonDown += button;
+                        }
                         if (Input.IsMouseButtonReleased(button))
-                            mouseButtonReleased += button + ", ";
+                        {
+                            if (mouseButtonReleased.Length > 0)
+                                mouseButtonReleased += ", ";
+                            mouseButtonReleased += button;
+                        }
                     }
                 }
                 mouseWheelDelta = Input.MouseWheelDelta.ToString();
@@ -232,19 +236,18 @@ namespace SiliconStudio.Xenko.Input.Tests
                 {
                     foreach (var pointerEvent in Input.PointerEvents)
                     {
-                        switch (pointerEvent.State)
+                        switch (pointerEvent.EventType)
                         {
-                            case PointerState.Down:
+                            case PointerEventType.Pressed:
                                 pointerPressed.Enqueue(Tuple.Create(pointerEvent.Position, currentTime, pointerEvent.PointerId));
                                 break;
-                            case PointerState.Move:
+                            case PointerEventType.Moved:
                                 pointerMoved.Enqueue(Tuple.Create(pointerEvent.Position, currentTime, pointerEvent.PointerId));
                                 break;
-                            case PointerState.Up:
+                            case PointerEventType.Released:
                                 pointerReleased.Enqueue(Tuple.Create(pointerEvent.Position, currentTime, pointerEvent.PointerId));
                                 break;
-                            case PointerState.Out:
-                            case PointerState.Cancel:
+                            case PointerEventType.Canceled:
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException();
@@ -319,7 +322,7 @@ namespace SiliconStudio.Xenko.Input.Tests
         }
 
         [Test]
-        public void RunSampleInputTest()
+        public void RunAdvancedInputTest()
         {
             RunGameTest(new AdvancedInputTest());
         }

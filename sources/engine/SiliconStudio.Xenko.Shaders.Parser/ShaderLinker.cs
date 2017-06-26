@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -65,25 +65,21 @@ namespace SiliconStudio.Xenko.Shaders.Parser
 
         private void PrepareConstantBuffers(Shader shader)
         {
-            // Recalculate constant buffers
-            // Order first all non-method declarations and then after method declarations
-            var otherNodes = shader.Declarations.Where(declaration => !(declaration is MethodDeclaration) && !(declaration is Variable)).ToList();
+            var otherNodes = shader.Declarations.Where(declaration => !(declaration is MethodDeclaration) && !(declaration is Variable));
+            // Note: flattening variables
+            var variables = shader.Declarations.OfType<Variable>().SelectMany(x => x.Instances()).ToList();
+
             var declarations = new List<Node>();
-            var variables = shader.Declarations.OfType<Variable>();
-            var methods = shader.Declarations.OfType<MethodDeclaration>();
-            var newVariables = new List<Node>();
 
-            foreach (var variableGroup in variables)
-            {
-                foreach (var variable in variableGroup.Instances())
-                {
-                    declarations.Add(variable);
-                }
-            }
-
+            // Reorder:
+            // - Constants (might be needed by struct/typedef)
+            declarations.AddRange(variables.Where(x => x.Qualifiers.Contains(StorageQualifier.Const)));
+            // - Non variable/methods (i.e. struct, typedef, cbuffer, etc...)
             declarations.AddRange(otherNodes);
-            declarations.AddRange(newVariables);
-            declarations.AddRange(methods);
+            // - Variables (textures, samplers, etc...)
+            declarations.AddRange(variables.Where(x => !x.Qualifiers.Contains(StorageQualifier.Const)));
+            // - Method declarations
+            declarations.AddRange(shader.Declarations.OfType<MethodDeclaration>());
 
             shader.Declarations = declarations;
         }
@@ -426,7 +422,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
             }
             else
             {
-                var variableTypeName = variableType.Name.Text.ToLower();
+                var variableTypeName = variableType.Name.Text.ToLowerInvariant();
 
                 switch (variableTypeName)
                 {

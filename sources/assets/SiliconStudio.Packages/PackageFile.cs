@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.IO;
 using NuGet;
@@ -26,6 +26,11 @@ namespace SiliconStudio.Packages
         /// Gets the full path of the file inside the package.
         /// </summary>
         public string Path => packageFile.Path;
+
+        /// <summary>
+        /// Gets the source path of the file on the hard drive (if it has a source).
+        /// </summary>
+        public string SourcePath => (packageFile as PhysicalPackageFile)?.SourcePath;
 
         /// <summary>
         /// Access to the stream content in read mode.

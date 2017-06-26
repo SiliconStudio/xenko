@@ -1,14 +1,15 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
-
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Regression;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
@@ -32,7 +33,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             await base.LoadContent();
 
             // setup the camera
-            var camera = new TestCamera { Yaw = 0, Pitch = 0, Position = new Vector3(0, 0, 1000), MoveSpeed = 100 };
+            var camera = new TestUICamera(Services.GetServiceAs<SceneSystem>().GraphicsCompositor) { Yaw = 0, Pitch = 0, Position = new Vector3(0, 0, 1000), MoveSpeed = 100 };
             CameraComponent = camera.Camera;
             Script.Add(camera);
 

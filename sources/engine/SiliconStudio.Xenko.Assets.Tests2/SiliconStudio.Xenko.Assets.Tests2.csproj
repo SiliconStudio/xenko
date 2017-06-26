@@ -103,6 +103,10 @@
       <Project>{C904D2C6-5A15-4E0B-8432-33967E1735AA}</Project>
       <Name>SiliconStudio.Xenko.Assets.Models</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Particles\SiliconStudio.Xenko.Particles.csproj">
+      <Project>{f32fda80-b6dd-47a8-8681-437e2c0d3f31}</Project>
+      <Name>SiliconStudio.Xenko.Particles</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Shaders.Compiler\SiliconStudio.Xenko.Shaders.Compiler.csproj">
       <Project>{E8B3553F-A79F-4E50-B75B-ACEE771C320C}</Project>
       <Name>SiliconStudio.Xenko.Shaders.Compiler</Name>
@@ -110,6 +114,10 @@
     <ProjectReference Include="..\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">
       <Project>{273bdd15-7392-4078-91f0-af23594a3d7b}</Project>
       <Name>SiliconStudio.Xenko.Shaders</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.SpriteStudio.Runtime\SiliconStudio.Xenko.SpriteStudio.Runtime.csproj">
+      <Project>{9bc63bec-f305-451d-bb31-262938ea964d}</Project>
+      <Name>SiliconStudio.Xenko.SpriteStudio.Runtime</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
       <Project>{72390339-B2A1-4F61-A800-31ED0975B515}</Project>

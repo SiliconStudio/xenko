@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -152,6 +152,7 @@ namespace SiliconStudio.Presentation.Services
         /// Attempts to close the main window of the application.
         /// </summary>
         /// <param name="onClosed">An action to execute if the main window is successfully closed.</param>
-        void CloseMainWindow(Action onClosed);
+        [NotNull]
+        Task CloseMainWindow(Action onClosed);
     }
 }

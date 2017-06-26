@@ -1,9 +1,10 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
+using Mono.Cecil.Rocks;
 using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.AssemblyProcessor.Serializers
@@ -52,7 +53,7 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
 
             // Find DataSerializer attribute on assembly and/or types
             foreach (var dataSerializerAttribute in
-                assembly.CustomAttributes.Concat(assembly.MainModule.Types.SelectMany(x => x.CustomAttributes)).Where(
+                assembly.CustomAttributes.Concat(assembly.MainModule.GetAllTypes().SelectMany(x => x.CustomAttributes)).Where(
                     x => x.AttributeType.FullName == "SiliconStudio.Core.Serialization.DataSerializerGlobalAttribute")
                     .OrderBy(x => x.ConstructorArguments[0].Value != null ? -1 : 1)) // Order so that we first have the ones which don't require us to go through GenerateSerializer
             {

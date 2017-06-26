@@ -1,18 +1,26 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Xenko.UI;
 
 namespace SiliconStudio.Xenko.Assets.UI
 {
     public abstract class UIAssetCompilerBase<T> : AssetCompilerBase
         where T : UIAssetBase
     {
+        public override IEnumerable<Type> GetRuntimeTypes(AssetItem assetItem)
+        {
+            yield return typeof(UIElement);
+        }
+
         protected sealed override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (T)assetItem.Asset;

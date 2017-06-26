@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Threading.Tasks;
 
@@ -87,15 +87,15 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public void Draw1()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.5f, 0.75f)));
+            AddPointerEvent(PointerEventType.Pressed, new Vector2(0.5f, 0.75f));
+            Input.Update(new GameTime());
             UI.Update(new GameTime());
         }
 
         public void Draw2()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.5f, 0.75f)));
+            AddPointerEvent(PointerEventType.Released, new Vector2(0.5f, 0.75f));
+            Input.Update(new GameTime());
             UI.Update(new GameTime());
 
             element1.LocalMatrix = Matrix.Translation(0, 0, -100);
@@ -103,8 +103,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public void Draw3()
         {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.5f, 0.75f)));
+            AddPointerEvent(PointerEventType.Pressed, new Vector2(0.5f, 0.75f));
+            Input.Update(new GameTime());
             UI.Update(new GameTime());
         }
         

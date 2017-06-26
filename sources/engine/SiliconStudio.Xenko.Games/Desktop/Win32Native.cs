@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
 // 
@@ -20,10 +20,12 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 
 using System;
 using System.Runtime.InteropServices;
+using System.Windows;
 
 namespace SiliconStudio.Xenko.Games
 {
@@ -48,6 +50,24 @@ namespace SiliconStudio.Xenko.Games
         {
             public int X;
             public int Y;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct RECT
+        {
+            public int Left, Top, Right, Bottom;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct PAINTSTRUCT
+        {
+            public IntPtr Hdc;
+            public bool Erase;
+            public RECT PaintRectangle;
+            public bool Restore;
+            public bool IncUpdate;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+            public byte[] Reserved;
         }
 
         public enum WindowLongType : int
@@ -124,13 +144,13 @@ namespace SiliconStudio.Xenko.Games
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern sbyte GetMessage(out NativeMessage lpMsg, IntPtr hWnd, uint wMsgFilterMin,
-          uint wMsgFilterMax);
+            uint wMsgFilterMax);
 
         [DllImport("user32.dll", EntryPoint = "PeekMessage")]
-        public static extern int PeekMessage( out NativeMessage lpMsg, IntPtr hWnd, int wMsgFilterMin, int wMsgFilterMax, int wRemoveMsg);
+        public static extern int PeekMessage(out NativeMessage lpMsg, IntPtr hWnd, int wMsgFilterMin, int wMsgFilterMax, int wRemoveMsg);
 
         [DllImport("user32.dll", EntryPoint = "GetMessage")]
-        public static extern int GetMessage( out NativeMessage lpMsg, IntPtr hWnd, int wMsgFilterMin, int wMsgFilterMax);
+        public static extern int GetMessage(out NativeMessage lpMsg, IntPtr hWnd, int wMsgFilterMin, int wMsgFilterMax);
 
         [DllImport("user32.dll", EntryPoint = "TranslateMessage", CharSet = CharSet.Unicode)]
         public static extern int TranslateMessage(ref NativeMessage lpMsg);
@@ -138,27 +158,53 @@ namespace SiliconStudio.Xenko.Games
         [DllImport("user32.dll", EntryPoint = "DispatchMessage", CharSet = CharSet.Unicode)]
         public static extern int DispatchMessage(ref NativeMessage lpMsg);
 
+        [DllImport("user32.dll", EntryPoint = "BeginPaint")]
+        public static extern IntPtr BeginPaint(IntPtr hWnd, ref PAINTSTRUCT paintStruct);
+
+        [DllImport("user32.dll", EntryPoint = "EndPaint")]
+        public static extern bool EndPaint(IntPtr hWnd, ref PAINTSTRUCT paintStruct);
+
+        [DllImport("imm32.dll", EntryPoint = "ImmGetContext")]
+        public static extern IntPtr ImmGetContext(IntPtr hWnd);
+
+        [DllImport("imm32.dll", EntryPoint = "ImmReleaseContext")]
+        public static extern IntPtr ImmReleaseContext(IntPtr hWnd, IntPtr context);
+
+        [DllImport("imm32.dll", EntryPoint = "ImmGetCompositionString", CharSet = CharSet.Unicode)]
+        public static extern int ImmGetCompositionString(IntPtr himc, int dwIndex, IntPtr buf, int bufLen);
+
+        public const int GCS_COMPSTR = 0x0008;
+
         public const int WM_SIZE = 0x0005;
-
         public const int WM_ACTIVATEAPP = 0x001C;
-
         public const int WM_POWERBROADCAST = 0x0218;
-
         public const int WM_MENUCHAR = 0x0120;
-
         public const int WM_SYSCOMMAND = 0x0112;
-
         public const int WM_KEYDOWN = 0x100;
-
         public const int WM_KEYUP = 0x101;
-
         public const int WM_CHAR = 0x102;
-
         public const int WM_SYSKEYDOWN = 0x104;
-
         public const int WM_SYSKEYUP = 0x105;
+        public const int WM_DEVICECHANGE = 0x0219;
+        public const int WM_INPUTLANGCHANGE = 0x0051;
+        public const int WM_IME_CHAR = 0x0286;
+        public const int WM_IME_COMPOSITION = 0x010F;
+        public const int WM_IME_COMPOSITIONFULL = 0x0284;
+        public const int WM_IME_CONTROL = 0x0283;
+        public const int WM_IME_ENDCOMPOSITION = 0x010E;
+        public const int WM_IME_KEYDOWN = 0x0290;
+        public const int WM_IME_KEYLAST = 0x010F;
+        public const int WM_IME_KEYUP = 0x0291;
+        public const int WM_IME_NOTIFY = 0x0282;
+        public const int WM_IME_REQUEST = 0x0288;
+        public const int WM_IME_SELECT = 0x0285;
+        public const int WM_IME_SETCONTEXT = 0x0281;
+        public const int WM_IME_STARTCOMPOSITION = 0x010D;
+        public const int WM_PAINT = 0x000F;
+        public const int WM_NCPAINT = 0x0085;
 
         public const int PM_REMOVE = 0x0001;
     }
 }
+
 #endif

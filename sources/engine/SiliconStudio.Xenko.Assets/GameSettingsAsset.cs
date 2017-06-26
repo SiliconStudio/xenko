@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -16,6 +16,8 @@ using SiliconStudio.Xenko.Data;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Rendering.Compositing;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets
 {
@@ -23,10 +25,11 @@ namespace SiliconStudio.Xenko.Assets
     /// Settings for a game with the default scene, resolution, graphics profile...
     /// </summary>
     [DataContract("GameSettingsAsset")]
-    [AssetDescription(FileExtensions, AlwaysMarkAsRoot = true, AllowArchetype = false)]
+    [AssetDescription(FileExtension, AlwaysMarkAsRoot = true, AllowArchetype = false)]
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
     [AssetContentType(typeof(GameSettings))]
     [Display(10000, "Game Settings")]
+    [CategoryOrder(1550, "Splash screen")]
     [NonIdentifiableCollectionItems]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.6.1-alpha01")]
@@ -45,21 +48,33 @@ namespace SiliconStudio.Xenko.Assets
         /// </summary>
         public const string FileExtension = ".xkgamesettings";
 
-        public const string FileExtensions = FileExtension + ";.pdxgamesettings";
-
         public const string GameSettingsLocation = GameSettings.AssetUrl;
 
         public const string DefaultSceneLocation = "MainScene";
 
         /// <summary>
-        /// Gets or sets the default scene.
+        /// Gets or sets the default scene
         /// </summary>
-        /// <userdoc>The default scene that will be loaded at game startup.</userdoc>
+        /// <userdoc>The default scene loaded when the game starts</userdoc>
         [DataMember(1000)]
         public Scene DefaultScene { get; set; }
 
         [DataMember(1500)]
         public GraphicsCompositor GraphicsCompositor { get; set; }
+
+        /// <userdoc>
+        /// The image (eg company logo) displayed as the splash screen 
+        /// </userdoc>
+        [Display("Texture", "Splash screen")]
+        [DataMember(1600)]
+        public Texture SplashScreenTexture { get; set; }
+
+        /// <userdoc>
+        /// The color the splash screen fades in on top of
+        /// </userdoc>
+        [Display("Color", "Splash screen")]
+        [DataMember(1700)]
+        public Color SplashScreenColor { get; set; } = Color.Black;
 
         [DataMember(2000)]
         [MemberCollection(ReadOnly = true, NotNullItems = true)]
@@ -72,6 +87,38 @@ namespace SiliconStudio.Xenko.Assets
         [DataMember(4000)]
         [Category]
         public List<string> PlatformFilters { get; } = new List<string>();
+
+        /// <summary>
+        /// Tries to get the requested <see cref="Configuration"/>, returns null if it doesn't exist
+        /// </summary>
+        /// <typeparam name="T">The <see cref="Configuration"/> to get</typeparam>
+        /// <param name="profile">If not null, will filter the results by profile first</param>
+        /// <returns></returns>
+        public T TryGet<T>(string profile = null) where T : Configuration
+        {
+            if (profile != null)
+            {
+                foreach (var configurationOverride in Overrides)
+                {
+                    if (configurationOverride.SpecificFilter == -1) continue;
+                    var filter = PlatformFilters[configurationOverride.SpecificFilter];
+                    if (filter == profile)
+                    {
+                        var x = configurationOverride.Configuration;
+                        if (x?.GetType() == typeof(T))
+                            return (T)x;
+                    }
+                }
+            }
+
+            foreach (var x in Defaults)
+            {
+                if (x?.GetType() == typeof(T))
+                    return (T)x;
+            }
+
+            return null;
+        }
 
         public T GetOrCreate<T>(string profile = null) where T : Configuration, new()
         {

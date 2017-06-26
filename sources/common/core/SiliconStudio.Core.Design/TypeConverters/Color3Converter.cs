@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
@@ -24,6 +26,12 @@ namespace SiliconStudio.Core.TypeConverters
                 new FieldPropertyDescriptor(type.GetField(nameof(Color3.G))),
                 new FieldPropertyDescriptor(type.GetField(nameof(Color3.B)))
             });
+        }
+
+        /// <inheritdoc/>
+        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+        {
+            return destinationType == typeof(Color) || destinationType == typeof(Color4) || base.CanConvertTo(context, destinationType);
         }
 
         /// <inheritdoc/>
@@ -57,6 +65,12 @@ namespace SiliconStudio.Core.TypeConverters
             }
 
             return base.ConvertTo(context, culture, value, destinationType);
+        }
+
+        /// <inheritdoc/>
+        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        {
+            return sourceType == typeof(Color) || sourceType == typeof(Color4) || base.CanConvertFrom(context, sourceType);
         }
 
         /// <inheritdoc/>

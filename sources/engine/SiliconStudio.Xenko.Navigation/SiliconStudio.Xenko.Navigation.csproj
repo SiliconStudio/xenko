@@ -78,6 +78,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\common\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="NavigationMeshGroup.cs" />
     <Compile Include="NavigationSettings.cs" />
     <Compile Include="NavigationSettingsExtensions.cs" />
@@ -104,9 +107,6 @@
     <Compile Include="Navigation.cs" />
     <Compile Include="Processors\RecastNavigationMesh.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="StaticColliderData.cs" />
     <Compile Include="Processors\StaticColliderProcessor.cs" />
   </ItemGroup>
@@ -119,12 +119,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Navigation.cpp" />
-    <Content Include="Navigation.hpp" />
-    <Content Include="NavigationBuilder.cpp" />
-    <Content Include="NavigationBuilder.hpp" />
-    <Content Include="NavigationMesh.cpp" />
-    <Content Include="NavigationMesh.hpp" />
+    <None Include="Navigation.cpp" />
+    <None Include="Navigation.hpp" />
+    <None Include="NavigationBuilder.cpp" />
+    <None Include="NavigationBuilder.hpp" />
+    <None Include="NavigationMesh.cpp" />
+    <None Include="NavigationMesh.hpp" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="..\..\native\Xenko.Native.targets" />

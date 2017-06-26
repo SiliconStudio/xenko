@@ -1,15 +1,12 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
-
+using System.Linq;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
-using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
 
 namespace SiliconStudio.Xenko.UI
@@ -19,7 +16,6 @@ namespace SiliconStudio.Xenko.UI
     /// </summary>
     public class UISystem : GameSystemBase
     {
-
         internal UIBatch Batch { get; private set; }
 
         internal DepthStencilStateDescription KeepStencilValueState { get; private set; }
@@ -35,7 +31,6 @@ namespace SiliconStudio.Xenko.UI
         public UISystem(IServiceRegistry registry)
             : base(registry)
         {
-            Services.AddService(typeof(UISystem), this);
         }
 
         public override void Initialize()
@@ -77,23 +72,23 @@ namespace SiliconStudio.Xenko.UI
 
             // create depth stencil states
             var depthStencilDescription = new DepthStencilStateDescription(true, true)
+            {
+                StencilEnable = true,
+                FrontFace = new DepthStencilStencilOpDescription
                 {
-                    StencilEnable = true,
-                    FrontFace = new DepthStencilStencilOpDescription
-                    {
-                        StencilDepthBufferFail = StencilOperation.Keep,
-                        StencilFail = StencilOperation.Keep,
-                        StencilPass = StencilOperation.Keep,
-                        StencilFunction = CompareFunction.Equal
-                    },
-                    BackFace = new DepthStencilStencilOpDescription
-                    {
-                        StencilDepthBufferFail = StencilOperation.Keep,
-                        StencilFail = StencilOperation.Keep,
-                        StencilPass = StencilOperation.Keep,
-                        StencilFunction = CompareFunction.Equal
-                    },
-                };
+                    StencilDepthBufferFail = StencilOperation.Keep,
+                    StencilFail = StencilOperation.Keep,
+                    StencilPass = StencilOperation.Keep,
+                    StencilFunction = CompareFunction.Equal
+                },
+                BackFace = new DepthStencilStencilOpDescription
+                {
+                    StencilDepthBufferFail = StencilOperation.Keep,
+                    StencilFail = StencilOperation.Keep,
+                    StencilPass = StencilOperation.Keep,
+                    StencilFunction = CompareFunction.Equal
+                },
+            };
             KeepStencilValueState = depthStencilDescription;
 
             depthStencilDescription.FrontFace.StencilPass = StencilOperation.Increment;
@@ -186,24 +181,42 @@ namespace SiliconStudio.Xenko.UI
             if (input == null)
                 return;
 
+            if (UIElement.FocusedElement == null || !UIElement.FocusedElement.IsHierarchyEnabled) return;
+
+            // Raise text input events
+            var textEvents = input.Events.OfType<TextInputEvent>();
+            bool enteredText = false;
+            foreach (var textEvent in textEvents)
+            {
+                enteredText = true;
+                UIElement.FocusedElement?.RaiseTextInputEvent(new TextEventArgs
+                {
+                    Text = textEvent.Text,
+                    Type = textEvent.Type,
+                    CompositionStart = textEvent.CompositionStart,
+                    CompositionLength = textEvent.CompositionLength
+                });
+            }
+
             foreach (var keyEvent in input.KeyEvents)
             {
-                if (UIElement.FocusedElement == null || !UIElement.FocusedElement.IsHierarchyEnabled) return;
                 var key = keyEvent.Key;
-                if (keyEvent.Type == KeyEventType.Pressed)
+                var evt = new KeyEventArgs { Key = key, Input = input };
+                if (enteredText)
+                    continue; // Skip key events if text was entered
+                if (keyEvent.IsDown)
                 {
-                    UIElement.FocusedElement.RaiseKeyPressedEvent(new KeyEventArgs { Key = key, Input = input });
+                    UIElement.FocusedElement?.RaiseKeyPressedEvent(evt);
                 }
                 else
                 {
-                    UIElement.FocusedElement.RaiseKeyReleasedEvent(new KeyEventArgs { Key = key, Input = input });
+                    UIElement.FocusedElement?.RaiseKeyReleasedEvent(evt);
                 }
             }
 
-            foreach (var key in input.KeyDown)
+            foreach (var key in input.DownKeys)
             {
-                if (UIElement.FocusedElement == null || !UIElement.FocusedElement.IsHierarchyEnabled) return;
-                UIElement.FocusedElement.RaiseKeyDownEvent(new KeyEventArgs { Key = key, Input = input });
+                UIElement.FocusedElement?.RaiseKeyDownEvent(new KeyEventArgs { Key = key, Input = input });
             }
         }
     }

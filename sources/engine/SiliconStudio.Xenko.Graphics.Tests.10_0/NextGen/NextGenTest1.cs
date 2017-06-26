@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +12,7 @@ using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Regression;
 using SiliconStudio.Xenko.Graphics.Tests;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Colors;
@@ -35,13 +38,13 @@ namespace SiliconStudio.Xenko.Engine.NextGen
             set
             {
                 Camera.Add(value);
-                SceneSystem.GraphicsCompositor.Cameras[0] = value;
+                value.Slot = SceneSystem.GraphicsCompositor.Cameras[0].ToSlotId();
             }
         }
 
         public NextGenTest1()
         {
-            GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
+            //GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
             //Profiler.EnableAll();
         }
@@ -49,7 +52,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
         protected override Task LoadContent()
         {
             //Profiler.Enable(GameProfilingKeys.GameDrawFPS);
-            ProfilerSystem.EnableProfiling(false, GameProfilingKeys.GameDrawFPS);
+            ProfilerSystem.EnableProfiling(false, GameProfilingKeys.GameDrawFPS, CompositingProfilingKeys.Opaque);
 
             model = Content.Load<Model>("Model");
             material1 = Content.Load<Material>("Material1");
@@ -156,7 +159,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
                     (float)rand.NextDouble() * 20.0f - 10.0f,
                     (float)rand.NextDouble() * 20.0f - 10.0f
                     );
-                //Scene.Entities.Add(pointLight1);
+                Scene.Entities.Add(pointLight1);
             }
 
 
@@ -165,7 +168,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
             // Load default graphics compositor
             SceneSystem.GraphicsCompositor = Content.Load<GraphicsCompositor>("GraphicsCompositor");
 
-            camera = new TestCamera();
+            camera = new TestCamera(Services.GetServiceAs<SceneSystem>().GraphicsCompositor);
             CameraComponent = camera.Camera;
             Script.Add(camera);
         }

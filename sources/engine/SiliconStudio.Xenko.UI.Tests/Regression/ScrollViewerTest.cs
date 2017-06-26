@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Threading.Tasks;
 
@@ -143,10 +143,10 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         public void Draw1()
         {
             // show the scroll bars
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.5f, 0.5f)));
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Move, new Vector2(0.3f, 0.3f)));
+            AddPointerEvent(PointerEventType.Pressed, new Vector2(0.5f, 0.5f));
+            AddPointerEvent(PointerEventType.Moved, new Vector2(0.3f, 0.3f));
 
+            Input.Update(new GameTime());
             UI.Update(new GameTime(new TimeSpan(), new TimeSpan(0, 0, 0, 0, 500)));
         }
 

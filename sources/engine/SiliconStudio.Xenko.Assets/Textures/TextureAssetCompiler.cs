@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [AssetCompiler(typeof(TextureAsset), typeof(AssetCompilationContext))]
     public class TextureAssetCompiler : AssetCompilerBase
     {
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
         {
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(GameSettingsAsset), BuildDependencyType.CompileAsset);
         }
@@ -54,7 +54,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
             private IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
-                // TODO dependency not working
                 yield return new ObjectUrl(UrlType.File, Parameters.SourcePathFromDisk);
             }
 

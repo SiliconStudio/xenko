@@ -14,6 +14,8 @@
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <SiliconStudioBuildTags>WindowsTools</SiliconStudioBuildTags>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\..\build\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
@@ -49,8 +51,10 @@
     <Compile Include="Collections\HybridDictionary.cs" />
     <Compile Include="Extensions\AnonymousEqualityComparer.cs" />
     <Compile Include="Extensions\DesignExtensions.cs" />
+    <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
+    <Compile Include="Extensions\ProcessExtensions.cs" />
     <Compile Include="Extensions\TaskExtensions.cs" />
     <Compile Include="Extensions\TypeDescriptorExtensions.cs" />
     <Compile Include="IAsyncDisposable.cs" />
@@ -110,6 +114,7 @@
     <Compile Include="Transactions\TransactionStack.cs" />
     <Compile Include="Transactions\TransactionStackFactory.cs" />
     <Compile Include="TypeConverters\Color3Converter.cs" />
+    <Compile Include="TypeConverters\TypeConverterHelper.cs" />
     <Compile Include="Windows\FileLock.cs" />
     <Compile Include="Windows\GlobalMutex.cs" />
     <Compile Include="Yaml\AssetIdSerializer.cs" />
@@ -196,11 +201,25 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.Setup.Configuration.Interop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\build\packages\Microsoft.VisualStudio.Setup.Configuration.Interop.1.8.24\lib\net35\Microsoft.VisualStudio.Setup.Configuration.Interop.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="System.Management" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

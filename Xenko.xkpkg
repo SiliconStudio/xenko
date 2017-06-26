@@ -3,7 +3,7 @@ Id: cc1bcc78-50b2-4da6-8902-f7a3ae42898b
 SerializedVersion: {Assets: 0.0.4}
 Meta:
     Name: Xenko
-    Version: 2.0.0.0
+    Version: 2.1.0.2
     Owners:
       - Silicon Studio
     Authors: 
@@ -40,10 +40,14 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Audio/DefaultSound.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Audio/SpatializedSound.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Audio/MusicSound.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Fonts/OfflineRasterizedSpriteFont.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Fonts/RuntimeRasterizedSpriteFont.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Fonts/SignedDistanceFieldSpriteFont.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Materials/DefaultMaterial.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Materials/DiffuseMaterial.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Materials/PBRMetalnessMaterial.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Materials/PBRSpecularMaterial.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Materials/PBRGlass.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Misc/DefaultGraphicsCompositorLevel10.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Misc/DefaultGraphicsCompositorLevel9.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Misc/DefaultRawAsset.xktpl
@@ -66,8 +70,8 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Physics/ColliderShapePlane.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Physics/ColliderShapeSphere.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Physics/ColliderShapeCone.xktpl
-        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Prefabs/DefaultPrefab.xktpl
-        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Navigation/DefaultNavigationMesh.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scenes/DefaultPrefab.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scenes/DefaultNavigationMesh.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scenes/DefaultScene.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Animation/AnimationBlend.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Animation/AnimationStart.xktpl
@@ -84,11 +88,8 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Prefabs/PrefabInstance.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Utility/GameProfiler.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Utility/SceneStreaming.xktpl
-        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/RuntimeRasterizedSpriteFont.xktpl
-        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/SignedDistanceFieldSpriteFont.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/SpriteSheetSprites.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/SpriteSheetUI.xktpl
-        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/OfflineRasterizedSpriteFont.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Textures/ColorTexture.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Textures/NormalMapTexture.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Textures/GrayscaleTexture.xktpl
@@ -119,10 +120,11 @@ TemplateFolders:
         - samples\UI\GameMenu\GameMenu.xktpl
         - samples\UI\UIParticles\UIParticles.xktpl
         - samples\UI\UIElementLink\UIElementLink.xktpl
-        - samples\Others\NativeLinking\NativeLinking.xktpl
         - samples\Templates\FirstPersonShooter\FirstPersonShooter\FirstPersonShooter.xktpl
         - samples\Templates\ThirdPersonPlatformer\ThirdPersonPlatformer\ThirdPersonPlatformer.xktpl
         - samples\Templates\TopDownRPG\TopDownRPG\TopDownRPG.xktpl
         - samples\Templates\VRSandbox\VRSandbox\VRSandbox.xktpl
 RootAssets:
     - c90f3988-0544-4cbe-993f-13af7d9c23c6:XenkoDefaultFont
+    - d26edb11-10bd-403c-b3c2-9c7fcccf25e5:XenkoDefaultSplashScreen
+    - FF02239B-3697-4EBB-9F37-FE880659E64B:XenkoDebugSpriteFont

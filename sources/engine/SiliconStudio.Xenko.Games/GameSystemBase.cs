@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
 // 
@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Games
             if (registry == null) throw new ArgumentNullException("registry");
             this.registry = registry;
             game = (GameBase)Services.GetServiceAs<IGame>();
-            contentManager = Services.GetSafeServiceAs<IContentManager>();
+            contentManager = Services.GetServiceAs<IContentManager>();
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace SiliconStudio.Xenko.Games
         }
 
         /// <summary>
-        /// Gets the content manager.
+        /// Gets the content manager. This value can be null in a mock environment.
         /// </summary>
         /// <value>The content.</value>
         protected IContentManager Content

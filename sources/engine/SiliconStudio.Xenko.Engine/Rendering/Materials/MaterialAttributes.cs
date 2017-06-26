@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.ComponentModel;
 
@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     [CategoryOrder(5, "Geometry")]
     [CategoryOrder(10, "Shading")]
     [CategoryOrder(15, "Misc")]
-    public class MaterialAttributes : MaterialFeature, IMaterialAttributes
+    public class MaterialAttributes : IMaterialAttributes
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialAttributes"/> class.
@@ -27,6 +27,14 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             CullMode = CullMode.Back;
             Overrides = new MaterialOverrides();
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="MaterialAttributes"/> is enabled.
+        /// </summary>
+        /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
+        [DataMember(-20)]
+        [DefaultValue(true)]
+        public bool Enabled { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the tessellation.
@@ -160,8 +168,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [DefaultValue(CullMode.Back)]
         public CullMode CullMode{ get; set; }
 
-        public override void VisitFeature(MaterialGeneratorContext context)
+        public void Visit(MaterialGeneratorContext context)
         {
+            if (!Enabled)
+                return;
+
             // Push overrides of this attributes
             context.PushOverrides(Overrides);
 
@@ -170,12 +181,20 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             // We may be able to describe a dependency system here, but for now, assume 
             // that it won't change much so it is hardcoded
 
-            // Diffuse - these 2 features are always used as a pair
-            if (Diffuse != null && DiffuseModel != null)
+            // If Specular has energy conservative, copy this to the diffuse lambertian model
+            // TODO: Should we apply it to any Diffuse Model?
+            var isEnergyConservative = (Specular as MaterialSpecularMapFeature)?.IsEnergyConservative ?? false;
+
+            var lambert = DiffuseModel as IEnergyConservativeDiffuseModelFeature;
+            if (lambert != null)
             {
-                context.Visit(Diffuse);
-                context.Visit(DiffuseModel);
+                lambert.IsEnergyConservative = isEnergyConservative;
             }
+
+            // Diffuse - these 2 features are always used as a pair
+            context.Visit(Diffuse);
+            if (Diffuse != null)
+                context.Visit(DiffuseModel);
 
             // Surface Geometry
             context.Visit(Tessellation);
@@ -183,22 +202,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             context.Visit(Surface);
             context.Visit(MicroSurface);
 
-            // If Specular has energy conservative, copy this to the diffuse lambertian model
-            // TODO: Should we apply it to any Diffuse Model?
-            bool isEnergyConservative = (Specular is MaterialSpecularMapFeature && ((MaterialSpecularMapFeature)Specular).IsEnergyConservative);
-
-            var lambert = DiffuseModel as MaterialDiffuseLambertModelFeature;
-            if (lambert != null)
-            {
-                lambert.IsEnergyConservative = isEnergyConservative;
-            }
-
             // Specular - these 2 features are always used as a pair
-            if (Specular != null && SpecularModel != null)
-            {
-                context.Visit(Specular);
+            context.Visit(Specular);
+            if (Specular != null)
                 context.Visit(SpecularModel);
-            }
 
             // Misc
             context.Visit(Occlusion);
@@ -209,11 +216,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             context.PopOverrides();
 
             // Only set the cullmode to something 
-            if (CullMode != CullMode.Back)
+            if (context.Step == MaterialGeneratorStep.GenerateShader && CullMode != CullMode.Back)
             {
-                if (context.Material.CullMode == null)
+                if (context.MaterialPass.CullMode == null)
                 {
-                    context.Material.CullMode = CullMode;
+                    context.MaterialPass.CullMode = CullMode;
                 }
             }
         }

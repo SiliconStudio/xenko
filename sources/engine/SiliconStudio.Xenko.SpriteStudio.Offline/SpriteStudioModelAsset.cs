@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
@@ -11,7 +13,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
     [DataContract("SpriteStudioSheetAsset")] // Name of the Asset serialized in YAML
     [AssetContentType(typeof(SpriteStudioSheet))]
-    [AssetDescription(".xkss4s;.pdxss4s")] // A description used to display in the asset editor
+    [AssetDescription(FileExtension)] // A description used to display in the asset editor
     [Display("Sprite Studio Sheet")]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "0.0.0")]
@@ -21,6 +23,8 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
 #endif
     public class SpriteStudioModelAsset : Asset
     {
+        public const string FileExtension = ".xkss4s";
+
         private const string CurrentVersion = "2.0.0.0";
 
         /// <summary>

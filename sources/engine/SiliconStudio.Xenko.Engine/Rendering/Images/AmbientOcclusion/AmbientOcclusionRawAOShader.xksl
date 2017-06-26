@@ -1,4 +1,7 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -47,17 +50,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
             //*****************************
             //  Depth
             float2 samplePos = streams.TexCoord + offset * ssRadius;
-
-            int2 samplePosInt = screenPosition + int2(ScreenInfo.xy * offset * ssRadius);
-            if (samplePosInt.x < 0 || samplePosInt.y < 0 || samplePosInt.x >= ScreenInfo.x || samplePosInt.y >= ScreenInfo.y)
-                return 0;
-
+            int2 samplePosInt = saturate(samplePos) * ScreenInfo.xy;
+            
             float depth = Texture0.Load(int3(samplePosInt, 0));
-
             float linearDepth = reconstructCSZ(depth);
-
-//            if (linearDepth >= viewPosition.z)
-//                return 0;
 
             //*****************************
             // View Position
@@ -121,6 +117,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
             float temp = ParamRadiusSquared * ParamRadius;
             sum /= temp * temp;
 	        float A = max(0.0, 1.0 - sum * 5 * ParamIntensity / SamplesCount);
+            
+            float nearPlaneFade = saturate(linearDepth * 2.0 - 0.5);
+            A = lerp(1, A, nearPlaneFade);
 
             //*****************************
             // Bilateral box-filter over a quad for free, respecting depth edges

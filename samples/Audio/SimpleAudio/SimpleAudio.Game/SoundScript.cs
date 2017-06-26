@@ -1,4 +1,6 @@
-﻿using System.Linq;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -52,7 +54,7 @@ namespace SimpleAudio
 
             while (Game.IsRunning)
             {
-                if (Input.PointerEvents.Any(item => item.State == PointerState.Down)) // New click
+                if (Input.PointerEvents.Any(item => item.EventType == PointerEventType.Pressed)) // New click
                 {
                     if (imgLeft != null && imgRight != null)
                     {

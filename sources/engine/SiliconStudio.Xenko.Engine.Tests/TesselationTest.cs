@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,6 +14,7 @@ using SiliconStudio.Xenko.Rendering.ProceduralModels;
 using SiliconStudio.Xenko.Rendering.Tessellation;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Regression;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Rendering.Compositing;
 
@@ -89,7 +90,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
             entities.Add(megalodon);
             entities.Add(knight);
 
-            camera = new TestCamera();
+            camera = new TestCamera(Services.GetServiceAs<SceneSystem>().GraphicsCompositor);
             CameraComponent = camera.Camera;
             Script.Add(camera);
 
@@ -126,7 +127,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
                 return;
 
             spriteBatch.Begin(GraphicsContext);
-            spriteBatch.DrawString(font, "Desired triangle size: {0}".ToFormat(currentMaterial.Parameters.Get(TessellationKeys.DesiredTriangleSize)), new Vector2(0), Color.Black);
+            spriteBatch.DrawString(font, "Desired triangle size: {0}".ToFormat(currentMaterial.Passes[0].Parameters.Get(TessellationKeys.DesiredTriangleSize)), new Vector2(0), Color.Black);
             spriteBatch.DrawString(font, "FPS: {0}".ToFormat(DrawTime.FramePerSecond), new Vector2(0, 20), Color.Black);
             spriteBatch.End();
         }
@@ -159,8 +160,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
             if(currentMaterial == null)
                 return;
 
-            var oldValue = currentMaterial.Parameters.Get(TessellationKeys.DesiredTriangleSize);
-            currentMaterial.Parameters.Set(TessellationKeys.DesiredTriangleSize, oldValue + f);
+            var oldValue = currentMaterial.Passes[0].Parameters.Get(TessellationKeys.DesiredTriangleSize);
+            currentMaterial.Passes[0].Parameters.Set(TessellationKeys.DesiredTriangleSize, oldValue + f);
         }
 
         private void ChangeModel(int offset)
@@ -201,7 +202,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
         [Test]
         public void RunTestGame()
         {
+            IgnoreGraphicPlatform(GraphicsPlatform.OpenGL);
             IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
+            IgnoreGraphicPlatform(GraphicsPlatform.Vulkan);
 
             RunGameTest(new TesselationTest());
         }

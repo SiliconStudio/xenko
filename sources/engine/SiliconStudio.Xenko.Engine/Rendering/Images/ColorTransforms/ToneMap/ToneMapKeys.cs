@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 namespace SiliconStudio.Xenko.Rendering.Images
 {
     internal static class ToneMapKeys
@@ -7,6 +7,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         public static readonly PermutationParameterKey<bool> AutoExposure = ParameterKeys.NewPermutation(false);
 
         public static readonly PermutationParameterKey<bool> AutoKey = ParameterKeys.NewPermutation(false);
+
+        public static readonly PermutationParameterKey<bool> UseLocalLuminance = ParameterKeys.NewPermutation(false);
 
         public static readonly PermutationParameterKey<ToneMapOperator> Operator = ParameterKeys.NewPermutation<ToneMapOperator>();
     }

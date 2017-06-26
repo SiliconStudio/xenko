@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Storage;
@@ -28,12 +28,6 @@ namespace SiliconStudio.BuildEngine
         public override IEnumerable<IDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups()
         {
             return Step.GetOutputObjectsGroups();
-        }
-
-        protected override async Task<ResultStatus> ScheduleAndExecuteCommandInternal(Command command)
-        {
-            var resultStatus = await Step.SpawnCommand(command, executeContext);
-            return resultStatus;
         }
 
         internal protected override ObjectId ComputeInputHash(UrlType type, string filePath)

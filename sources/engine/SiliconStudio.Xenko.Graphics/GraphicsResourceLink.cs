@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 
@@ -10,29 +10,20 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     public sealed class GraphicsResourceLink
     {
-        private readonly GraphicsResource resource;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphicsResourceLink"/> class.
         /// </summary>
-        /// <param name="graphicsResource">The graphics resource.</param>
-        /// <exception cref="System.ArgumentNullException">graphicsResource</exception>
-        internal GraphicsResourceLink(GraphicsResource graphicsResource)
+        /// <param name="resource">The graphics resource.</param>
+        /// <exception cref="System.ArgumentNullException">resource</exception>
+        internal GraphicsResourceLink(GraphicsResourceBase resource)
         {
-            if (graphicsResource == null) throw new ArgumentNullException("graphicsResource");
-            this.resource = graphicsResource;
+            Resource = resource ?? throw new ArgumentNullException(nameof(resource));
         }
 
         /// <summary>
         /// The graphics resource.
         /// </summary>
-        public GraphicsResource Resource
-        {
-            get
-            {
-                return resource;
-            }
-        }
+        public GraphicsResourceBase Resource { get; }
 
         /// <summary>
         /// Gets the last time this resource was accessed.

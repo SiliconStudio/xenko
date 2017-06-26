@@ -4,6 +4,8 @@ SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 DefaultScene: 7207a5b4-cbf4-4edc-a7fb-0dfa83e2414e:Scene
 GraphicsCompositor: de5e5f4f-73e4-4411-8fa8-11a0b9aa80c2:GraphicsCompositor
+SplashScreenTexture: d26edb11-10bd-403c-b3c2-9c7fcccf25e5:XenkoDefaultSplashScreen
+SplashScreenColor: {R: 0, G: 0, B: 0, A: 255}
 Defaults:
     - !SiliconStudio.Xenko.Graphics.RenderingSettings,SiliconStudio.Xenko.Graphics
         DefaultBackBufferWidth: 640

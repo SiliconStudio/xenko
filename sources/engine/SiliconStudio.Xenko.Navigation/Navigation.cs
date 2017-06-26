@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Runtime.InteropServices;
@@ -34,6 +34,17 @@ namespace SiliconStudio.Xenko.Navigation
             public fixed float Bmin [3];
             public fixed float Bmax [3];
             public float BvQuantFactor;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        public unsafe struct Poly
+        {
+            public uint FirstLink;
+            public fixed ushort Vertices[6];
+            public fixed ushort Neighbours[6];
+            public ushort Flags;
+            public byte VertexCount;
+            public byte AreaAndType;
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
@@ -182,5 +193,10 @@ namespace SiliconStudio.Xenko.Navigation
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnNavigationRaycastQuery", CallingConvention = CallingConvention.Cdecl)]
         public static extern void DoRaycastQuery(IntPtr query, RaycastQuery pathFindQuery, IntPtr resultStructure);
+        
+        public static int DtAlign4(int size)
+        {
+            return (size + 3) & ~3;
+        }
     }
 }

@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System;
 using System.Collections.Generic;
@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         private ConcurrentCollector<RenderMesh> renderMeshesToGenerateAEN = new ConcurrentCollector<RenderMesh>();
 
         // Material instantiated
-        private readonly Dictionary<Material, MaterialInfo> allMaterialInfos = new Dictionary<Material, MaterialInfo>();
+        private readonly Dictionary<MaterialPass, MaterialInfo> allMaterialInfos = new Dictionary<MaterialPass, MaterialInfo>();
 
         public class MaterialInfoBase
         {
@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// </summary>
         internal class MaterialInfo : MaterialInfoBase
         {
-            public Material Material;
+            public MaterialPass MaterialPass;
 
             // Permutation parameters
             public int PermutationCounter; // Dirty counter against material.Parameters.PermutationCounter
@@ -76,9 +76,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             public bool HasNormalMap;
 
-            public MaterialInfo(Material material)
+            public MaterialInfo(MaterialPass materialPass)
             {
-                Material = material;
+                MaterialPass = materialPass;
             }
         }
 
@@ -108,14 +108,14 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 var renderMesh = (RenderMesh)renderObject;
                 bool resetPipelineState = false;
 
-                var material = renderMesh.Material;
+                var material = renderMesh.MaterialPass;
                 var materialInfo = renderMesh.MaterialInfo;
 
                 // Material use first 16 bits
-                var materialHashCode = material != null ? (uint)material.GetHashCode() : 0;
+                var materialHashCode = material != null ? ((uint)material.GetHashCode() & 0x0FFF) | ((uint)material.PassIndex << 12) : 0;
                 renderObject.StateSortKey = (renderObject.StateSortKey & 0x0000FFFF) | (materialHashCode << 16);
 
-                var tessellationState = tessellationStates[staticObjectNode];
+                ref var tessellationState = ref tessellationStates[staticObjectNode];
 
                 // Update draw data if tessellation is active
                 if (material.TessellationMethod != XenkoTessellationMethod.None)
@@ -147,9 +147,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                             Utilities.Dispose(ref tessellationState.GeneratedIndicesAEN);
                         }
                         tessellationState.MeshDraw = tessellationMeshDraw;
-
-                        // Save back new state
-                        tessellationStates[staticObjectNode] = tessellationState;
 
                         // Reset pipeline states
                         resetPipelineState = true;
@@ -188,7 +185,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                     if (!renderEffect.IsUsedDuringThisFrame(RenderSystem))
                         continue;
 
-                    if (materialInfo == null || materialInfo.Material != material)
+                    if (materialInfo == null || materialInfo.MaterialPass != material)
                     {
                         // First time this material is initialized, let's create associated info
                         lock (allMaterialInfos)
@@ -277,7 +274,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 // Collect materials and create associated MaterialInfo (includes reflection) first time
                 // TODO: We assume same material will generate same ResourceGroup (i.e. same resources declared in same order)
                 // Need to offer some protection if this invariant is violated (or support it if it can actually happen in real scenario)
-                var material = renderMesh.Material;
+                var material = renderMesh.MaterialPass;
                 var materialInfo = renderMesh.MaterialInfo;
                 var materialParameters = material.Parameters;
 

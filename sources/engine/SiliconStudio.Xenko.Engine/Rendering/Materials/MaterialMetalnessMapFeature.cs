@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -39,10 +39,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <userdoc>The map specifying the metalness of the material.</userdoc>
         [Display("Metalness Map")]
         [NotNull]
-        [DataMemberRange(0.0, 1.0, 0.01, 0.1)]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
         public IComputeScalar MetalnessMap { get; set; }
 
-        public override void VisitFeature(MaterialGeneratorContext context)
+        public override void GenerateShader(MaterialGeneratorContext context)
         {
             if (MetalnessMap != null)
             {

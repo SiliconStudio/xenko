@@ -1,4 +1,6 @@
-﻿using System.Linq;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System.Linq;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Input;
 
@@ -14,7 +16,7 @@ namespace GameMenu
 
         protected override void UpdateScene()
         {
-            if (Input.PointerEvents.Any(e => e.State == PointerState.Down))
+            if (Input.PointerEvents.Any(e => e.EventType == PointerEventType.Pressed))
             {
                 // Next scene
                 SceneSystem.SceneInstance.RootScene = Content.Load<Scene>("MainScene");

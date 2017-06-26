@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
@@ -23,6 +25,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             Type = (container.Descriptor as CollectionDescriptor)?.ElementType ?? (container.Descriptor as DictionaryDescriptor)?.ValueType;
             Index = index;
             Name = index.ToString();
+            Order = index.IsInt ? (int?)index.Int : null; // So items are sorted by index instead of string
             CombineKey = Name;
             DisplayName = Index.IsInt ? "Item " + Index : Index.ToString();
 

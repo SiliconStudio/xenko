@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Shaders;
@@ -13,15 +13,15 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     [Display("Point Normal Tessellation")]
     public class MaterialTessellationPNFeature : MaterialTessellationBaseFeature
     {
-        public override void VisitFeature(MaterialGeneratorContext context)
+        public override void GenerateShader(MaterialGeneratorContext context)
         {
-            base.VisitFeature(context);
+            base.GenerateShader(context);
 
             if (HasAlreadyTessellationFeature) 
                 return;
 
             // set the tessellation method used enumeration
-            context.Material.TessellationMethod |= XenkoTessellationMethod.PointNormal;
+            context.MaterialPass.TessellationMethod |= XenkoTessellationMethod.PointNormal;
 
             // create and affect the shader source
             var tessellationShader = new ShaderMixinSource();

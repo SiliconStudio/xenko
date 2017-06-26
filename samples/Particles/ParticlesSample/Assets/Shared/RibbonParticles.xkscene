@@ -1,21 +1,21 @@
 !SceneAsset
 Id: 6736d805-6194-40bf-8056-7c52758e2e4b
-SerializedVersion: {Xenko: 2.0.0.0}
+SerializedVersion: {Xenko: 2.1.0.1}
 Tags: []
 ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
-    RootPartIds:
-        - b5279763-d0ee-4fc2-bf4c-710ff412bd93
-        - 3aedbca9-d0a2-4833-a577-22f967ba13ee
-        - d13ce4bf-5e8e-4bdf-8415-42cfc8405415
-        - 1b92f0e7-d75d-4623-826d-c7c1c14489f8
-        - c5d6e044-6e0b-4599-b8e3-e4a7a8f6ba67
-        - 666eeaba-21ff-4595-9005-c91027a334c2
-        - 6b65e133-4d5e-49ed-9af9-8949cfe883ce
-        - ce5d6c0a-1829-4d37-8ec1-50ea2bdf43d6
-        - bbee7259-cb5a-4492-a8fa-18e421148857
-        - 0d9a929a-f6e5-4ca7-b603-7465abe2e8d1
+    RootParts:
+        - ref!! b5279763-d0ee-4fc2-bf4c-710ff412bd93
+        - ref!! 3aedbca9-d0a2-4833-a577-22f967ba13ee
+        - ref!! d13ce4bf-5e8e-4bdf-8415-42cfc8405415
+        - ref!! 1b92f0e7-d75d-4623-826d-c7c1c14489f8
+        - ref!! c5d6e044-6e0b-4599-b8e3-e4a7a8f6ba67
+        - ref!! 666eeaba-21ff-4595-9005-c91027a334c2
+        - ref!! 6b65e133-4d5e-49ed-9af9-8949cfe883ce
+        - ref!! ce5d6c0a-1829-4d37-8ec1-50ea2bdf43d6
+        - ref!! bbee7259-cb5a-4492-a8fa-18e421148857
+        - ref!! 0d9a929a-f6e5-4ca7-b603-7465abe2e8d1
     Parts:
         -   Entity:
                 Id: 03dd5648-2a32-4ff3-9267-1b1bcf8406b5
@@ -1063,7 +1063,7 @@ Hierarchy:
                         Projection: Perspective
                         FarClipPlane: 100.0
                         AspectRatio: 0.5634
-                        Slot: {Index: 0}
+                        Slot: 3217b71f-b48d-4321-bab1-7cb4da999c19
         -   Entity:
                 Id: bb339fa8-eea4-497d-a251-030c192d0ac3
                 Name: SwordModel

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 // Copyright (c) 2010-2012 SharpDX - Alexandre Mutel
 // 
@@ -58,8 +58,8 @@ namespace SiliconStudio.Xenko.Graphics
             nativeDevice.CheckThreadingSupport(out HasMultiThreadingConcurrentResources, out this.HasDriverCommandLists);
 
             HasDepthAsSRV = (CurrentProfile >= GraphicsProfile.Level_10_0);
-            HasDepthAsReadOnlyRT = (CurrentProfile >= GraphicsProfile.Level_11_0);
-            HasMultisampleDepthAsSRV = (CurrentProfile > GraphicsProfile.Level_10_0);
+            HasDepthAsReadOnlyRT = CurrentProfile >= GraphicsProfile.Level_11_0;
+            HasMultisampleDepthAsSRV = CurrentProfile >= GraphicsProfile.Level_11_0;
 
             // Check features for each DXGI.Format
             foreach (var format in Enum.GetValues(typeof(SharpDX.DXGI.Format)))

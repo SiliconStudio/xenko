@@ -1,4 +1,6 @@
-﻿using System.IO;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using SiliconStudio.Assets.Quantum.Internal;
@@ -19,35 +21,6 @@ namespace SiliconStudio.Assets.Quantum.Tests
          * Abstract (interface) override with different type
          * class prop set to null
          */
-        private static readonly AssetId BaseId = (AssetId)GuidGenerator.Get(1);
-        private static readonly AssetId DerivedId = (AssetId)GuidGenerator.Get(2);
-
-        private static void SerializeAndCompare(AssetItem assetItem, AssetPropertyGraph graph, string expectedYaml, bool isDerived)
-        {
-            assetItem.Asset.Id = isDerived ? DerivedId : BaseId;
-            Assert.AreEqual(isDerived, assetItem.Asset.Archetype != null);
-            if (isDerived)
-                assetItem.Asset.Archetype = new AssetReference(BaseId, assetItem.Asset.Archetype?.Location);
-            graph.PrepareForSave(null, assetItem);
-            var stream = new MemoryStream();
-            AssetFileSerializer.Save(stream, assetItem.Asset, assetItem.YamlMetadata, null);
-            stream.Position = 0;
-            var streamReader = new StreamReader(stream);
-            var yaml = streamReader.ReadToEnd();
-            Assert.AreEqual(expectedYaml, yaml);
-        }
-
-        private static void SerializeAndCompare(object instance, YamlAssetMetadata<OverrideType> overrides, string expectedYaml)
-        {
-            var stream = new MemoryStream();
-            var metadata = new AttachedYamlAssetMetadata();
-            metadata.AttachMetadata(AssetObjectSerializerBackend.OverrideDictionaryKey, overrides);
-            AssetFileSerializer.Default.Save(stream, instance, metadata, null);
-            stream.Position = 0;
-            var streamReader = new StreamReader(stream);
-            var yaml = streamReader.ReadToEnd();
-            Assert.AreEqual(expectedYaml, yaml);
-        }
 
         private const string SimplePropertyUpdateBaseYaml = @"!SiliconStudio.Assets.Quantum.Tests.Helpers.Types+MyAsset1,SiliconStudio.Assets.Quantum.Tests
 Id: 00000001-0001-0000-0100-000001000000
@@ -253,8 +226,8 @@ MyObjects:
 
             basePropertyNode.Update("MyBaseString");
             derivedPropertyNode.Update("MyDerivedString");
-            SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, SimplePropertyUpdateBaseYaml, false);
-            SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, SimplePropertyUpdateDerivedYaml, true);
+            SerializationHelper.SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, SimplePropertyUpdateBaseYaml, false);
+            SerializationHelper.SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, SimplePropertyUpdateDerivedYaml, true);
         }
 
         [Test]
@@ -278,8 +251,8 @@ MyObjects:
             var derivedPropertyNode = (AssetMemberNode)context.DerivedGraph.RootNode[nameof(Types.MyAsset10.MyBool)];
 
             derivedPropertyNode.Update(true);
-            SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, SimplePropertyWithOverrideToDefaultValueBaseYaml, false);
-            SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, SimplePropertyWithOverrideToDefaultValueDerivedYaml, true);
+            SerializationHelper.SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, SimplePropertyWithOverrideToDefaultValueBaseYaml, false);
+            SerializationHelper.SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, SimplePropertyWithOverrideToDefaultValueDerivedYaml, true);
         }
 
         [Test]
@@ -308,8 +281,8 @@ MyObjects:
 
             basePropertyNode.Target.Update("MyBaseString", new Index(1));
             derivedPropertyNode.Target.Update("MyDerivedString", new Index(0));
-            SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, SimpleCollectionUpdateBaseYaml, false);
-            SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, SimpleCollectionUpdateDerivedYaml, true);
+            SerializationHelper.SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, SimpleCollectionUpdateBaseYaml, false);
+            SerializationHelper.SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, SimpleCollectionUpdateDerivedYaml, true);
         }
 
         [Test]
@@ -355,8 +328,8 @@ MyObjects:
 
             basePropertyNode.Target.Update("MyBaseString", new Index("Key2"));
             derivedPropertyNode.Target.Update("MyDerivedString", new Index("Key1"));
-            SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, SimpleDictionaryUpdateBaseYaml, false);
-            SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, SimpleDictionaryUpdateDerivedYaml, true);
+            SerializationHelper.SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, SimpleDictionaryUpdateBaseYaml, false);
+            SerializationHelper.SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, SimpleDictionaryUpdateDerivedYaml, true);
 
             context = DeriveAssetTest<Types.MyAsset3, Types.MyAssetBasePropertyGraph>.LoadFromYaml(SimpleDictionaryUpdateBaseYaml, SimpleDictionaryUpdateDerivedYaml);
             basePropertyNode = context.BaseGraph.RootNode[nameof(Types.MyAsset3.MyDictionary)];
@@ -430,8 +403,8 @@ MyObjects:
 
             basePropertyNode.Target.Update("MyBaseString", new Index(1));
             derivedPropertyNode.Target.Update("MyDerivedString", new Index(0));
-            SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, CollectionInStructBaseYaml, false);
-            SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, CollectionInStructDerivedYaml, true);
+            SerializationHelper.SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, CollectionInStructBaseYaml, false);
+            SerializationHelper.SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, CollectionInStructDerivedYaml, true);
         }
 
         [Test]
@@ -480,8 +453,8 @@ MyObjects:
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyStrings);
             var expectedBaseYaml = string.Format(SimpleCollectionAddBaseYaml.Replace("{}", "{{}}"), baseIds[2]);
             var expectedDerivedYaml = string.Format(SimpleCollectionAddDerivedYaml.Replace("{}", "{{}}"), baseIds[2], derivedIds[3]);
-            SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, expectedBaseYaml, false);
-            SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, expectedDerivedYaml, true);
+            SerializationHelper.SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, expectedBaseYaml, false);
+            SerializationHelper.SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, expectedDerivedYaml, true);
         }
 
         [Test]
@@ -540,8 +513,8 @@ MyObjects:
             var derivedIds = CollectionItemIdHelper.GetCollectionItemIds(context.DerivedAsset.MyDictionary);
             var expectedBaseYaml = string.Format(SimpleDictionaryAddBaseYaml.Replace("{}", "{{}}"), baseIds["Key4"]);
             var expectedDerivedYaml = string.Format(SimpleDictionaryAddDerivedYaml.Replace("{}", "{{}}"), baseIds["Key4"], derivedIds["Key3"]);
-            SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, expectedBaseYaml, false);
-            SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, expectedDerivedYaml, true);
+            SerializationHelper.SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, expectedBaseYaml, false);
+            SerializationHelper.SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, expectedDerivedYaml, true);
         }
 
         [Test]
@@ -598,8 +571,8 @@ MyObjects:
 
             basePropertyNode.Target.Update(new Types.SomeObject { Value = "MyBaseString" }, new Index(1));
             derivedPropertyNode.Target.Update(new Types.SomeObject { Value = "MyDerivedString" }, new Index(0));
-            SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, ObjectCollectionUpdateBaseYaml, false);
-            SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, ObjectCollectionUpdateDerivedYaml, true);
+            SerializationHelper.SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, ObjectCollectionUpdateBaseYaml, false);
+            SerializationHelper.SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, ObjectCollectionUpdateDerivedYaml, true);
         }
 
         [Test]
@@ -652,8 +625,8 @@ MyObjects:
             basePropertyNode.Target.Add(new Types.SomeObject { Value = "String4" });
             var expectedBaseYaml = string.Format(ObjectCollectionAddBaseYaml.Replace("{}", "{{}}"), baseIds[2]);
             var expectedDerivedYaml = string.Format(ObjectCollectionAddDerivedYaml.Replace("{}", "{{}}"), baseIds[2], derivedIds[3]);
-            SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, expectedBaseYaml, false);
-            SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, expectedDerivedYaml, true);
+            SerializationHelper.SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, expectedBaseYaml, false);
+            SerializationHelper.SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, expectedDerivedYaml, true);
         }
 
         [Test]
@@ -714,8 +687,8 @@ MyObjects:
 
             basePropertyNode.Target.IndexedTarget(new Index(1))[nameof(Types.SomeObject.Value)].Update("MyBaseString");
             derivedPropertyNode.Target.IndexedTarget(new Index(0))[nameof(Types.SomeObject.Value)].Update("MyDerivedString");
-            SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, ObjectCollectionPropertyUpdateBaseYaml, false);
-            SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, ObjectCollectionPropertyUpdateDerivedYaml, true);
+            SerializationHelper.SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, ObjectCollectionPropertyUpdateBaseYaml, false);
+            SerializationHelper.SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, ObjectCollectionPropertyUpdateDerivedYaml, true);
         }
 
         [Test]
@@ -766,8 +739,8 @@ MyObjects:
 
             basePropertyNode.Target.IndexedTarget(new Index(1))[nameof(Types.SomeObject.Value)].Update("MyBaseString");
             derivedPropertyNode.Target.IndexedTarget(new Index(0))[nameof(Types.SomeObject.Value)].Update("MyDerivedString");
-            SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, NonIdentifiableObjectCollectionPropertyUpdateBaseYaml, false);
-            SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, NonIdentifiableObjectCollectionPropertyUpdateDerivedYaml, true);
+            SerializationHelper.SerializeAndCompare(context.BaseAssetItem, context.BaseGraph, NonIdentifiableObjectCollectionPropertyUpdateBaseYaml, false);
+            SerializationHelper.SerializeAndCompare(context.DerivedAssetItem, context.DerivedGraph, NonIdentifiableObjectCollectionPropertyUpdateDerivedYaml, true);
         }
 
         [Test]
@@ -826,7 +799,7 @@ Value*: OverriddenString
             Assert.AreEqual(OverrideType.New, overridesAsDictionary[expectedPath]);
 
             // Test deserialization
-            SerializeAndCompare(context.DerivedAsset.MyObject, overrides, expectedYaml);
+            SerializationHelper.SerializeAndCompare(context.DerivedAsset.MyObject, overrides, expectedYaml);
             bool aliasOccurred;
             AttachedYamlAssetMetadata metadata;
             var instance = (Types.SomeObject)AssetFileSerializer.Default.Load(AssetTestContainer.ToStream(expectedYaml), null, null, true, out aliasOccurred, out metadata);
@@ -859,7 +832,7 @@ Value*: OverriddenString
             Assert.AreEqual(OverrideType.New, overridesAsDictionary[expectedPath]);
 
             // Test deserialization
-            SerializeAndCompare(context.DerivedAsset.MyObjects[1], overrides, expectedYaml);
+            SerializationHelper.SerializeAndCompare(context.DerivedAsset.MyObjects[1], overrides, expectedYaml);
             bool aliasOccurred;
             AttachedYamlAssetMetadata metadata;
             var instance = (Types.SomeObject)AssetFileSerializer.Default.Load(AssetTestContainer.ToStream(expectedYaml), null, null, true, out aliasOccurred, out metadata);

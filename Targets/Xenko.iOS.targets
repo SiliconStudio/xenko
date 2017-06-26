@@ -1,4 +1,4 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioNETFrameworkVersion>v1.0</SiliconStudioNETFrameworkVersion>
   </PropertyGroup>
@@ -19,9 +19,12 @@
     <XenkoMTouchExtras></XenkoMTouchExtras>
   </PropertyGroup>
 
-  <Target Name="EnsureXamarinVersion" BeforeTargets="PrepareForBuild">
-    <Error Condition="'$(XamarinVersion)' == ''" Text="Xamarin iOS version was not found. Ensure HKEY_LOCAL_MACHINE\SOFTWARE\Xamarin\iOS\InstalledVersion is properly set."/>
-    <Error Condition="($(XamarinIOSMajorVersion) == 8 And $(XamarinIOSMinorVersion) &lt; 10) Or $(XamarinIOSMajorVersion) &lt; 8" Text="Xamarin iOS version less than 8.10 is not compatible with Xenko. Please upgrade to 8.10."/>
+  <Target Name="_SiliconStudioSetupNativeLibraries" DependsOnTargets="_SiliconStudioBuildDependencies" AfterTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <NativeReference Include="@(_SiliconStudioDependencyNativeLib)">
+        <Kind>Static</Kind>
+      </NativeReference>
+    </ItemGroup>
   </Target>
 
   <!-- Rewrite BuildDependsOn and ResolveReferencesDependsOn -->
@@ -36,23 +39,9 @@
   <!-- Override PostSettings target CopySiliconStudioNativeLibraries. 
        Copy the libcore.a library to the project root directory for future native link. -->
   <Target Name="CopyXenkoNativeiOsLibrary" Condition=" '$(SiliconStudioIsExecutable)' == 'true'" DependsOnTargets="_SiliconStudioBuildDependencies" AfterTargets="ResolveAssemblyReferences">
-    <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS' ">
-      <!-- strip any "lib" prefix and populate the LibraryName value -->
-      <_SiliconStudioDependencyNativeLib>
-        <LibraryName>$([System.Text.RegularExpressions.Regex]::Match('%(Filename)', `(lib)*(.+)`).get_Groups().get_Item(2).ToString())</LibraryName>
-      </_SiliconStudioDependencyNativeLib>
-
-      <None Include="@(_SiliconStudioDependencyNativeLib)">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
-
     <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS' ">
-      <MtouchExtraArgsLibs>$(XenkoMTouchExtras) -L"%24{ProjectDir}" @(_SiliconStudioDependencyNativeLib->'-l%(LibraryName) "%24{ProjectDir}/%(Filename)%(Extension)"',' ')</MtouchExtraArgsLibs>
       <MtouchExtraArgs>$(MtouchExtraArgs) --compiler=clang -cxx -gcc_flags '-lstdc++ $(MtouchExtraArgsLibs)'</MtouchExtraArgs>
     </PropertyGroup>
-
-    <!--<Copy SessionId="$(BuildSessionId)" SourceFiles="@(_SiliconStudioDependencyNativeLib)" DestinationFiles="@(_SiliconStudioDependencyNativeLib->'$(ProjectDir)%(Filename)%(Extension)')"/>-->
   </Target>
 
   <!-- Deploy assets and native libraries (Xamarin iOS 8.2+ version) -->

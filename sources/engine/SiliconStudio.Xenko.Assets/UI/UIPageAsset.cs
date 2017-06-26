@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+﻿// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
@@ -21,10 +21,11 @@ namespace SiliconStudio.Xenko.Assets.UI
 #else
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
 #endif
+    [AssetUpgrader(XenkoConfig.PackageName, "2.0.0.0", "2.1.0.1", typeof(RootPartIdsToRootPartsUpgrader))]
     [Display("UI Page")]
     public sealed class UIPageAsset : UIAssetBase
     {
-        private const string CurrentVersion = "2.0.0.0";
+        private const string CurrentVersion = "2.1.0.1";
 
         /// <summary>
         /// The default file extension used by the <see cref="UIPageAsset"/>.

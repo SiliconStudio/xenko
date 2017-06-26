@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
@@ -87,9 +89,15 @@ namespace FirstPersonShooter.Player
                 // Mouse-based camera rotation.
                 //  Only enabled after you click the screen to lock your cursor, pressing escape will cancel it.
                 if (Input.IsMouseButtonDown(MouseButton.Left))
+                {
                     Input.LockMousePosition(true);
+                    Game.IsMouseVisible = false;
+                }
                 if (Input.IsKeyPressed(Keys.Escape))
+                {
                     Input.UnlockMousePosition();
+                    Game.IsMouseVisible = true;
+                }
                 if (Input.IsMousePositionLocked)
                 {
                     cameraDirection += new Vector2(Input.MouseDelta.X, -Input.MouseDelta.Y) * MouseSensitivity;
@@ -104,7 +112,7 @@ namespace FirstPersonShooter.Player
                 // Mouse: Left button, Tap events
                 var didShoot = Input.GetRightTriggerAny(0.2f) > 0.2f;   // This will allow for continuous shooting
 
-                if (Input.PointerEvents.Any(x => x.State == PointerState.Down))
+                if (Input.PointerEvents.Any(x => x.EventType == PointerEventType.Pressed))
                     didShoot = true;
                     
                 if (Input.HasMouse && Input.IsMouseButtonDown(MouseButton.Left))                  // This will allow for continuous shooting

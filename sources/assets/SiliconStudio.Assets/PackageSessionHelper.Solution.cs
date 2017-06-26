@@ -1,11 +1,12 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.VisualStudio;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
@@ -38,30 +39,9 @@ namespace SiliconStudio.Assets
 
                     foreach (var dependency in yamlRootNode.Meta.Dependencies)
                     {
-                        // Support paradox legacy projects
-                        if ((string)dependency.Name == "Xenko" || (string)dependency.Name == "Paradox")
+                        if ((string)dependency.Name == "Xenko")
                         {
                             dependencyVersion = new PackageVersion((string) dependency.Version);
-
-                            // Paradox 1.1 was having incorrect version set (1.0), read it from .props file
-                            if (dependencyVersion.Version.Major == 1 && dependencyVersion.Version.Minor == 0)
-                            {
-                                var propsFilePath = Path.Combine(Path.GetDirectoryName(packageFullPath) ?? "", Path.GetFileNameWithoutExtension(packageFullPath) + ".props");
-                                if (File.Exists(propsFilePath))
-                                {
-                                    using (XmlReader propsReader = XmlReader.Create(propsFilePath))
-                                    {
-                                        propsReader.MoveToContent();
-                                        if (propsReader.ReadToDescendant("SiliconStudioPackageParadoxVersion"))
-                                        {
-                                            if (propsReader.Read())
-                                            {
-                                                dependencyVersion = new PackageVersion(propsReader.Value);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
                             break;
                         }
                     }
@@ -73,8 +53,9 @@ namespace SiliconStudio.Assets
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                e.Ignore();
             }
 
             return null;

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 
 using System.Collections.Generic;
 using System.Globalization;
@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// <summary>
         /// The default file extension used by the <see cref="ProceduralModelAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xkpromodel;.pdxpromodel";
+        public const string FileExtension = ".xkpromodel";
 
         /// <summary>
         /// Gets or sets the type.

@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -140,6 +142,7 @@ namespace SiliconStudio.Core.Yaml
             while (!reader.Accept<MappingEnd>())
             {
                 var currentDepth = objectContext.Reader.CurrentDepth;
+                var startParsingEvent = objectContext.Reader.Parser.Current;
 
                 try
                 {
@@ -160,7 +163,7 @@ namespace SiliconStudio.Core.Yaml
                     {
                         var logger = objectContext.SerializerContext.Logger;
                         logger?.Warning("Ignored dictionary item that could not be deserialized", ex);
-                        objectContext.Reader.Skip(currentDepth);
+                        objectContext.Reader.Skip(currentDepth, objectContext.Reader.Parser.Current == startParsingEvent);
                     }
                     else throw;
                 }

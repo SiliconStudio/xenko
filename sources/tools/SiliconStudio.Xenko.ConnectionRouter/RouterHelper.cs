@@ -1,5 +1,5 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
 using System;
 using System.Collections.Specialized;
 using System.Diagnostics;
@@ -47,9 +47,13 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                 var store = new NugetStore(xenkoSdkDir);
 
                 var xenkoPackages = store.GetPackagesInstalled(store.MainPackageIds);
-                var xenkoPackage = xenkoVersion != null
-                    ? (xenkoPackages.FirstOrDefault(p => p.Version.ToString() == xenkoVersion)
-                        ?? xenkoPackages.FirstOrDefault(p => VersionWithoutSpecialPart(p.Version.ToString()) == VersionWithoutSpecialPart(xenkoVersion))) // If no exact match, try a second time without the special version tag (beta, alpha, etc...)
+                // Convert the provided xenko version into a valid package version
+                PackageVersion packageVersion;
+                PackageVersion.TryParse(xenkoVersion, out packageVersion);
+                // Retrieve the corresponding package, if it exists
+                var xenkoPackage = packageVersion != null
+                    ? (xenkoPackages.FirstOrDefault(p => p.Version == packageVersion)
+                       ?? xenkoPackages.FirstOrDefault(p => p.Version.Version == packageVersion.Version)) // If no exact match, try a second time without the special version tag (beta, alpha, etc...)
                     : xenkoPackages.FirstOrDefault();
                 if (xenkoPackage == null)
                     return null;
