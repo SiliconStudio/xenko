@@ -78,6 +78,7 @@ namespace SiliconStudio.Assets.Quantum
             var overrides = assetItem.YamlMetadata?.RetrieveMetadata(AssetObjectSerializerBackend.OverrideDictionaryKey);
             ApplyOverrides(RootNode, overrides);
             nodeListener = new AssetGraphNodeChangeListener(RootNode, Definition);
+            nodeListener.Initialize();
             nodeListener.ValueChanging += AssetContentChanging;
             nodeListener.ValueChanged += AssetContentChanged;
             nodeListener.ItemChanging += AssetItemChanging;
