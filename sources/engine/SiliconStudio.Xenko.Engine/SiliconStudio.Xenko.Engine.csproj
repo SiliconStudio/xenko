@@ -223,6 +223,30 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorFlakeNormals.cs">
+      <DependentUpon>ComputeColorFlakeNormals.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorFlakeColor.cs">
+      <DependentUpon>ComputeColorFlakeColor.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorFlakeShininess.cs">
+      <DependentUpon>ComputeColorFlakeShininess.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Materials\Shaders\CarPaintCommon.cs">
+      <DependentUpon>CarPaintCommon.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Rendering\QueryManager.cs" />
     <Compile Include="Rendering\Images\ImageEffectProfilingKeys.cs" />
     <Compile Include="Rendering\Images\ImageScaler\SamplingPattern.cs" />
@@ -796,6 +820,18 @@
       <LastGenOutput>LightPoint1.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Materials\CelShading\MaterialSurfaceShadingSpecularCelShading.xksl" />
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorFlakeNormals.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorFlakeNormals.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorFlakeColor.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorFlakeColor.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorFlakeShininess.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorFlakeShininess.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorThreshold.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorThreshold.cs</LastGenOutput>
@@ -807,6 +843,10 @@
     <None Include="Rendering\LightProbes\ComputeSphericalHarmonics.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeSphericalHarmonics.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\Shaders\CarPaintCommon.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>CarPaintCommon.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Materials\Shaders\IMaterialSpecularMicrofacetEnvironmentFunction.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>

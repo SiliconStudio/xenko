@@ -1,0 +1,35 @@
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+shader ComputeColorFlakeNormals : ComputeColor, 
+                                    CarPaintCommon,
+                                    DynamicTexture<TTextureName, PerMaterial>, 
+                                    DynamicSampler<TSampler, PerMaterial>, 
+                                    DynamicTextureStream<TStream>
+{
+    compose ComputeColor flake_scale;
+    compose ComputeColor flake_size;
+    compose ComputeColor flake_size_variance;
+    compose ComputeColor pearlescent_ratio;
+    
+    compose ComputeColor flake_base_color;
+
+    override float4 Compute()
+    {
+        float3 rNormal = float3( 0, 0, 0 );
+        float rShininess = 0.0f;
+        float4 rColor = float4( 0, 0, 0, 1 );
+
+        float flakeScale = flake_scale.Compute().r;
+        float flakeSize = flake_size.Compute().r;
+        float flakeSizeVariance = flake_size_variance.Compute().r;
+        float flakePearlescentRatio = pearlescent_ratio.Compute().r;
+
+        float4 flakeParameters = float4( flakeScale, flakeSize, flakeSizeVariance, flakePearlescentRatio );
+
+        float3 flakeBaseNormals = flake_base_color.Compute().rgb;
+
+        generate_flake_all(streams.TexCoord, flakeParameters, rNormal, rColor, rShininess);
+
+        return float4(rNormal, 1.0f);
+    }
+};
