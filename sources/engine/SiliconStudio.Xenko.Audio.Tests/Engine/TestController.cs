@@ -68,13 +68,13 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
                     game.Content.Load<Sound>("EffectToneA"),
                 };
 
-            emitComps[0].AttachSound(sounds[0]);
-            emitComps[0].AttachSound(sounds[1]);
+            emitComps[0].Sounds["EffectBip"] = sounds[0];
+            emitComps[0].Sounds["EffectToneA"] = sounds[1];
 
             soundControllers = new List<AudioEmitterSoundController>
                 {
-                    emitComps[0].GetSoundController(sounds[0]),
-                    emitComps[0].GetSoundController(sounds[1]),
+                    emitComps[0]["EffectBip"],
+                    emitComps[0]["EffectToneA"],
                 };
 
             mainController = soundControllers[0];
@@ -110,14 +110,14 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             AddListenersToAudioSystem(game);
             
             // test before the creation of any soundEffectInstances
-            Assert.IsFalse(mainController.IsLooped, "Controller is looped status was true by default.");
+            Assert.IsFalse(mainController.IsLooping, "Controller is looped status was true by default.");
             Assert.AreEqual(SoundPlayState.Stopped, mainController.PlayState, "Controller play state was not set to stopped by default.");
             Assert.AreEqual(1, mainController.Volume, "The volume of the controller was not 1 by default.");
 
             AddRootEntityToEntitySystem(game);
 
             // test after the creation of any soundEffectInstances
-            Assert.IsFalse(mainController.IsLooped, "Controller is looped status was true by default.");
+            Assert.IsFalse(mainController.IsLooping, "Controller is looped status was true by default.");
             Assert.AreEqual(SoundPlayState.Stopped, mainController.PlayState, "Controller play state was not set to stopped by default.");
             Assert.AreEqual(1, mainController.Volume, "The volume of the controller was not 1 by default.");
         }
@@ -173,7 +173,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             else if (loopCount == 240)
             {
                 mainController.Volume = 0f;
-                mainController.IsLooped = true;
+                mainController.IsLooping = true;
                 mainController.Play();
             }
             else if(loopCount > 240)
@@ -209,7 +209,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             if (loopCount == 0)
             {
                 // check that the sound loops as it should.
-                mainController.IsLooped = true;
+                mainController.IsLooping = true;
                 mainController.Play();
             }
             // should hear looped sound
@@ -222,7 +222,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             else if (loopCount == 150)
             {
                 // check that the sound does not loop  as it should.
-                mainController.IsLooped = false;
+                mainController.IsLooping = false;
                 mainController.Play();
             }
             // should hear not a looped sound
@@ -237,7 +237,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
                 // check that setting the isLooped without listener works too
                 game.Audio.RemoveListener(listComps[0]);
                 game.Audio.RemoveListener(listComps[1]);
-                mainController.IsLooped = true;
+                mainController.IsLooping = true;
                 game.Audio.AddListener(listComps[0]);
                 game.Audio.AddListener(listComps[1]);
                 mainController.Play();
@@ -256,7 +256,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             else if (loopCount == 475)
             {
                 // check that IsLooped throws InvalidOperationException when modified while playing.
-                Assert.Throws<InvalidOperationException>(() => mainController.IsLooped = true, "setting isLooped variable during playing sound did not throw InvalidOperationException");
+                Assert.Throws<InvalidOperationException>(() => mainController.IsLooping = true, "setting isLooped variable during playing sound did not throw InvalidOperationException");
                 game.Exit();
             }
         }
@@ -302,8 +302,8 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             {
                 // add a longuer sound
                 sounds.Add(game.Content.Load<Sound>("EffectFishLamp"));
-                emitComps[0].AttachSound(sounds[2]);
-                soundControllers.Add(emitComps[0].GetSoundController(sounds[2]));
+                emitComps[0].Sounds["EffectFishLamp"] = sounds[2];
+                soundControllers.Add(emitComps[0]["EffectFishLamp"]);
                 soundControllers[2].Play();
             }
             // should hear the beginning of the sound
@@ -353,8 +353,8 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
 
             // add a longuer sound
             sounds.Add(game.Content.Load<Sound>("EffectFishLamp"));
-            emitComps[0].AttachSound(sounds[2]);
-            soundControllers.Add(emitComps[0].GetSoundController(sounds[2]));
+            emitComps[0].Sounds["EffectFishLamp"] = sounds[2];
+            soundControllers.Add(emitComps[0]["EffectFishLamp"]);
         }
 
         private void TestPauseLoopImpl(Game game, int loopCount, int loopCountSum)
@@ -407,8 +407,8 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
 
             // add a longuer sound
             sounds.Add(game.Content.Load<Sound>("EffectFishLamp"));
-            emitComps[0].AttachSound(sounds[2]);
-            soundControllers.Add(emitComps[0].GetSoundController(sounds[2]));
+            emitComps[0].Sounds["EffectFishLamp"] = sounds[2];
+            soundControllers.Add(emitComps[0]["EffectFishLamp"]);
         }
 
         private void TestStopLoopImpl(Game game, int loopCount, int loopCountSum)
@@ -516,7 +516,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             AddRootEntityToEntitySystem(game);
             AddListenersToAudioSystem(game);
 
-            mainController.IsLooped = true;
+            mainController.IsLooping = true;
         }
 
         private void TestExitLoopLoopImpl(Game game, int loopCount, int loopCountSum)
@@ -534,7 +534,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             // should hear the end of the sound
             else if (loopCount == 60)
             {
-                Assert.IsTrue(mainController.IsLooped, "The value of isLooped has been modified by ExitLoop.");
+                Assert.IsTrue(mainController.IsLooping, "The value of isLooped has been modified by ExitLoop.");
                 Assert.AreEqual(SoundPlayState.Stopped, mainController.PlayState, "The sound did not stopped after exitloop.");
             }
             // should hear nothing
@@ -547,7 +547,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             // should hear a sound not looped
             else if (loopCount == 140)
             {
-                Assert.IsTrue(mainController.IsLooped, "The value of isLooped has been modified by ExitLoop just after play.");
+                Assert.IsTrue(mainController.IsLooping, "The value of isLooped has been modified by ExitLoop just after play.");
                 Assert.AreEqual(SoundPlayState.Stopped, mainController.PlayState, "The sound did not stopped after Exitloop just after play.");
             }
             // should hear nothing
@@ -570,7 +570,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             // should hear the end of the sound (not looped)
             else if (loopCount == 270)
             {
-                Assert.IsTrue(mainController.IsLooped, "The value of isLooped has been modified by ExitLoop after pause.");
+                Assert.IsTrue(mainController.IsLooping, "The value of isLooped has been modified by ExitLoop after pause.");
                 Assert.AreEqual(SoundPlayState.Stopped, mainController.PlayState, "The sound did not stopped after exitloop after pause.");
             }
             // should hear nothing
@@ -583,7 +583,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             // should hear the sound looping
             else if (loopCount == 500)
             {
-                Assert.IsTrue(mainController.IsLooped, "The value of isLooped has been modified by ExitLoop before play.");
+                Assert.IsTrue(mainController.IsLooping, "The value of isLooped has been modified by ExitLoop before play.");
                 Assert.AreEqual(SoundPlayState.Playing, mainController.PlayState, "The sound did not looped.");
                 game.Exit();
             }

@@ -119,7 +119,7 @@ namespace SiliconStudio.Assets.Tests.Compilers
         [AssetCompiler(typeof(MyAsset1), typeof(AssetCompilationContext))]
         public class MyAsset1Compiler : TestAssertCompiler<MyAsset1>
         {
-            public override IEnumerable<Type> GetRuntimeTypes(AssetCompilerContext context, AssetItem assetItem)
+            public override IEnumerable<Type> GetRuntimeTypes(AssetItem assetItem)
             {
                 yield return typeof(MyRuntimeType);
             }

@@ -135,6 +135,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         {
             base.InitializeCore();
             ToLoadAndUnload(msaaResolver);
+            ToLoadAndUnload(msaaDepthResolver);
         }
 
         protected override void DrawCore(RenderDrawContext drawContext)

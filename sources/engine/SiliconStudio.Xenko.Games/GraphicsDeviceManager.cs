@@ -677,15 +677,18 @@ namespace SiliconStudio.Xenko.Games
                 preferredParameters.PreferredBackBufferHeight = resizedBackBufferHeight;
             }
 
-            GraphicsProfile availableGraphicsProfile;
-            if (!IsPreferredProfileAvailable(preferredParameters.PreferredGraphicsProfile, out availableGraphicsProfile))
-            {
-                throw new InvalidOperationException($"Graphics profiles [{string.Join(", ", preferredParameters.PreferredGraphicsProfile)}] are not supported by the device. The highest available profile is [{availableGraphicsProfile}].");
-            }
-
             var devices = graphicsDeviceFactory.FindBestDevices(preferredParameters);
             if (devices.Count == 0)
             {
+                // Nothing was found; first, let's check if graphics profile was actually supported
+                // Note: we don't do this preemptively because in some cases it seems to take lot of time (happened on a test machine, several seconds freeze on ID3D11Device.Release())
+                GraphicsProfile availableGraphicsProfile;
+                if (!IsPreferredProfileAvailable(preferredParameters.PreferredGraphicsProfile, out availableGraphicsProfile))
+                {
+                    throw new InvalidOperationException($"Graphics profiles [{string.Join(", ", preferredParameters.PreferredGraphicsProfile)}] are not supported by the device. The highest available profile is [{availableGraphicsProfile}].");
+                }
+
+                // Otherwise, there was just no screen mode
                 throw new InvalidOperationException("No screen modes found");
             }
 

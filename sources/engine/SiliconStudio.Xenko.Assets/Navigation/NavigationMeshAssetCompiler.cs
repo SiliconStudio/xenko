@@ -27,13 +27,13 @@ namespace SiliconStudio.Xenko.Assets.Navigation
     [AssetCompiler(typeof(NavigationMeshAsset), typeof(AssetCompilationContext))]
     class NavigationMeshAssetCompiler : AssetCompilerBase
     { 
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
         {
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SceneAsset), BuildDependencyType.CompileAsset);
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(ColliderShapeAsset), BuildDependencyType.CompileContent);
         }
 
-        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
         {
             var asset = (NavigationMeshAsset)assetItem.Asset;
             if (asset.Scene != null)
@@ -78,7 +78,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             {
                 new NavmeshBuildCommand(targetUrlInStorage, assetItem, asset, context)
                 {
-                    InputFilesGetter = () => GetInputFiles(context, assetItem)
+                    InputFilesGetter = () => GetInputFiles(assetItem)
                 }
             };
         }

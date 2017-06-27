@@ -936,7 +936,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (severity == DebugSeverity.DebugSeverityHigh)
             {
                 string msg = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(message);
-                Log.Error("[GL] {0}; {1}; {2}; {3}; {4}", source, type, id, severity, msg);
+                Log.Error($"[GL] {source}; {type}; {id}; {severity}; {msg}");
             }
         }
 

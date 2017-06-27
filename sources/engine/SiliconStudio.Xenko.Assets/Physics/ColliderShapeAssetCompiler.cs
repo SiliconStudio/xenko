@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
             NativeLibrary.PreloadLibrary("VHACD.dll");
         }
 
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
         {
             foreach (var type in AssetRegistry.GetAssetTypes(typeof(Model)))
             {
@@ -42,25 +42,13 @@ namespace SiliconStudio.Xenko.Assets.Physics
             }
         }
 
-        public override IEnumerable<Type> GetInputTypesToExclude(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<Type> GetInputTypesToExclude(AssetItem assetItem)
         {
             foreach(var type in AssetRegistry.GetAssetTypes(typeof(Material)))
             {
                 yield return type;
             }
             yield return typeof(TextureAsset);
-        }
-
-        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
-        {
-            var asset = (ColliderShapeAsset)assetItem.Asset;
-            foreach (var convexHullDesc in
-                (from shape in asset.ColliderShapes let type = shape.GetType() where type == typeof(ConvexHullColliderShapeDesc) select shape)
-                    .Cast<ConvexHullColliderShapeDesc>())
-            {
-                var url = AttachedReferenceManager.GetUrl(convexHullDesc.Model);
-                yield return new ObjectUrl(UrlType.Content, url);
-            }
         }
 
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
