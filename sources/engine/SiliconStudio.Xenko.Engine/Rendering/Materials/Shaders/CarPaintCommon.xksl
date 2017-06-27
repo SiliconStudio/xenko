@@ -1,0 +1,269 @@
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+
+shader CarPaintCommon
+{
+//------------------------------------------------------------------------------
+// Gererate pseudorandom number
+//------------------------------------------------------------------------------
+float random(in float2 uv)
+{
+    float2 noise = (frac(sin(dot(uv,float2(12.9898,78.233)*2.0)) * 43758.5453));
+    return abs(noise.x + noise.y) * 0.5;
+}
+
+//------------------------------------------------------------------------------
+// Gererate texture coordinates for random placement
+//------------------------------------------------------------------------------
+float2 randomUV(in float2 uv)
+{
+    const int NUM_PATTERNS = 2 * 2 * 4 * 4 * 4;
+    uint pattern = (uint)(random(floor(uv)) * (float)NUM_PATTERNS) % NUM_PATTERNS;
+    float2 result = frac(uv);
+
+    // flip
+    if (pattern % 2)
+    {
+        result.x = 1.0f - result.x;
+    }
+    pattern /= 2;
+    if (pattern % 2)
+    {
+        result.y = 1.0f - result.y;
+    }
+
+    // rotate
+    pattern /= 2;
+    if (pattern % 4 == 1)
+    {
+        result = float2(result.y, 1.0f - result.x);
+    }
+    else if (pattern % 4 == 2)
+    {
+        result = float2(1.0f - result.y, result.x);
+    }
+    else if (pattern % 4 == 3)
+    {
+        result = 1.0f - result;
+    }
+
+    // offset
+    pattern /= 4;
+    result.x += (pattern % 4) * 0.25f;
+    pattern /= 4;
+    result.y += (pattern % 4) * 0.25f;
+
+    return result;
+}
+
+    //------------------------------------------------------------------------------
+    // Convert integer to float
+    //------------------------------------------------------------------------------
+    float bits_to_01(uint bits)
+    {
+        return bits * (1.0f/(float)0xFFFFFFFF);
+    }
+
+    //------------------------------------------------------------------------------
+    // Generate hash
+    //------------------------------------------------------------------------------
+    uint hash(uint kx, uint ky, uint kz)
+    {
+        // define some handy macros
+        #define rot(x,k) (((x)<<(k)) | ((x)>>(32-(k))))
+        #define final(a,b,c) \
+        { \
+        c ^= b; c -= rot(b,14); \
+        a ^= c; a -= rot(c,11); \
+        b ^= a; b -= rot(a,25); \
+        c ^= b; c -= rot(b,16); \
+        a ^= c; a -= rot(c,4);  \
+        b ^= a; b -= rot(a,14); \
+        c ^= b; c -= rot(b,24); \
+        }
+        // now hash the data!
+        uint a, b, c, len = 3;
+        a = b = c = 0xdeadbeef + (len << 2) + 13;
+
+        c += kz;
+        b += ky;
+        a += kx;
+        final(a, b, c);
+
+        return c;
+        // macros not needed anymore
+        #undef rot
+        #undef final
+    }
+
+    //------------------------------------------------------------------------------
+    // Convert float to integer
+    //------------------------------------------------------------------------------
+    int quick_floor(float x)
+    {
+        return ((int)x) - ((x < 0) ? 1 : 0);
+    }
+
+    //------------------------------------------------------------------------------
+    // Generate cellnoise value from 3D vector
+    //------------------------------------------------------------------------------
+    float cellnoise_scalar(float3 p)
+    {
+        uint ix = quick_floor(p.x);
+        uint iy = quick_floor(p.y);
+        uint iz = quick_floor(p.z);
+
+        return bits_to_01(hash(ix, iy, iz));
+    }
+
+    //------------------------------------------------------------------------------
+    // Generate cellnoise vector from 3D vector
+    //------------------------------------------------------------------------------
+    float3 cellnoise(float3 p)
+    {
+        float r = cellnoise_scalar(p);
+        float g = cellnoise_scalar(p.yxz);
+        float b = cellnoise_scalar(p.yzx);
+
+        return float3(r,g,b);
+    }
+
+    //------------------------------------------------------------------------------
+    // Internal function for flake generation
+    //------------------------------------------------------------------------------
+    int check_flake_cell(float3 b, float3 position, float flake_size, float flake_size_variance, out float3 cell_center)
+    {
+        const float safe_flake_size_variance = clamp(flake_size_variance, 0.1, 1.0);
+        float3 cellCenters[9] = {
+            float3( 0.5,  0.5,  0.0),
+            float3( 1.5,  0.5,  0.0),
+            float3( 1.5,  1.5,  0.0),
+            float3( 0.5,  1.5,  0.0),
+            float3(-0.5,  1.5,  0.0),
+            float3(-0.5,  0.5,  0.0),
+            float3(-0.5, -0.5,  0.0),
+            float3( 0.5, -0.5,  0.0),
+            float3( 1.5, -0.5,  0.0)
+        };
+
+        float3 nearestCell = float3(0.0, 0.0, 1.0);
+        int nearestCellIndex = -1;
+        for(int cellIndex = 0; cellIndex < 9; ++cellIndex)
+        {
+            float3 cellCenter = b + cellCenters[cellIndex];
+
+            float3 centerOffset = cellnoise(cellCenter) * 2.0 - 1.0;
+            centerOffset.z *= safe_flake_size_variance;
+            centerOffset = normalize(centerOffset);
+
+            cellCenter += 0.5 * centerOffset;
+
+            float cellDistance = distance(position, cellCenter);
+            if(cellDistance < flake_size && cellCenter.z < nearestCell.z)
+            {
+                nearestCell      = cellCenter;
+                nearestCellIndex = cellIndex;
+            }
+        }
+
+        cell_center = cellCenters[nearestCellIndex];
+        return nearestCellIndex;
+    }
+
+    //------------------------------------------------------------------------------
+    // Generate normal map for flake
+    //------------------------------------------------------------------------------
+    float3 generate_flake_normal(in float2 uv, in float4 p)
+    {
+        const float flake_scale              = p.x;
+        const float flake_size               = p.y;
+        const float flake_size_variance      = p.z;
+        const float flake_normal_orientation = p.w;
+
+        float3 position = float3(uv.x, uv.y, 0.0);
+        position *= flake_scale;
+
+        float3 b = floor(position);
+
+        float3 cell_center;
+        int nearestCellIndex = check_flake_cell(b, position, flake_size, flake_size_variance, cell_center);
+
+        float3 result = float3(0.0, 0.0, 1.0);
+
+        if (nearestCellIndex >= 0)
+        {
+            float3 randomNormal = cellnoise(b + cell_center + float3(0.0, 0.0, 1.5));
+            randomNormal = 2.0 * randomNormal - 1.0;
+            randomNormal = faceforward(randomNormal, float3(0.0, 0.0, 1.0), randomNormal);
+            result = normalize(lerp(randomNormal, float3(0.0, 0.0, 1.0), flake_normal_orientation));
+        }
+
+        return result;
+    }
+
+    float CarPaintGenerateFlakeShininess(in float2 uv, in float4 parameters)
+    {
+        const float flake_scale              = parameters.x;
+        const float flake_size               = parameters.y;
+        const float flake_size_variance      = parameters.z;
+        const float pearlescent_ratio        = parameters.w;
+
+        float3 position = float3(uv.xy, 0.0f);
+    }
+
+    #define RETRIEVE_FLAKE_PARAMETERS( p )\
+        const float flake_scale              = p.x;\
+        const float flake_size               = p.y;\
+        const float flake_size_variance      = p.z;\
+        const float pearlescent_ratio        = p.w;
+
+    float4 GetFlakeColor( in float2 uvCoordinates, in float4 baseColor, in float4 parameters )
+    {    
+        RETRIEVE_FLAKE_PARAMETERS(parameters)
+
+        float2 randomUvCoordinates = randomUV( uvCoordinates );
+        float3 position = float3( randomUvCoordinates.xy * flake_scale, 0 );
+        
+        float3 basePosition = floor( position );
+        float3 cell_center = 0;
+        int nearestCellIndex = check_flake_cell(basePosition, position, flake_size, flake_size_variance, cell_center);
+
+        if (nearestCellIndex >= 0)
+        {
+            float3 randomValues = cellnoise(basePosition + cell_center + float3(1.0, 2.0, 3.5));
+            float3 randomColor = cellnoise(basePosition + cell_center + float3(2.0, 1.0, 0.5));
+
+            return lerp(randomColor, baseColor.rgb, step(pearlescent_ratio, randomValues.x));
+        }
+
+        return baseColor;
+    }
+
+    void generate_flake_all(in float2 uv, in float4 p, inout float3 resultNormal, inout float4 resultColor, inout float resultShininess)
+    {
+        uv = randomUV( uv );
+        
+        RETRIEVE_FLAKE_PARAMETERS(p)
+
+        float3 position = float3(uv.x, uv.y, 0.0);
+        position *= flake_scale;
+
+        float3 b = floor(position);
+
+        float3 cell_center;
+        int nearestCellIndex = check_flake_cell(b, position, flake_size, flake_size_variance, cell_center);
+
+        if (nearestCellIndex >= 0)
+        {
+            float3 randomNormal = cellnoise(b + cell_center + float3(0.0, 0.0, 1.5));
+            randomNormal = 2.0 * randomNormal - 1.0;
+            randomNormal = faceforward(randomNormal, float3(0.0, 0.0, 1.0), randomNormal);
+            resultNormal = randomNormal;
+
+            float3 randomValues = cellnoise(b + cell_center + float3(1.0, 2.0, 3.5));
+            float3 randomColor  = cellnoise(b + cell_center + float3(2.0, 1.0, 0.5));
+            resultColor.xyz = lerp(randomColor, resultColor.xyz, step(pearlescent_ratio, randomValues.x));
+            resultShininess = randomValues.y;
+        }
+    }
+};
