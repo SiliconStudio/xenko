@@ -297,7 +297,7 @@ namespace SiliconStudio.Xenko.Particles
         /// Random numbers in the <see cref="ParticleSystem"/> are generated based on a seed, which in turn can be generated using several methods.
         /// </summary>
         /// <userdoc>
-        /// All random numbers in the Particle System are based on a seed. If you use deterministic seeds, your particles will always behave the same way every time you start the simulation.
+        /// All random numbers in the particle system are based on a seed. If you use deterministic seeds, your particles will always behave the same way every time you start the simulation.
         /// </userdoc>
         [DataMember(12)]
         [Display("Randomize")]
