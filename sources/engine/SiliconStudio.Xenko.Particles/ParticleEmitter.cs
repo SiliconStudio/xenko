@@ -372,7 +372,7 @@ namespace SiliconStudio.Xenko.Particles
         /// List of <see cref="ParticleSpawner"/> to spawn particles in this <see cref="ParticleEmitter"/>
         /// </summary>
         /// <userdoc>
-        /// Spawners define when, how and how many particles are spawned withing this Emitter. There can be several of them.
+        /// Spawners define when, how, and how many particles are spawned. There can be several spawners.
         /// </userdoc>
         [DataMember(55)]
         [Display("Spawners")]
@@ -383,7 +383,7 @@ namespace SiliconStudio.Xenko.Particles
         /// List of <see cref="ParticleInitializer"/> within thie <see cref="ParticleEmitter"/>. Adjust <see cref="requiredFields"/> automatically
         /// </summary>
         /// <userdoc>
-        /// Initializers set initial values for fields of particles which just spawned. Have no effect on already spawned particles.
+        /// Initializers set initial values for fields of particles which just spawned. Have no effect on already-spawned particles.
         /// </userdoc>
         [DataMember(200)]
         [Display("Initializers")]
