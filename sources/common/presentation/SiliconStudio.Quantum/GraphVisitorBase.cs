@@ -9,7 +9,8 @@ using SiliconStudio.Quantum.References;
 namespace SiliconStudio.Quantum
 {
     /// <summary>
-    /// A class that allows to visit a hierarchy of <see cref="IGraphNode"/>, going through children and references.
+    /// A class that visits all node referenced by a given root node, including members, targets of members, and targets of collection items.
+    /// The nodes to visit can be controlled by implementing <see cref="ShouldVisitMemberTarget"/> and <see cref="ShouldVisitTargetItem"/>.
     /// </summary>
     public class GraphVisitorBase
     {
@@ -24,16 +25,6 @@ namespace SiliconStudio.Quantum
         /// Gets or sets whether to skip the root node passed to <see cref="Visit"/> when raising the <see cref="Visiting"/> event.
         /// </summary>
         public bool SkipRootNode { get; set; }
-
-        /// <summary>
-        /// Gets or sets a method that will be invoked to check whether a node should be visited or not.
-        /// </summary>
-        [Obsolete]
-        internal Func<IMemberNode, IGraphNode, bool> ShouldVisit { get; set; }
-
-        internal Func<IMemberNode, bool> ShouldVisitMemberTargetNode { get; set; }
-
-        internal Func<IObjectNode, Index, bool> ShouldVisitTargetItemNode { get; set; }
 
         /// <summary>
         /// Gets the root node of the current visit.
@@ -157,17 +148,30 @@ namespace SiliconStudio.Quantum
             VisitNode(reference.TargetNode);
         }
 
-        protected virtual bool ShouldVisitMemberTarget([NotNull] IMemberNode memberContent)
+        /// <summary>
+        /// Indicates whether the <see cref="IMemberNode.Target"/> of the given <see cref="IMemberNode"/> should be visited or not.
+        /// </summary>
+        /// <param name="memberNode">The member node to evaluate.</param>
+        /// <returns>True if the target of the member node should be visited, false otherwise.</returns>
+        /// <remarks>This method is invoked only when the given <see cref="IMemberNode"/> contains a target node.</remarks>
+        protected virtual bool ShouldVisitMemberTarget([NotNull] IMemberNode memberNode)
         {
-            if (memberContent == null) throw new ArgumentNullException(nameof(memberContent));
-            return !visitedNodes.Contains(memberContent.Target) && (ShouldVisitMemberTargetNode?.Invoke(memberContent) ?? true);
+            if (memberNode == null) throw new ArgumentNullException(nameof(memberNode));
+            return !visitedNodes.Contains(memberNode.Target);
         }
 
+        /// <summary>
+        /// Indicates whether the target node of the item corresponding to the given index in the collection contained in the given node should be visited or not.
+        /// </summary>
+        /// <param name="collectionNode">The node to evaluate.</param>
+        /// <param name="index">The index of the item to evaluate.</param>
+        /// <returns>True if the node of the item corresponding to the given index in the collection contained in the given node should be visited, false otherwise.</returns>
+        /// <remarks>This method is invoked only when the given <see cref="IObjectNode"/> contains a collection with items being references.</remarks>
         protected virtual bool ShouldVisitTargetItem([NotNull] IObjectNode collectionNode, Index index)
         {
             if (collectionNode == null) throw new ArgumentNullException(nameof(collectionNode));
             var target = collectionNode.IndexedTarget(index);
-            return !visitedNodes.Contains(target) && (ShouldVisitTargetItemNode?.Invoke(collectionNode, index) ?? true);
+            return !visitedNodes.Contains(target);
         }
     }
 }

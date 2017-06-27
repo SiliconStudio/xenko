@@ -89,7 +89,7 @@ namespace SiliconStudio.Xenko.Animations
                 return;
             }
 
-            curve?.UpdateChanges();
+            curve.UpdateChanges();
 
             for (var i = 0; i < bakedArraySize; i++)
             {

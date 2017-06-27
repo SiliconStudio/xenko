@@ -52,6 +52,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -179,6 +181,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -301,6 +305,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -388,6 +394,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -472,6 +480,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -599,6 +609,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -690,6 +702,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -843,6 +857,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -949,6 +965,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -1180,6 +1198,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -1304,6 +1324,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -1401,6 +1423,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -1505,6 +1529,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -1633,6 +1659,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -1749,6 +1777,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -1852,6 +1882,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -1929,6 +1961,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -2011,6 +2045,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -2130,6 +2166,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -2234,6 +2272,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -2299,6 +2339,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -2403,6 +2445,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -2538,6 +2582,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -2609,6 +2655,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -2689,6 +2737,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -2776,6 +2826,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -2908,6 +2960,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -2993,6 +3047,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -3100,6 +3156,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -3226,6 +3284,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -3317,6 +3377,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -3411,6 +3473,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -3518,6 +3582,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -3613,6 +3679,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -3734,6 +3802,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -3793,6 +3863,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -3872,6 +3944,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -3997,6 +4071,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -4128,6 +4204,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -4249,6 +4327,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -4405,6 +4485,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -4565,6 +4647,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -4655,6 +4739,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -4735,6 +4821,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource
@@ -4861,6 +4949,8 @@ UsedParameters:
                                         Mixins:
                                             -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
                                         Compositions:
+                                            environmentFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetEnvironmentGGXLUT
                                             fresnelFunction: !ShaderClassSource
                                                 ClassName: MaterialSpecularMicrofacetFresnelSchlick
                                             geometricShadowingFunction: !ShaderClassSource

@@ -3,40 +3,59 @@
 
 using System;
 using System.ComponentModel;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.TypeConverters
 {
     public static class TypeConverterHelper
     {
         /// <summary>
-        /// Tries to convert the <paramref name="source"/> to the <paramref name="targetType"/>.
+        /// Returns whether an instance of <paramref name="sourceType"/> can be converted to an instance of <paramref name="destinationType"/>.
+        /// </summary>
+        /// <param name="sourceType">A <see cref="Type"/> that represents the type you want to convert from.</param>
+        /// <param name="destinationType">A <see cref="Type"/> that represents the type you want to convert to.</param>
+        /// <returns><c>true</c> if such a conversion exists; otherwise, <c>false</c>.</returns>
+        public static bool CanConvert([NotNull] Type sourceType, [NotNull] Type destinationType)
+        {
+            if (sourceType == null) throw new ArgumentNullException(nameof(sourceType));
+            if (destinationType == null) throw new ArgumentNullException(nameof(destinationType));
+
+            // already same type or inherited (also works with interface), or
+            // implements IConvertible, or
+            // can convert from source type to target type
+            return destinationType.IsAssignableFrom(sourceType) ||
+                   typeof(IConvertible).IsAssignableFrom(sourceType) && Type.GetTypeCode(destinationType) != TypeCode.Object ||
+                   TypeDescriptor.GetConverter(sourceType).CanConvertTo(destinationType) || TypeDescriptor.GetConverter(destinationType).CanConvertFrom(sourceType);
+        }
+
+        /// <summary>
+        /// Tries to convert the <paramref name="source"/> to the <paramref name="destinationType"/>.
         /// </summary>
         /// <param name="source">The object to convert</param>
-        /// <param name="targetType">The type to convert to</param>
+        /// <param name="destinationType">The type to convert to</param>
         /// <param name="target">The converted object</param>
-        /// <returns><c>true</c> if the <paramref name="source"/> could be converted to the <paramref name="targetType"/>; otherwise, <c>false</c>.</returns>
-        public static bool TryConvert(object source, Type targetType, out object target)
+        /// <returns><c>true</c> if the <paramref name="source"/> could be converted to the <paramref name="destinationType"/>; otherwise, <c>false</c>.</returns>
+        public static bool TryConvert(object source, [NotNull] Type destinationType, out object target)
         {
-            if (targetType == null)
-                throw new ArgumentNullException(nameof(targetType));
+            if (destinationType == null) throw new ArgumentNullException(nameof(destinationType));
 
-            if(source != null)
+            if (source != null)
             {
                 try
                 {
                     // Already same type or inherited (also works with interface)
-                    if (targetType.IsInstanceOfType(source))
+                    if (destinationType.IsInstanceOfType(source))
                     {
                         target = source;
                         return true;
                     }
-                
+
                     if (source is IConvertible)
                     {
-                        var typeCode = Type.GetTypeCode(targetType);
+                        var typeCode = Type.GetTypeCode(destinationType);
                         if (typeCode != TypeCode.Object)
                         {
-                            target = Convert.ChangeType(source, targetType);
+                            target = Convert.ChangeType(source, destinationType);
                             return true;
                         }
                     }
@@ -44,13 +63,13 @@ namespace SiliconStudio.Core.TypeConverters
                     var sourceType = source.GetType();
                     // Try to convert using the source type converter
                     var converter = TypeDescriptor.GetConverter(sourceType);
-                    if (converter.CanConvertTo(targetType))
+                    if (converter.CanConvertTo(destinationType))
                     {
-                        target = converter.ConvertTo(source, targetType);
+                        target = converter.ConvertTo(source, destinationType);
                         return true;
                     }
                     // Try to convert using the target type converter
-                    converter = TypeDescriptor.GetConverter(targetType);
+                    converter = TypeDescriptor.GetConverter(destinationType);
                     if (converter.CanConvertFrom(sourceType))
                     {
                         target = converter.ConvertFrom(source);
@@ -61,10 +80,12 @@ namespace SiliconStudio.Core.TypeConverters
                 catch (InvalidOperationException) { }
                 catch (FormatException) { }
                 catch (NotSupportedException) { }
+                catch (OverflowException) { }
                 catch (Exception ex) when (ex.InnerException is InvalidCastException) { }
                 catch (Exception ex) when (ex.InnerException is InvalidOperationException) { }
                 catch (Exception ex) when (ex.InnerException is FormatException) { }
                 catch (Exception ex) when (ex.InnerException is NotSupportedException) { }
+                catch (Exception ex) when (ex.InnerException is OverflowException) { }
             }
 
             // Incompatible type and no conversion available

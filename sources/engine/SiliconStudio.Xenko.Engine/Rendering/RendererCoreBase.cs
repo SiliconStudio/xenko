@@ -21,6 +21,7 @@ namespace SiliconStudio.Xenko.Rendering
     [DataContract]
     public abstract class RendererCoreBase : ComponentBase, IGraphicsRendererCore
     {
+        [DataMemberIgnore]
         public readonly ProfilingKey ProfilingKey;
 
         private bool isInDrawCore;
