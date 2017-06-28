@@ -15,32 +15,32 @@ namespace SiliconStudio.Assets.Quantum
     public class AssetNodeFactory : INodeFactory
     {
         /// <inheritdoc/>
-        public IGraphNode CreateObjectContent(INodeBuilder nodeBuilder, Guid guid, object obj, ITypeDescriptor descriptor, bool isPrimitive)
+        public IObjectNode CreateObjectNode(INodeBuilder nodeBuilder, Guid guid, object obj, ITypeDescriptor descriptor)
         {
             if (nodeBuilder == null) throw new ArgumentNullException(nameof(nodeBuilder));
             if (obj == null) throw new ArgumentNullException(nameof(obj));
             if (descriptor == null) throw new ArgumentNullException(nameof(descriptor));
             var reference = nodeBuilder.CreateReferenceForNode(descriptor.Type, obj, false) as ReferenceEnumerable;
-            return new AssetObjectNode(nodeBuilder, obj, guid, descriptor, isPrimitive, reference);
+            return new AssetObjectNode(nodeBuilder, obj, guid, descriptor, reference);
         }
 
         /// <inheritdoc/>
-        public IGraphNode CreateBoxedContent(INodeBuilder nodeBuilder, Guid guid, object structure, ITypeDescriptor descriptor, bool isPrimitive)
+        public IObjectNode CreateBoxedNode(INodeBuilder nodeBuilder, Guid guid, object structure, ITypeDescriptor descriptor)
         {
             if (nodeBuilder == null) throw new ArgumentNullException(nameof(nodeBuilder));
             if (structure == null) throw new ArgumentNullException(nameof(structure));
             if (descriptor == null) throw new ArgumentNullException(nameof(descriptor));
-            return new AssetBoxedNode(nodeBuilder, structure, guid, descriptor, isPrimitive);
+            return new AssetBoxedNode(nodeBuilder, structure, guid, descriptor);
         }
 
         /// <inheritdoc/>
-        public IGraphNode CreateMemberContent(INodeBuilder nodeBuilder, Guid guid, IObjectNode parent, IMemberDescriptor member, bool isPrimitive, object value)
+        public IMemberNode CreateMemberNode(INodeBuilder nodeBuilder, Guid guid, IObjectNode parent, IMemberDescriptor member, object value)
         {
             if (nodeBuilder == null) throw new ArgumentNullException(nameof(nodeBuilder));
             if (parent == null) throw new ArgumentNullException(nameof(parent));
             if (member == null) throw new ArgumentNullException(nameof(member));
             var reference = nodeBuilder.CreateReferenceForNode(member.Type, value, true);
-            return new AssetMemberNode(nodeBuilder, guid, parent, member, isPrimitive, reference);
+            return new AssetMemberNode(nodeBuilder, guid, parent, member, reference);
         }
     }
 }

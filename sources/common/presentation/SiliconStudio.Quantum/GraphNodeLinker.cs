@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
@@ -75,6 +76,16 @@ namespace SiliconStudio.Quantum
                 }
                 base.VisitReference(referencer, reference);
             }
+
+            protected override bool ShouldVisitMemberTarget(IMemberNode memberNode)
+            {
+                return linker.ShouldVisitMemberTarget(memberNode) && base.ShouldVisitMemberTarget(memberNode);
+            }
+
+            protected override bool ShouldVisitTargetItem(IObjectNode collectionNode, Index index)
+            {
+                return linker.ShouldVisitTargetItem(collectionNode, index) && base.ShouldVisitTargetItem(collectionNode, index);
+            }
         }
 
         private readonly GraphNodeLinkerVisitor visitor;
@@ -84,11 +95,7 @@ namespace SiliconStudio.Quantum
         /// </summary>
         public GraphNodeLinker()
         {
-            visitor = new GraphNodeLinkerVisitor(this)
-            {
-                ShouldVisitMemberTargetNode = (member) => ShouldVisitMemberTarget(member),
-                ShouldVisitTargetItemNode = (collectionNode, index) => ShouldVisitTargetItem(collectionNode, index),
-            };
+            visitor = new GraphNodeLinkerVisitor(this);
         }
 
         /// <summary>

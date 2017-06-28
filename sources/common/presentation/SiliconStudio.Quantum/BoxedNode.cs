@@ -12,8 +12,8 @@ namespace SiliconStudio.Quantum
         private GraphNodeBase boxedStructureOwner;
         private Index boxedStructureOwnerIndex;
 
-        public BoxedNode([NotNull] INodeBuilder nodeBuilder, object value, Guid guid, ITypeDescriptor descriptor, bool isPrimitive)
-            : base(nodeBuilder, value, guid, descriptor, isPrimitive, null)
+        public BoxedNode([NotNull] INodeBuilder nodeBuilder, object value, Guid guid, ITypeDescriptor descriptor)
+            : base(nodeBuilder, value, guid, descriptor, null)
         {
         }
 
