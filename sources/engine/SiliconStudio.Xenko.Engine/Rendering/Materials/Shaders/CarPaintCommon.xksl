@@ -170,80 +170,14 @@ float2 randomUV(in float2 uv)
         return nearestCellIndex;
     }
 
-    //------------------------------------------------------------------------------
-    // Generate normal map for flake
-    //------------------------------------------------------------------------------
-    float3 generate_flake_normal(in float2 uv, in float4 p)
-    {
-        const float flake_scale              = p.x;
-        const float flake_size               = p.y;
-        const float flake_size_variance      = p.z;
-        const float flake_normal_orientation = p.w;
-
-        float3 position = float3(uv.x, uv.y, 0.0);
-        position *= flake_scale;
-
-        float3 b = floor(position);
-
-        float3 cell_center;
-        int nearestCellIndex = check_flake_cell(b, position, flake_size, flake_size_variance, cell_center);
-
-        float3 result = float3(0.0, 0.0, 1.0);
-
-        if (nearestCellIndex >= 0)
-        {
-            float3 randomNormal = cellnoise(b + cell_center + float3(0.0, 0.0, 1.5));
-            randomNormal = 2.0 * randomNormal - 1.0;
-            randomNormal = faceforward(randomNormal, float3(0.0, 0.0, 1.0), randomNormal);
-            result = normalize(lerp(randomNormal, float3(0.0, 0.0, 1.0), flake_normal_orientation));
-        }
-
-        return result;
-    }
-
-    float CarPaintGenerateFlakeShininess(in float2 uv, in float4 parameters)
-    {
-        const float flake_scale              = parameters.x;
-        const float flake_size               = parameters.y;
-        const float flake_size_variance      = parameters.z;
-        const float pearlescent_ratio        = parameters.w;
-
-        float3 position = float3(uv.xy, 0.0f);
-    }
-
-    #define RETRIEVE_FLAKE_PARAMETERS( p )\
-        const float flake_scale              = p.x;\
-        const float flake_size               = p.y;\
-        const float flake_size_variance      = p.z;\
-        const float pearlescent_ratio        = p.w;
-
-    float4 GetFlakeColor( in float2 uvCoordinates, in float4 baseColor, in float4 parameters )
-    {    
-        RETRIEVE_FLAKE_PARAMETERS(parameters)
-
-        float2 randomUvCoordinates = randomUV( uvCoordinates );
-        float3 position = float3( randomUvCoordinates.xy * flake_scale, 0 );
-        
-        float3 basePosition = floor( position );
-        float3 cell_center = 0;
-        int nearestCellIndex = check_flake_cell(basePosition, position, flake_size, flake_size_variance, cell_center);
-
-        if (nearestCellIndex >= 0)
-        {
-            float3 randomValues = cellnoise(basePosition + cell_center + float3(1.0, 2.0, 3.5));
-            float3 randomColor = cellnoise(basePosition + cell_center + float3(2.0, 1.0, 0.5));
-
-            return lerp(randomColor, baseColor.rgb, step(pearlescent_ratio, randomValues.x));
-        }
-
-        return baseColor;
-    }
-
     void generate_flake_all(in float2 uv, in float4 p, inout float3 resultNormal, inout float4 resultColor, inout float resultShininess)
     {
         uv = randomUV( uv );
         
-        RETRIEVE_FLAKE_PARAMETERS(p)
+        const float flake_scale              = p.x;
+        const float flake_size               = p.y;
+        const float flake_size_variance      = p.z;
+        const float pearlescent_ratio        = p.w;
 
         float3 position = float3(uv.x, uv.y, 0.0);
         position *= flake_scale;
@@ -265,5 +199,81 @@ float2 randomUV(in float2 uv)
             resultColor.xyz = lerp(randomColor, resultColor.xyz, step(pearlescent_ratio, randomValues.x));
             resultShininess = randomValues.y;
         }
+    }
+    
+    float3 GenerateFlakeRandomColor(in float2 uv, in float4 p, in float3 baseColor)
+    {
+        const float flake_scale              = p.x;
+        const float flake_size               = p.y;
+        const float flake_size_variance      = p.z;
+        const float pearlescent_ratio        = p.w;
+
+        float3 position = float3(uv.x, uv.y, 0.0);
+        position *= flake_scale;
+
+        float3 b = floor(position);
+
+        float3 cell_center;
+        int nearestCellIndex = check_flake_cell(b, position, flake_size, flake_size_variance, cell_center);
+
+        if (nearestCellIndex >= 0)
+        {
+            float3 randomValues = cellnoise(b + cell_center + float3(1.0, 2.0, 3.5));
+            float3 randomColor  = cellnoise(b + cell_center + float3(2.0, 1.0, 0.5));
+
+            return lerp(randomColor, baseColor.xyz, step(pearlescent_ratio, randomValues.x));         
+        }
+
+        return baseColor;
+    }
+
+    float3 GenerateFlakeRandomNormal(in float2 uv, in float4 p, in float3 baseNormal)
+    {
+        const float flake_scale              = p.x;
+        const float flake_size               = p.y;
+        const float flake_size_variance      = p.z;
+        const float flake_normal_orientation = p.w;
+        
+        float3 position = float3(uv.x, uv.y, 0.0);
+        position *= flake_scale;
+
+        float3 b = floor(position);
+
+        float3 cell_center;
+        int nearestCellIndex = check_flake_cell(b, position, flake_size, flake_size_variance, cell_center);
+        
+        if (nearestCellIndex >= 0)
+        {
+            float3 randomNormal = cellnoise(b + cell_center + float3(0.0, 0.0, 1.5));
+            randomNormal = 2.0 * randomNormal - 1.0;
+            randomNormal = faceforward(randomNormal, float3(0.0, 0.0, 1.0), randomNormal);
+
+            return normalize(lerp(randomNormal, float3(0.0, 1.0, 0.0), flake_normal_orientation));
+        }
+
+        return baseNormal;
+    }
+
+    float GenerateFlakeShininess(in float2 uv, in float4 p, in float baseShininess)
+    {
+        const float flake_scale              = p.x;
+        const float flake_size               = p.y;
+        const float flake_size_variance      = p.z;
+        const float pearlescent_ratio        = p.w;
+
+        float3 position = float3(uv.x, uv.y, 0.0);
+        position *= flake_scale;
+
+        float3 b = floor(position);
+
+        float3 cell_center;
+        int nearestCellIndex = check_flake_cell(b, position, flake_size, flake_size_variance, cell_center);
+
+        if (nearestCellIndex >= 0)
+        {      
+            return cellnoise(b + cell_center + float3(1.0, 2.0, 3.5)).y;
+        }
+
+        return baseShininess;
     }
 };

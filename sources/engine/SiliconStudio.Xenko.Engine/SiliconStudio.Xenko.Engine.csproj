@@ -241,6 +241,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureScaledOffsetDynamicSamplerRandomUv.cs">
+      <DependentUpon>ComputeColorTextureScaledOffsetDynamicSamplerRandomUv.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Rendering\Materials\Shaders\CarPaintCommon.cs">
       <DependentUpon>CarPaintCommon.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -831,6 +837,10 @@
     <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorFlakeShininess.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorFlakeShininess.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureScaledOffsetDynamicSamplerRandomUv.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorTextureScaledOffsetDynamicSamplerRandomUv.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorThreshold.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>

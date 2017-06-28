@@ -1,35 +1,31 @@
 // Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 shader ComputeColorFlakeNormals : ComputeColor, 
-                                    CarPaintCommon,
-                                    DynamicTexture<TTextureName, PerMaterial>, 
-                                    DynamicSampler<TSampler, PerMaterial>, 
-                                    DynamicTextureStream<TStream>
+                                  CarPaintCommon,
+                                  DynamicTextureStream<TStream>,
+                                  MaterialPixelShadingStream
 {
-    compose ComputeColor flake_scale;
-    compose ComputeColor flake_size;
-    compose ComputeColor flake_size_variance;
-    compose ComputeColor pearlescent_ratio;
+    compose ComputeColor flakeParameters;
+    compose ComputeColor flakeNormalMap;
     
-    compose ComputeColor flake_base_color;
-
     override float4 Compute()
     {
-        float3 rNormal = float3( 0, 0, 0 );
-        float rShininess = 0.0f;
-        float4 rColor = float4( 0, 0, 0, 1 );
+        float4 fp = flakeParameters.Compute();
+        
+        float3 flakeNormalFromMap = float3(0.0f, 0.0f, 1.0f);
+         
+        float4 flakeBaseNormals = flakeNormalMap.Compute();
+        flakeNormalFromMap.xy = flakeBaseNormals.rg * float2(flakeBaseNormals.a, 1.0f);
+        flakeNormalFromMap.xy = flakeNormalFromMap.xy * 2.0f - 1.0f;
+        flakeNormalFromMap.z = sqrt(max(0.0, 1.0f - dot(flakeNormalFromMap.xy, flakeNormalFromMap.xy)));
 
-        float flakeScale = flake_scale.Compute().r;
-        float flakeSize = flake_size.Compute().r;
-        float flakeSizeVariance = flake_size_variance.Compute().r;
-        float flakePearlescentRatio = pearlescent_ratio.Compute().r;
+        float3 randomNormal = GenerateFlakeRandomNormal( streams.TexCoord, fp, flakeNormalFromMap );
 
-        float4 flakeParameters = float4( flakeScale, flakeSize, flakeSizeVariance, flakePearlescentRatio );
+        // TODO Fix inconsitent random flake normal scaling
+        flakeNormalFromMap = lerp(flakeNormalFromMap, randomNormal, streams.NdotL);
 
-        float3 flakeBaseNormals = flake_base_color.Compute().rgb;
+        flakeNormalFromMap = normalize(flakeNormalFromMap);
 
-        generate_flake_all(streams.TexCoord, flakeParameters, rNormal, rColor, rShininess);
-
-        return float4(rNormal, 1.0f);
+        return float4(flakeNormalFromMap, 0.0f);
     }
 };
