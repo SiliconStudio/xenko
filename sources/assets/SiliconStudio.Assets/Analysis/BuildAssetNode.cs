@@ -67,17 +67,20 @@ namespace SiliconStudio.Assets.Analysis
             //DependencyManager check
             //for now we use the dependency manager itself to resolve runtime dependencies, in the future we might want to unify the builddependency manager with the dependency manager
             var dependencies = AssetItem.Package.Session.DependencyManager.ComputeDependencies(AssetItem.Id, AssetDependencySearchOptions.Out);
-            foreach (var assetDependency in dependencies.LinksOut)
+            if (dependencies != null)
             {
-                var assetType = assetDependency.Item.Asset.GetType();
-                if (!typesToExclude.Contains(assetType)) //filter out what we do not need
+                foreach (var assetDependency in dependencies.LinksOut)
                 {
-                    foreach (var input in typesToInclude.Where(x => x.Key == assetType))
+                    var assetType = assetDependency.Item.Asset.GetType();
+                    if (!typesToExclude.Contains(assetType)) //filter out what we do not need
                     {
-                        var dependencyType = input.Value;
-                        var node = buildDependencyManager.FindOrCreateNode(assetDependency.Item, dependencyType);
-                        references.TryAdd(assetDependency.Item.Id, node);
-                        node.referencedBy.TryAdd(this, AssetItem.Id); //add this as referenced by child
+                        foreach (var input in typesToInclude.Where(x => x.Key == assetType))
+                        {
+                            var dependencyType = input.Value;
+                            var node = buildDependencyManager.FindOrCreateNode(assetDependency.Item, dependencyType);
+                            references.TryAdd(assetDependency.Item.Id, node);
+                            node.referencedBy.TryAdd(this, AssetItem.Id); //add this as referenced by child
+                        }
                     }
                 }
             }

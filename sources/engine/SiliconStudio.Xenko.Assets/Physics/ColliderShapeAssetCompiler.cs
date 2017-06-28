@@ -51,18 +51,6 @@ namespace SiliconStudio.Xenko.Assets.Physics
             yield return typeof(TextureAsset);
         }
 
-        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
-        {
-            var asset = (ColliderShapeAsset)assetItem.Asset;
-            foreach (var convexHullDesc in
-                (from shape in asset.ColliderShapes let type = shape.GetType() where type == typeof(ConvexHullColliderShapeDesc) select shape)
-                    .Cast<ConvexHullColliderShapeDesc>())
-            {
-                var url = AttachedReferenceManager.GetUrl(convexHullDesc.Model);
-                yield return new ObjectUrl(UrlType.Content, url);
-            }
-        }
-
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (ColliderShapeAsset)assetItem.Asset;

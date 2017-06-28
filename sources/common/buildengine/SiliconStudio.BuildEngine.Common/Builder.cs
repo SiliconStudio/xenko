@@ -517,7 +517,7 @@ namespace SiliconStudio.BuildEngine
         /// <summary>
         /// Runs this instance.
         /// </summary>
-        public BuildResultCode Run(Mode mode, bool writeIndexFile = true, bool enableMonitor = true)
+        public BuildResultCode Run(Mode mode, bool writeIndexFile = true, bool enableMonitor = false)
         {
             // When we setup the database ourself we have to take responsibility to close it after
             var shouldCloseDatabase = ObjectDatabase == null;
@@ -531,7 +531,6 @@ namespace SiliconStudio.BuildEngine
                 throw new InvalidOperationException("An instance of this Builder is already running.");
 
             // reset build cache from previous build run
-            var parameters = new BuildParameterCollection();
             cancellationTokenSource = new CancellationTokenSource();
             Cancelled = false;
             IsRunning = true;
@@ -540,7 +539,7 @@ namespace SiliconStudio.BuildEngine
             // Reseting result map
             var inputHashes = FileVersionTracker.GetDefault();
             {
-                var builderContext = new BuilderContext(buildPath, buildProfile, inputHashes, parameters, MaxParallelProcesses, SlaveBuilderPath);
+                var builderContext = new BuilderContext(buildPath, buildProfile, inputHashes, MaxParallelProcesses, SlaveBuilderPath);
 
                 resultMap = ObjectDatabase;
 

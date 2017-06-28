@@ -167,7 +167,6 @@ namespace SiliconStudio.Assets.Yaml
         public YamlAssetPath Append([CanBeNull] YamlAssetPath other)
         {
             var result = new YamlAssetPath(elements);
-            result.elements.AddRange(elements);
             if (other != null)
             {
                 result.elements.AddRange(other.elements);

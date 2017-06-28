@@ -15,8 +15,6 @@ namespace SiliconStudio.BuildEngine
 
         public abstract LoggerResult Logger { get; }
 
-        public BuildParameterCollection BuildParameters { get; }
-
         protected internal readonly CommandResultEntry ResultEntry;
 
         public abstract IEnumerable<IDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups();
@@ -26,7 +24,6 @@ namespace SiliconStudio.BuildEngine
         protected CommandContextBase(Command command, BuilderContext builderContext)
         {
             CurrentCommand = command;
-            BuildParameters = builderContext.Parameters;
             ResultEntry = new CommandResultEntry();
         }
 
