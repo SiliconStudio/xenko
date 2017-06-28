@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
             string modelName;
             if (!SpriteStudioXmlImport.ParseModel(rawAssetPath, nodes, out modelName))
             {
-                importParameters.Logger.Error("Failed to parse Sprite Studio model.");
+                importParameters.Logger.Error("Failed to parse SpriteStudio model.");
                 return null;
             }
 
@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                 var anims = new List<SpriteStudioAnim>();
                 if (!SpriteStudioXmlImport.ParseAnimations(rawAssetPath, anims))
                 {
-                    importParameters.Logger.Error("Failed to parse Sprite Studio animations.");
+                    importParameters.Logger.Error("Failed to parse SpriteStudio animations.");
                     return null;
                 }
 
@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
         }
 
         public override Guid Id { get; } = new Guid("f0b76549-ed9c-4e74-8522-f44ec8e90806");
-        public override string Description { get; } = "OPTPiX Sprite Studio Importer";
+        public override string Description { get; } = "OPTPiX SpriteStudio Importer";
 
         public override string SupportedFileExtensions => FileExtensions;
     }
