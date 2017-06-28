@@ -1,11 +1,12 @@
 // Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Annotations;
 
-namespace SiliconStudio.Presentation.Extensions
+namespace SiliconStudio.Core.Extensions
 {
     /// <summary>
     /// Helper functions to process enum flags.
