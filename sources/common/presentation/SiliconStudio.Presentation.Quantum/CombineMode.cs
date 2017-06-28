@@ -1,7 +1,7 @@
 // Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
-namespace SiliconStudio.Quantum
+namespace SiliconStudio.Presentation.Quantum
 {
     /// <summary>
     /// An enum that describes what to do with a node or a command when combining view models.
