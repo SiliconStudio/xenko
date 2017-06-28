@@ -15,6 +15,6 @@ shader ComputeColorFlakeColor : ComputeColor,
 
         float3 randomFlakeColor = GenerateFlakeRandomColor(streams.TexCoord, flakeParameters, flakeBaseColor);
 
-        return float4(lerp(flakeBaseColor, randomFlakeColor, streams.NdotL), 1.0f);
+        return float4(lerp(flakeBaseColor, randomFlakeColor, 0.8f), 1.0f);
     }
 };

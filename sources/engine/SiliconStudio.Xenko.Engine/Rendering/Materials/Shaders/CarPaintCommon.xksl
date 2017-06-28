@@ -221,13 +221,13 @@ float2 randomUV(in float2 uv)
             float3 randomValues = cellnoise(b + cell_center + float3(1.0, 2.0, 3.5));
             float3 randomColor  = cellnoise(b + cell_center + float3(2.0, 1.0, 0.5));
 
-            return lerp(randomColor, baseColor.xyz, step(pearlescent_ratio, randomValues.x));         
+            return lerp(randomColor, baseColor.xyz, step(pearlescent_ratio, randomValues.x));
         }
 
         return baseColor;
     }
 
-    float3 GenerateFlakeRandomNormal(in float2 uv, in float4 p, in float3 baseNormal)
+    float3 GenerateRandomFlakeNormal(in float2 uv, in float4 p, in float3 baseNormal)
     {
         const float flake_scale              = p.x;
         const float flake_size               = p.y;
@@ -248,7 +248,7 @@ float2 randomUV(in float2 uv)
             randomNormal = 2.0 * randomNormal - 1.0;
             randomNormal = faceforward(randomNormal, float3(0.0, 0.0, 1.0), randomNormal);
 
-            return normalize(lerp(randomNormal, float3(0.0, 1.0, 0.0), flake_normal_orientation));
+            return randomNormal;
         }
 
         return baseNormal;
