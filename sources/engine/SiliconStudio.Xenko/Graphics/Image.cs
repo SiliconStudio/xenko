@@ -1111,8 +1111,7 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 ++mipLevels;
 
-                if (width > 1)
-                    width >>= 1;
+                width >>= 1;
             }
 
             return mipLevels;

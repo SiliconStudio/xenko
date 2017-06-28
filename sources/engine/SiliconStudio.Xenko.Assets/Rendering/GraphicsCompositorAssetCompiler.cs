@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Assets.Rendering
     [AssetCompiler(typeof(GraphicsCompositorAsset), typeof(AssetCompilationContext))]
     public class GraphicsCompositorAssetCompiler : AssetCompilerBase
     {
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
         {
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(RenderTextureAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileAsset);
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(TextureAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileAsset);
@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Assets.Rendering
 
         public override bool AlwaysCheckRuntimeTypes { get; } = true; //compositor is special, we always want to visit what the renderers
 
-        public override IEnumerable<Type> GetRuntimeTypes(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<Type> GetRuntimeTypes(AssetItem assetItem)
         {
             yield return typeof(RendererCoreBase);
         }

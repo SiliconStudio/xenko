@@ -33,24 +33,20 @@
     <Compile Include="BuildStepExtensions.cs" />
     <Compile Include="BuildThreadMonitor.cs" />
     <Compile Include="BuildStepLogger.cs" />
-    <Compile Include="DatabaseMountInfo.cs" />
-    <Compile Include="BuildScript.cs" />
+    <Compile Include="CommandResultEntry.cs" />
     <Compile Include="DynamicBuilder.cs" />
     <Compile Include="DynamicBuildStep.cs" />
     <Compile Include="FileVersionStorage.cs" />
     <Compile Include="IBuildStepProvider.cs" />
     <Compile Include="IForwardSerializableLogRemote.cs" />
     <Compile Include="MicrothreadLocalDatabases.cs" />
-    <Compile Include="PathExt.cs" />
-    <Compile Include="PluginResolver.cs" />
     <Compile Include="ProcessBuilderRemote.cs" />
     <Compile Include="SerializableTimestampLogMessage.cs" />
     <Compile Include="SingleFileImportCommand.cs" />
     <Compile Include="IBuildMonitorRemote.cs" />
-    <Compile Include="MicroThreadFileProvider.cs" />
     <Compile Include="StepCounter.cs" />
     <Compile Include="TimeInterval.cs" />
-    <Compile Include="TransactionAssetIndexMap.cs" />
+    <Compile Include="BuildTransaction.cs" />
     <Compile Include="CommandIOMonitor.cs" />
     <Compile Include="Builder.cs" />
     <Compile Include="BuilderContext.cs" />
@@ -58,9 +54,7 @@
     <Compile Include="CommandBuildStep.cs" />
     <Compile Include="CommandContextBase.cs" />
     <Compile Include="ICommandContext.cs" />
-    <Compile Include="BuildParameterCollection.cs" />
     <Compile Include="Command.cs" />
-    <Compile Include="CommandResult.cs" />
     <Compile Include="IExecuteContext.cs" />
     <Compile Include="IndexFileCommand.cs" />
     <Compile Include="FileVersionTracker.cs" />
@@ -70,7 +64,6 @@
     <Compile Include="XenkoDataContractOperationBehavior.cs" />
     <Compile Include="OutputObject.cs" />
     <Compile Include="XenkoXmlObjectSerializer.cs" />
-    <Compile Include="ParamFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResultStatus.cs" />
     <Compile Include="BuildStepEventArgs.cs" />
@@ -103,11 +96,6 @@
       <Name>SiliconStudio.Core.Serialization</Name>
       <Private>False</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\FileEnumerationBuildStep.png" />
-    <EmbeddedResource Include="Resources\ListBuildStep.png" />
-    <EmbeddedResource Include="Resources\WaitBuildStep.png" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

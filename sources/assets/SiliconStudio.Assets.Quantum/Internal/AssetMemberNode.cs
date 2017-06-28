@@ -17,8 +17,8 @@ namespace SiliconStudio.Assets.Quantum.Internal
 
         private OverrideType contentOverride;
 
-        public AssetMemberNode(INodeBuilder nodeBuilder, Guid guid, IObjectNode parent, IMemberDescriptor memberDescriptor, bool isPrimitive, IReference reference)
-            : base(nodeBuilder, guid, parent, memberDescriptor, isPrimitive, reference)
+        public AssetMemberNode(INodeBuilder nodeBuilder, Guid guid, IObjectNode parent, IMemberDescriptor memberDescriptor, IReference reference)
+            : base(nodeBuilder, guid, parent, memberDescriptor, reference)
         {
             ValueChanged += ContentChanged;
             IsNonIdentifiableCollectionContent = MemberDescriptor.GetCustomAttributes<NonIdentifiableCollectionItemsAttribute>(true)?.Any() ?? false;

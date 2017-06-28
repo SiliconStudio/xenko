@@ -33,20 +33,17 @@ namespace SiliconStudio.Xenko.PackageInstall
                 bool isRepair = false;
                 switch (args[0])
                 {
+                    case "/extract":
+                    {
+                        ExtractData();
+                        break;
+                    }
                     case "/install":
                     {
                         // In repair mode, we check if data.xz exists (means install failed)
-                        if (!isRepair || File.Exists(@"..\data.xz"))
+                        if (!isRepair)
                         {
-                            var indexedArchive = new IndexedArchive();
-
-                            // Note: there is 2 phases while decompressing: Decompress (LZMA) and Expanding (file copying using index.txt)
-                            var progressReport = new XenkoLauncherProgressReport(2);
-
-                            // Extract files from LZMA archive
-                            indexedArchive.Extract(@"..\data.xz", @"..", progressReport);
-
-                            File.Delete(@"..\data.xz");
+                            ExtractData();
                         }
 
                         // Run prerequisites installer (if it exists)
@@ -96,6 +93,22 @@ namespace SiliconStudio.Xenko.PackageInstall
             {
                 Console.WriteLine($"Error: {e}");
                 return 1;
+            }
+        }
+
+        private static void ExtractData()
+        {
+            if (File.Exists(@"..\data.xz"))
+            {
+                var indexedArchive = new IndexedArchive();
+
+                // Note: there is 2 phases while decompressing: Decompress (LZMA) and Expanding (file copying using index.txt)
+                var progressReport = new XenkoLauncherProgressReport(2);
+
+                // Extract files from LZMA archive
+                indexedArchive.Extract(@"..\data.xz", @"..", progressReport);
+
+                File.Delete(@"..\data.xz");
             }
         }
 

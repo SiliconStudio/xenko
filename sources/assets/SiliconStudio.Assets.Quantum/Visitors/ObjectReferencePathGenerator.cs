@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using SiliconStudio.Assets.Quantum.Internal;
@@ -37,9 +37,9 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         /// <inheritdoc/>
         protected override void VisitMemberNode(IAssetMemberNode memberNode, int inNonIdentifiableType)
         {
-            if (propertyGraphDefinition.IsMemberTargetObjectReference(memberNode, memberNode.Retrieve()))
+            var value = memberNode.Retrieve();
+            if (propertyGraphDefinition.IsMemberTargetObjectReference(memberNode, value))
             {
-                var value = memberNode.Retrieve();
                 if (value == null)
                     return;
 

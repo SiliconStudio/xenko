@@ -316,7 +316,7 @@ namespace SiliconStudio.BuildEngine
                         };
 
                     // Start WCF pipe for communication with process
-                    var processBuilderRemote = new ProcessBuilderRemote(commandContext, Command, builderContext.Parameters);
+                    var processBuilderRemote = new ProcessBuilderRemote(commandContext, Command);
                     var host = new ServiceHost(processBuilderRemote);
                     host.AddServiceEndpoint(typeof(IProcessBuilderRemote), new NetNamedPipeBinding(NetNamedPipeSecurityMode.None) { MaxReceivedMessageSize = int.MaxValue }, address);
                     host.Open();
@@ -350,7 +350,7 @@ namespace SiliconStudio.BuildEngine
 
                     if (process.ExitCode != 0)
                     {
-                        logger.Debug($"Remote command crashed with output:{Environment.NewLine}{string.Join(Environment.NewLine, output)}");
+                        logger.Error($"Remote command crashed with output:{Environment.NewLine}{string.Join(Environment.NewLine, output)}");
                     }
 
                     if (processBuilderRemote.Result != null)

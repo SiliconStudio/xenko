@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using Mono.Cecil.Rocks;
 
 namespace SiliconStudio.AssemblyProcessor
 {
@@ -11,7 +12,7 @@ namespace SiliconStudio.AssemblyProcessor
         public bool Process(AssemblyProcessorContext context)
         {
             bool changed = false;
-            foreach (var type in context.Assembly.EnumerateTypes())
+            foreach (var type in context.Assembly.MainModule.GetAllTypes())
             {
                 foreach (var method in type.Methods)
                 {

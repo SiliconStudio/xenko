@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Assets
             };
         }
 
-        public override IEnumerable<Type> GetRuntimeTypes(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<Type> GetRuntimeTypes(AssetItem assetItem)
         {
             yield return typeof(Scene);
             yield return typeof(GraphicsCompositor);
