@@ -152,6 +152,17 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
         [DataMember(60)]
         public Vector2 Offset { get; set; }
 
+        /// <summary>
+        /// Uses random texture coordinates.
+        /// </summary>
+        /// <userdoc>
+        /// Specify if the input texture should be sampled with random texture coordinates.
+        /// </userdoc>
+        [DataMember(70)]
+        [DefaultValue(false)]
+        [Display("Use Random Texture Coordinates")]
+        public bool UseRandomTexCoordinates { get; set; }
+
         /// <inheritdoc/>
         public override string ToString()
         {
@@ -232,7 +243,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
                 }
                 else
                 {
-                    shaderSource = new ShaderClassSource("ComputeColorTextureScaledOffsetDynamicSampler", textureKey, usedTexcoord, samplerKey, channelStr, textureScale, textureOffset);
+                    if (UseRandomTexCoordinates)
+                        shaderSource = new ShaderClassSource("ComputeColorTextureScaledOffsetDynamicSamplerRandomUv", textureKey, usedTexcoord, samplerKey, channelStr, textureScale, textureOffset);
+                    else
+                        shaderSource = new ShaderClassSource("ComputeColorTextureScaledOffsetDynamicSampler", textureKey, usedTexcoord, samplerKey, channelStr, textureScale, textureOffset);
                 }
             }
 
