@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     public class MaterialDiffuseMapFeature : MaterialFeature, IMaterialDiffuseFeature, IMaterialStreamProvider
     {
         public static readonly MaterialStreamDescriptor DiffuseStream = new MaterialStreamDescriptor("Diffuse", "matDiffuse", MaterialKeys.DiffuseValue.PropertyType);
-        public static readonly MaterialStreamDescriptor ColorBaseStream = new MaterialStreamDescriptor("Color Base", "matColorBase", MaterialKeys.DiffuseValue.PropertyType);
+        public static readonly MaterialStreamDescriptor ColorBaseStream = new MaterialStreamDescriptor("Color base", "matColorBase", MaterialKeys.DiffuseValue.PropertyType);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialDiffuseMapFeature"/> class.
