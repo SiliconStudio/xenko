@@ -159,7 +159,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
                     (float)rand.NextDouble() * 20.0f - 10.0f,
                     (float)rand.NextDouble() * 20.0f - 10.0f
                     );
-                //Scene.Entities.Add(pointLight1);
+                Scene.Entities.Add(pointLight1);
             }
 
 

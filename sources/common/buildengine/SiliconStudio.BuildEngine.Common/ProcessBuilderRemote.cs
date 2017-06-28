@@ -16,25 +16,18 @@ namespace SiliconStudio.BuildEngine
     {
         private readonly LocalCommandContext commandContext;
         private readonly Command remoteCommand;
-        private readonly BuildParameterCollection buildParameters;
 
         public CommandResultEntry Result { get; protected set; }
 
-        public ProcessBuilderRemote(LocalCommandContext commandContext, Command remoteCommand, BuildParameterCollection buildParameters)
+        public ProcessBuilderRemote(LocalCommandContext commandContext, Command remoteCommand)
         {
             this.commandContext = commandContext;
             this.remoteCommand = remoteCommand;
-            this.buildParameters = buildParameters;
         }
 
         public Command GetCommandToExecute()
         {
             return remoteCommand;
-        }
-
-        public BuildParameterCollection GetBuildParameters()
-        {
-            return buildParameters;
         }
 
         public void RegisterResult(CommandResultEntry commandResult)

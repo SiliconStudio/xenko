@@ -1243,14 +1243,12 @@ namespace SiliconStudio.Xenko.Graphics
         private static int CountMips(int width)
         {
             int mipLevels = 1;
-
-            // TODO: Use Math.Log2 or a loop?
+            
             while (width > 1)
             {
                 ++mipLevels;
 
-                if (width > 1)
-                    width >>= 1;
+                width >>= 1;
             }
 
             return mipLevels;

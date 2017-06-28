@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     {
         private static readonly FontDataFactory FontDataFactory = new FontDataFactory();
 
-        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
         {
             var asset = (SpriteFontAsset)assetItem.Asset;
             var fontTypeStatic = asset.FontType as OfflineRasterizedSpriteFontType;
@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                     {
                         new OfflineRasterizedFontCommand(targetUrlInStorage, assetClone, colorSpace, assetItem.Package)
                         {
-                            InputFilesGetter = () => GetInputFiles(context, assetItem)
+                            InputFilesGetter = () => GetInputFiles(assetItem)
                         }
                     };
                 }

@@ -17,8 +17,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         private ImageMultiScaler multiScaler;
 
-        private Afterimage afterimage;
-
         private Vector2 distortion;
 
         private bool stableConvolution;
@@ -31,10 +29,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             Radius = 10;
             Amount = 0.3f;
-            DownScale = 1;
+            DownScale = 2;
             SigmaRatio = 3.5f;
             Distortion = new Vector2(1);
-            afterimage = new Afterimage { Enabled = false };
+            Afterimage = new Afterimage { Enabled = false };
             EnableSetRenderTargets = false;
             stableConvolution = true;
         }
@@ -74,11 +72,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [DataMember(40)]
         public Vector2 Distortion
         {
-            get
-            {
-                return distortion;
-            }
-
+            get => distortion;
             set
             {
                 distortion = value;
@@ -92,13 +86,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         /// <userdoc>When enabled, it simulates some persistence effects of the light points (trails) on the next frames. </userdoc>
         [DataMember(50)]
-        public Afterimage Afterimage
-        {
-            get
-            {
-                return afterimage;
-            }
-        }
+        public Afterimage Afterimage { get; private set; }
 
         /// <summary>
         /// Use the "stable bloom" rendering path.
@@ -109,7 +97,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [Display("Expanded filtering")]
         public bool StableConvolution
         {
-            get { return stableConvolution; }
+            get => stableConvolution;
             set
             {
                 var old = stableConvolution;
@@ -136,21 +124,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [DataMemberIgnore]
         public int DownScale { get; set; }
 
-        [DataMemberIgnore]
-        public int UpperMip
-        {
-            get { return Math.Max(0, MaxMip - 1); }
-        }
-
-        private int MaxMip { get; set; }
-
         protected override void InitializeCore()
         {
             base.InitializeCore();
 
             multiScaler = ToLoadAndUnload(new ImageMultiScaler(StableConvolution));
             blur = ToLoadAndUnload(new GaussianBlur());
-            afterimage = ToLoadAndUnload(afterimage);
+            Afterimage = ToLoadAndUnload(Afterimage);
         }
 
         protected override void DrawCore(RenderDrawContext context)
@@ -164,12 +144,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
 
             // If afterimage is active, add some persistence to the brightness
-            if (afterimage.Enabled)
+            if (Afterimage.Enabled)
             {
                 var persistenceBrightness = NewScopedRenderTarget2D(input.Description);
-                afterimage.SetInput(0, input);
-                afterimage.SetOutput(persistenceBrightness);
-                ((RendererBase)afterimage).Draw(context);
+                Afterimage.SetInput(0, input);
+                Afterimage.SetOutput(persistenceBrightness);
+                Afterimage.Draw(context);
                 input = persistenceBrightness;
             }
 
@@ -186,44 +166,29 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
 
             // ----------------------------------------
-            // Downscale / 4
+            // Downscale
             // ----------------------------------------
-            const int DownScaleBasis = 1;
-            var nextSize = input.Size.Down2(DownScaleBasis);
-            var inputTextureDown4 = NewScopedRenderTarget2D(nextSize.Width, nextSize.Height, input.Format);
-            Scaler.SetInput(input);
-            Scaler.SetOutput(inputTextureDown4);
-            Scaler.Draw(context, "Down/4");
-
-            var blurTexture = inputTextureDown4;
-
-            // TODO: Support automatic additional downscales based on a quality parameter instead
-            // Additional downscales 
+            var nextSize = input.Size.Down2(DownScale);
+            var blurTexture = NewScopedRenderTarget2D(nextSize.Width, nextSize.Height, input.Format);
             if (DownScale > 0)
             {
-                nextSize = nextSize.Down2(DownScale);
-                blurTexture = NewScopedRenderTarget2D(nextSize.Width, nextSize.Height, input.Format);
-
-                multiScaler.SetInput(inputTextureDown4);
+                multiScaler.SetInput(input);
                 multiScaler.SetOutput(blurTexture);
-                ((RendererBase)multiScaler).Draw(context);
+                multiScaler.Draw(context);
+
+                blur.SetInput(blurTexture);
+            }
+            else
+            {
+                blur.SetInput(input);
             }
 
             // Max blur size no more than 1/4 of input size
-            var inputMaxBlurRadiusInPixels = 0.25 * Math.Max(input.Width, input.Height) * Math.Pow(2, -DownScaleBasis - DownScale);
+            var inputMaxBlurRadiusInPixels = 0.25 * Math.Max(input.Width, input.Height) * Math.Pow(2, -DownScale);
             blur.Radius = Math.Max(1, (int)MathUtil.Lerp(1, inputMaxBlurRadiusInPixels, Math.Max(0, Radius / 100.0f)));
             blur.SigmaRatio = Math.Max(1.0f, SigmaRatio);
-            blur.SetInput(blurTexture);
             blur.SetOutput(blurTexture);
-            ((RendererBase)blur).Draw(context);
-
-            // TODO: Support automatic additional downscales 
-            if (DownScale > 0)
-            {
-                multiScaler.SetInput(blurTexture);
-                multiScaler.SetOutput(inputTextureDown4);
-                ((RendererBase)multiScaler).Draw(context);
-            }
+            blur.Draw(context);
 
             // Copy the input texture to the output
             if (ShowOnlyMip || ShowOnlyBloom)
@@ -235,9 +200,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
             Scaler.BlendState = BlendStates.Additive;
 
             Scaler.Color = new Color4(Amount);
-            Scaler.SetInput(inputTextureDown4);
+            Scaler.SetInput(blurTexture);
             Scaler.SetOutput(output);
-            ((RendererBase)Scaler).Draw(context);
+            Scaler.Draw(context);
             Scaler.Reset();
 
             Scaler.BlendState = BlendStates.Default;

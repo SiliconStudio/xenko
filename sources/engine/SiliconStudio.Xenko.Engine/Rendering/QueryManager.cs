@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
@@ -17,7 +19,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             public int Index;
 
-            public ProfilingState ProfilingState;
+            public ProfilingKey ProfilingKey;
         }
 
         private const int TimestampQueryPoolCapacity = 64;
@@ -27,6 +29,7 @@ namespace SiliconStudio.Xenko.Rendering
         private readonly long[] queryResults = new long[TimestampQueryPoolCapacity];
         private readonly Queue<QueryEvent> queryEvents = new Queue<QueryEvent>();
         private readonly Stack<QueryEvent> queries = new Stack<QueryEvent>();
+        private readonly Stack<ProfilingState> profilingStates = new Stack<ProfilingState>();
 
         private QueryPool currentQueryPool;
         private int currentQueryIndex;
@@ -35,6 +38,8 @@ namespace SiliconStudio.Xenko.Rendering
         {
             this.commandList = commandList;
             this.allocator = allocator;
+
+            Profiler.GpuTimestampFrequencyRatio = commandList.GraphicsDevice.TimestampFrequency / 1000.0;
         }
 
         /// <summary>
@@ -49,26 +54,22 @@ namespace SiliconStudio.Xenko.Rendering
                 return new Scope(this, profilingKey);
             }
 
-            // Allocate two timestamp queries
-            if (currentQueryPool == null || currentQueryIndex > currentQueryPool.QueryCount - 2)
-            {
-                currentQueryPool = allocator.GetQueryPool(QueryType.Timestamp, TimestampQueryPoolCapacity);
-                currentQueryIndex = 0;
-            }
+            EnsureQueryPoolSize();
 
             // Push the current query range onto the stack 
-            queries.Push(new QueryEvent
+            var query = new QueryEvent
             {
-                ProfilingState = Profiler.New(profilingKey),
+                ProfilingKey = profilingKey,
                 Pool = currentQueryPool,
-                Index = currentQueryIndex
-            });
+                Index = currentQueryIndex++,
+            };
+            queries.Push(query);
 
             // Query the timestamp at the beginning of the range
-            commandList.WriteTimestamp(currentQueryPool, currentQueryIndex);
+            commandList.WriteTimestamp(currentQueryPool, query.Index);
 
-            // Advance next allocation index;
-            currentQueryIndex += 2;
+            // Add the queries to the list of queries to proceess
+            queryEvents.Enqueue(query);
 
             // Sets a debug marker if debug mode is enabled
             if (commandList.GraphicsDevice.IsDebugMode)
@@ -94,11 +95,16 @@ namespace SiliconStudio.Xenko.Rendering
                 throw new InvalidOperationException();
             }
 
+            EnsureQueryPoolSize();
+
             // Get the current query
             var query = queries.Pop();
+            query.Pool = currentQueryPool;
+            query.Index = currentQueryIndex++;
+            query.ProfilingKey = null;
 
             // Query the timestamp at the end of the range
-            commandList.WriteTimestamp(query.Pool, query.Index + 1);
+            commandList.WriteTimestamp(query.Pool, query.Index);
 
             // Add the queries to the list of queries to proceess
             queryEvents.Enqueue(query);
@@ -138,8 +144,18 @@ namespace SiliconStudio.Xenko.Rendering
                 queryEvents.Dequeue();
 
                 // Profile
-                /* query.ProfilingState.Begin(queryResults[query.Index]);
-                query.ProfilingState.End(queryResults[query.Index + 1]); */
+                // An event with a key is a begin event
+                if (query.ProfilingKey != null)
+                {
+                    var profilingState = Profiler.New(query.ProfilingKey);
+                    profilingState.Begin(timeStamp: queryResults[query.Index]);
+                    profilingStates.Push(profilingState);
+                }
+                else
+                {
+                    var profilingState = profilingStates.Pop();
+                    profilingState.End(timeStamp: queryResults[query.Index]);
+                }
             }
         }
 
@@ -163,6 +179,16 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             currentQueryPool = null;
+        }
+
+        private void EnsureQueryPoolSize()
+        {
+            // Allocate one timestamp query
+            if (currentQueryPool == null || currentQueryIndex >= currentQueryPool.QueryCount)
+            {
+                currentQueryPool = allocator.GetQueryPool(QueryType.Timestamp, TimestampQueryPoolCapacity);
+                currentQueryIndex = 0;
+            }
         }
 
         public struct Scope : IDisposable
