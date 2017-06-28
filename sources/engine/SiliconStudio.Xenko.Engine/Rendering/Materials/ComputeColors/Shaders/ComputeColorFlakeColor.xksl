@@ -1,23 +1,20 @@
 // Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 shader ComputeColorFlakeColor : ComputeColor, 
-                                    CarPaintCommon,
-                                    DynamicTexture<TTextureName, PerMaterial>, 
-                                    DynamicSampler<TSampler, PerMaterial>, 
-                                    DynamicTextureStream<TStream>
+                                CarPaintCommon,
+                                DynamicTextureStream<TStream>,
+                                MaterialPixelShadingStream
 {
-    compose ComputeColor flake_scale;
-    compose ComputeColor flake_size;
-    compose ComputeColor flake_size_variance;
-    compose ComputeColor pearlescent_ratio;
-    
+    compose ComputeColor flakeScaleSizeSizeVariancePearlescentRatio;
     compose ComputeColor flake_base_color;
 
     override float4 Compute()
     {
-        const float3 flakeBaseColor = flake_base_color.Compute();
-        const float4 flakeParameters = float4( flake_scale, flakeflake_sizeSize, flake_size_variance, pearlescent_ratio );
+        const float3 flakeBaseColor = flake_base_color.Compute().rgb;
+        const float4 flakeParameters = flakeScaleSizeSizeVariancePearlescentRatio.Compute().rgba;
 
-        return GetFlakeColor( streams.TexCoord, flakeBaseColor, flakeParameters );
+        float3 randomFlakeColor = GenerateFlakeRandomColor(streams.TexCoord, flakeParameters, flakeBaseColor);
+
+        return float4(lerp(flakeBaseColor, randomFlakeColor, streams.NdotL), 1.0f);
     }
 };
