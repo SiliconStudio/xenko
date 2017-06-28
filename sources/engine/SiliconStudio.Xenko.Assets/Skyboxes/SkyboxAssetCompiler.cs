@@ -74,7 +74,8 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
 
                     // Create and add the texture command.
                     var textureParameters = new TextureConvertParameters(assetSource, textureAsset, PlatformType.Windows, GraphicsPlatform.Direct3D11, graphicsProfile, gameSettingsAsset.GetOrCreate<TextureSettings>().TextureQuality, colorSpace);
-                    var prereqStep = new AssetBuildStep(textureAssetItem) { new TextureAssetCompiler.TextureConvertCommand(textureUrl, textureParameters, assetItem.Package) };
+                    var prereqStep = new AssetBuildStep(textureAssetItem);
+                    prereqStep.Add(new TextureAssetCompiler.TextureConvertCommand(textureUrl, textureParameters, assetItem.Package));
                     result.BuildSteps.Add(prereqStep);
                     prereqs.Enqueue(prereqStep);
                 }

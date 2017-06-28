@@ -74,13 +74,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             var asset = (NavigationMeshAsset)assetItem.Asset;
 
             // Compile the navigation mesh itself
-            result.BuildSteps = new AssetBuildStep(assetItem)
-            {
-                new NavmeshBuildCommand(targetUrlInStorage, assetItem, asset, context)
-                {
-                    InputFilesGetter = () => GetInputFiles(assetItem)
-                }
-            };
+            result.BuildSteps = new AssetBuildStep(assetItem);
+            result.BuildSteps.Add(new NavmeshBuildCommand(targetUrlInStorage, assetItem, asset, context) { InputFilesGetter = () => GetInputFiles(assetItem) });
         }
 
         private class NavmeshBuildCommand : AssetCommand<NavigationMeshAsset>
