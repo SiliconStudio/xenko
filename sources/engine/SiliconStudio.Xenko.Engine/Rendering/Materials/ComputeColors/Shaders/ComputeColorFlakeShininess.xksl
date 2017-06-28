@@ -21,6 +21,6 @@ shader ComputeColorFlakeShininess : ComputeColor,
         const float flakePearlescentRatio = pearlescent_ratio.Compute().r;
         const float4 flakeParameters = float4( flakeScale, flakeSize, flakeSizeVariance, flakePearlescentRatio );
 
-        return lerp( flakeBaseShininess, GenerateFlakeShininess(streams.TexCoord, flakeParameters, flakeBaseShininess), streams.NdotL);
+        return lerp( flakeBaseShininess, GenerateFlakeShininess(streams.TexCoord, flakeParameters, flakeBaseShininess), 0.8f);
     }
 };
