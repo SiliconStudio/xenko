@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Assets.UI
     public abstract class UIAssetCompilerBase<T> : AssetCompilerBase
         where T : UIAssetBase
     {
-        public override IEnumerable<Type> GetRuntimeTypes(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<Type> GetRuntimeTypes(AssetItem assetItem)
         {
             yield return typeof(UIElement);
         }

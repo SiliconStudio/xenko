@@ -15,14 +15,12 @@ namespace SiliconStudio.Quantum
     /// </summary>
     public class MemberNode : GraphNodeBase, IMemberNode, IGraphNodeInternal
     {
-        public MemberNode([NotNull] INodeBuilder nodeBuilder, Guid guid, [NotNull] IObjectNode parent, [NotNull] IMemberDescriptor memberDescriptor, bool isPrimitive, IReference reference)
-            : base(nodeBuilder.SafeArgument(nameof(nodeBuilder)).NodeContainer, guid, nodeBuilder.TypeDescriptorFactory.Find(memberDescriptor.Type), isPrimitive)
+        public MemberNode([NotNull] INodeBuilder nodeBuilder, Guid guid, [NotNull] IObjectNode parent, [NotNull] IMemberDescriptor memberDescriptor, IReference reference)
+            : base(nodeBuilder.SafeArgument(nameof(nodeBuilder)).NodeContainer, guid, nodeBuilder.TypeDescriptorFactory.Find(memberDescriptor.Type))
         {
             if (nodeBuilder == null) throw new ArgumentNullException(nameof(nodeBuilder));
-            if (parent == null) throw new ArgumentNullException(nameof(parent));
-            if (memberDescriptor == null) throw new ArgumentNullException(nameof(memberDescriptor));
-            Parent = parent;
-            MemberDescriptor = memberDescriptor;
+            Parent = parent ?? throw new ArgumentNullException(nameof(parent));
+            MemberDescriptor = memberDescriptor ?? throw new ArgumentNullException(nameof(memberDescriptor));
             Name = memberDescriptor.Name;
             TargetReference = reference as ObjectReference;
         }
@@ -59,7 +57,15 @@ namespace SiliconStudio.Quantum
         public event EventHandler<MemberNodeChangeEventArgs> ValueChanged;
 
         /// <inheritdoc/>
-        protected sealed override object Value { get { if (Parent.Retrieve() == null) throw new InvalidOperationException("Container's value is null"); return MemberDescriptor.Get(Parent.Retrieve()); } }
+        protected sealed override object Value
+        {
+            get
+            {
+                var container = Parent.Retrieve();
+                if (container == null) throw new InvalidOperationException("Container's value is null");
+                return MemberDescriptor.Get(container);
+            }
+        }
 
         /// <inheritdoc/>
         public void Update(object newValue)
@@ -102,12 +108,12 @@ namespace SiliconStudio.Quantum
                 args = new MemberNodeChangeEventArgs(this, oldValue, newValue);
                 NotifyContentChanging(args);
             }
-            if (Parent.Retrieve() == null)
-                throw new InvalidOperationException("Container's value is null");
             var containerValue = Parent.Retrieve();
+            if (containerValue == null)
+                throw new InvalidOperationException("Container's value is null");
             MemberDescriptor.Set(containerValue, newValue);
 
-            if (Parent.Retrieve().GetType().GetTypeInfo().IsValueType)
+            if (containerValue.GetType().GetTypeInfo().IsValueType)
                 ((GraphNodeBase)Parent).UpdateFromMember(containerValue, Index.Empty);
 
             UpdateReferences();

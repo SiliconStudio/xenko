@@ -16,25 +16,15 @@ namespace SiliconStudio.Xenko.Assets.Models
     [AssetCompiler(typeof(ModelAsset), typeof(AssetCompilationContext))]
     public class ModelAssetCompiler : AssetCompilerBase
     {
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
         {
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SkeletonAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MaterialAsset), BuildDependencyType.Runtime);
         }
 
-        public override IEnumerable<ObjectUrl> GetInputFiles(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
         {
             var modelAsset = (ModelAsset)assetItem.Asset;
-
-            if (modelAsset.Skeleton != null)
-            {
-                var skeleton = assetItem.Package.FindAssetFromProxyObject(modelAsset.Skeleton);
-                if (skeleton != null)
-                {
-                    yield return new ObjectUrl(UrlType.Content, skeleton.Location);
-                }
-            }
-            
             var assetDirectory = assetItem.FullPath.GetParent();
             var assetSource = UPath.Combine(assetDirectory, modelAsset.Source);
             yield return new ObjectUrl(UrlType.File, assetSource);
@@ -66,7 +56,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 return;
             }
 
-            importModelCommand.InputFilesGetter = () => GetInputFiles(context, assetItem);
+            importModelCommand.InputFilesGetter = () => GetInputFiles(assetItem);
             importModelCommand.Mode = ImportModelCommand.ExportMode.Model;
             importModelCommand.SourcePath = assetSource;
             importModelCommand.Location = targetUrlInStorage;

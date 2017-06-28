@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     [AssetCompiler(typeof(ProceduralModelAsset), typeof(AssetCompilationContext))]
     internal class ProceduralModelAssetCompiler : AssetCompilerBase
     {
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetCompilerContext context, AssetItem assetItem)
+        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
         {
             yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileAsset);
         }

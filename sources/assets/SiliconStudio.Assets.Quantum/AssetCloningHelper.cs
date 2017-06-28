@@ -20,7 +20,8 @@ namespace SiliconStudio.Assets.Quantum
         /// <param name="basePath">If not null, this method will apply the remapping only for paths that are contained in the given base path.</param>
         public static void RemapIdentifiablePaths<T>(YamlAssetMetadata<T> metadata, Dictionary<Guid, Guid> idRemapping, YamlAssetPath basePath = null)
         {
-            if (metadata == null)
+            // Early exit if nothing to remap
+            if (metadata == null || idRemapping == null)
                 return;
 
             var replacements = new List<Tuple<YamlAssetPath, YamlAssetPath, T>>();

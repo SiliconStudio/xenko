@@ -21,7 +21,10 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="CombineMode.cs" />
     <Compile Include="GraphNodeBinding.cs" />
+    <Compile Include="MemberGraphNodeBinding.cs" />
+    <Compile Include="ObjectGraphNodeBinding.cs" />
     <Compile Include="Presenters\AnonymousNodePresenterCommand.cs" />
     <Compile Include="Presenters\PropertyCombinerMetadata.cs" />
     <Compile Include="Presenters\SyncAnonymousNodePresenterCommand.cs" />

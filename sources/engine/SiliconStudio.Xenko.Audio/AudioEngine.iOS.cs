@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Audio
             var error = audioSession.SetCategory(AVAudioSessionCategory.SoloAmbient);
             if (error != null)
             {
-                Logger.Warning("Failed to set the audio category to 'Ambient'. [Error info: {0}]", error.UserInfo);
+                Logger.Warning($"Failed to set the audio category to 'Ambient'. [Error info: {error.UserInfo}]");
                 State = AudioEngineState.Invalidated;
                 return;
             }
@@ -46,20 +46,20 @@ namespace SiliconStudio.Xenko.Audio
             // Reduce the buffer size for better latency response..
             audioSession.SetPreferredIOBufferDuration(preferedAudioLatency, out error);
             if (error != null)
-                Logger.Warning("Failed to set the audio IO buffer duration to '{1}'. [Error info: {0}]", error.UserInfo, preferedAudioLatency);
+                Logger.Warning($"Failed to set the audio IO buffer duration to '{preferedAudioLatency}'. [Error info: {error.UserInfo}]");
 
             // set the preferred sampling rate of the application
             if (AudioSampleRate != 0)
             {
                 audioSession.SetPreferredSampleRate(AudioSampleRate, out error);
-                Logger.Warning("Failed to set the audio session preferred sampling rate to '{1}'. [Error info: {0}]", error.UserInfo, AudioSampleRate);
+                Logger.Warning($"Failed to set the audio session preferred sampling rate to '{AudioSampleRate}'. [Error info: {error.UserInfo}]");
             }
 
             // activate the sound for the application
             error = audioSession.SetActive(true);
             if (error != null)
             {
-                Logger.Warning("Failed to activate the audio session. [Error info: {0}]", error.UserInfo);
+                Logger.Warning($"Failed to activate the audio session. [Error info: {error.UserInfo}]");
                 State = AudioEngineState.Invalidated;
             }
         }

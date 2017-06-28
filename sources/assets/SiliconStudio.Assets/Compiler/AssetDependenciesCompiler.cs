@@ -80,18 +80,22 @@ namespace SiliconStudio.Assets.Compiler
                 //We want to avoid repeating steps, so we use the local cache to check if this compile command already has the step required first
                 AssetCompilerResult cachedResult;
                 var inCache = true;
-                if (!resultsCache.TryGetValue(assetItem.Id, out cachedResult))
+
+                // Invoke the compiler to prepare the build step for this asset if the dependency needs to compile it (Runtime or CompileContent)
+                if (!resultsCache.TryGetValue(assetItem.Id, out cachedResult) && (assetNode.DependencyType & ~BuildDependencyType.CompileAsset) != 0)
                 {
                     var mainCompiler = BuildDependencyManager.AssetCompilerRegistry.GetCompiler(assetItem.Asset.GetType(), BuildDependencyManager.CompilationContext);
-                    if (mainCompiler == null) return;
+                    if (mainCompiler == null)
+                        return;
 
                     cachedResult = mainCompiler.Prepare(context, assetItem);
-                    if (((dependencyType & BuildDependencyType.Runtime) == BuildDependencyType.Runtime) && cachedResult.HasErrors) //allow Runtime dependencies to fail
+                    if ((dependencyType & BuildDependencyType.Runtime) == BuildDependencyType.Runtime && cachedResult.HasErrors) //allow Runtime dependencies to fail
                     {
                         //totally skip this asset but do not propagate errors!
                         return;
                     }
 
+                    // Copy the log to the final result (note: this does not copy or forward the build steps)
                     cachedResult.CopyTo(finalResult);
                     if (cachedResult.HasErrors)
                     {
@@ -103,31 +107,27 @@ namespace SiliconStudio.Assets.Compiler
                     AssetCompiled?.Invoke(this, new AssetCompiledArgs(assetItem, cachedResult));
                 }
 
-                //Go thru the dependencies of the node and prepare them as well
+                // Go through the dependencies of the node and prepare them as well
                 foreach (var dependencyNode in assetNode.References)
                 {
-                    if ((dependencyNode.DependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent || //only if content is required Content.Load
-                        (dependencyNode.DependencyType & BuildDependencyType.Runtime) == BuildDependencyType.Runtime) //or the asset is required anyway at runtime
+                    Prepare(resultsCache, finalResult, context, dependencyNode.AssetItem, visitedItems, cachedResult?.BuildSteps, dependencyNode.DependencyType);
+                    if (finalResult.HasErrors)
                     {
-                        Prepare(resultsCache, finalResult, context, dependencyNode.AssetItem, visitedItems, cachedResult.BuildSteps, dependencyNode.DependencyType);
-                        if (finalResult.HasErrors)
-                        {
-                            return;
-                        }
+                        return;
                     }
                 }
 
-                //Finally link the steps together, this uses low level build engine primitive and routines to make sure dependencies are compiled
-                if (((dependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent) || //only if content is required Content.Load
-                    (dependencyType & BuildDependencyType.Runtime) == BuildDependencyType.Runtime) //or the asset is required anyway at runtime
-                {
-                    if (!inCache) //skip adding again the step if it was already in the final step
-                        finalResult.BuildSteps.Add(cachedResult.BuildSteps);
+                // If we didn't prepare any build step for this asset let's exit here.
+                if (cachedResult == null)
+                    return;
 
-                    //link
-                    if (parentBuildStep != null && (dependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent) //only if content is required Content.Load
-                        BuildStep.LinkBuildSteps(cachedResult.BuildSteps, parentBuildStep);
-                }
+                // Add the resulting build steps to the final
+                if (!inCache)
+                    finalResult.BuildSteps.Add(cachedResult.BuildSteps);
+
+                // Link the newly created build steps to their parent step.
+                if (parentBuildStep != null && (dependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent) //only if content is required Content.Load
+                    BuildStep.LinkBuildSteps(cachedResult.BuildSteps, parentBuildStep);
             }
             finally
             {
