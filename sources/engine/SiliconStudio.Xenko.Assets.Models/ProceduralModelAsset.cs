@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     [DataContract("ProceduralModelAsset")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Model))]
-    [Display(1850, "Procedural Model")]
+    [Display(1850, "Procedural model")]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.9.0-beta01")]
     [AssetUpgrader(XenkoConfig.PackageName, "1.9.0-beta01", "2.0.0.0", typeof(EmptyAssetUpgrader))]
