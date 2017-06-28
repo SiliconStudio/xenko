@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Engine
     /// <summary>
     /// The source for light shafts, should be placed on the same entity as the light component which will be used for light shafts
     /// </summary>
-    [Display("Light Shaft", Expand = ExpandRule.Always)]
+    [Display("Light shaft", Expand = ExpandRule.Always)]
     [DataContract("LightShaftComponent")]
     [DefaultEntityComponentProcessor(typeof(LightShaftProcessor), ExecutionMode = ExecutionMode.All)]
     public class LightShaftComponent : ActivableEntityComponent
