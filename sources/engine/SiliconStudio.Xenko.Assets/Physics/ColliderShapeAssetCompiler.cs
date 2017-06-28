@@ -54,10 +54,8 @@ namespace SiliconStudio.Xenko.Assets.Physics
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (ColliderShapeAsset)assetItem.Asset;
-            result.BuildSteps = new AssetBuildStep(assetItem)
-            {
-                new ColliderShapeCombineCommand(targetUrlInStorage, asset, assetItem.Package)
-            };
+            result.BuildSteps = new AssetBuildStep(assetItem);
+            result.BuildSteps.Add(new ColliderShapeCombineCommand(targetUrlInStorage, asset, assetItem.Package));
         }
 
         public class ColliderShapeCombineCommand : AssetCommand<ColliderShapeAsset>

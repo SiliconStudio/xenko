@@ -77,7 +77,8 @@ namespace SiliconStudio.Xenko.Assets.Models
 
             importModelCommand.Package = assetItem.Package;
 
-            result.BuildSteps = new AssetBuildStep(assetItem) { importModelCommand };
+            result.BuildSteps = new AssetBuildStep(assetItem);
+            result.BuildSteps.Add(importModelCommand);
         }
     }
 }

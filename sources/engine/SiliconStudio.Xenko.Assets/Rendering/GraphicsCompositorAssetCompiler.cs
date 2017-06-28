@@ -34,10 +34,8 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (GraphicsCompositorAsset)assetItem.Asset;
-            result.BuildSteps = new AssetBuildStep(assetItem)
-            {
-                new GraphicsCompositorCompileCommand(targetUrlInStorage, asset, assetItem.Package),
-            };
+            result.BuildSteps = new AssetBuildStep(assetItem);
+            result.BuildSteps.Add(new GraphicsCompositorCompileCommand(targetUrlInStorage, asset, assetItem.Package));
         }
 
         internal class GraphicsCompositorCompileCommand : AssetCommand<GraphicsCompositorAsset>

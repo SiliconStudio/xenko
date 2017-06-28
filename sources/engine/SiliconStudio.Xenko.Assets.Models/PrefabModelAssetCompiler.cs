@@ -48,7 +48,8 @@ namespace SiliconStudio.Xenko.Assets.Models
         {
             var asset = (PrefabModelAsset)assetItem.Asset;
             var renderingSettings = context.GetGameSettingsAsset().GetOrCreate<RenderingSettings>();
-            result.BuildSteps = new AssetBuildStep(assetItem) { new PrefabModelAssetCompileCommand(targetUrlInStorage, asset, assetItem, renderingSettings) };
+            result.BuildSteps = new AssetBuildStep(assetItem);
+            result.BuildSteps.Add(new PrefabModelAssetCompileCommand(targetUrlInStorage, asset, assetItem, renderingSettings));
         }
 
         private class PrefabModelAssetCompileCommand : AssetCommand<PrefabModelAsset>
