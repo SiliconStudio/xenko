@@ -10,21 +10,18 @@ shader ComputeColorFlakeNormals : ComputeColor,
     
     override float4 Compute()
     {
-        float4 fp = flakeParameters.Compute();
-        
+        const float4 fp = flakeParameters.Compute();        
         float3 flakeNormalFromMap = float3(0.0f, 0.0f, 1.0f);
          
-        float4 flakeBaseNormals = flakeNormalMap.Compute();
+        /*float4 flakeBaseNormals = float4(0,0,1,0); //flakeNormalMap.Compute();
         flakeNormalFromMap.xy = flakeBaseNormals.rg * float2(flakeBaseNormals.a, 1.0f);
         flakeNormalFromMap.xy = flakeNormalFromMap.xy * 2.0f - 1.0f;
         flakeNormalFromMap.z = sqrt(max(0.0, 1.0f - dot(flakeNormalFromMap.xy, flakeNormalFromMap.xy)));
+        */
 
-        float3 randomNormal = GenerateFlakeRandomNormal( streams.TexCoord, fp, flakeNormalFromMap );
+        float3 randomFlakeNormal = GenerateRandomFlakeNormal( streams.TexCoord, fp, flakeNormalFromMap );
 
-        // TODO Fix inconsitent random flake normal scaling
-        flakeNormalFromMap = lerp(flakeNormalFromMap, randomNormal, streams.NdotL);
-
-        flakeNormalFromMap = normalize(flakeNormalFromMap);
+        flakeNormalFromMap = normalize(lerp(flakeNormalFromMap, randomFlakeNormal, 0.8f));
 
         return float4(flakeNormalFromMap, 0.0f);
     }
