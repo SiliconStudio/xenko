@@ -3,7 +3,8 @@
 shader ComputeColorFlakeColor : ComputeColor, 
                                 CarPaintCommon,
                                 DynamicTextureStream<TStream>,
-                                MaterialPixelShadingStream
+                                MaterialPixelShadingStream,
+                                BRDFMicrofacet
 {
     compose ComputeColor FlakeScaleSizeSize_VariancePearlescent_Ratio;
     compose ComputeColor FlakeBaseColor;
@@ -12,7 +13,11 @@ shader ComputeColorFlakeColor : ComputeColor,
     override float4 Compute()
     {
         const float4 flakeGenerationParameters = FlakeScaleSizeSize_VariancePearlescent_Ratio.Compute().rgba;
-        const float3 baseColor = FlakeBaseColor.Compute().rgb;
+        const float fresnel = FresnelSchlick(0.0f, streams.LdotH);
+        
+        float3 baseColor = FlakeBaseColor.Compute().rgb;
+        baseColor = lerp(baseColor, 0.0f, fresnel);
+
         const float randomColorFactor = FlakeRandom_Color_Strength.Compute().r;
 
         float3 randomFlakeColor = GenerateRandomFlakeColor(streams.TexCoord, flakeGenerationParameters, baseColor);
