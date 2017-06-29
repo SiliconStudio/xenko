@@ -23,6 +23,13 @@ namespace SiliconStudio.Xenko.Profiling
         ByName
     }
 
+    public enum GameProfilingFiltering
+    {
+        ALL,
+        CPU,
+        GPU,
+    }
+
     public class GameProfilingSystem : GameSystemBase
     {
         private readonly GcProfiling gcProfiler;
@@ -37,7 +44,7 @@ namespace SiliconStudio.Xenko.Profiling
         private readonly StringBuilder fpsStatStringBuilder = new StringBuilder();
         private string fpsStatString = "";
 
-        private SpriteBatch spriteBatch;
+        private FastTextRenderer fastTextRenderer = null;
 
         private readonly StringBuilder profilersStringBuilder = new StringBuilder();
         private string profilersString = "";
@@ -104,11 +111,20 @@ namespace SiliconStudio.Xenko.Profiling
                 var eventsCopy = Profiler.GetEvents();
                 if (eventsCopy == null) return;
 
-                var elapsedTime = eventsCopy.Length > 0 ? eventsCopy[eventsCopy.Length - 1].TimeStamp - eventsCopy[0].TimeStamp : 0;
+                long elapsedTime = 0;
 
                 //update strings that need update
                 foreach (var e in eventsCopy)
                 {
+                    bool isGpuProfilingKey = (e.Key.Flags & ProfilingKeyFlags.GpuProfiling) == ProfilingKeyFlags.GpuProfiling;
+                    bool isProfilingKeyFiltered = (isGpuProfilingKey && FilteringMode == GameProfilingFiltering.CPU)
+                                                  || (!isGpuProfilingKey && FilteringMode == GameProfilingFiltering.GPU);
+
+                    if (isProfilingKeyFiltered)
+                    {
+                        continue;
+                    }
+
                     //gc profiling is a special case
                     if (e.Key == GcProfiling.GcMemoryKey && e.Custom0.HasValue && e.Custom1.HasValue && e.Custom2.HasValue)
                     {
@@ -139,6 +155,7 @@ namespace SiliconStudio.Xenko.Profiling
 
                     if (e.Type == ProfilingMessageType.End)
                     {
+                        elapsedTime += e.ElapsedTime;
                         profilingResult.AccumulatedTime += e.ElapsedTime;
 
                         if (e.ElapsedTime < profilingResult.MinTime)
@@ -326,28 +343,35 @@ namespace SiliconStudio.Xenko.Profiling
 
         public override void Draw(GameTime gameTime)
         {
-            if (spriteBatch == null)
+            if (fastTextRenderer == null)
             {
-                spriteBatch = new SpriteBatch(Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice);
-            }
-
-            if (Font == null)
-            {
-                Font = Content.Load<SpriteFont>("XenkoDefaultFont");
+                fastTextRenderer = new FastTextRenderer
+                {
+                    DebugSpriteFont = Content.Load<Texture>("XenkoDebugSpriteFont"),
+                    TextColor = this.TextColor
+                }.Initialize(Game.GraphicsContext);
             }
 
             // TODO GRAPHICS REFACTOR where to get command list from?
             Game.GraphicsContext.CommandList.SetRenderTargetAndViewport(null, Game.GraphicsDevice.Presenter.BackBuffer);
-            spriteBatch.Begin(Game.GraphicsContext, depthStencilState: DepthStencilStates.None);
+            fastTextRenderer.Begin(Game.GraphicsContext);
             lock (stringLock)
-            {                
-                spriteBatch.DrawString(Font, gcMemoryString, new Vector2(10, 10), TextColor);
-                spriteBatch.DrawString(Font, gcCollectionsString, new Vector2(10, 20), TextColor);
-                spriteBatch.DrawString(Font, fpsStatString, new Vector2(10, 30), TextColor);
-                spriteBatch.DrawString(Font, profilersString, new Vector2(10, 40), TextColor);               
+            {
+                fastTextRenderer.DrawString(Game.GraphicsContext, "Active filter:  " + FilteringMode, 10, 10);
+
+                bool isGpuFiltered = (FilteringMode == GameProfilingFiltering.GPU);
+
+                if (!isGpuFiltered)
+                {
+                    fastTextRenderer.DrawString(Game.GraphicsContext, gcMemoryString, 10, 30);
+                    fastTextRenderer.DrawString(Game.GraphicsContext, gcCollectionsString, 10, 50);
+                    fastTextRenderer.DrawString(Game.GraphicsContext, fpsStatString, 10, 70);
+                }
+
+                fastTextRenderer.DrawString(Game.GraphicsContext, profilersString, 10, isGpuFiltered ? 30 : 90);
             }
 
-            spriteBatch.End();
+            fastTextRenderer.End(Game.GraphicsContext);
         }
 
         /// <summary>
@@ -404,13 +428,13 @@ namespace SiliconStudio.Xenko.Profiling
         public Color4 TextColor { get; set; } = Color.LightGreen;
 
         /// <summary>
-        /// Sets or gets the font to use when drawing the profiling system text.
-        /// </summary>
-        public SpriteFont Font { get; set; }
-
-        /// <summary>
         /// Sets or gets the way the printed information will be sorted.
         /// </summary>
-        public GameProfilingSorting SortingMode { get; set; } = GameProfilingSorting.ByTime; 
+        public GameProfilingSorting SortingMode { get; set; } = GameProfilingSorting.ByTime;
+
+        /// <summary>
+        /// Sets or gets which data should be displayed on screen.
+        /// </summary>
+        public GameProfilingFiltering FilteringMode { get; set; } = GameProfilingFiltering.ALL;
     }
 }
