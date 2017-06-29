@@ -10,7 +10,7 @@ shader ComputeColorFlakeNormals : ComputeColor,
     override float4 Compute()
     {
         const float4 flakeGenerationParameters = FlakeScaleSizeSize_VarianceFlake_Sparkle_Strength.Compute().rgba;
-        const float3 baseNormal = float3(0.0f, 0.0f, 1.0f);
+        const float3 baseNormal = float3(0.0f, 0.0f, -1.0f);
 
         float3 randomFlakeNormal = GenerateRandomFlakeNormal(streams.TexCoord, flakeGenerationParameters, baseNormal);
         float3 flakeNormal = normalize(lerp(baseNormal, randomFlakeNormal, flakeGenerationParameters.a));
