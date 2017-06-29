@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Rendering
             Enabled = true;
             subRenderersToUnload = new List<IGraphicsRendererCore>();
             Profiling = true;
-            ProfilingKey = new ProfilingKey(name ?? nameof(RendererCoreBase));
+            ProfilingKey = new ProfilingKey(Name ?? nameof(RendererCoreBase), ProfilingKeyFlags.GpuProfiling);
         }
 
         /// <summary>
@@ -227,7 +227,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             EnsureContext(context.RenderContext);
 
-            if (Name != null && Profiling)
+            if (ProfilingKey.Name != nameof(RendererCoreBase) && Profiling)
             {
                 context.QueryManager.BeginProfile(Color.Green, ProfilingKey);
             }
@@ -259,7 +259,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             PostDrawCore(context);
 
-            if (Name != null && Profiling)
+            if (ProfilingKey.Name != nameof(RendererCoreBase) && Profiling)
             {
                 context.QueryManager.EndProfile(ProfilingKey);
             }
