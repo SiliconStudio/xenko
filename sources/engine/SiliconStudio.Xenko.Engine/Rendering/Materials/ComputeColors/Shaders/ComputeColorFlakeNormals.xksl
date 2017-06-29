@@ -5,24 +5,18 @@ shader ComputeColorFlakeNormals : ComputeColor,
                                   DynamicTextureStream<TStream>,
                                   MaterialPixelShadingStream
 {
-    compose ComputeColor flakeParameters;
-    compose ComputeColor flakeNormalMap;
-    
+    compose ComputeColor FlakeScaleSizeSize_VarianceNormal_Orientation;
+    compose ComputeColor FlakeRandom_Normals_Strength;
+
     override float4 Compute()
     {
-        const float4 fp = flakeParameters.Compute();        
-        float3 flakeNormalFromMap = float3(0.0f, 0.0f, 1.0f);
-         
-        /*float4 flakeBaseNormals = float4(0,0,1,0); //flakeNormalMap.Compute();
-        flakeNormalFromMap.xy = flakeBaseNormals.rg * float2(flakeBaseNormals.a, 1.0f);
-        flakeNormalFromMap.xy = flakeNormalFromMap.xy * 2.0f - 1.0f;
-        flakeNormalFromMap.z = sqrt(max(0.0, 1.0f - dot(flakeNormalFromMap.xy, flakeNormalFromMap.xy)));
-        */
+        const float4 flakeGenerationParameters = FlakeScaleSizeSize_VarianceNormal_Orientation.Compute().rgba;
+        const float3 baseNormal = float3(0.0f, 1.0f, 0.0f);
+        const float randomNormalStrength = FlakeRandom_Normals_Strength.Compute().r;
+        float3 randomFlakeNormal = GenerateRandomFlakeNormal(streams.TexCoord, flakeGenerationParameters, baseNormal);
 
-        float3 randomFlakeNormal = GenerateRandomFlakeNormal( streams.TexCoord, fp, flakeNormalFromMap );
+        float3 flakeNormal = normalize(lerp(baseNormal, randomFlakeNormal, randomNormalStrength));
 
-        flakeNormalFromMap = normalize(lerp(flakeNormalFromMap, randomFlakeNormal, 0.8f));
-
-        return float4(flakeNormalFromMap, 0.0f);
+        return float4(flakeNormal, 0.0f);
     }
 };

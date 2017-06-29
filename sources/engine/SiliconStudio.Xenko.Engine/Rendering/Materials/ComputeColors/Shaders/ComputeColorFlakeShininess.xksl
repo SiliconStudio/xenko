@@ -5,22 +5,26 @@ shader ComputeColorFlakeShininess : ComputeColor,
                                     DynamicTextureStream<TStream>,
                                     MaterialPixelShadingStream
 {
-    compose ComputeColor flake_scale;
-    compose ComputeColor flake_size;
-    compose ComputeColor flake_size_variance;
-    compose ComputeColor pearlescent_ratio;
+    compose ComputeColor FlakeScale;
+    compose ComputeColor FlakeSize;
+    compose ComputeColor FlakeSizeVariance;
     
-    compose ComputeColor flake_base_color;
+    compose ComputeColor FlakeBaseShininess;
+    compose ComputeColor FlakeRandomShininessStrength;
 
     override float Compute()
     {
-        const float flakeBaseShininess = flake_base_color.Compute().r;
-        const float flakeScale = flake_scale.Compute().r;
-        const float flakeSize = flake_size.Compute().r;
-        const float flakeSizeVariance = flake_size_variance.Compute().r;
-        const float flakePearlescentRatio = pearlescent_ratio.Compute().r;
-        const float4 flakeParameters = float4( flakeScale, flakeSize, flakeSizeVariance, flakePearlescentRatio );
+        const float scale = FlakeScale.Compute().r;
+        const float size = FlakeSize.Compute().r;
+        const float sizeVariance = FlakeSizeVariance.Compute().r;
+        const float4 flakeGenerationParameters = float4(scale, size, sizeVariance, 0.0f);
 
-        return lerp( flakeBaseShininess, GenerateFlakeShininess(streams.TexCoord, flakeParameters, flakeBaseShininess), 0.8f);
+        const float baseShininess = FlakeBaseShininess.Compute().r;
+        const float randomShininessStrength = FlakeRandomShininessStrength.Compute().r;
+
+        float randomShininess = GenerateRandomFlakeShininess(streams.TexCoord, flakeGenerationParameters, baseShininess);
+        float flakeShininess = lerp(baseShininess, randomShininess, randomShininessStrength);
+
+        return flakeShininess;
     }
 };

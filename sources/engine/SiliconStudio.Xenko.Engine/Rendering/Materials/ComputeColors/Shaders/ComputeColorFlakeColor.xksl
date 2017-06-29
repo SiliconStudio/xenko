@@ -5,16 +5,19 @@ shader ComputeColorFlakeColor : ComputeColor,
                                 DynamicTextureStream<TStream>,
                                 MaterialPixelShadingStream
 {
-    compose ComputeColor flakeScaleSizeSizeVariancePearlescentRatio;
-    compose ComputeColor flake_base_color;
+    compose ComputeColor FlakeScaleSizeSize_VariancePearlescent_Ratio;
+    compose ComputeColor FlakeBaseColor;
+    compose ComputeColor FlakeRandom_Color_Strength;
 
     override float4 Compute()
     {
-        const float3 flakeBaseColor = flake_base_color.Compute().rgb;
-        const float4 flakeParameters = flakeScaleSizeSizeVariancePearlescentRatio.Compute().rgba;
+        const float4 flakeGenerationParameters = FlakeScaleSizeSize_VariancePearlescent_Ratio.Compute().rgba;
+        const float3 baseColor = FlakeBaseColor.Compute().rgb;
+        const float randomColorFactor = FlakeRandom_Color_Strength.Compute().r;
 
-        float3 randomFlakeColor = GenerateFlakeRandomColor(streams.TexCoord, flakeParameters, flakeBaseColor);
+        float3 randomFlakeColor = GenerateRandomFlakeColor(streams.TexCoord, flakeGenerationParameters, baseColor);
+        float3 flakeColor = lerp(baseColor, randomFlakeColor, randomColorFactor);
 
-        return float4(lerp(flakeBaseColor, randomFlakeColor, 0.8f), 1.0f);
+        return float4(flakeColor, 1.0f);
     }
 };
