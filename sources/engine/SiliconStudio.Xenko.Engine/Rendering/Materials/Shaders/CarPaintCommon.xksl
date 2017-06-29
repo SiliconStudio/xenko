@@ -3,58 +3,58 @@
 
 shader CarPaintCommon
 {
-//------------------------------------------------------------------------------
-// Gererate pseudorandom number
-//------------------------------------------------------------------------------
-float random(in float2 uv)
-{
-    float2 noise = (frac(sin(dot(uv,float2(12.9898,78.233)*2.0)) * 43758.5453));
-    return abs(noise.x + noise.y) * 0.5;
-}
-
-//------------------------------------------------------------------------------
-// Gererate texture coordinates for random placement
-//------------------------------------------------------------------------------
-float2 randomUV(in float2 uv)
-{
-    const int NUM_PATTERNS = 2 * 2 * 4 * 4 * 4;
-    uint pattern = (uint)(random(floor(uv)) * (float)NUM_PATTERNS) % NUM_PATTERNS;
-    float2 result = frac(uv);
-
-    // flip
-    if (pattern % 2)
+    //------------------------------------------------------------------------------
+    // Gererate pseudorandom number
+    //------------------------------------------------------------------------------
+    float random(in float2 uv)
     {
-        result.x = 1.0f - result.x;
-    }
-    pattern /= 2;
-    if (pattern % 2)
-    {
-        result.y = 1.0f - result.y;
+        float2 noise = (frac(sin(dot(uv,float2(12.9898,78.233)*2.0)) * 43758.5453));
+        return abs(noise.x + noise.y) * 0.5;
     }
 
-    // rotate
-    pattern /= 2;
-    if (pattern % 4 == 1)
+    //------------------------------------------------------------------------------
+    // Gererate texture coordinates for random placement
+    //------------------------------------------------------------------------------
+    float2 randomUV(in float2 uv)
     {
-        result = float2(result.y, 1.0f - result.x);
-    }
-    else if (pattern % 4 == 2)
-    {
-        result = float2(1.0f - result.y, result.x);
-    }
-    else if (pattern % 4 == 3)
-    {
-        result = 1.0f - result;
-    }
+        const int NUM_PATTERNS = 2 * 2 * 4 * 4 * 4;
+        uint pattern = (uint)(random(floor(uv)) * (float)NUM_PATTERNS) % NUM_PATTERNS;
+        float2 result = frac(uv);
 
-    // offset
-    pattern /= 4;
-    result.x += (pattern % 4) * 0.25f;
-    pattern /= 4;
-    result.y += (pattern % 4) * 0.25f;
+        // flip
+        if (pattern % 2)
+        {
+            result.x = 1.0f - result.x;
+        }
+        pattern /= 2;
+        if (pattern % 2)
+        {
+            result.y = 1.0f - result.y;
+        }
 
-    return result;
-}
+        // rotate
+        pattern /= 2;
+        if (pattern % 4 == 1)
+        {
+            result = float2(result.y, 1.0f - result.x);
+        }
+        else if (pattern % 4 == 2)
+        {
+            result = float2(1.0f - result.y, result.x);
+        }
+        else if (pattern % 4 == 3)
+        {
+            result = 1.0f - result;
+        }
+
+        // offset
+        pattern /= 4;
+        result.x += (pattern % 4) * 0.25f;
+        pattern /= 4;
+        result.y += (pattern % 4) * 0.25f;
+
+        return result;
+    }
 
     //------------------------------------------------------------------------------
     // Convert integer to float
@@ -201,7 +201,7 @@ float2 randomUV(in float2 uv)
         }
     }
     
-    float3 GenerateFlakeRandomColor(in float2 uv, in float4 p, in float3 baseColor)
+    float3 GenerateRandomFlakeColor(in float2 uv, in float4 p, in float3 baseColor)
     {
         const float flake_scale              = p.x;
         const float flake_size               = p.y;
@@ -232,7 +232,6 @@ float2 randomUV(in float2 uv)
         const float flake_scale              = p.x;
         const float flake_size               = p.y;
         const float flake_size_variance      = p.z;
-        const float flake_normal_orientation = p.w;
         
         float3 position = float3(uv.x, uv.y, 0.0);
         position *= flake_scale;
@@ -254,12 +253,11 @@ float2 randomUV(in float2 uv)
         return baseNormal;
     }
 
-    float GenerateFlakeShininess(in float2 uv, in float4 p, in float baseShininess)
+    float GenerateRandomFlakeShininess(in float2 uv, in float4 p, in float baseShininess)
     {
         const float flake_scale              = p.x;
         const float flake_size               = p.y;
         const float flake_size_variance      = p.z;
-        const float pearlescent_ratio        = p.w;
 
         float3 position = float3(uv.x, uv.y, 0.0);
         position *= flake_scale;
