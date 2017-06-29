@@ -5,17 +5,15 @@ shader ComputeColorFlakeNormals : ComputeColor,
                                   DynamicTextureStream<TStream>,
                                   MaterialPixelShadingStream
 {
-    compose ComputeColor FlakeScaleSizeSize_VarianceNormal_Orientation;
-    compose ComputeColor FlakeRandom_Normals_Strength;
+    compose ComputeColor FlakeScaleSizeSize_VarianceFlake_Sparkle_Strength;
 
     override float4 Compute()
     {
-        const float4 flakeGenerationParameters = FlakeScaleSizeSize_VarianceNormal_Orientation.Compute().rgba;
-        const float3 baseNormal = float3(0.0f, 1.0f, 0.0f);
-        const float randomNormalStrength = FlakeRandom_Normals_Strength.Compute().r;
-        float3 randomFlakeNormal = GenerateRandomFlakeNormal(streams.TexCoord, flakeGenerationParameters, baseNormal);
+        const float4 flakeGenerationParameters = FlakeScaleSizeSize_VarianceFlake_Sparkle_Strength.Compute().rgba;
+        const float3 baseNormal = float3(0.0f, 0.0f, 1.0f);
 
-        float3 flakeNormal = normalize(lerp(baseNormal, randomFlakeNormal, randomNormalStrength));
+        float3 randomFlakeNormal = GenerateRandomFlakeNormal(streams.TexCoord, flakeGenerationParameters, baseNormal);
+        float3 flakeNormal = normalize(lerp(baseNormal, randomFlakeNormal, flakeGenerationParameters.a));
 
         return float4(flakeNormal, 0.0f);
     }
