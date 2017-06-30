@@ -14,6 +14,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         public class FastTextRenderer : ComponentBase
         {
+            private const int VertexBufferCount = 3;
+
             private const int IndexStride = sizeof(int);
 
             private Buffer[] vertexBuffers;
@@ -49,8 +51,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             protected override void Destroy()
             {
-                vertexBuffers[0].Dispose();
-                vertexBuffers[1].Dispose();
+                for (int i = 0; i < VertexBufferCount; i++)
+                    vertexBuffers[i].Dispose();
 
                 activeVertexBufferIndex = -1;
 
@@ -71,8 +73,8 @@ namespace SiliconStudio.Xenko.Graphics
                     simpleEffect = null;
                 }
 
-                inputElementDescriptions[0] = null;
-                inputElementDescriptions[1] = null;
+                for (int i = 0; i < VertexBufferCount; i++)
+                    inputElementDescriptions[i] = null;
 
                 charsToRenderCount = -1;
 
@@ -113,23 +115,18 @@ namespace SiliconStudio.Xenko.Graphics
                 // Create vertex buffers
                 var vertexBufferLength = MaxCharactersPerLine * MaxCharactersLines * 4;
 
-                vertexBuffers = new Buffer[]
-                {
-                    Buffer.Vertex.New(graphicsContext.CommandList.GraphicsDevice, new VertexPositionNormalTexture[vertexBufferLength], GraphicsResourceUsage.Dynamic),
-                    Buffer.Vertex.New(graphicsContext.CommandList.GraphicsDevice, new VertexPositionNormalTexture[vertexBufferLength], GraphicsResourceUsage.Dynamic)
-                };
+                vertexBuffers = new Buffer[VertexBufferCount];
+                for (int j = 0; j < VertexBufferCount; j++)
+                    vertexBuffers[j] = Buffer.Vertex.New(graphicsContext.CommandList.GraphicsDevice, new VertexPositionNormalTexture[vertexBufferLength], GraphicsResourceUsage.Dynamic);
 
-                vertexBuffersBinding = new[]
-                {
-                    new VertexBufferBinding(vertexBuffers[0], VertexPositionNormalTexture.Layout, 0),
-                    new VertexBufferBinding(vertexBuffers[1], VertexPositionNormalTexture.Layout, 0)
-                };
+                vertexBuffersBinding = new VertexBufferBinding[VertexBufferCount];
+                for (int j = 0; j < VertexBufferCount; j++)
+                    vertexBuffersBinding[j] = new VertexBufferBinding(vertexBuffers[j], VertexPositionNormalTexture.Layout, 0);
 
-                inputElementDescriptions = new[]
-                {
-                    vertexBuffersBinding[0].Declaration.CreateInputElements(),
-                    vertexBuffersBinding[1].Declaration.CreateInputElements()
-                };
+
+                inputElementDescriptions = new InputElementDescription[VertexBufferCount][];
+                for (int j = 0; j < VertexBufferCount; j++)
+                    inputElementDescriptions[j] = vertexBuffersBinding[j].Declaration.CreateInputElements();
 
                 // Create the pipeline state object
                 pipelineState = new MutablePipelineState(graphicsContext.CommandList.GraphicsDevice);
@@ -156,7 +153,7 @@ namespace SiliconStudio.Xenko.Graphics
             public void Begin([NotNull] GraphicsContext graphicsContext)
             {
                 // Swap vertex buffer
-                activeVertexBufferIndex = activeVertexBufferIndex == 0 ? 1 : 0;
+                activeVertexBufferIndex = ++activeVertexBufferIndex >= VertexBufferCount ? 0 : activeVertexBufferIndex;
 
                 charsToRenderCount = 0;
 
