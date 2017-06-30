@@ -21,8 +21,13 @@ shader ComputeColorFlakeShininess : ComputeColor,
 
         const float baseShininess = FlakeBaseShininess.Compute().r;
         const float randomShininessStrength = FlakeRandomShininessStrength.Compute().r;
-
+        
+#if 0 // DESKTOP
         float randomShininess = GenerateRandomFlakeShininess(streams.TexCoord, flakeGenerationParameters, baseShininess);
+#else // MOBILE TEST
+        float randomShininess = baseShininess;
+#endif
+
         float flakeShininess = lerp(baseShininess, randomShininess, randomShininessStrength);
 
         // Force 3d vector return type (to avoid glsl compilation errors)

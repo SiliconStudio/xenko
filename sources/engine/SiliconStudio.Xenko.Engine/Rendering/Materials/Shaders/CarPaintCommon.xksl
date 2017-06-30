@@ -182,7 +182,7 @@ shader CarPaintCommon
 
         float3 b = floor(position);
 
-        float3 cell_center;
+        float3 cell_center = float3( 0, 0, 0 );
         int nearestCellIndex = check_flake_cell(b, position, flake_size, flake_size_variance, cell_center);
 
         if (nearestCellIndex >= 0)
@@ -206,8 +206,8 @@ shader CarPaintCommon
         position *= flake_scale;
 
         float3 b = floor(position);
-
-        float3 cell_center;
+        
+        float3 cell_center = float3( 0, 0, 0 );
         int nearestCellIndex = check_flake_cell(b, position, flake_size, flake_size_variance, cell_center);
         
         if (nearestCellIndex >= 0)
@@ -233,7 +233,7 @@ shader CarPaintCommon
 
         float3 b = floor(position);
 
-        float3 cell_center;
+        float3 cell_center = float3( 0, 0, 0 );
         int nearestCellIndex = check_flake_cell(b, position, flake_size, flake_size_variance, cell_center);
 
         if (nearestCellIndex >= 0)
