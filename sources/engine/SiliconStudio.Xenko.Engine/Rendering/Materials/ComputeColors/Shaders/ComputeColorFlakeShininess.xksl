@@ -12,7 +12,7 @@ shader ComputeColorFlakeShininess : ComputeColor,
     compose ComputeColor FlakeBaseShininess;
     compose ComputeColor FlakeRandomShininessStrength;
 
-    override float Compute()
+    override float3 Compute()
     {
         const float scale = FlakeScale.Compute().r;
         const float size = FlakeSize.Compute().r;
@@ -25,6 +25,7 @@ shader ComputeColorFlakeShininess : ComputeColor,
         float randomShininess = GenerateRandomFlakeShininess(streams.TexCoord, flakeGenerationParameters, baseShininess);
         float flakeShininess = lerp(baseShininess, randomShininess, randomShininessStrength);
 
-        return flakeShininess;
+        // Force 3d vector return type (to avoid glsl compilation errors)
+        return float3(flakeShininess, flakeShininess, flakeShininess);
     }
 };
