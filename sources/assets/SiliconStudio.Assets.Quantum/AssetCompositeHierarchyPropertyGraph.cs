@@ -692,7 +692,7 @@ namespace SiliconStudio.Assets.Quantum
                         // Overwrite the Ids of the cloned part with the id of the existing one so the cloned part will be considered as a proxy object by the fix reference pass
                         RewriteIds(clone.Part, existingPart);
                         // Replace the cloned part itself by the existing part.
-                        var part = Container.NodeContainer.GetNode(clone);
+                        var part = Container.NodeContainer.GetOrCreateNode(clone);
                         part[PartName].Update(existingPart);
                     }
                 }
