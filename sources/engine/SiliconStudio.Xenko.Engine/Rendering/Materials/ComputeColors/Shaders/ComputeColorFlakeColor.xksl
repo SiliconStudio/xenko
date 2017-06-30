@@ -17,10 +17,15 @@ shader ComputeColorFlakeColor : ComputeColor,
         
         float3 baseColor = FlakeBaseColor.Compute().rgb;
         baseColor = lerp(baseColor, 0.0f, fresnel);
-
+        
         const float randomColorFactor = FlakeRandom_Color_Strength.Compute().r;
 
+#if 0 // DESKTOP
         float3 randomFlakeColor = GenerateRandomFlakeColor(streams.TexCoord, flakeGenerationParameters, baseColor);
+#else // MOBILE TEST
+        float3 randomFlakeColor = baseColor;
+#endif
+
         float3 flakeColor = lerp(baseColor, randomFlakeColor, randomColorFactor);
 
         return float4(flakeColor, 1.0f);
