@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         public override void ApplyViewParameters(RenderDrawContext context, ParameterCollection parameters, LightShadowMapTexture shadowMapTexture)
         {
-            parameters.Set(ShadowMapCasterParaboloidProjectionKeys.DepthParameters, GetShadowMapDepthParameters(shadowMapTexture));
+            parameters.Set(ShadowMapCasterParaboloidProjectionWithPixelShaderKeys.DepthParameters, GetShadowMapDepthParameters(shadowMapTexture));
         }
 
         public override void Collect(RenderContext context, RenderView sourceView, LightShadowMapTexture lightShadowMap)
