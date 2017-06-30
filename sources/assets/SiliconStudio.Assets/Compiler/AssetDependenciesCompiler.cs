@@ -38,7 +38,7 @@ namespace SiliconStudio.Assets.Compiler
         public AssetCompilerResult PrepareMany(AssetCompilerContext context, List<AssetItem> assetItems)
         {
             var finalResult = new AssetCompilerResult();
-            var compiledItems = new HashSet<AssetId>();
+            var compiledItems = new Dictionary<AssetId, BuildStep>();
             foreach (var assetItem in assetItems)
             {
                 var visitedItems = new HashSet<BuildAssetNode>();
@@ -57,16 +57,17 @@ namespace SiliconStudio.Assets.Compiler
         {
             var finalResult = new AssetCompilerResult();
             var visitedItems = new HashSet<BuildAssetNode>();
-            var compiledItems = new HashSet<AssetId>();
+            var compiledItems = new Dictionary<AssetId, BuildStep>();
             Prepare(finalResult, context, assetItem, context.CompilationContext, visitedItems, compiledItems);
             return finalResult;
         }
 
-        private void Prepare(AssetCompilerResult finalResult, AssetCompilerContext context, AssetItem assetItem, [NotNull] Type compilationContext, HashSet<BuildAssetNode> visitedItems, HashSet<AssetId> compiledItems, BuildStep parentBuildStep = null, 
+        private void Prepare(AssetCompilerResult finalResult, AssetCompilerContext context, AssetItem assetItem, [NotNull] Type compilationContext, HashSet<BuildAssetNode> visitedItems, Dictionary<AssetId, BuildStep> compiledItems, BuildStep parentBuildStep = null, 
             BuildDependencyType dependencyType = BuildDependencyType.Runtime)
         {
             if (compilationContext == null) throw new ArgumentNullException(nameof(compilationContext));
             var assetNode = BuildDependencyManager.FindOrCreateNode(assetItem, compilationContext);
+            compiledItems.TryGetValue(assetNode.AssetItem.Id, out var assetBuildSteps);
 
             // Prevent re-entrancy in the same node
             if (visitedItems.Add(assetNode))
@@ -74,7 +75,7 @@ namespace SiliconStudio.Assets.Compiler
                 assetNode.Analyze(context);
 
                 // Invoke the compiler to prepare the build step for this asset if the dependency needs to compile it (Runtime or CompileContent)
-                if ((dependencyType & ~BuildDependencyType.CompileAsset) != 0 && compiledItems.Add(assetNode.AssetItem.Id))
+                if ((dependencyType & ~BuildDependencyType.CompileAsset) != 0 && assetBuildSteps == null)
                 {
                     var mainCompiler = BuildDependencyManager.AssetCompilerRegistry.GetCompiler(assetItem.Asset.GetType(), assetNode.CompilationContext);
                     if (mainCompiler == null)
@@ -88,7 +89,8 @@ namespace SiliconStudio.Assets.Compiler
                         return;
                     }
 
-                    assetNode.BuildSteps = compilerResult.BuildSteps;
+                    assetBuildSteps = compilerResult.BuildSteps;
+                    compiledItems.Add(assetNode.AssetItem.Id, assetBuildSteps);
 
                     // Copy the log to the final result (note: this does not copy or forward the build steps)
                     compilerResult.CopyTo(finalResult);
@@ -99,7 +101,7 @@ namespace SiliconStudio.Assets.Compiler
                     }
 
                     // Add the resulting build steps to the final
-                    finalResult.BuildSteps.Add(assetNode.BuildSteps);
+                    finalResult.BuildSteps.Add(assetBuildSteps);
 
                     AssetCompiled?.Invoke(this, new AssetCompiledArgs(assetItem, compilerResult));
                 }
@@ -108,7 +110,7 @@ namespace SiliconStudio.Assets.Compiler
                 foreach (var reference in assetNode.References)
                 {
                     var target = reference.Target;
-                    Prepare(finalResult, context, target.AssetItem, target.CompilationContext, visitedItems, compiledItems, assetNode.BuildSteps, reference.DependencyType);
+                    Prepare(finalResult, context, target.AssetItem, target.CompilationContext, visitedItems, compiledItems, assetBuildSteps, reference.DependencyType);
                     if (finalResult.HasErrors)
                     {
                         return;
@@ -116,13 +118,13 @@ namespace SiliconStudio.Assets.Compiler
                 }
 
                 // If we didn't prepare any build step for this asset let's exit here.
-                if (assetNode.BuildSteps == null)
+                if (assetBuildSteps == null)
                     return;
             }
 
             // Link the created build steps to their parent step.
-            if (parentBuildStep != null && assetNode.BuildSteps != null && (dependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent) //only if content is required Content.Load
-                BuildStep.LinkBuildSteps(assetNode.BuildSteps, parentBuildStep);
+            if (parentBuildStep != null && assetBuildSteps != null && (dependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent) //only if content is required Content.Load
+                BuildStep.LinkBuildSteps(assetBuildSteps, parentBuildStep);
         }
     }
 }

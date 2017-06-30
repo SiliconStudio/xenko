@@ -57,8 +57,6 @@ namespace SiliconStudio.Assets.Analysis
 
         public ICollection<BuildAssetLink> References => references.Values;
 
-        public ListBuildStep BuildSteps { get; set; }
-
         public BuildAssetNode(AssetItem assetItem, Type compilationContext, BuildDependencyManager dependencyManager)
         {
             AssetItem = assetItem;
@@ -107,7 +105,7 @@ namespace SiliconStudio.Assets.Analysis
             }
 
             //Input files required
-            foreach (var inputFile in mainCompiler.GetInputFiles(AssetItem)) //directly resolve by input files, in the future we might just want this pass
+            foreach (var inputFile in new HashSet<ObjectUrl>(mainCompiler.GetInputFiles(AssetItem))) //directly resolve by input files, in the future we might just want this pass
             {
                 if (inputFile.Type == UrlType.Content || inputFile.Type == UrlType.ContentLink)
                 {

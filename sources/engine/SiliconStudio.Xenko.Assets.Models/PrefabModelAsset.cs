@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.Models
@@ -33,6 +34,6 @@ namespace SiliconStudio.Xenko.Assets.Models
         public List<ModelMaterial> Materials { get; } = new List<ModelMaterial>();
 
         [DataMember]
-        public AssetReference Prefab { get; set; }
+        public Prefab Prefab { get; set; }
     }
 }
