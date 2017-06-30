@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// <summary>
     /// Creates shadow map (just writing into the depth buffer).
     /// </summary>
-    shader ShadowMapCasterBase : Transformation, ShaderBase, PositionStream
+    shader ShadowMapCasterBase : ShadowMapCasterBaseWithPixelShader
     {
         /// --------------------------------------------------------------------------------
         /// Pixel Shader

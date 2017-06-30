@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         // For cut off materials we want to run pixel shader during rendering shadow maps
         if(MaterialKeys.UsePixelShaderWithDepthPass)
         {
-            mixin ShadowMapCasterWithPixelShaderBase;
+            mixin ShadowMapCasterBaseWithPixelShader;
         }
         else
         {
