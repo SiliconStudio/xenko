@@ -51,6 +51,8 @@ namespace SiliconStudio.Xenko.Profiling
 
         private readonly object stringLock = new object();
 
+        private Color4 textColor = Color.LightGreen;
+
         private struct ProfilingResult : IComparer<ProfilingResult>
         {
             public long AccumulatedTime;
@@ -348,7 +350,7 @@ namespace SiliconStudio.Xenko.Profiling
                 fastTextRenderer = new FastTextRenderer
                 {
                     DebugSpriteFont = Content.Load<Texture>("XenkoDebugSpriteFont"),
-                    TextColor = this.TextColor
+                    TextColor = TextColor
                 }.Initialize(Game.GraphicsContext);
             }
 
@@ -357,18 +359,17 @@ namespace SiliconStudio.Xenko.Profiling
             fastTextRenderer.Begin(Game.GraphicsContext);
             lock (stringLock)
             {
-                fastTextRenderer.DrawString(Game.GraphicsContext, "Active filter:  " + FilteringMode, 10, 10);
+                fastTextRenderer.DrawString(Game.GraphicsContext, $"Display: {FilteringMode}, {fpsStatString}", 10, 10);
 
                 bool isGpuFiltered = (FilteringMode == GameProfilingFiltering.GPU);
-
+                
                 if (!isGpuFiltered)
                 {
                     fastTextRenderer.DrawString(Game.GraphicsContext, gcMemoryString, 10, 30);
                     fastTextRenderer.DrawString(Game.GraphicsContext, gcCollectionsString, 10, 50);
-                    fastTextRenderer.DrawString(Game.GraphicsContext, fpsStatString, 10, 70);
                 }
 
-                fastTextRenderer.DrawString(Game.GraphicsContext, profilersString, 10, isGpuFiltered ? 30 : 90);
+                fastTextRenderer.DrawString(Game.GraphicsContext, profilersString, 10, isGpuFiltered ? 30 : 70);
             }
 
             fastTextRenderer.End(Game.GraphicsContext);
@@ -425,7 +426,16 @@ namespace SiliconStudio.Xenko.Profiling
         /// <summary>
         /// Sets or gets the color to use when drawing the profiling system fonts.
         /// </summary>
-        public Color4 TextColor { get; set; } = Color.LightGreen;
+        public Color4 TextColor
+        {
+            get => textColor;
+            set
+            {
+                textColor = value;
+                if (fastTextRenderer != null)
+                    fastTextRenderer.TextColor = value;
+            }
+        }
 
         /// <summary>
         /// Sets or gets the way the printed information will be sorted.
