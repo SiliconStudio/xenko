@@ -30,15 +30,15 @@ namespace SiliconStudio.Xenko.Assets.Physics
             NativeLibrary.PreloadLibrary("VHACD.dll");
         }
 
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
+        public override IEnumerable<BuildDependencyInfo> GetInputTypes(AssetItem assetItem)
         {
             foreach (var type in AssetRegistry.GetAssetTypes(typeof(Model)))
             {
-                yield return new KeyValuePair<Type, BuildDependencyType>(type, BuildDependencyType.CompileContent);
+                yield return new BuildDependencyInfo(type, typeof(AssetCompilationContext), BuildDependencyType.CompileContent);
             }
             foreach (var type in AssetRegistry.GetAssetTypes(typeof(Skeleton)))
             {
-                yield return new KeyValuePair<Type, BuildDependencyType>(type, BuildDependencyType.CompileContent);
+                yield return new BuildDependencyInfo(type, typeof(AssetCompilationContext), BuildDependencyType.CompileContent);
             }
         }
 

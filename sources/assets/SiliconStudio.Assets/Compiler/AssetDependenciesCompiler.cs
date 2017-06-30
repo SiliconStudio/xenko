@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.BuildEngine;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Assets.Compiler
 {
@@ -25,7 +26,7 @@ namespace SiliconStudio.Assets.Compiler
             if(!typeof(ICompilationContext).IsAssignableFrom(compilationContext))
                 throw new InvalidOperationException($"{nameof(compilationContext)} should inherit from ICompilationContext");
 
-            BuildDependencyManager = new BuildDependencyManager(compilationContext);
+            BuildDependencyManager = new BuildDependencyManager();
         }
 
         /// <summary>
@@ -37,10 +38,11 @@ namespace SiliconStudio.Assets.Compiler
         public AssetCompilerResult PrepareMany(AssetCompilerContext context, List<AssetItem> assetItems)
         {
             var finalResult = new AssetCompilerResult();
+            var compiledItems = new HashSet<AssetId>();
             foreach (var assetItem in assetItems)
             {
                 var visitedItems = new HashSet<BuildAssetNode>();
-                Prepare(finalResult, context, assetItem, visitedItems);
+                Prepare(finalResult, context, assetItem, context.CompilationContext, visitedItems, compiledItems);
             }
             return finalResult;
         }
@@ -50,73 +52,77 @@ namespace SiliconStudio.Assets.Compiler
         /// </summary>
         /// <param name="context">The AssetCompilerContext</param>
         /// <param name="assetItem">The asset to build</param>
-        /// <param name="allowDependencyExclusion">If the process should allow asset compilers to remove unused dependency types to speed up the process</param>
         /// <returns></returns>
-        public AssetCompilerResult Prepare(AssetCompilerContext context, AssetItem assetItem, bool allowDependencyExclusion = true)
+        public AssetCompilerResult Prepare(AssetCompilerContext context, AssetItem assetItem)
         {
             var finalResult = new AssetCompilerResult();
             var visitedItems = new HashSet<BuildAssetNode>();
-            Prepare(finalResult, context, assetItem, visitedItems);
+            var compiledItems = new HashSet<AssetId>();
+            Prepare(finalResult, context, assetItem, context.CompilationContext, visitedItems, compiledItems);
             return finalResult;
         }
 
-        private void Prepare(AssetCompilerResult finalResult, AssetCompilerContext context, AssetItem assetItem, HashSet<BuildAssetNode> visitedItems, BuildStep parentBuildStep = null, 
+        private void Prepare(AssetCompilerResult finalResult, AssetCompilerContext context, AssetItem assetItem, [NotNull] Type compilationContext, HashSet<BuildAssetNode> visitedItems, HashSet<AssetId> compiledItems, BuildStep parentBuildStep = null, 
             BuildDependencyType dependencyType = BuildDependencyType.Runtime)
         {
-            var assetNode = BuildDependencyManager.FindOrCreateNode(assetItem, dependencyType);
+            if (compilationContext == null) throw new ArgumentNullException(nameof(compilationContext));
+            var assetNode = BuildDependencyManager.FindOrCreateNode(assetItem, compilationContext);
 
             // Prevent re-entrancy in the same node
-            if (!visitedItems.Add(assetNode))
-                return;
-
-            assetNode.Analyze(context);
-
-            AssetCompilerResult compilerResult = null;
-
-            // Invoke the compiler to prepare the build step for this asset if the dependency needs to compile it (Runtime or CompileContent)
-            if ((assetNode.DependencyType & ~BuildDependencyType.CompileAsset) != 0)
+            if (visitedItems.Add(assetNode))
             {
-                var mainCompiler = BuildDependencyManager.AssetCompilerRegistry.GetCompiler(assetItem.Asset.GetType(), BuildDependencyManager.CompilationContext);
-                if (mainCompiler == null)
-                    return;
+                assetNode.Analyze(context);
 
-                compilerResult = mainCompiler.Prepare(context, assetItem);
-                if ((dependencyType & BuildDependencyType.Runtime) == BuildDependencyType.Runtime && compilerResult.HasErrors) //allow Runtime dependencies to fail
+                // Invoke the compiler to prepare the build step for this asset if the dependency needs to compile it (Runtime or CompileContent)
+                if ((dependencyType & ~BuildDependencyType.CompileAsset) != 0 && compiledItems.Add(assetNode.AssetItem.Id))
                 {
-                    //totally skip this asset but do not propagate errors!
-                    return;
+                    var mainCompiler = BuildDependencyManager.AssetCompilerRegistry.GetCompiler(assetItem.Asset.GetType(), assetNode.CompilationContext);
+                    if (mainCompiler == null)
+                        return;
+
+                    var compilerResult = mainCompiler.Prepare(context, assetItem);
+
+                    if ((dependencyType & BuildDependencyType.Runtime) == BuildDependencyType.Runtime && compilerResult.HasErrors) //allow Runtime dependencies to fail
+                    {
+                        //totally skip this asset but do not propagate errors!
+                        return;
+                    }
+
+                    assetNode.BuildSteps = compilerResult.BuildSteps;
+
+                    // Copy the log to the final result (note: this does not copy or forward the build steps)
+                    compilerResult.CopyTo(finalResult);
+                    if (compilerResult.HasErrors)
+                    {
+                        finalResult.Error($"Failed to prepare asset {assetItem.Location}");
+                        return;
+                    }
+
+                    // Add the resulting build steps to the final
+                    finalResult.BuildSteps.Add(assetNode.BuildSteps);
+
+                    AssetCompiled?.Invoke(this, new AssetCompiledArgs(assetItem, compilerResult));
                 }
 
-                // Copy the log to the final result (note: this does not copy or forward the build steps)
-                compilerResult.CopyTo(finalResult);
-                if (compilerResult.HasErrors)
+                // Go through the dependencies of the node and prepare them as well
+                foreach (var reference in assetNode.References)
                 {
-                    finalResult.Error($"Failed to prepare asset {assetItem.Location}");
-                    return;
+                    var target = reference.Target;
+                    Prepare(finalResult, context, target.AssetItem, target.CompilationContext, visitedItems, compiledItems, assetNode.BuildSteps, reference.DependencyType);
+                    if (finalResult.HasErrors)
+                    {
+                        return;
+                    }
                 }
-                AssetCompiled?.Invoke(this, new AssetCompiledArgs(assetItem, compilerResult));
+
+                // If we didn't prepare any build step for this asset let's exit here.
+                if (assetNode.BuildSteps == null)
+                    return;
             }
 
-            // Go through the dependencies of the node and prepare them as well
-            foreach (var dependencyNode in assetNode.References)
-            {
-                Prepare(finalResult, context, dependencyNode.AssetItem, visitedItems, compilerResult?.BuildSteps, dependencyNode.DependencyType);
-                if (finalResult.HasErrors)
-                {
-                    return;
-                }
-            }
-
-            // If we didn't prepare any build step for this asset let's exit here.
-            if (compilerResult == null)
-                return;
-
-            // Add the resulting build steps to the final
-            finalResult.BuildSteps.Add(compilerResult.BuildSteps);
-
-            // Link the newly created build steps to their parent step.
-            if (parentBuildStep != null && (dependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent) //only if content is required Content.Load
-                BuildStep.LinkBuildSteps(compilerResult.BuildSteps, parentBuildStep);
+            // Link the created build steps to their parent step.
+            if (parentBuildStep != null && assetNode.BuildSteps != null && (dependencyType & BuildDependencyType.CompileContent) == BuildDependencyType.CompileContent) //only if content is required Content.Load
+                BuildStep.LinkBuildSteps(assetNode.BuildSteps, parentBuildStep);
         }
     }
 }

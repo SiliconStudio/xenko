@@ -1,9 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Windows.Threading;
 using NUnit.Framework;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Compiler;
+using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 
@@ -41,12 +46,11 @@ namespace SiliconStudio.Assets.Tests.Compilers
             package.RootAssets.Add(new AssetReference(assetItem.Id, assetItem.Location));
 
             // Create context
-            var context = new AssetCompilerContext();
-
+            var context = new AssetCompilerContext { CompilationContext = typeof(AssetCompilationContext) };
             // Builds the project
             MyAsset1Compiler.AssertFunc = (url, ass, pkg) =>
             {
-                // Nothing must have been compiled compiled before
+                // Nothing must have been compiled before
                 Assert.AreEqual(0, TestCompilerBase.CompiledAssets);
             };
 
@@ -76,28 +80,32 @@ namespace SiliconStudio.Assets.Tests.Compilers
                 CompileContentReference = CreateRef<MyContent9>(otherAssets[1]),
                 CompileRuntimeReference = CreateRef<MyContent10>(otherAssets[2]),
             };
-            var assetItem = new AssetItem("asset3", compileAssetReference, package);
-            package.Assets.Add(assetItem);
+            var asset3 = new AssetItem("asset3", compileAssetReference, package);
+            package.Assets.Add(asset3);
 
-            var asset = new MyAsset1 { CompileAssetReference = CreateRef<MyContent2>(assetItem) };
-            assetItem = new AssetItem("asset1", asset, package);
+            var asset = new MyAsset1 { CompileContentReference = CreateRef<MyContent3>(asset3) };
+            var assetItem = new AssetItem("asset1", asset, package);
             package.Assets.Add(assetItem);
             package.RootAssets.Add(new AssetReference(assetItem.Id, assetItem.Location));
 
             // Create context
-            var context = new AssetCompilerContext();
+            var context = new AssetCompilerContext { CompilationContext = typeof(AssetCompilationContext) };
 
-            // Builds the project
+            Exception ex = null;
             MyAsset1Compiler.AssertFunc = (url, ass, pkg) =>
             {
-                // Nothing must have been compiled compiled before
-                Assert.AreEqual(1, TestCompilerBase.CompiledAssets);
+                AssertInThread(ref ex, () => Assert.AreEqual(1, TestCompilerBase.CompiledAssets.Count));
+                AssertInThread(ref ex, () => Assert.AreEqual(asset3, TestCompilerBase.CompiledAssets.First()));
             };
 
             var assetBuilder = new PackageCompiler(new RootPackageAssetEnumerator(package));
             var assetBuildResult = assetBuilder.Prepare(context);
             // Since MyAsset3 is a CompileContent reference, it should be compiled, so we should have only 2 asset (MyAsset1 and MyAsset3) to compile.
             Assert.AreEqual(2, assetBuildResult.BuildSteps.Count);
+            var builder = new Builder(GlobalLogger.GetLogger("Test"), "", "", "");
+            builder.Root.Add(assetBuildResult.BuildSteps);
+            builder.Run(Builder.Mode.Build, false);
+            RethrowAssertsFromThread(ex);
         }
 
         [Test]
@@ -129,12 +137,12 @@ namespace SiliconStudio.Assets.Tests.Compilers
             package.RootAssets.Add(new AssetReference(assetItem.Id, assetItem.Location));
 
             // Create context
-            var context = new AssetCompilerContext();
+            var context = new AssetCompilerContext { CompilationContext = typeof(AssetCompilationContext) };
 
             // Builds the project
             MyAsset1Compiler.AssertFunc = (url, ass, pkg) =>
             {
-                // Nothing must have been compiled compiled before
+                // Nothing must have been compiled before
                 Assert.AreEqual(1, TestCompilerBase.CompiledAssets);
             };
 
@@ -142,6 +150,27 @@ namespace SiliconStudio.Assets.Tests.Compilers
             var assetBuildResult = assetBuilder.Prepare(context);
             // Since MyAsset4 is a Runtime reference, it should be compiled, so we should have 2 asset (MyAsset1 and MyAsset4) to compile.
             Assert.AreEqual(2, assetBuildResult.BuildSteps.Count);
+        }
+
+
+        private static void AssertInThread(ref Exception ex, Action assert)
+        {
+            try
+            {
+                assert();
+            }
+            catch (Exception e)
+            {
+                ex = e;
+            }
+        }
+
+        private static void RethrowAssertsFromThread(Exception ex)
+        {
+            if (ex != null)
+            {
+                throw ex;
+            }
         }
 
         #region Types
@@ -227,11 +256,11 @@ namespace SiliconStudio.Assets.Tests.Compilers
         [AssetCompiler(typeof(MyAsset1), typeof(AssetCompilationContext))]
         public class MyAsset1Compiler : TestAssertCompiler<MyAsset1>
         {
-            public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
+            public override IEnumerable<BuildDependencyInfo> GetInputTypes(AssetItem assetItem)
             {
-                yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MyAsset2), BuildDependencyType.CompileAsset);
-                yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MyAsset3), BuildDependencyType.CompileContent);
-                yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MyAsset4), BuildDependencyType.Runtime);
+                yield return new BuildDependencyInfo(typeof(MyAsset2), typeof(AssetCompilationContext), BuildDependencyType.CompileAsset);
+                yield return new BuildDependencyInfo(typeof(MyAsset3), typeof(AssetCompilationContext), BuildDependencyType.CompileContent);
+                yield return new BuildDependencyInfo(typeof(MyAsset4), typeof(AssetCompilationContext), BuildDependencyType.Runtime);
             }
 
             public static Action<string, MyAsset1, Package> AssertFunc;
