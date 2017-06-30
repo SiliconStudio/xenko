@@ -340,11 +340,11 @@
     </Compile>
     <Compile Include="Rendering\Materials\ShadingModelShaderBuilder.cs" />
     <Compile Include="Rendering\RenderViewFlags.cs" />
-    <Compile Include="Rendering\Shadows\ShadowMapCasterWithPixelShaderBase.cs">
+    <Compile Include="Rendering\Shadows\ShadowMapCasterBaseWithPixelShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ShadowMapCasterWithPixelShaderBase.xksl</DependentUpon>
+      <DependentUpon>ShadowMapCasterBaseWithPixelShader.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Skyboxes\CubemapSceneRenderer.cs" />
     <Compile Include="Rendering\Lights\LightPointShadowMap.cs" />
@@ -846,9 +846,9 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceNormalStreamShading.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\Shadows\ShadowMapCasterWithPixelShaderBase.xksl">
+    <None Include="Rendering\Shadows\ShadowMapCasterBaseWithPixelShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>ShadowMapCasterWithPixelShaderBase.cs</LastGenOutput>
+      <LastGenOutput>ShadowMapCasterBaseWithPixelShader.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Shadows\ShadowMapCasterCubeMap.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
