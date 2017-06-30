@@ -20,11 +20,11 @@ namespace SiliconStudio.Xenko.Assets.Materials
     [AssetCompiler(typeof(MaterialAsset), typeof(AssetCompilationContext))]
     internal class MaterialAssetCompiler : AssetCompilerBase
     {
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
+        public override IEnumerable<BuildDependencyInfo> GetInputTypes(AssetItem assetItem)
         {
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(TextureAsset), BuildDependencyType.Runtime);
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MaterialAsset), BuildDependencyType.CompileAsset);
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(GameSettingsAsset), BuildDependencyType.CompileAsset);
+            yield return new BuildDependencyInfo(typeof(TextureAsset), typeof(AssetCompilationContext), BuildDependencyType.Runtime);
+            yield return new BuildDependencyInfo(typeof(MaterialAsset), typeof(AssetCompilationContext), BuildDependencyType.CompileAsset);
+            yield return new BuildDependencyInfo(typeof(GameSettingsAsset), typeof(AssetCompilationContext), BuildDependencyType.CompileAsset);
         }
 
         public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)

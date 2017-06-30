@@ -18,10 +18,10 @@ namespace SiliconStudio.Xenko.Assets.Rendering
     [AssetCompiler(typeof(GraphicsCompositorAsset), typeof(AssetCompilationContext))]
     public class GraphicsCompositorAssetCompiler : AssetCompilerBase
     {
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
+        public override IEnumerable<BuildDependencyInfo> GetInputTypes(AssetItem assetItem)
         {
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(RenderTextureAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileAsset);
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(TextureAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileAsset);
+            yield return new BuildDependencyInfo(typeof(RenderTextureAsset), typeof(AssetCompilationContext), BuildDependencyType.Runtime | BuildDependencyType.CompileAsset);
+            yield return new BuildDependencyInfo(typeof(TextureAsset), typeof(AssetCompilationContext), BuildDependencyType.Runtime | BuildDependencyType.CompileAsset);
         }
 
         public override bool AlwaysCheckRuntimeTypes { get; } = true; //compositor is special, we always want to visit what the renderers

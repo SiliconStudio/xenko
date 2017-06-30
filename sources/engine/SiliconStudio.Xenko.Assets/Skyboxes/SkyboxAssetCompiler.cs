@@ -20,9 +20,9 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
     [AssetCompiler(typeof(SkyboxAsset), typeof(AssetCompilationContext))]
     internal class SkyboxAssetCompiler : AssetCompilerBase
     {
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
+        public override IEnumerable<BuildDependencyInfo> GetInputTypes(AssetItem assetItem)
         {
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(TextureAsset), BuildDependencyType.CompileContent);
+            yield return new BuildDependencyInfo(typeof(TextureAsset), typeof(AssetCompilationContext), BuildDependencyType.CompileContent);
         }
 
         public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
