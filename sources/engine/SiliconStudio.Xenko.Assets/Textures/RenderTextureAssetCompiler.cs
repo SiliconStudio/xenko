@@ -19,7 +19,8 @@ namespace SiliconStudio.Xenko.Assets.Textures
             var asset = (RenderTextureAsset)assetItem.Asset;
             var colorSpace = context.GetColorSpace();
 
-            result.BuildSteps = new AssetBuildStep(assetItem) { new RenderTextureConvertCommand(targetUrlInStorage, new RenderTextureParameters(asset, colorSpace), assetItem.Package) };
+            result.BuildSteps = new AssetBuildStep(assetItem);
+            result.BuildSteps.Add(new RenderTextureConvertCommand(targetUrlInStorage, new RenderTextureParameters(asset, colorSpace), assetItem.Package));
         }
 
         /// <summary>

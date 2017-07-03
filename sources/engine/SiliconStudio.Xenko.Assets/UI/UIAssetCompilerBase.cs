@@ -24,7 +24,8 @@ namespace SiliconStudio.Xenko.Assets.UI
         protected sealed override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (T)assetItem.Asset;
-            result.BuildSteps = new AssetBuildStep(assetItem) { Create(targetUrlInStorage, asset, assetItem.Package) };
+            result.BuildSteps = new AssetBuildStep(assetItem);
+            result.BuildSteps.Add(Create(targetUrlInStorage, asset, assetItem.Package));
         }
 
         protected abstract UIConvertCommand Create(string url, T parameters, Package package);

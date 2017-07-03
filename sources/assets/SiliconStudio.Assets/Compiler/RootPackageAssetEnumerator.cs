@@ -23,7 +23,7 @@ namespace SiliconStudio.Assets.Compiler
         public RootPackageAssetEnumerator(Package package)
         {
             rootPackage = package;
-            buildDependencyManager = new BuildDependencyManager(typeof(AssetCompilationContext));
+            buildDependencyManager = new BuildDependencyManager();
         }
 
         /// <inheritdoc/>

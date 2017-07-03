@@ -204,7 +204,6 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(0, memberNode.Target.Members.Count);
             Assert.Null(memberNode.Target.Indices);
             Assert.AreEqual(TypeDescriptorFactory.Default.Find(typeof(float)), memberNode.Target.Descriptor);
-            Assert.AreEqual(true, memberNode.Target.IsPrimitive);
             Assert.AreEqual(false, memberNode.Target.IsReference);
             Assert.Null(memberNode.Target.ItemReferences);
             Assert.AreEqual(typeof(float), memberNode.Target.Type);
@@ -218,7 +217,6 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(0, memberNode.Target.Members.Count);
             Assert.Null(memberNode.Target.Indices);
             Assert.AreEqual(TypeDescriptorFactory.Default.Find(typeof(float)), memberNode.Target.Descriptor);
-            Assert.AreEqual(true, memberNode.Target.IsPrimitive);
             Assert.AreEqual(false, memberNode.Target.IsReference);
             Assert.Null(memberNode.Target.ItemReferences);
             Assert.AreEqual(typeof(float), memberNode.Target.Type);
@@ -231,7 +229,6 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(0, memberNode.Target.Members.Count);
             Assert.Null(memberNode.Target.Indices);
             Assert.AreEqual(TypeDescriptorFactory.Default.Find(typeof(float)), memberNode.Target.Descriptor);
-            Assert.AreEqual(true, memberNode.Target.IsPrimitive);
             Assert.AreEqual(false, memberNode.Target.IsReference);
             Assert.Null(memberNode.Target.ItemReferences);
             Assert.AreEqual(typeof(float), memberNode.Target.Type);

@@ -26,7 +26,8 @@ namespace SiliconStudio.Xenko.Assets.Effect
             var url = EffectCompilerBase.DefaultSourceShaderFolder + "/" + Path.GetFileName(assetItem.FullPath);
 
             var originalSourcePath = assetItem.FullPath;
-            result.BuildSteps = new AssetBuildStep(assetItem) { new ImportStreamCommand { SourcePath = originalSourcePath, Location = url, SaveSourcePath = true } };
+            result.BuildSteps = new AssetBuildStep(assetItem);
+            result.BuildSteps.Add(new ImportStreamCommand { SourcePath = originalSourcePath, Location = url, SaveSourcePath = true });
             var shaderLocations = (ConcurrentDictionary<string, string>)context.Properties.GetOrAdd(ShaderLocationsKey, key => new ConcurrentDictionary<string, string>());
 
             // Store directly this into the context TODO this this temporary

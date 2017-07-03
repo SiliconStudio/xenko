@@ -4,7 +4,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Extensions;
 
 namespace SiliconStudio.Presentation.ValueConverters
