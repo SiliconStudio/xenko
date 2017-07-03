@@ -104,8 +104,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         {
             private ColorSpace colorspace;
 
-            public OfflineRasterizedFontCommand(string url, SpriteFontAsset description, ColorSpace colorspace, Package package)
-                : base(url, description, package)
+            public OfflineRasterizedFontCommand(string url, SpriteFontAsset description, ColorSpace colorspace, IAssetFinder assetFinder)
+                : base(url, description, assetFinder)
             {
                 this.colorspace = colorspace;
             }
@@ -151,8 +151,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </summary>
         internal class SignedDistanceFieldFontCommand : AssetCommand<SpriteFontAsset>
         {
-            public SignedDistanceFieldFontCommand(string url, SpriteFontAsset description, Package package)
-                : base(url, description, package)
+            public SignedDistanceFieldFontCommand(string url, SpriteFontAsset description, IAssetFinder assetFinder)
+                : base(url, description, assetFinder)
             {
             }
 
@@ -188,8 +188,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
         internal class RuntimeRasterizedFontCommand : AssetCommand<SpriteFontAsset>
         {
-            public RuntimeRasterizedFontCommand(string url, SpriteFontAsset description, Package package)
-                : base(url, description, package)
+            public RuntimeRasterizedFontCommand(string url, SpriteFontAsset description, IAssetFinder assetFinder)
+                : base(url, description, assetFinder)
             {
             }
 

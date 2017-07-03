@@ -27,8 +27,8 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </summary>
         private class RenderTextureConvertCommand : AssetCommand<RenderTextureParameters>
         {
-            public RenderTextureConvertCommand(string url, RenderTextureParameters parameters, Package package)
-                : base(url, parameters, package)
+            public RenderTextureConvertCommand(string url, RenderTextureParameters parameters, IAssetFinder assetFinder)
+                : base(url, parameters, assetFinder)
             {
             }
 

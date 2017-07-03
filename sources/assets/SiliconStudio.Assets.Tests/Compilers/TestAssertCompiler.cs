@@ -11,10 +11,10 @@ namespace SiliconStudio.Assets.Tests.Compilers
         private class AssertCommand : AssetCommand<T>
         {
             private readonly AssetItem assetItem;
-            private readonly Action<string, T, Package> assertFunc;
+            private readonly Action<string, T, IAssetFinder> assertFunc;
 
-            public AssertCommand(AssetItem assetItem, T parameters, Package package, Action<string, T, Package> assertFunc)
-                : base(assetItem.Location, parameters, package)
+            public AssertCommand(AssetItem assetItem, T parameters, IAssetFinder assetFinder, Action<string, T, IAssetFinder> assertFunc)
+                : base(assetItem.Location, parameters, assetFinder)
             {
                 this.assetItem = assetItem;
                 this.assertFunc = assertFunc;
@@ -22,7 +22,7 @@ namespace SiliconStudio.Assets.Tests.Compilers
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
-                assertFunc?.Invoke(Url, Parameters, Package);
+                assertFunc?.Invoke(Url, Parameters, AssetFinder);
                 CompiledAssets.Add(assetItem);
                 return Task.FromResult(ResultStatus.Successful);
             }
@@ -36,7 +36,7 @@ namespace SiliconStudio.Assets.Tests.Compilers
             };
         }
 
-        protected virtual void DoCommandAssert(string url, T parameters, Package package)
+        protected virtual void DoCommandAssert(string url, T parameters, IAssetFinder package)
         {
 
         }

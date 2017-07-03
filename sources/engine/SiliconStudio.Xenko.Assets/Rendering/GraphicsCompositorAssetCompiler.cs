@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Assets.Rendering
 
         internal class GraphicsCompositorCompileCommand : AssetCommand<GraphicsCompositorAsset>
         {
-            public GraphicsCompositorCompileCommand(string url, GraphicsCompositorAsset asset, Package assetItemPackage) : base(url, asset, assetItemPackage)
+            public GraphicsCompositorCompileCommand(string url, GraphicsCompositorAsset asset, IAssetFinder assetFinder) : base(url, asset, assetFinder)
             {
             }
 

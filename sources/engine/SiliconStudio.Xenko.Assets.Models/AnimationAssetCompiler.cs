@@ -164,8 +164,8 @@ namespace SiliconStudio.Xenko.Assets.Models
 
         internal class AdditiveAnimationCommand : AssetCommand<AdditiveAnimationParameters>
         {
-            public AdditiveAnimationCommand(string url, AdditiveAnimationParameters parameters, Package package) :
-                base(url, parameters, package)
+            public AdditiveAnimationCommand(string url, AdditiveAnimationParameters parameters, IAssetFinder assetFinder) :
+                base(url, parameters, assetFinder)
             {
                 Version = 2;
             }

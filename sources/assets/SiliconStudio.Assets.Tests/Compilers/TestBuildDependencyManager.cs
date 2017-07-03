@@ -234,8 +234,8 @@ namespace SiliconStudio.Assets.Tests.Compilers
                 yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MyAsset4), BuildDependencyType.Runtime);
             }
 
-            public static Action<string, MyAsset1, Package> AssertFunc;
-            protected override void DoCommandAssert(string url, MyAsset1 parameters, Package package) => AssertFunc?.Invoke(url, parameters, package);
+            public static Action<string, MyAsset1, IAssetFinder> AssertFunc;
+            protected override void DoCommandAssert(string url, MyAsset1 parameters, IAssetFinder package) => AssertFunc?.Invoke(url, parameters, package);
         }
 
         [AssetCompiler(typeof(MyAsset2), typeof(AssetCompilationContext))]

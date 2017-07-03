@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             {
                 base.ComputeParameterHash(writer);
 
-                var prefabAsset = Package.Session.FindAsset(Parameters.Prefab.Location);
+                var prefabAsset = AssetFinder.FindAsset(Parameters.Prefab.Location);
                 if (prefabAsset != null)
                 {
                     writer.Write(prefabAsset.Version);

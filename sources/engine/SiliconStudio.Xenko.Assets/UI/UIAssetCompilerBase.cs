@@ -31,8 +31,8 @@ namespace SiliconStudio.Xenko.Assets.UI
 
         protected abstract class UIConvertCommand : AssetCommand<T>
         {
-            protected UIConvertCommand(string url, T parameters, Package package)
-                : base(url, parameters, package)
+            protected UIConvertCommand(string url, T parameters, IAssetFinder assetFinder)
+                : base(url, parameters, assetFinder)
             {
             }
 

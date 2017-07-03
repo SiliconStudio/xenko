@@ -342,7 +342,7 @@ namespace SiliconStudio.BuildEngine
                     //    }
                     //}
 
-                    await process.WaitForExitAsync();
+                    process.WaitForExit();
 
                     host.Close();
 
