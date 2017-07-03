@@ -8,6 +8,7 @@ shader ComputeColorFlakeColor : ComputeColor,
 {
     compose ComputeColor FlakeScaleSizeSize_VariancePearlescent_Ratio;
     compose ComputeColor FlakeBaseColor;
+    compose ComputeColor FlakeFresnelColor;
     compose ComputeColor FlakeRandom_Color_Strength;
 
     override float4 Compute()
@@ -17,9 +18,10 @@ shader ComputeColorFlakeColor : ComputeColor,
         const float randomColorFactor = FlakeRandom_Color_Strength.Compute().r;
         
         // Mix the base color with Fresnel factor to give a reflective look
-        const float fresnel = FresnelSchlick(0.0f, streams.LdotH);       
+        const float fresnel = FresnelSchlick(0.0f, streams.LdotH);      
+        float3 fresnelColor = FlakeFresnelColor.Compute().rgb;
         float3 baseColor = FlakeBaseColor.Compute().rgb;
-        baseColor = lerp(baseColor, 0.0f, fresnel);
+        baseColor = lerp(baseColor, fresnelColor, fresnel);
 
 #if CAR_PAINT_PROCEDURAL
         float3 randomFlakeColor = GenerateRandomFlakeColor(flakeGenerationParameters, baseColor, streams.TexCoord);
