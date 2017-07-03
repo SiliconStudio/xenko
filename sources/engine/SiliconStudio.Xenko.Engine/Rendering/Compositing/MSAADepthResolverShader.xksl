@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 		// 1:-1 to 0:TextureSize
         uint2 ClipPosToUvPos(float2 clipPos)
         {
-            return (uint2)mad(clipPos, SvPosUnpack.xy, SvPosUnpack.zw);
+            return (uint2)(clipPos * SvPosUnpack.xy + SvPosUnpack.zw);
         }
 
         override stage float4 Shading()
