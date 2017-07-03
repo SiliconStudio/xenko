@@ -15,7 +15,10 @@ namespace SiliconStudio.Assets.Analysis
     /// </summary>
     public class BuildDependencyManager
     {
-        public struct BuildNodeDesc : IEquatable<BuildNodeDesc>
+        /// <summary>
+        /// A structure used as key of the dictionary containing all the build nodes
+        /// </summary>
+        private struct BuildNodeDesc : IEquatable<BuildNodeDesc>
         {
             public readonly AssetId AssetId;
             public readonly Type CompilationContext;
