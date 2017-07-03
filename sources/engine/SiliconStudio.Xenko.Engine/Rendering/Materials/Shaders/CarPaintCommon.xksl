@@ -96,9 +96,7 @@ shader CarPaintCommon
             cellCenter += 0.5 * centerOffset;
 
             float cellDistance = distance(position, cellCenter);
-            bool isCellSizeValid = (cellDistance <= (flake_size + safe_flake_size_variance) && cellDistance >= (flake_size - safe_flake_size_variance));
-
-            if (isCellSizeValid && cellCenter.z < nearestCell.z)
+            if(cellDistance < flake_size && cellCenter.z < nearestCell.z)
             {
                 nearestCell      = cellCenter;
                 nearestCellIndex = cellIndex;
@@ -109,12 +107,8 @@ shader CarPaintCommon
         return nearestCellIndex;
     }
 
-    void GenerateFlakeCellData(in float4 flakeParameters, in float3 scaledCellPosition, out int nearestCellIndex, out float3 noiseGenerationPosition )
-    {     
-        const float flakeScale = flakeParameters.x;
-        const float flakeSize = flakeParameters.y;
-        const float flakeSizeVariance = flakeParameters.z;
-
+    void GenerateFlakeCellData(in float3 scaledCellPosition, in float flakeSize, out float3 noiseGenerationPosition, in float flakeSizeVariance, out int nearestCellIndex )
+    {
         float3 baseCellPosition = floor(scaledCellPosition);
         float3 cellCenter = float3(0.0f, 0.0f, 0.0f);
        
@@ -135,7 +129,7 @@ shader CarPaintCommon
         float3 scaledCellPosition = float3(uv.x, uv.y, 0.0) * flake_scale;
         float3 noiseGenerationPosition = float3(0.0f, 0.0f, 0.0f);
         int nearestCellIndex = -1;
-        GenerateFlakeCellData(p, nearestCellIndex, scaledCellPosition, noiseGenerationPosition);
+        GenerateFlakeCellData(scaledCellPosition, flake_size, nearestCellIndex, flake_size_variance, noiseGenerationPosition);
 
         if (nearestCellIndex >= 0)
         {
@@ -157,7 +151,7 @@ shader CarPaintCommon
         float3 scaledCellPosition = float3(uv.x, uv.y, 0.0) * flake_scale;
         float3 noiseGenerationPosition = float3(0.0f, 0.0f, 0.0f);
         int nearestCellIndex = -1;
-        GenerateFlakeCellData(p, nearestCellIndex, scaledCellPosition, noiseGenerationPosition);
+        GenerateFlakeCellData(scaledCellPosition, flake_size, nearestCellIndex, flake_size_variance, noiseGenerationPosition);
 
         if (nearestCellIndex >= 0)
         {
@@ -180,7 +174,7 @@ shader CarPaintCommon
         float3 scaledCellPosition = float3(uv.x, uv.y, 0.0) * flake_scale;
         float3 noiseGenerationPosition = float3(0.0f, 0.0f, 0.0f);
         int nearestCellIndex = -1;
-        GenerateFlakeCellData(p, nearestCellIndex, scaledCellPosition, noiseGenerationPosition);
+        GenerateFlakeCellData(scaledCellPosition, flake_size, nearestCellIndex, flake_size_variance, noiseGenerationPosition);
 
         if (nearestCellIndex >= 0)
         {      
