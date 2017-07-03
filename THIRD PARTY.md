@@ -35,3 +35,4 @@ Xenko uses the following open-source products:
 * [SocketsForPCL](https://github.com/rdavisau/sockets-for-pcl) (MIT License)
 * [NativePath] (https://github.com/sinkingsugar/NativePath) (MIT License)
 * [Recast & Detour] (https://github.com/recastnavigation/recastnavigation) (zlib License)
+* [Gettext.NET] (https://sourceforge.net/projects/gettextnet/) (LGPL 2.1, unmodified binaries)
