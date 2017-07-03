@@ -44,11 +44,6 @@ namespace SiliconStudio.BuildEngine
             return Command.ToString();
         }
 
-        public override BuildStep Clone()
-        {
-            return new CommandBuildStep(Command.Clone());
-        }
-
         public override void Clean(IExecuteContext executeContext, BuilderContext builderContext, bool deleteOutput)
         {
             // try to retrieve result from one of the object store

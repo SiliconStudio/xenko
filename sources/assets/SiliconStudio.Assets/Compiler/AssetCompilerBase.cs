@@ -22,7 +22,7 @@ namespace SiliconStudio.Assets.Compiler
         }
 
         /// <inheritdoc/>
-        public virtual IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
+        public virtual IEnumerable<BuildDependencyInfo> GetInputTypes(AssetItem assetItem)
         {
             yield break;
         }
@@ -33,7 +33,7 @@ namespace SiliconStudio.Assets.Compiler
             yield break;
         }
 
-        public virtual bool AlwaysCheckRuntimeTypes { get; } = false;
+        public virtual bool AlwaysCheckRuntimeTypes { get; } = true;
 
         public virtual IEnumerable<Type> GetRuntimeTypes(AssetItem assetItem)
         {

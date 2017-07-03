@@ -92,13 +92,6 @@ namespace SiliconStudio.BuildEngine
         }
 
         /// <inheritdoc/>
-        public override BuildStep Clone()
-        {
-            var clone = new DynamicBuildStep(buildStepProvider, MaxParallelSteps);
-            return clone;
-        }
-
-        /// <inheritdoc/>
         public override string ToString()
         {
             return "DynamicBuildStep";

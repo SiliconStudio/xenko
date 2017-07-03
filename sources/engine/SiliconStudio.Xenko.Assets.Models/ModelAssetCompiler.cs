@@ -16,10 +16,10 @@ namespace SiliconStudio.Xenko.Assets.Models
     [AssetCompiler(typeof(ModelAsset), typeof(AssetCompilationContext))]
     public class ModelAssetCompiler : AssetCompilerBase
     {
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
+        public override IEnumerable<BuildDependencyInfo> GetInputTypes(AssetItem assetItem)
         {
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SkeletonAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MaterialAsset), BuildDependencyType.Runtime);
+            yield return new BuildDependencyInfo(typeof(SkeletonAsset), typeof(AssetCompilationContext), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
+            yield return new BuildDependencyInfo(typeof(MaterialAsset), typeof(AssetCompilationContext), BuildDependencyType.Runtime);
         }
 
         public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
@@ -77,7 +77,8 @@ namespace SiliconStudio.Xenko.Assets.Models
 
             importModelCommand.Package = assetItem.Package;
 
-            result.BuildSteps = new AssetBuildStep(assetItem) { importModelCommand };
+            result.BuildSteps = new AssetBuildStep(assetItem);
+            result.BuildSteps.Add(importModelCommand);
         }
     }
 }
