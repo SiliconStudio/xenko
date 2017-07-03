@@ -14,23 +14,25 @@ shader ComputeColorFlakeShininess : ComputeColor,
 
     override float3 Compute()
     {
+        const float baseShininess = FlakeBaseShininess.Compute().r;
+
+#if CAR_PAINT_PROCEDURAL
+        // Flake Generation Parameters
         const float scale = FlakeScale.Compute().r;
         const float size = FlakeSize.Compute().r;
         const float sizeVariance = FlakeSizeVariance.Compute().r;
         const float4 flakeGenerationParameters = float4(scale, size, sizeVariance, 0.0f);
 
-        const float baseShininess = FlakeBaseShininess.Compute().r;
-        const float randomShininessStrength = FlakeRandomShininessStrength.Compute().r;
-        
-#if CAR_PAINT_PROCEDURAL
         float randomShininess = GenerateRandomFlakeShininess(flakeGenerationParameters, streams.TexCoord, baseShininess);
 #else
         float randomShininess = baseShininess;
 #endif
 
+        const float randomShininessStrength = FlakeRandomShininessStrength.Compute().r;
+        
         float flakeShininess = lerp(baseShininess, randomShininess, randomShininessStrength);
 
-        // Force 3d vector return type (to avoid glsl compilation errors)
+        // Force 3D vector as return type (to avoid GLSL compilation errors)
         return float3(flakeShininess, flakeShininess, flakeShininess);
     }
 };

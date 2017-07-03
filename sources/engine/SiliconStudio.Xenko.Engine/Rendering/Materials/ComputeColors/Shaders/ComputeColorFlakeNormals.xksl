@@ -9,16 +9,18 @@ shader ComputeColorFlakeNormals : ComputeColor,
 
     override float4 Compute()
     {
-#if CAR_PAINT_PROCEDURAL
-        const float4 flakeGenerationParameters = FlakeScaleSizeSize_VarianceFlake_Sparkle_Strength.Compute().rgba;
-        const float3 baseNormal = float3(0.0f, 0.0f, 1.0f);
+        // Contains procedural noise generation parameters or an offline computed normal map
+        const float4 userInput = FlakeScaleSizeSize_VarianceFlake_Sparkle_Strength.Compute().rgba;
 
-        float3 randomFlakeNormal = GenerateRandomFlakeNormal(flakeGenerationParameters, baseNormal, streams.TexCoord);
-        float3 flakeNormal = normalize(lerp(baseNormal, randomFlakeNormal, flakeGenerationParameters.a));
+#if CAR_PAINT_PROCEDURAL
+        const float3 baseNormal = float3(0.0f, 0.0f, 1.0f);
+        float3 randomFlakeNormal = GenerateRandomFlakeNormal(userInput, baseNormal, streams.TexCoord);
+
+        float3 flakeNormal = normalize(lerp(baseNormal, randomFlakeNormal, userInput.a));
 #else
-        float4 normalMap = FlakeScaleSizeSize_VarianceFlake_Sparkle_Strength.Compute();
-        float3 flakeNormal = normalMap.rgb;
-        flakeNormal.xy = flakeNormal.rg * float2(normalMap.a, 1.0f);
+        // Use an offline computed normal map in case procedural is too slow
+        float3 flakeNormal = userInput.rgb;
+        flakeNormal.xy = flakeNormal.rg * float2(userInput.a, 1.0f);
         flakeNormal.xy = flakeNormal.xy * 2.0f - 1.0f;
         flakeNormal.z = sqrt(max(0.0, 1.0f - dot(flakeNormal.xy, flakeNormal.xy)));
 #endif
