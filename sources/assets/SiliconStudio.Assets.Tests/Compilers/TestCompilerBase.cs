@@ -8,7 +8,6 @@ namespace SiliconStudio.Assets.Tests.Compilers
 {
     public abstract class TestCompilerBase : IAssetCompiler
     {
-        [ThreadStatic]
         public static HashSet<AssetItem> CompiledAssets;
 
         public abstract AssetCompilerResult Prepare(AssetCompilerContext context, AssetItem assetItem);
@@ -17,10 +16,10 @@ namespace SiliconStudio.Assets.Tests.Compilers
 
         public virtual IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem) { yield break; }
 
-        public virtual IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem) { yield break; }
+        public virtual IEnumerable<BuildDependencyInfo> GetInputTypes(AssetItem assetItem) { yield break; }
 
         public virtual IEnumerable<Type> GetInputTypesToExclude(AssetItem assetItem) { yield break; }
 
-        public virtual bool AlwaysCheckRuntimeTypes { get; } = false;
+        public virtual bool AlwaysCheckRuntimeTypes { get; } = true;
     }
 }

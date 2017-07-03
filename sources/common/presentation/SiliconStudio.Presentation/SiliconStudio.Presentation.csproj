@@ -37,7 +37,7 @@
   <ItemGroup>
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>    
+    </Compile>
     <Compile Include="Behaviors\NumericTextBoxDragBehavior.cs" />
     <Compile Include="Behaviors\ToggleButtonPopupBehavior.cs" />
     <Compile Include="Controls\PopupModalWindow.cs" />
@@ -155,7 +155,6 @@
     <Compile Include="Extensions\MathExtensions.cs" />
     <Compile Include="Extensions\WindowHelper.cs" />
     <Compile Include="Core\Utils.cs" />
-    <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="MarkupExtensions\MaxDoubleExtension.cs" />
     <Compile Include="MarkupExtensions\MaxIntExtension.cs" />
     <Compile Include="MarkupExtensions\MinDoubleExtension.cs" />

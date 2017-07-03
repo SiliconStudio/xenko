@@ -34,7 +34,7 @@ namespace SiliconStudio.Assets.Tests.Compilers
             package.RootAssets.Add(new AssetReference(asset1.Id, asset1.Location));
 
             // Create context
-            var context = new AssetCompilerContext();
+            var context = new AssetCompilerContext { CompilationContext = typeof(AssetCompilationContext) };
 
             // Builds the project
             var assetBuilder = new PackageCompiler(new RootPackageAssetEnumerator(package));
@@ -81,19 +81,19 @@ namespace SiliconStudio.Assets.Tests.Compilers
         [AssetCompiler(typeof(MyAsset1), typeof(AssetCompilationContext))]
         public class MyAsset1Compiler : TestAssertCompiler<MyAsset1>
         {
-            public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
+            public override IEnumerable<BuildDependencyInfo> GetInputTypes(AssetItem assetItem)
             {
-                yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MyAsset2), BuildDependencyType.Runtime);
-                yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MyAsset3), BuildDependencyType.CompileAsset);
+                yield return new BuildDependencyInfo(typeof(MyAsset2), typeof(AssetCompilationContext), BuildDependencyType.Runtime);
+                yield return new BuildDependencyInfo(typeof(MyAsset3), typeof(AssetCompilationContext), BuildDependencyType.CompileAsset);
             }
         }
 
         [AssetCompiler(typeof(MyAsset2), typeof(AssetCompilationContext))]
         public class MyAsset2Compiler : TestAssertCompiler<MyAsset2>
         {
-            public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
+            public override IEnumerable<BuildDependencyInfo> GetInputTypes(AssetItem assetItem)
             {
-                yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MyAsset3), BuildDependencyType.Runtime);
+                yield return new BuildDependencyInfo(typeof(MyAsset3), typeof(AssetCompilationContext), BuildDependencyType.Runtime);
             }
         }
 
