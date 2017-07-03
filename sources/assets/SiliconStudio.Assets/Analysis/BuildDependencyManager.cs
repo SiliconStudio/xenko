@@ -92,24 +92,24 @@ namespace SiliconStudio.Assets.Analysis
             return node;
         }
 
-        private static void AnalyzeNode([NotNull] BuildAssetNode node, [NotNull] AssetCompilerContext context)
-        {
-            if (node == null) throw new ArgumentNullException(nameof(node));
-            if (context == null) throw new ArgumentNullException(nameof(context));
-            node.Analyze(context);
-            foreach (var reference in node.References)
-            {
-                AnalyzeNode(reference.Target, context);
-            }
-        }
+        // TODO: this should be reimplemented at the service level (that consumes the build graph - thumbnails, preview, scene editors...)
+        //private static void AnalyzeNode([NotNull] BuildAssetNode node, [NotNull] AssetCompilerContext context)
+        //{
+        //    if (node == null) throw new ArgumentNullException(nameof(node));
+        //    if (context == null) throw new ArgumentNullException(nameof(context));
+        //    node.Analyze(context);
+        //    foreach (var reference in node.References)
+        //    {
+        //        AnalyzeNode(reference.Target, context);
+        //    }
+        //}
 
-        public void AssetChanged(AssetItem sender)
-        {
-            // TODO: this should not work like this!
-            var node = FindOrCreateNode(sender, typeof(AssetCompilationContext)); // update only runtime ones ( as they are root )
-            var context = new AssetCompilerContext { CompilationContext = typeof(AssetCompilationContext) };
-            AnalyzeNode(node, context);
-        }
+        //public void AssetChanged(AssetItem sender)
+        //{
+        //    //var node = FindOrCreateNode(sender, typeof(AssetCompilationContext)); // update only runtime ones ( as they are root )
+        //    //var context = new AssetCompilerContext { CompilationContext = typeof(AssetCompilationContext) };
+        //    //AnalyzeNode(node, context);
+        //}
 
         /// <summary>
         /// Finds a node, notice that this will not perform an analysis on the node, which must be explicitly called on the node
