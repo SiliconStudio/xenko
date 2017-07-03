@@ -352,6 +352,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ShadowMapCasterCubeMapProjectionWithPixelShader.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Shadows\ShadowMapCasterParaboloidProjectionWithPixelShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ShadowMapCasterParaboloidProjectionWithPixelShader.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Skyboxes\CubemapSceneRenderer.cs" />
     <Compile Include="Rendering\Lights\LightPointShadowMap.cs" />
     <Compile Include="Rendering\Lights\LightPointShadowMapType.cs" />
@@ -875,6 +881,10 @@
     <None Include="Rendering\Shadows\ShadowMapCasterParaboloidProjection.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowMapCasterParaboloidProjection1.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Shadows\ShadowMapCasterParaboloidProjectionWithPixelShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ShadowMapCasterParaboloidProjectionWithPixelShader.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Shadows\ShadowMapReceiverPointCubeMap.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
