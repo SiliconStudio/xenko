@@ -49,6 +49,7 @@
     <Compile Include="Annotations\MustUseReturnValueAttribute.cs" />
     <Compile Include="Annotations\NoEnumerationAttribute.cs" />
     <Compile Include="Collections\HybridDictionary.cs" />
+    <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\AnonymousEqualityComparer.cs" />
     <Compile Include="Extensions\DesignExtensions.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
