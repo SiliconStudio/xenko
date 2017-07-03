@@ -28,14 +28,14 @@ namespace SiliconStudio.Core.Yaml
             add
             {
                 if (serializer != null)
-                    throw new InvalidOperationException("Event handlers cannot be added or removed after the serializer has been initialized.");
+                    throw new InvalidOperationException("Event handlers can't be added or removed after the serializer has been initialized.");
 
                 PrepareMembersEvent += value;
             }
             remove
             {
                 if (serializer != null)
-                    throw new InvalidOperationException("Event handlers cannot be added or removed after the serializer has been initialized.");
+                    throw new InvalidOperationException("Event handlers can't be added or removed after the serializer has been initialized.");
                 PrepareMembersEvent -= value;
             }
         }
