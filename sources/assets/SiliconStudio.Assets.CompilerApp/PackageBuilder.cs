@@ -118,6 +118,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 {
                     Profile = builderOptions.BuildProfile,
                     Platform = builderOptions.Platform,
+                    CompilationContext = typeof(AssetCompilationContext),
                     BuildConfiguration = builderOptions.ProjectConfiguration
                 };
 
