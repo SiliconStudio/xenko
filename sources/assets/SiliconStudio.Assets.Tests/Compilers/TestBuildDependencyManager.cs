@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Windows.Threading;
 using NUnit.Framework;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Compiler;
@@ -48,16 +46,21 @@ namespace SiliconStudio.Assets.Tests.Compilers
             // Create context
             var context = new AssetCompilerContext { CompilationContext = typeof(AssetCompilationContext) };
             // Builds the project
+            Exception ex = null;
             MyAsset1Compiler.AssertFunc = (url, ass, pkg) =>
             {
                 // Nothing must have been compiled before
-                Assert.AreEqual(0, TestCompilerBase.CompiledAssets);
+                AssertInThread(ref ex, () => Assert.AreEqual(0, TestCompilerBase.CompiledAssets.Count));
             };
 
             var assetBuilder = new PackageCompiler(new RootPackageAssetEnumerator(package));
             var assetBuildResult = assetBuilder.Prepare(context);
             // Since MyAsset2 is a CompileAsset reference, it should not be compiled, so we should have only 1 asset (MyAsset1) to compile.
             Assert.AreEqual(1, assetBuildResult.BuildSteps.Count);
+            var builder = new Builder(GlobalLogger.GetLogger("Test"), "", "", "");
+            builder.Root.Add(assetBuildResult.BuildSteps);
+            builder.Run(Builder.Mode.Build, false);
+            RethrowAssertsFromThread(ex);
         }
 
         [Test]
@@ -95,7 +98,7 @@ namespace SiliconStudio.Assets.Tests.Compilers
             MyAsset1Compiler.AssertFunc = (url, ass, pkg) =>
             {
                 AssertInThread(ref ex, () => Assert.AreEqual(1, TestCompilerBase.CompiledAssets.Count));
-                AssertInThread(ref ex, () => Assert.AreEqual(asset3, TestCompilerBase.CompiledAssets.First()));
+                AssertInThread(ref ex, () => Assert.AreEqual(asset3.Id, TestCompilerBase.CompiledAssets.First().Id));
             };
 
             var assetBuilder = new PackageCompiler(new RootPackageAssetEnumerator(package));
@@ -140,16 +143,21 @@ namespace SiliconStudio.Assets.Tests.Compilers
             var context = new AssetCompilerContext { CompilationContext = typeof(AssetCompilationContext) };
 
             // Builds the project
+            Exception ex = null;
             MyAsset1Compiler.AssertFunc = (url, ass, pkg) =>
             {
-                // Nothing must have been compiled before
-                Assert.AreEqual(1, TestCompilerBase.CompiledAssets);
+                AssertInThread(ref ex, () => Assert.AreEqual(1, TestCompilerBase.CompiledAssets.Count));
+                AssertInThread(ref ex, () => Assert.AreEqual(compileAssetReference.Id, TestCompilerBase.CompiledAssets.First().Id));
             };
 
             var assetBuilder = new PackageCompiler(new RootPackageAssetEnumerator(package));
             var assetBuildResult = assetBuilder.Prepare(context);
             // Since MyAsset4 is a Runtime reference, it should be compiled, so we should have 2 asset (MyAsset1 and MyAsset4) to compile.
             Assert.AreEqual(2, assetBuildResult.BuildSteps.Count);
+            var builder = new Builder(GlobalLogger.GetLogger("Test"), "", "", "");
+            builder.Root.Add(assetBuildResult.BuildSteps);
+            builder.Run(Builder.Mode.Build, false);
+            RethrowAssertsFromThread(ex);
         }
 
 
