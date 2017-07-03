@@ -33,41 +33,41 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             yield return new BuildDependencyInfo(typeof(ColliderShapeAsset), typeof(AssetCompilationContext), BuildDependencyType.CompileContent);
         }
 
-        //public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
-        //{
-        //    var asset = (NavigationMeshAsset)assetItem.Asset;
-        //    if (asset.Scene != null)
-        //    {
-        //        string sceneUrl = AttachedReferenceManager.GetUrl(asset.Scene);
-        //        var sceneAsset = (SceneAsset)assetItem.Package.Session.FindAsset(sceneUrl)?.Asset;
-        //        if(sceneAsset == null)
-        //            yield break;
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
+        {
+            var asset = (NavigationMeshAsset)assetItem.Asset;
+            if (asset.Scene != null)
+            {
+                string sceneUrl = AttachedReferenceManager.GetUrl(asset.Scene);
+                var sceneAsset = (SceneAsset)assetItem.Package.Session.FindAsset(sceneUrl)?.Asset;
+                if (sceneAsset == null)
+                    yield break;
 
-        //        var sceneEntities = sceneAsset.Hierarchy.Parts.Select(x => x.Value.Entity).ToList();
-        //        foreach (var entity in sceneEntities)
-        //        {
-        //            var collider = entity.Get<StaticColliderComponent>();
+                var sceneEntities = sceneAsset.Hierarchy.Parts.Select(x => x.Value.Entity).ToList();
+                foreach (var entity in sceneEntities)
+                {
+                    var collider = entity.Get<StaticColliderComponent>();
 
-        //            // Only process enabled colliders
-        //            bool colliderEnabled = collider != null && ((CollisionFilterGroupFlags)collider.CollisionGroup & asset.IncludedCollisionGroups) != 0 && collider.Enabled;
-        //            if (colliderEnabled) // Removed or disabled
-        //            {
-        //                foreach (var desc in collider.ColliderShapes)
-        //                {
-        //                    var shapeAssetDesc = desc as ColliderShapeAssetDesc;
-        //                    if (shapeAssetDesc?.Shape != null)
-        //                    {
-        //                        var assetReference = AttachedReferenceManager.GetAttachedReference(shapeAssetDesc.Shape);
-        //                        if (assetReference != null)
-        //                        {
-        //                            yield return new ObjectUrl(UrlType.Content, assetReference.Url);
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
+                    // Only process enabled colliders
+                    bool colliderEnabled = collider != null && ((CollisionFilterGroupFlags)collider.CollisionGroup & asset.IncludedCollisionGroups) != 0 && collider.Enabled;
+                    if (colliderEnabled) // Removed or disabled
+                    {
+                        foreach (var desc in collider.ColliderShapes)
+                        {
+                            var shapeAssetDesc = desc as ColliderShapeAssetDesc;
+                            if (shapeAssetDesc?.Shape != null)
+                            {
+                                var assetReference = AttachedReferenceManager.GetAttachedReference(shapeAssetDesc.Shape);
+                                if (assetReference != null)
+                                {
+                                    yield return new ObjectUrl(UrlType.Content, assetReference.Url);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
