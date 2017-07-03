@@ -7,17 +7,24 @@ using System.Linq;
 using System.Threading;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Visitors;
-using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Analysis
 {
-    public struct BuildAssetLink
+    /// <summary>
+    /// A structure representing a link (a dependency) between two <see cref="BuildAssetNode"/> instances (assets).
+    /// </summary>
+    public struct BuildAssetLink : IEquatable<BuildAssetLink>
     {
+        /// <summary>
+        /// Initialize a new instance of the <see cref="BuildAssetLink"/> structure.
+        /// </summary>
+        /// <param name="source">The source asset of the dependency.</param>
+        /// <param name="target">The target asset of the dependency.</param>
+        /// <param name="dependencyType">The type of dependency.</param>
         public BuildAssetLink(BuildAssetNode source, BuildAssetNode target, BuildDependencyType dependencyType)
         {
             Source = source;
@@ -25,20 +32,77 @@ namespace SiliconStudio.Assets.Analysis
             DependencyType = dependencyType;
         }
 
+        /// <summary>
+        /// The type of dependency.
+        /// </summary>
         public BuildDependencyType DependencyType { get; }
 
+        /// <summary>
+        /// The source asset of the dependency.
+        /// </summary>
         public BuildAssetNode Source { get; }
 
+        /// <summary>
+        /// The target asset of the dependency.
+        /// </summary>
         public BuildAssetNode Target { get; }
 
+        /// <summary>
+        /// Indicates whether this <see cref="BuildAssetLink"/> has at least one of the dependency of the given flags.
+        /// </summary>
+        /// <param name="type">A bitset of <see cref="BuildDependencyType"/>.</param>
+        /// <returns>True if it has at least one of the given dependencies, false otherwise.</returns>
         public bool HasOne(BuildDependencyType type)
         {
             return (DependencyType & type) != 0;
         }
 
+        /// <summary>
+        /// Indicates whether this <see cref="BuildAssetLink"/> has at all dependencies of the given flags.
+        /// </summary>
+        /// <param name="type">A bitset of <see cref="BuildDependencyType"/>.</param>
+        /// <returns>True if it has all the given dependencies, false otherwise.</returns>
         public bool HasAll(BuildDependencyType type)
         {
             return (DependencyType & type) == type;
+        }
+
+        /// <inheritdoc/>
+        public bool Equals(BuildAssetLink other)
+        {
+            return DependencyType == other.DependencyType && Equals(Source, other.Source) && Equals(Target, other.Target);
+        }
+
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+            return obj is BuildAssetLink && Equals((BuildAssetLink)obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (int)DependencyType;
+                hashCode = (hashCode * 397) ^ (Source != null ? Source.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Target != null ? Target.GetHashCode() : 0);
+                return hashCode;
+            }
+        }
+
+        /// <inheritdoc/>
+        public static bool operator ==(BuildAssetLink left, BuildAssetLink right)
+        {
+            return left.Equals(right);
+        }
+
+        /// <inheritdoc/>
+        public static bool operator !=(BuildAssetLink left, BuildAssetLink right)
+        {
+            return !left.Equals(right);
         }
     }
 
@@ -47,7 +111,6 @@ namespace SiliconStudio.Assets.Analysis
         public static PropertyKey<bool> VisitRuntimeTypes = new PropertyKey<bool>("VisitRuntimeTypes", typeof(BuildAssetNode));
 
         private readonly BuildDependencyManager buildDependencyManager;
-        //private readonly ConcurrentDictionary<AssetId, BuildAssetNode> references = new ConcurrentDictionary<AssetId, BuildAssetNode>();
         private readonly ConcurrentDictionary<BuildAssetLink, BuildAssetLink> references = new ConcurrentDictionary<BuildAssetLink, BuildAssetLink>();
         private long version = -1;
 
