@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             // Check that we cannot have the same type of shading model multiple times
             if (ContainsKey(shadingModel.GetType()))
             {
-                throw new InvalidOperationException($"The shading model with type [{shadingModel.GetType()}] is already added and cannot be added anymore");
+                throw new InvalidOperationException($"The shading model with type [{shadingModel.GetType()}] is already added");
             }
 
             var result = new ShadingModelShaderBuilder();
