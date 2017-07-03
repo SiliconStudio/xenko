@@ -89,10 +89,8 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     // add the texture build command.
                     var textureConvertParameters = new TextureConvertParameters(assetSource, textureAsset, context.Platform, context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.GetOrCreate<TextureSettings>().TextureQuality, colorSpace);
                     var textureConvertCommand = new TextureAssetCompiler.TextureConvertCommand(textureUrl, textureConvertParameters, assetItem.Package);
-                    var assetBuildStep = new AssetBuildStep(new AssetItem(textureUrl, textureAsset))
-                    {
-                        textureConvertCommand
-                    };
+                    var assetBuildStep = new AssetBuildStep(new AssetItem(textureUrl, textureAsset));
+                    assetBuildStep.Add(textureConvertCommand);
                     prereqSteps.Enqueue(assetBuildStep);
                     result.BuildSteps.Add(assetBuildStep);
                 }
@@ -102,10 +100,8 @@ namespace SiliconStudio.Xenko.Assets.Sprite
             {
                 var parameters = new SpriteSheetParameters(asset, imageToTextureUrl, context.Platform, context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.GetOrCreate<TextureSettings>().TextureQuality, colorSpace);
 
-                var assetBuildStep = new AssetBuildStep(assetItem)
-                {
-                    new SpriteSheetCommand(targetUrlInStorage, parameters, assetItem.Package)
-                };
+                var assetBuildStep = new AssetBuildStep(assetItem);
+                assetBuildStep.Add(new SpriteSheetCommand(targetUrlInStorage, parameters, assetItem.Package));
                 result.BuildSteps.Add(assetBuildStep);
 
                 while (prereqSteps.Count > 0)

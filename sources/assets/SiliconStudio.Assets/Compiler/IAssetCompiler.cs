@@ -33,7 +33,7 @@ namespace SiliconStudio.Assets.Compiler
         /// </summary>
         /// <param name="assetItem">The asset for which types are enumerated</param>
         /// <returns>The dependencies</returns>
-        IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem);
+        IEnumerable<BuildDependencyInfo> GetInputTypes(AssetItem assetItem);
 
         /// <summary>
         /// Enumerates all the asset types to exclude when compiling this asset
