@@ -9,13 +9,13 @@ shader ComputeColorFlakeNormals : ComputeColor,
 
     override float4 Compute()
     {
-#if CAR_PAINT_PROCEDURAL // DESKTOP
+#if CAR_PAINT_PROCEDURAL
         const float4 flakeGenerationParameters = FlakeScaleSizeSize_VarianceFlake_Sparkle_Strength.Compute().rgba;
-        const float3 baseNormal = float3(0.0f, 0.0f, -1.0f);
+        const float3 baseNormal = float3(0.0f, 0.0f, 1.0f);
 
-        float3 randomFlakeNormal = GenerateRandomFlakeNormal(streams.TexCoord, flakeGenerationParameters, baseNormal);
+        float3 randomFlakeNormal = GenerateRandomFlakeNormal(flakeGenerationParameters, baseNormal, streams.TexCoord);
         float3 flakeNormal = normalize(lerp(baseNormal, randomFlakeNormal, flakeGenerationParameters.a));
-#else // MOBILE TEST
+#else
         float4 normalMap = FlakeScaleSizeSize_VarianceFlake_Sparkle_Strength.Compute();
         float3 flakeNormal = normalMap.rgb;
         flakeNormal.xy = flakeNormal.rg * float2(normalMap.a, 1.0f);

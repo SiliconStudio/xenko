@@ -12,22 +12,22 @@ shader ComputeColorFlakeColor : ComputeColor,
 
     override float4 Compute()
     {
-        const float4 flakeGenerationParameters = FlakeScaleSizeSize_VariancePearlescent_Ratio.Compute().rgba;
-        const float fresnel = FresnelSchlick(0.0f, streams.LdotH);
+        // Retrieve user parameters
+        const float4 flakeGenerationParameters = FlakeScaleSizeSize_VariancePearlescent_Ratio.Compute().rgba;      
+        const float randomColorFactor = FlakeRandom_Color_Strength.Compute().r;
         
+        // Mix the base color with Fresnel factor to give a reflective look
+        const float fresnel = FresnelSchlick(0.0f, streams.LdotH);       
         float3 baseColor = FlakeBaseColor.Compute().rgb;
         baseColor = lerp(baseColor, 0.0f, fresnel);
-        
-        const float randomColorFactor = FlakeRandom_Color_Strength.Compute().r;
 
-#if CAR_PAINT_PROCEDURAL // DESKTOP
-        float3 randomFlakeColor = GenerateRandomFlakeColor(streams.TexCoord, flakeGenerationParameters, baseColor);
-#else // MOBILE TEST
+#if CAR_PAINT_PROCEDURAL
+        float3 randomFlakeColor = GenerateRandomFlakeColor(flakeGenerationParameters, baseColor, streams.TexCoord);
+#else
         float3 randomFlakeColor = baseColor;
 #endif
-
+    
         float3 flakeColor = lerp(baseColor, randomFlakeColor, randomColorFactor);
-
         return float4(flakeColor, 1.0f);
     }
 };

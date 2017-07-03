@@ -22,9 +22,9 @@ shader ComputeColorFlakeShininess : ComputeColor,
         const float baseShininess = FlakeBaseShininess.Compute().r;
         const float randomShininessStrength = FlakeRandomShininessStrength.Compute().r;
         
-#if CAR_PAINT_PROCEDURAL // DESKTOP
-        float randomShininess = GenerateRandomFlakeShininess(streams.TexCoord, flakeGenerationParameters, baseShininess);
-#else // MOBILE TEST
+#if CAR_PAINT_PROCEDURAL
+        float randomShininess = GenerateRandomFlakeShininess(flakeGenerationParameters, streams.TexCoord, baseShininess);
+#else
         float randomShininess = baseShininess;
 #endif
 
