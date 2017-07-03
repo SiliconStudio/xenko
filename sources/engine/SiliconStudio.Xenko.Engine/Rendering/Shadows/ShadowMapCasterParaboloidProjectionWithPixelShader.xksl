@@ -3,7 +3,7 @@
 
 namespace SiliconStudio.Xenko.Rendering.Shadows
 {
-    shader ShadowMapCasterParaboloidProjectionWithPixelShader : TransformationBase, PositionStream4, Texturing
+    shader ShadowMapCasterParaboloidProjectionWithPixelShader : TransformationBase, PositionStream4, Texturing, MaterialPixelStream
     {
         static const float ClippingEpsilon = 0.03;
 
@@ -53,6 +53,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         stage override void PSMain()
         {
             base.PSMain();
+
+            clip(streams.ColorTarget.a - streams.matAlphaDiscard);
 
             streams.PixelDepth = streams.DepthVS;
         }
