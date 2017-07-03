@@ -30,8 +30,8 @@ namespace SiliconStudio.Xenko.Assets.UI
 
         private sealed class UILibraryCommand : UIConvertCommand
         {
-            public UILibraryCommand(string url, UILibraryAsset parameters, Package package)
-                : base(url, parameters, package)
+            public UILibraryCommand(string url, UILibraryAsset parameters, IAssetFinder assetFinder)
+                : base(url, parameters, assetFinder)
             {
             }
 

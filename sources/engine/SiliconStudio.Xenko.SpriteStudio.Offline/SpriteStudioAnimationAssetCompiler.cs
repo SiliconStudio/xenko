@@ -40,8 +40,8 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
         {
             private ColorSpace colorSpace;
 
-            public SpriteStudioAnimationAssetCommand(string url, SpriteStudioAnimationAsset asset, ColorSpace colorSpace, Package package)
-                : base(url, asset, package)
+            public SpriteStudioAnimationAssetCommand(string url, SpriteStudioAnimationAsset asset, ColorSpace colorSpace, IAssetFinder assetFinder)
+                : base(url, asset, assetFinder)
             {
                 this.colorSpace = colorSpace;
             }

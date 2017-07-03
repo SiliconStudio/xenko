@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
 {
     public static class ShaderGeneratorContextExtensions
     {
-        public static void AddLoadingFromSession(this ShaderGeneratorContext context, Package package)
+        public static void AddLoadingFromSession(this ShaderGeneratorContext context, IAssetFinder package)
         {
             var previousGetAssetFriendlyName = context.GetAssetFriendlyName;
             var previousFindAsset = context.FindAsset;
@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
                 var reference = AttachedReferenceManager.GetAttachedReference(runtimeAsset);
 
 
-                var assetItem = package.FindAsset(reference);
+                var assetItem = package.FindAsset(reference.Id);
 
                 return assetItem?.Asset;
             };            

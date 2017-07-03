@@ -114,6 +114,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
             shadowMapRenderer = Context.RenderSystem.RenderFeatures.OfType<MeshRenderFeature>().FirstOrDefault()?.RenderFeatures.OfType<ForwardLightingRenderFeature>().FirstOrDefault()?.ShadowMapRenderer;
 
+            Console.WriteLine($"MSAA LEVEL: {MSAALevel} GraphicsDevice.Features.HasMultisampleDepthAsSRV={GraphicsDevice.Features.HasMultisampleDepthAsSRV}");
+
             if (MSAALevel != MultisampleCount.None)
             {
                 actualMultisampleCount = (MultisampleCount)Math.Min((int)MSAALevel, (int)GraphicsDevice.Features[PixelFormat.R16G16B16A16_Float].MultisampleCountMax);
@@ -123,6 +125,10 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 if(GraphicsDevice.Features.HasMultisampleDepthAsSRV == false)
                     actualMultisampleCount = MultisampleCount.None;
             }
+
+            Console.WriteLine($"MSAA GraphicsDevice.Features[PixelFormat.R16G16B16A16_Float] LEVEL: {GraphicsDevice.Features[PixelFormat.R16G16B16A16_Float]}");
+            Console.WriteLine($"MSAA GraphicsDevice.Features[DepthBufferFormat] LEVEL: {GraphicsDevice.Features[DepthBufferFormat]}");
+            Console.WriteLine($"MSAA actualMultisampleCount LEVEL: {actualMultisampleCount}");
 
             var camera = Context.GetCurrentCamera();
 

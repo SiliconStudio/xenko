@@ -31,8 +31,8 @@ namespace SiliconStudio.Xenko.Assets.Models
 
         private class GeometricPrimitiveCompileCommand : AssetCommand<ProceduralModelAsset>
         {
-            public GeometricPrimitiveCompileCommand(string url, ProceduralModelAsset parameters, Package package)
-                : base(url, parameters, package)
+            public GeometricPrimitiveCompileCommand(string url, ProceduralModelAsset parameters, IAssetFinder assetFinder)
+                : base(url, parameters, assetFinder)
             {
             }
 

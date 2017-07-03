@@ -28,8 +28,8 @@ namespace SiliconStudio.Xenko.Assets.UI
         
         private sealed class UIPageCommand : UIConvertCommand
         {
-            public UIPageCommand(string url, UIPageAsset parameters, Package package)
-                : base(url, parameters, package)
+            public UIPageCommand(string url, UIPageAsset parameters, IAssetFinder assetFinder)
+                : base(url, parameters, assetFinder)
             {
             }
 
