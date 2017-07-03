@@ -59,10 +59,9 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                 texIndex++;
             }
 
-            result.BuildSteps.Add(new AssetBuildStep(assetItem)
-            {
-                new SpriteStudioModelAssetCommand(targetUrlInStorage, asset, colorSpace, assetItem.Package)
-            });
+            var step = new AssetBuildStep(assetItem);
+            step.Add(new SpriteStudioModelAssetCommand(targetUrlInStorage, asset, colorSpace, assetItem.Package));
+            result.BuildSteps.Add(step);
         }
 
         /// <summary>
