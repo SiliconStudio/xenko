@@ -4,67 +4,9 @@
 shader CarPaintCommon
 {
     #define CAR_PAINT_PROCEDURAL
-
-    //------------------------------------------------------------------------------
-    // Gererate pseudorandom number
-    //------------------------------------------------------------------------------
-    float random(in float2 uv)
-    {
-        float2 noise = (frac(sin(dot(uv,float2(12.9898,78.233)*2.0)) * 43758.5453));
-        return abs(noise.x + noise.y) * 0.5;
-    }
-
-    //------------------------------------------------------------------------------
-    // Gererate texture coordinates for random placement
-    //------------------------------------------------------------------------------
-    float2 randomUV(in float2 uv)
-    {
-        const uint NUM_PATTERNS = 2 * 2 * 4 * 4 * 4;
-        uint pattern = (uint)(random(floor(uv)) * (float)NUM_PATTERNS) % NUM_PATTERNS;
-        float2 result = frac(uv);
-
-        // flip
-        if ((uint)(pattern % 2) != 0)
-        {
-            result.x = 1.0f - result.x;
-        }
-        pattern /= 2;
-        if ((uint)(pattern % 2) != 0)
-        {
-            result.y = 1.0f - result.y;
-        }
-
-        // rotate
-        pattern /= 2;
-        if (pattern % 4 == 1)
-        {
-            result = float2(result.y, 1.0f - result.x);
-        }
-        else if (pattern % 4 == 2)
-        {
-            result = float2(1.0f - result.y, result.x);
-        }
-        else if (pattern % 4 == 3)
-        {
-            result = 1.0f - result;
-        }
-
-        // offset
-        pattern /= 4;
-        result.x += (pattern % 4) * 0.25f;
-        pattern /= 4;
-        result.y += (pattern % 4) * 0.25f;
-
-        return result;
-    }
-
-    //------------------------------------------------------------------------------
-    // Convert integer to float
-    //------------------------------------------------------------------------------
-    float bits_to_01(uint bits)
-    {
-        return bits * (1.0f/(float)0xFFFFFFFF);
-    }
+    
+    float UIntToFloat(in uint x) { return ((int)x) - ((x < 0) ? 1 : 0); }
+    uint FloatToUInt(in float x) { return (x * (1.0f / (float)0xFFFFFFFF)); }
 
     //------------------------------------------------------------------------------
     // Generate hash
@@ -99,23 +41,15 @@ shader CarPaintCommon
     }
 
     //------------------------------------------------------------------------------
-    // Convert float to integer
-    //------------------------------------------------------------------------------
-    uint quick_floor(float x)
-    {
-        return ((int)x) - ((x < 0) ? 1 : 0);
-    }
-
-    //------------------------------------------------------------------------------
     // Generate cellnoise value from 3D vector
     //------------------------------------------------------------------------------
     float cellnoise_scalar(float3 p)
     {
-        uint ix = quick_floor(p.x);
-        uint iy = quick_floor(p.y);
-        uint iz = quick_floor(p.z);
+        uint ix = FloatToUInt(p.x);
+        uint iy = FloatToUInt(p.y);
+        uint iz = FloatToUInt(p.z);
 
-        return bits_to_01(hash(ix, iy, iz));
+        return UIntToFloat(hash(ix, iy, iz));
     }
 
     //------------------------------------------------------------------------------
@@ -172,6 +106,23 @@ shader CarPaintCommon
         return nearestCellIndex;
     }
 
+    void GenerateFlakeCellData(in float2 uv, in float4 flakeParameters, out int nearestCellIndex, out float3 cellPosition, out float3 noiseGenerationPosition )
+    {     
+        const float flakeScale = flakeParameters.x;
+        const float flakeSize = flakeParameters.y;
+        const float flakeSizeVariance = flakeParameters.z;
+
+        cellPosition = float3(uv.x, uv.y, 0.0);
+        cellPosition *= flakeScale;    
+        
+        float3 baseCellPosition = floor(cellPosition);
+        float3 cellCenter = float3( 0, 0, 0 );
+        
+        nearestCellIndex = check_flake_cell(baseCellPosition, cellPosition, flakeSize, flakeSizeVariance, cellCenter);
+
+        noiseGenerationPosition = baseCellPosition + cellCenter;
+    }
+
     float3 GenerateRandomFlakeColor(in float2 uv, in float4 p, in float3 baseColor)
     {
         const float flake_scale              = p.x;
@@ -179,18 +130,15 @@ shader CarPaintCommon
         const float flake_size_variance      = p.z;
         const float pearlescent_ratio        = p.w;
 
-        float3 position = float3(uv.x, uv.y, 0.0);
-        position *= flake_scale;
-
-        float3 b = floor(position);
-
-        float3 cell_center = float3( 0, 0, 0 );
-        int nearestCellIndex = check_flake_cell(b, position, flake_size, flake_size_variance, cell_center);
+        float3 cellPosition = float3(0.0f, 0.0f, 0.0f);
+        float3 noiseGenerationPosition = float3(0.0f, 0.0f, 0.0f);
+        int nearestCellIndex = -1;
+        GenerateFlakeCellData( uv, p, nearestCellIndex, cellPosition, noiseGenerationPosition );
 
         if (nearestCellIndex >= 0)
         {
-            float3 randomValues = cellnoise(b + cell_center + float3(1.0, 2.0, 3.5));
-            float3 randomColor  = cellnoise(b + cell_center + float3(2.0, 1.0, 0.5));
+            float3 randomValues = cellnoise(noiseGenerationPosition + float3(1.0, 2.0, 3.5));
+            float3 randomColor  = cellnoise(noiseGenerationPosition + float3(2.0, 1.0, 0.5));
 
             return lerp(randomColor, baseColor.xyz, step(pearlescent_ratio, randomValues.x));
         }
@@ -203,18 +151,15 @@ shader CarPaintCommon
         const float flake_scale              = p.x;
         const float flake_size               = p.y;
         const float flake_size_variance      = p.z;
-        
-        float3 position = float3(uv.x, uv.y, 0.0);
-        position *= flake_scale;
 
-        float3 b = floor(position);
-        
-        float3 cell_center = float3( 0, 0, 0 );
-        int nearestCellIndex = check_flake_cell(b, position, flake_size, flake_size_variance, cell_center);
-        
+        float3 cellPosition = float3(0.0f, 0.0f, 0.0f);
+        float3 noiseGenerationPosition = float3(0.0f, 0.0f, 0.0f);
+        int nearestCellIndex = -1;
+        GenerateFlakeCellData(uv, p, nearestCellIndex, cellPosition, noiseGenerationPosition);
+
         if (nearestCellIndex >= 0)
         {
-            float3 randomNormal = cellnoise(b + cell_center + float3(0.0, 0.0, 1.5));
+            float3 randomNormal = cellnoise(noiseGenerationPosition + float3(0.0, 0.0, 1.5));
             randomNormal = 2.0 * randomNormal - 1.0;
             randomNormal = faceforward(randomNormal, float3(0.0, 0.0, 1.0), randomNormal);
 
@@ -229,18 +174,15 @@ shader CarPaintCommon
         const float flake_scale              = p.x;
         const float flake_size               = p.y;
         const float flake_size_variance      = p.z;
-
-        float3 position = float3(uv.x, uv.y, 0.0);
-        position *= flake_scale;
-
-        float3 b = floor(position);
-
-        float3 cell_center = float3( 0, 0, 0 );
-        int nearestCellIndex = check_flake_cell(b, position, flake_size, flake_size_variance, cell_center);
+        
+        float3 cellPosition = float3(0.0f, 0.0f, 0.0f);
+        float3 noiseGenerationPosition = float3(0.0f, 0.0f, 0.0f);
+        int nearestCellIndex = -1;
+        GenerateFlakeCellData(uv, p, nearestCellIndex, cellPosition, noiseGenerationPosition);
 
         if (nearestCellIndex >= 0)
         {      
-            return cellnoise(b + cell_center + float3(1.0, 2.0, 3.5)).y;
+            return cellnoise(noiseGenerationPosition + float3(1.0, 2.0, 3.5)).y;
         }
 
         return baseShininess;
