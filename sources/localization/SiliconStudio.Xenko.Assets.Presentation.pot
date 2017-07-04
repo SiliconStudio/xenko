@@ -1,0 +1,1510 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2017-07-03 17:06:19+0900\n"
+"PO-Revision-Date: 2017-07-03 17:06:19+0900\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: MonoDevelop Gettext addin\n"
+
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/ViewModels/EntityFolderViewModel.cs:158
+msgctxt "Message"
+msgid ""
+"Unable to rename the folder '{0}' to '{1}': A folder with the same name "
+"already exists."
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/ViewModels/EntityHierarchyEditorViewModel.cs:493
+msgctxt "Message"
+msgid "Are you sure you want to delete the selected entity?"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/ViewModels/EntityHierarchyEditorViewModel.cs:496
+msgctxt "Message"
+msgid "Are you sure you want to delete the {0} selected entities?"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/GameEditor/Transformation.cs:16
+msgid "Use translation gizmo"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/GameEditor/Transformation.cs:22
+msgid "Use rotation gizmo"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/GameEditor/Transformation.cs:28
+msgid "Use scale gizmo"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/GameEditor/TransformationSpace.cs:16
+msgid "Use world coordinates for transformations"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/GameEditor/TransformationSpace.cs:22
+msgid "Use local coordinates for transformations"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/GameEditor/TransformationSpace.cs:28
+msgid "Use current camera projection coordinates for transformations"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/ScriptEditor/ScriptEditorSettings.cs:11
+msgctxt "Settings"
+msgid "Script editor"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/ScriptEditor/ScriptEditorSettings.cs:18
+msgctxt "Settings"
+msgid "Font size"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/ViewModels/SpriteInfoViewModel.cs:162
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/ViewModels/SpriteInfoViewModel.cs:185
+msgctxt "Message"
+msgid "Unable to find the file on the disk"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/ViewModels/SpriteInfoViewModel.cs:172
+msgctxt "Message"
+msgid "An error occurred while trying to edit the image.{0}"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/ViewModels/SpriteInfoViewModel.cs:195
+msgctxt "Message"
+msgid "An error occurred while trying to open the Explorer.{0}"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/UIEditorSettings.cs:11
+msgctxt "Settings"
+msgid "UI editor"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/UIEditorSettings.cs:18
+msgctxt "Settings"
+msgid "Ask confirmation before deleting UI elements"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/ViewModels/UIEditorBaseViewModel.cs:424
+msgctxt "Message"
+msgid "Are you sure you want to delete the selected UI element?"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/ViewModels/UIEditorBaseViewModel.cs:426
+msgctxt "Message"
+msgid "Are you sure you want to delete the {0} selected UI elements?"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/SceneEditor/SceneEditorSettings.cs:12
+msgctxt "Settings"
+msgid "Key bindings"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/SceneEditor/SceneEditorSettings.cs:13
+msgctxt "Settings"
+msgid "Scene editor"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/SceneEditor/SceneEditorSettings.cs:14
+msgctxt "Settings"
+msgid "Viewport settings"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/SceneEditor/SceneEditorSettings.cs:21
+msgctxt "Settings"
+msgid "Move camera forward"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/SceneEditor/SceneEditorSettings.cs:25
+msgctxt "Settings"
+msgid "Move camera backward"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/SceneEditor/SceneEditorSettings.cs:29
+msgctxt "Settings"
+msgid "Move camera left"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/SceneEditor/SceneEditorSettings.cs:33
+msgctxt "Settings"
+msgid "Move camera right"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/SceneEditor/SceneEditorSettings.cs:37
+msgctxt "Settings"
+msgid "Move camera upward"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/SceneEditor/SceneEditorSettings.cs:41
+msgctxt "Settings"
+msgid "Move camera downward"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/SceneEditor/SceneEditorSettings.cs:45
+msgctxt "Settings"
+msgid "Invert mouse panning axis"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/SceneEditor/SceneEditorSettings.cs:49
+msgctxt "Settings"
+msgid "Center view on selection"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/SceneEditor/SceneEditorSettings.cs:53
+msgctxt "Settings"
+msgid "Snap selection to the grid"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/SceneEditor/SceneEditorSettings.cs:57
+msgctxt "Settings"
+msgid "Switch to translation mode"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/SceneEditor/SceneEditorSettings.cs:61
+msgctxt "Settings"
+msgid "Switch to rotation mode"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/SceneEditor/SceneEditorSettings.cs:65
+msgctxt "Settings"
+msgid "Switch to scale mode"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/SceneEditor/SceneEditorSettings.cs:69
+msgctxt "Settings"
+msgid "Switch to next gizmo mode"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/SceneEditor/SceneEditorSettings.cs:73
+msgctxt "Settings"
+msgid "Default snap distance for translation"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/SceneEditor/SceneEditorSettings.cs:77
+msgctxt "Settings"
+msgid "Default snap angle for rotation"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/SceneEditor/SceneEditorSettings.cs:81
+msgctxt "Settings"
+msgid "Default snap factor for scale"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/SceneEditor/SceneEditorSettings.cs:85
+msgctxt "Settings"
+msgid "Ask confirmation before deleting entities"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/AssetFromFileTemplateGenerator.cs:46
+msgctxt "Message"
+msgid "Do you want to create a {0} without source file?"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/GameTemplateWindow.xaml.cs:89
+msgctxt "Message"
+msgid "Please select an orientation"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/GameTemplateWindow.xaml.cs:94
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/UpdatePlatformsWindows.xaml.cs:59
+msgctxt "Message"
+msgid "Please select at least one platform"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/GameTemplateWindow.xaml.cs:101
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ProjectLibraryWindow.xaml.cs:75
+msgctxt "Message"
+msgid "Please type a valid namespace name: Error with {0}"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ProjectLibraryWindow.xaml.cs:69
+msgctxt "Message"
+msgid "Please type a valid library name: Error with {0}"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ScriptNameWindow.xaml.cs:62
+msgctxt "Message"
+msgid "The names you entered are invalid or empty."
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ScriptTemplateGenerator.cs:57
+msgctxt "Message"
+msgid "New script won't be usable until saved. Do you want to save now?"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/UpdatePlatformsWindows.xaml.cs:65
+msgctxt "Message"
+msgid ""
+"You are going to remove {0} platform(s) from the selected package, Are you "
+"sure?"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/ViewModel/CodeViewModel.cs:186
+msgctxt "Message"
+msgid ""
+"Project file {0} can't be auto-reloaded since you have local changes such as "
+"new or deleted scripts.\r\n"
+"\r\n"
+"Press OK to keep reloading or Cancel to keep current version."
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/ViewModel/CodeViewModel.cs:233
+msgctxt "Message"
+msgid ""
+"{0} project assets don't exist in the project file {1} anymore, but are "
+"dirty. Are you sure you want to continue reloading and lose their changes?\r\n"
+"\r\n"
+"{2}"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/ViewModel/ScriptSourceFileAssetViewModel.cs:365
+msgctxt "Message"
+msgid ""
+"{0}\r\n"
+"\r\n"
+"The file has been changed externally and has unsaved changes inside the "
+"editor.\r\n"
+"Do you want to reload it and loose your changes?"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/ViewModel/SpriteFontViewModel.cs:47
+msgctxt "Message"
+msgid ""
+"**Only static font can be precompiled.**\r\n"
+"\r\n"
+"Uncheck the _Is Dynamic_ property on this font and try again."
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/ViewModel/SpriteFontViewModel.cs:67
+msgctxt "Message"
+msgid "Which color space should be used?"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:64
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:108
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:186
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:782
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/GraphicsCompositorEditor/Views/GraphicsCompositorEditorView.xaml:33
+msgctxt "Menu"
+msgid "Create"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:65
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:109
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:188
+msgctxt "Menu"
+msgid "New folder"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:66
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:110
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:190
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:783
+msgctxt "Menu"
+msgid "Empty entity"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:92
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:136
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:809
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/GraphicsCompositorEditor/Views/GraphicsCompositorEditorView.xaml:49
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:129
+msgctxt "Menu"
+msgid "Action"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:93
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:138
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:811
+msgctxt "Menu"
+msgid "Open prefab in editor"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:94
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:139
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:812
+msgctxt "Menu"
+msgid "Select prefab in asset view"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:95
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:140
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:813
+msgctxt "Menu"
+msgid "Break link to prefab"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:96
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:141
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:814
+msgctxt "Menu"
+msgid "Create prefab from selection"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:98
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:143
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:137
+msgctxt "Menu"
+msgid "Duplicate selection"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:137
+msgctxt "Menu"
+msgid "Set as active scene"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:149
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:143
+msgctxt "Menu"
+msgid "Rename"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:166
+msgid "Loading scene, please wait..."
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:167
+msgid "This might take a few minutes the first time"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:181
+msgctxt "ToolTip"
+msgid "Create a new entity"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:221
+msgctxt "ToolTip"
+msgid "Filter entities by name"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:229
+msgctxt "ToolTip"
+msgid "Expand all entities"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:233
+msgctxt "ToolTip"
+msgid "Collapse all entities"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:257
+msgid "Loading..."
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:261
+msgid "Unloading..."
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:329
+msgctxt "ToolTip"
+msgid "Focus on this entity (F)"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:336
+msgctxt "ToolTip"
+msgid "Toggle lock on this entity"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:337
+msgctxt "ToolTip"
+msgid "(Hold CTRL to apply to the child entities recursively)"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:375
+msgctxt "ToolTip"
+msgid "Toggle lock on all entities in this scene"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:376
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:385
+msgctxt "ToolTip"
+msgid "(Hold CTRL to apply to the child scenes recursively)"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:384
+msgctxt "ToolTip"
+msgid "Toggle loading of all entities in this scene"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:405
+msgid "(Unloaded)"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:471
+msgctxt "ToolTip"
+msgid "Light probes and cubemaps"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:481
+msgid "Light Probes"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:486
+msgid "Number of bounces"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:490
+msgctxt "ToolTip"
+msgid "Compute lighting using light probes"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:498
+msgctxt "ToolTip"
+msgid "Reset lightprobes"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:502
+msgid "Reset"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:508
+msgid "Cubemap"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:512
+msgctxt "ToolTip"
+msgid "Generate a cubemap from the current scene and save it as a texture file"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:516
+msgid "Capture"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:524
+msgctxt "ToolTip"
+msgid "Navigation visibility"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:534
+msgid "Navigation mesh visibility:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:536
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:592
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/SkeletonPropertyTemplates.xaml:25
+msgctxt "Button"
+msgid "All"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:537
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:593
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/SkeletonPropertyTemplates.xaml:27
+msgctxt "Button"
+msgid "None"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:562
+msgctxt "ToolTip"
+msgid "Grid and gizmo options"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:572
+msgid "Transformation gizmo size:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:577
+msgid "Component gizmo size:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:578
+msgctxt "Button"
+msgid "Fixed"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:586
+msgctxt "Button"
+msgid "Camera preview"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:587
+msgctxt "Button"
+msgid "LightProbe volumes"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:604
+msgctxt "Button"
+msgid "Other entities"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:611
+msgctxt "ToolTip"
+msgid "Editor camera options"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:621
+msgid "Projection"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:624
+msgctxt "Button"
+msgid "Perspective"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:625
+msgctxt "Button"
+msgid "Orthographic"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:627
+msgid "Near plane:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:629
+msgid "Far plane:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:631
+msgid "Field of view:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:637
+msgid "Orthographic size:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:643
+msgid "Movement"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:647
+msgid "Speed:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:652
+msgid "Orientation"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:655
+msgctxt "Button"
+msgid "Front"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:657
+msgctxt "Button"
+msgid "Back"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:659
+msgctxt "Button"
+msgid "Top"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:661
+msgctxt "Button"
+msgid "Bottom"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:663
+msgctxt "Button"
+msgid "Left"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:665
+msgctxt "Button"
+msgid "Right"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:678
+msgctxt "ToolTip"
+msgid "Snap translations to this value"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:687
+msgctxt "ToolTip"
+msgid "Snap rotations to this value"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:696
+msgctxt "ToolTip"
+msgid "Snap scale to this factor"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:738
+msgctxt "ToolTip"
+msgid "Toggle material selection mode"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:741
+msgctxt "ToolTip"
+msgid "Toggle selection mask visibility"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:743
+msgid "Loading assets..."
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:810
+msgctxt "Menu"
+msgid "Duplicate selected entities"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:850
+msgid ""
+"Please try to fix the failing asset (likely Graphics Compositor or Scene) "
+"before resuming"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:852
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:516
+msgctxt "Button"
+msgid "Resume"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:854
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:518
+msgctxt "Button"
+msgid "Copy error to clipboard"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityPickerWindow.xaml:13
+msgid "Entity Picker"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityPickerWindow.xaml:23
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/DebuggerPickerWindow.xaml:21
+msgctxt "ToolTip"
+msgid "Pick the selected asset(s)"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityPickerWindow.xaml:28
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/GameTemplateWindow.xaml:126
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ModelAssetTemplateWindow.xaml:52
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ProjectLibraryWindow.xaml:28
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ScriptNameWindow.xaml:21
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/UpdatePlatformsWindows.xaml:54
+msgctxt "Button"
+msgid "Cancel"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityPickerWindow.xaml:28
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/DebuggerPickerWindow.xaml:26
+msgctxt "ToolTip"
+msgid "Cancel (Esc)"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityPickerWindow.xaml:37
+msgid "Please select an entity:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityPickerWindow.xaml:66
+msgid "(Index: {0})"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/GraphicsCompositorEditor/Views/GraphicsCompositorEditorView.xaml:50
+msgctxt "Menu"
+msgid "Delete selection"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/GraphicsCompositorEditor/Views/GraphicsCompositorEditorView.xaml:202
+msgid "Render Stages:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/GraphicsCompositorEditor/Views/GraphicsCompositorEditorView.xaml:254
+msgid "Render Features:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/GraphicsCompositorEditor/Views/GraphicsCompositorEditorView.xaml:278
+msgid "Camera slots:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/ScriptEditor/Resources/ThemeScriptEditor.xaml:107
+msgctxt "ToolTip"
+msgid "Toggle between find and replace modes"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/ScriptEditor/Resources/ThemeScriptEditor.xaml:167
+msgctxt "ToolTip"
+msgid "Replace next (Alt+R)"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/ScriptEditor/Resources/ThemeScriptEditor.xaml:177
+msgctxt "ToolTip"
+msgid "Replace all (Alt+A)"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/ScriptEditor/Resources/ThemeScriptEditor.xaml:253
+msgid "No suggestions"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:53
+msgctxt "Button"
+msgid "Sprite sheet properties"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:56
+msgid "Sheet type:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:89
+msgctxt "Button"
+msgid "UseColorKey"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:90
+msgctxt "ToolTip"
+msgid "If checked, the sprite will use the given color as transparency"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:118
+msgctxt "ToolTip"
+msgid "Select the color key by picking a pixel color from the image"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:127
+msgctxt "ToolTip"
+msgid "Add a new empty sprite"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:130
+msgctxt "ToolTip"
+msgid "Duplicate selected sprites"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:133
+msgctxt "ToolTip"
+msgid "Delete selected sprites"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:136
+msgctxt "ToolTip"
+msgid "Move selected sprites up"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:140
+msgctxt "ToolTip"
+msgid "Move selected sprites down"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:143
+msgid "Sprites:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:165
+msgctxt "Menu"
+msgid "Add new sprite"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:166
+msgctxt "Menu"
+msgid "Duplicate sprite"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:167
+msgctxt "Menu"
+msgid "Edit image"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:168
+msgctxt "Menu"
+msgid "Show image in explorer"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:217
+msgid "Select a single image from the left panel"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:224
+msgctxt "ToolTip"
+msgid "Select previous sprite"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:228
+msgctxt "ToolTip"
+msgid "Select next sprite"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:233
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:382
+msgctxt "ToolTip"
+msgid "Zoom out"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:237
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:386
+msgctxt "ToolTip"
+msgid "Zoom in"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:241
+msgctxt "ToolTip"
+msgid "Scale to real pixel size"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:245
+msgctxt "ToolTip"
+msgid "Fit the image on the screen"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:249
+msgctxt "ToolTip"
+msgid "Center the view on the current sprite region"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:255
+msgctxt "ToolTip"
+msgid "Change the color of the selection rectangle"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:272
+msgctxt "ToolTip"
+msgid "Highlight the current selection"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:275
+msgctxt "ToolTip"
+msgid "ToolTipSelectWholeImage"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:283
+msgctxt "ToolTip"
+msgid "Select the sprite region using the magic wand"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:300
+msgctxt "Button"
+msgid "Use transparency"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:301
+msgctxt "Button"
+msgid "Use color key"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:311
+msgctxt "ToolTip"
+msgid "Move the sprite center"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:319
+msgctxt "ToolTip"
+msgid "Resize the sprite borders"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:330
+msgctxt "ToolTip"
+msgid "Unlock the sprite borders"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:334
+msgctxt "ToolTip"
+msgid "Lock the sprite borders"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:37
+msgctxt "Menu"
+msgid "Layout"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:38
+msgctxt "Menu"
+msgid "Group into"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:49
+msgctxt "Menu"
+msgid "Ungroup"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:53
+msgctxt "Menu"
+msgid "Change layout type"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:69
+msgctxt "Menu"
+msgid "Pin Origin"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:83
+msgctxt "Menu"
+msgid "Top left"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:84
+msgctxt "Menu"
+msgid "Top"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:85
+msgctxt "Menu"
+msgid "Top right"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:86
+msgctxt "Menu"
+msgid "Left"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:87
+msgctxt "Menu"
+msgid "Center"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:88
+msgctxt "Menu"
+msgid "Right"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:89
+msgctxt "Menu"
+msgid "Bottom left"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:90
+msgctxt "Menu"
+msgid "Bottom"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:91
+msgctxt "Menu"
+msgid "Bottom right"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:92
+msgctxt "Menu"
+msgid "Front"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:93
+msgctxt "Menu"
+msgid "Middle"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:94
+msgctxt "Menu"
+msgid "Back"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:101
+msgctxt "Menu"
+msgid "Row"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:103
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:121
+msgctxt "Menu"
+msgid "Move up"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:104
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:124
+msgctxt "Menu"
+msgid "Move down"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:106
+msgctxt "Menu"
+msgid "Column"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:108
+msgctxt "Menu"
+msgid "Move left"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:109
+msgctxt "Menu"
+msgid "Move right"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:111
+msgctxt "Menu"
+msgid "Layer"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:113
+msgctxt "Menu"
+msgid "Move back"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:114
+msgctxt "Menu"
+msgid "Move front"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:130
+msgctxt "Menu"
+msgid "Open library in editor"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:131
+msgctxt "Menu"
+msgid "Select library in asset view"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:132
+msgctxt "Menu"
+msgid "Break link to library"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:134
+msgctxt "Menu"
+msgid "Create page from selection"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:135
+msgctxt "Menu"
+msgid "Create library from selection"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:187
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/CurveEditor/Views/CurveEditorView.xaml:177
+msgctxt "Menu"
+msgid "View"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:188
+msgctxt "Menu"
+msgid "Zoom In"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:189
+msgctxt "Menu"
+msgid "Zoom Out"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:190
+msgctxt "Menu"
+msgid "Reset camera"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:211
+msgid "Loading, please wait..."
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:212
+msgid "This might take a few minutes the first time."
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:226
+msgctxt "Button"
+msgid "UI properties"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:237
+msgid "UI Library"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:284
+msgctxt "ToolTip"
+msgid "Expand all elements"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:288
+msgctxt "ToolTip"
+msgid "Collapse all elements"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:378
+msgctxt "ToolTip"
+msgid "Reset zoom"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:389
+msgctxt "ToolTip"
+msgid "Snaps to this value (0 to disable)"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:401
+msgid "Colors"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:417
+msgid "Guideline"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:433
+msgid "Highlight"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:449
+msgid "Selection"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:465
+msgid "Sizing"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:514
+msgid ""
+"Please try to fix the failing asset (likely UI Page or Library) before "
+"resuming"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/VisualScriptEditor/Views/VisualScriptEditorView.xaml:213
+msgctxt "Menu"
+msgid "Get"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/VisualScriptEditor/Views/VisualScriptEditorView.xaml:214
+msgctxt "Menu"
+msgid "Set"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/VisualScriptEditor/Views/VisualScriptEditorView.xaml:253
+msgid "Variables:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/VisualScriptEditor/Views/VisualScriptEditorView.xaml:302
+msgid "Functions:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/VisualScriptEditor/Views/VisualScriptEditorView.xaml:346
+msgctxt "Button"
+msgid "Static Method"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/VisualScriptEditor/Views/VisualScriptEditorView.xaml:347
+msgid "Return type..."
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/VisualScriptEditor/Views/VisualScriptEditorView.xaml:354
+msgid "Function parameters:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/CurveEditor/Views/CurveEditorView.xaml:41
+msgctxt "ToolTip"
+msgid "Remove the selected curve"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/CurveEditor/Views/CurveEditorView.xaml:43
+msgid "Curves:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/CurveEditor/Views/CurveEditorView.xaml:73
+msgctxt "ToolTip"
+msgid "Show or hide the tracker"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/CurveEditor/Views/CurveEditorView.xaml:79
+msgctxt "ToolTip"
+msgid "Fit view to curve"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/CurveEditor/Views/CurveEditorView.xaml:82
+msgctxt "ToolTip"
+msgid "Fit view to curve height"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/CurveEditor/Views/CurveEditorView.xaml:85
+msgctxt "ToolTip"
+msgid "Fit view to curve width"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/CurveEditor/Views/CurveEditorView.xaml:92
+msgctxt "ToolTip"
+msgid "Delete selected point(s)"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/CurveEditor/Views/CurveEditorView.xaml:101
+msgctxt "ToolTip"
+msgid "First Key"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/CurveEditor/Views/CurveEditorView.xaml:104
+msgctxt "ToolTip"
+msgid "Previous Key"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/CurveEditor/Views/CurveEditorView.xaml:107
+msgctxt "ToolTip"
+msgid "Next Key"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/CurveEditor/Views/CurveEditorView.xaml:110
+msgctxt "ToolTip"
+msgid "Last Key"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/CurveEditor/Views/CurveEditorView.xaml:117
+msgid "Key"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/CurveEditor/Views/CurveEditorView.xaml:120
+msgid "Value"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/CurveEditor/Views/CurveEditorView.xaml:167
+msgctxt "Menu"
+msgid "Curve"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/CurveEditor/Views/CurveEditorView.xaml:169
+msgctxt "Menu"
+msgid "Add point"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/CurveEditor/Views/CurveEditorView.xaml:172
+msgctxt "Menu"
+msgid "Delete selected point(s)"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/CurveEditor/Views/CurveEditorView.xaml:174
+msgctxt "Menu"
+msgid "Clear whole curve"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/CurveEditor/Views/CurveEditorView.xaml:178
+msgctxt "Menu"
+msgid "Fit to curve"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/CurveEditor/Views/CurveEditorView.xaml:180
+msgctxt "Menu"
+msgid "Fit to curve height"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/CurveEditor/Views/CurveEditorView.xaml:182
+msgctxt "Menu"
+msgid "Fit to curve width"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/GameTemplateWindow.xaml:10
+msgid "Create a new game..."
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/GameTemplateWindow.xaml:21
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ProjectLibraryWindow.xaml:23
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ScriptNameWindow.xaml:28
+msgid "Namespace:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/GameTemplateWindow.xaml:26
+msgid "Platforms"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/GameTemplateWindow.xaml:47
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/UpdatePlatformsWindows.xaml:44
+msgid ""
+"The requirements to build for this platform are not met on this machine."
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/GameTemplateWindow.xaml:57
+msgid "Asset Packs"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/GameTemplateWindow.xaml:77
+msgid "Rendering"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/GameTemplateWindow.xaml:89
+msgctxt "Button"
+msgid "High dynamic range (HDR)"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/GameTemplateWindow.xaml:91
+msgctxt "Button"
+msgid "Low dynamic range (LDR)"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/GameTemplateWindow.xaml:125
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ModelAssetTemplateWindow.xaml:51
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ProjectLibraryWindow.xaml:27
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ScriptNameWindow.xaml:20
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/UpdatePlatformsWindows.xaml:53
+msgctxt "Button"
+msgid "Ok"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ModelAssetTemplateWindow.xaml:10
+msgid "Model import parameters"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ModelAssetTemplateWindow.xaml:22
+msgid "Materials and textures"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ModelAssetTemplateWindow.xaml:26
+msgctxt "Button"
+msgid "Import materials"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ModelAssetTemplateWindow.xaml:27
+msgctxt "Button"
+msgid "Import textures"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ModelAssetTemplateWindow.xaml:35
+msgctxt "Button"
+msgid "Import new skeleton"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ModelAssetTemplateWindow.xaml:36
+msgctxt "Button"
+msgid "Don't use skeleton"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ModelAssetTemplateWindow.xaml:37
+msgctxt "Button"
+msgid "Use existing skeleton"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ProjectLibraryWindow.xaml:10
+msgid "New Code Library"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ProjectLibraryWindow.xaml:21
+msgid "Library Name:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ScriptNameWindow.xaml:9
+msgid "Script wizard"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ScriptNameWindow.xaml:25
+msgid "Class name:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/UpdatePlatformsWindows.xaml:9
+msgid "Select Platforms"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/UpdatePlatformsWindows.xaml:31
+msgid "(Project will be removed from package and disk)"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/UpdatePlatformsWindows.xaml:51
+msgctxt "Button"
+msgid "Force to regenerate all platforms projects"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Themes/Generic.xaml:28
+msgctxt "ToolTip"
+msgid "Play the animation"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Themes/Generic.xaml:31
+msgctxt "ToolTip"
+msgid "Pause the animation"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Themes/Generic.xaml:43
+msgid "Time scale:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Themes/Generic.xaml:117
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Themes/Generic.xaml:136
+msgctxt "ToolTip"
+msgid "Reset the camera"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Themes/Generic.xaml:187
+msgid "Scene preview unavailable, please open this asset in the scene editor."
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Themes/Generic.xaml:201
+msgctxt "ToolTip"
+msgid "Play the sound"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Themes/Generic.xaml:204
+msgctxt "ToolTip"
+msgid "Pause the sound"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Themes/Generic.xaml:240
+msgid "Building preview sound asset."
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Themes/Generic.xaml:278
+msgctxt "ToolTip"
+msgid "Previous sprite"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Themes/Generic.xaml:280
+msgid "Sprite:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Themes/Generic.xaml:283
+msgctxt "ToolTip"
+msgid "Next sprite"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Themes/Generic.xaml:311
+msgid "Preview text"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Themes/Generic.xaml:353
+msgctxt "ToolTip"
+msgid "Previous slice"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Themes/Generic.xaml:357
+msgctxt "ToolTip"
+msgid "Next slice"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Themes/Generic.xaml:380
+msgid "W: {0}"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/Themes/Generic.xaml:381
+msgid "H: {0}"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/AnimationPropertyTemplates.xaml:18
+msgctxt "ToolTip"
+msgid "Edit Curve"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/AnimationPropertyTemplates.xaml:70
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/EntityPropertyTemplates.xaml:71
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/EntityPropertyTemplates.xaml:111
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/SkeletonPropertyTemplates.xaml:64
+msgid "(Different values)"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/DebugEntityHierarchyEditorUserControl.xaml:13
+msgctxt "Button"
+msgid "Refresh"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/DebugEntityHierarchyEditorUserControl.xaml:26
+msgid "Loading-time urls:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/DebugEntityHierarchyEditorUserControl.xaml:30
+msgid "Actually loaded assets:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/DebuggerPickerWindow.xaml:11
+msgid "Live Scripting Debugger"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/EntityPropertyTemplates.xaml:44
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/EntityPropertyTemplates.xaml:84
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/EntityPropertyTemplates.xaml:235
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/EntityPropertyTemplates.xaml:262
+msgctxt "ToolTip"
+msgid "Pick an asset up"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/EntityPropertyTemplates.xaml:50
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/EntityPropertyTemplates.xaml:90
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/EntityPropertyTemplates.xaml:267
+msgctxt "ToolTip"
+msgid "Clear the reference"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/EntityPropertyTemplates.xaml:56
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/EntityPropertyTemplates.xaml:96
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/EntityPropertyTemplates.xaml:221
+msgctxt "ToolTip"
+msgid "Select the referenced asset"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/EntityPropertyTemplates.xaml:133
+msgid "Add component"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/EntityPropertyTemplates.xaml:258
+msgctxt "ToolTip"
+msgid "Highlight this material in the scene editor"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/MaterialPropertyTemplates.xaml:13
+msgid "Select shader..."
+msgstr ""
+

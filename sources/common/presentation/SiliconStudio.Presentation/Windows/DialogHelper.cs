@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using System.Windows.Interop;
 using System.Windows.Threading;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Presentation.Resources;
 using SiliconStudio.Presentation.Services;
+using SiliconStudio.Translation;
 
 namespace SiliconStudio.Presentation.Windows
 {
@@ -28,7 +28,7 @@ namespace SiliconStudio.Presentation.Windows
         [NotNull]
         public static Task<CheckedMessageBoxResult> CheckedMessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, bool? isChecked, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None)
         {
-            return dispatcher.InvokeTask(() => Windows.CheckedMessageBox.Show(message, caption, button, image, Strings.DontAskMeAgain, isChecked));
+            return dispatcher.InvokeTask(() => Windows.CheckedMessageBox.Show(message, caption, button, image, Tr._("Don't ask me again"), isChecked));
         }
 
         [NotNull]

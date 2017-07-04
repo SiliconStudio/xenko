@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26430.14
 MinimumVisualStudioVersion = 14.0.23107.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "90-Tools", "90-Tools", "{1AE1AC60-5D2F-4CA7-AE20-888F44551185}"
 EndProject
@@ -450,6 +450,25 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.VisualS
 		{7C67FF28-1B9E-4F13-8BDA-B833D588BC6A} = {7C67FF28-1B9E-4F13-8BDA-B833D588BC6A}
 		{E136B568-3E3F-498F-A8B4-2877B7768560} = {E136B568-3E3F-498F-A8B4-2877B7768560}
 		{0BD41ADD-2704-4A77-A9AB-15460A2ABDC6} = {0BD41ADD-2704-4A77-A9AB-15460A2ABDC6}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Translation", "..\sources\common\core\SiliconStudio.Translation\SiliconStudio.Translation.csproj", "{6A7B231E-36AA-4647-8C1A-FB1540ABC813}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Translation.Presentation", "..\sources\common\presentation\SiliconStudio.Translation.Presentation\SiliconStudio.Translation.Presentation.csproj", "{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Translation.Extractor", "..\sources\tools\SiliconStudio.Translation.Extractor\SiliconStudio.Translation.Extractor.csproj", "{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Localization", "00-Localization", "{FC791F56-C1F1-4C41-A193-868D8197F8E2}"
+	ProjectSection(SolutionItems) = preProject
+		..\sources\localization\SiliconStudio.Assets.Editor.pot = ..\sources\localization\SiliconStudio.Assets.Editor.pot
+		..\sources\localization\SiliconStudio.Xenko.Assets.Presentation.pot = ..\sources\localization\SiliconStudio.Xenko.Assets.Presentation.pot
+		..\sources\localization\Xenko.GameStudio.pot = ..\sources\localization\Xenko.GameStudio.pot
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ja", "ja", "{B4EABB0D-E495-405C-B7B1-E2A7A3711AF5}"
+	ProjectSection(SolutionItems) = preProject
+		..\sources\localization\ja\SiliconStudio.Assets.Editor.ja.po = ..\sources\localization\ja\SiliconStudio.Assets.Editor.ja.po
+		..\sources\localization\ja\Xenko.GameStudio.ja.po = ..\sources\localization\ja\Xenko.GameStudio.ja.po
 	EndProjectSection
 EndProject
 Global
@@ -4085,6 +4104,114 @@ Global
 		{5BFE4386-3C42-4118-96C8-4B68441F1661}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
 		{5BFE4386-3C42-4118-96C8-4B68441F1661}.Testing|Win32.ActiveCfg = Release|Any CPU
 		{5BFE4386-3C42-4118-96C8-4B68441F1661}.Testing|Win32.Build.0 = Release|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.AppStore|Win32.ActiveCfg = Release|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.AppStore|Win32.Build.0 = Release|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.CoreCLR_Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.CoreCLR_Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.CoreCLR_Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.CoreCLR_Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.CoreCLR_Debug|Win32.ActiveCfg = Debug|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.CoreCLR_Debug|Win32.Build.0 = Debug|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.CoreCLR_Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.CoreCLR_Release|Any CPU.Build.0 = Release|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.CoreCLR_Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.CoreCLR_Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.CoreCLR_Release|Win32.ActiveCfg = Release|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.CoreCLR_Release|Win32.Build.0 = Release|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.Debug|Win32.Build.0 = Debug|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.Release|Win32.ActiveCfg = Release|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.Release|Win32.Build.0 = Release|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.Testing|Any CPU.ActiveCfg = Release|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.Testing|Any CPU.Build.0 = Release|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.Testing|Win32.ActiveCfg = Release|Any CPU
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813}.Testing|Win32.Build.0 = Release|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.AppStore|Win32.ActiveCfg = Release|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.AppStore|Win32.Build.0 = Release|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.CoreCLR_Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.CoreCLR_Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.CoreCLR_Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.CoreCLR_Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.CoreCLR_Debug|Win32.ActiveCfg = Debug|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.CoreCLR_Debug|Win32.Build.0 = Debug|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.CoreCLR_Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.CoreCLR_Release|Any CPU.Build.0 = Release|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.CoreCLR_Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.CoreCLR_Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.CoreCLR_Release|Win32.ActiveCfg = Release|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.CoreCLR_Release|Win32.Build.0 = Release|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.Debug|Win32.Build.0 = Debug|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.Release|Win32.ActiveCfg = Release|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.Release|Win32.Build.0 = Release|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.Testing|Any CPU.ActiveCfg = Release|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.Testing|Any CPU.Build.0 = Release|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.Testing|Win32.ActiveCfg = Release|Any CPU
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F}.Testing|Win32.Build.0 = Release|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.AppStore|Win32.ActiveCfg = Release|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.AppStore|Win32.Build.0 = Release|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.CoreCLR_Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.CoreCLR_Debug|Any CPU.Build.0 = Debug|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.CoreCLR_Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.CoreCLR_Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.CoreCLR_Debug|Win32.ActiveCfg = Debug|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.CoreCLR_Debug|Win32.Build.0 = Debug|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.CoreCLR_Release|Any CPU.ActiveCfg = Release|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.CoreCLR_Release|Any CPU.Build.0 = Release|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.CoreCLR_Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.CoreCLR_Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.CoreCLR_Release|Win32.ActiveCfg = Release|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.CoreCLR_Release|Win32.Build.0 = Release|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.Debug|Win32.Build.0 = Debug|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.Release|Win32.ActiveCfg = Release|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.Release|Win32.Build.0 = Release|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.Testing|Any CPU.ActiveCfg = Release|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.Testing|Any CPU.Build.0 = Release|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.Testing|Win32.ActiveCfg = Release|Any CPU
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1}.Testing|Win32.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -4211,5 +4338,9 @@ Global
 		{7C67FF28-1B9E-4F13-8BDA-B833D588BC6A} = {25F10A0B-7259-404C-86BE-FD2363C92F72}
 		{AF6049CC-E60E-4174-9AB6-9AA282DE3A31} = {E4508D15-6503-4A29-ADC4-27B3A5E99545}
 		{5BFE4386-3C42-4118-96C8-4B68441F1661} = {E4508D15-6503-4A29-ADC4-27B3A5E99545}
+		{6A7B231E-36AA-4647-8C1A-FB1540ABC813} = {25F10A0B-7259-404C-86BE-FD2363C92F72}
+		{B686C194-D71D-4FF0-8B4F-F53AFBCD962F} = {75A820AB-0F21-40F2-9448-5D7F495B97A0}
+		{164A5B9A-E684-4B3F-9EF4-B7765FC0A8A1} = {1AE1AC60-5D2F-4CA7-AE20-888F44551185}
+		{B4EABB0D-E495-405C-B7B1-E2A7A3711AF5} = {FC791F56-C1F1-4C41-A193-868D8197F8E2}
 	EndGlobalSection
 EndGlobal

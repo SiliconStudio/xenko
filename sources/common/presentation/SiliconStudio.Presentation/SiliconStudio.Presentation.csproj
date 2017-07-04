@@ -37,7 +37,7 @@
   <ItemGroup>
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>    
+    </Compile>
     <Compile Include="Behaviors\NumericTextBoxDragBehavior.cs" />
     <Compile Include="Behaviors\ToggleButtonPopupBehavior.cs" />
     <Compile Include="Controls\PopupModalWindow.cs" />
@@ -55,11 +55,6 @@
     <Compile Include="Interop\ClipboardMonitor.cs" />
     <Compile Include="MarkupExtensions\GuidExtension.cs" />
     <Compile Include="MarkupExtensions\VisibilityExtension.cs" />
-    <Compile Include="Resources\KeyGestures.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>KeyGestures.resx</DependentUpon>
-    </Compile>
     <Compile Include="Services\DummyTransaction.cs" />
     <Compile Include="Services\IModalDialogInternal.cs" />
     <Compile Include="Services\IUndoRedoService.cs" />
@@ -155,17 +150,11 @@
     <Compile Include="Extensions\MathExtensions.cs" />
     <Compile Include="Extensions\WindowHelper.cs" />
     <Compile Include="Core\Utils.cs" />
-    <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="MarkupExtensions\MaxDoubleExtension.cs" />
     <Compile Include="MarkupExtensions\MaxIntExtension.cs" />
     <Compile Include="MarkupExtensions\MinDoubleExtension.cs" />
     <Compile Include="MarkupExtensions\MinIntExtension.cs" />
     <Compile Include="Drawing\VisualHost.cs" />
-    <Compile Include="Resources\Strings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Strings.resx</DependentUpon>
-    </Compile>
     <Compile Include="ValueConverters\AllEqualMultiConverter.cs" />
     <Compile Include="ValueConverters\CharToString.cs" />
     <Compile Include="ValueConverters\ConverterHelper.cs" />
@@ -366,12 +355,23 @@
       <Name>SiliconStudio.Core.Mathematics</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\core\SiliconStudio.Translation\SiliconStudio.Translation.csproj">
+      <Project>{6a7b231e-36aa-4647-8c1a-fb1540abc813}</Project>
+      <Name>SiliconStudio.Translation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Translation.Presentation\SiliconStudio.Translation.Presentation.csproj">
+      <Project>{b686c194-d71d-4ff0-8b4f-f53afbcd962f}</Project>
+      <Name>SiliconStudio.Translation.Presentation</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Cursors\CursorDrag.cur" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="SiliconStudio.Presentation.pot" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\close_window.png" />
@@ -384,16 +384,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\gear--pencil.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\KeyGestures.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>KeyGestures.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Strings.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\lock-unlock.png" />
