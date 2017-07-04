@@ -11,49 +11,31 @@ using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.BuildEngine
 {
-    [Description("Step list")]
-    public class ListBuildStep : BuildStep, IList<BuildStep>
+    public interface IBuildStepCollection
     {
-        private readonly List<BuildStep> children;
 
-        public ListBuildStep()
-            : this(new List<BuildStep>())
-        {
-            children = (List<BuildStep>)Steps;
-        }
+    }
 
-        public ListBuildStep(IEnumerable<BuildStep> steps)
-        {
-            Steps = steps;
-            children = (List<BuildStep>)Steps;
-        }
-
-        public override BuildStep Clone()
-        {
-            return new ListBuildStep(children.Select(x => x.Clone()));
-        }
-
-        /// <inheritdoc/>
-        public override string ToString()
-        {
- 	         return "Build step list (" + Count + " items)";
-        }
+    public class ListBuildStep : BuildStep, IBuildStepCollection
+    {
+        private readonly List<BuildStep> steps = new List<BuildStep>();
+        private readonly List<BuildStep> executedSteps = new List<BuildStep>();
+        private readonly Dictionary<ObjectUrl, InputObject> inputObjects = new Dictionary<ObjectUrl, InputObject>();
+        private readonly Dictionary<ObjectUrl, OutputObject> outputObjects = new Dictionary<ObjectUrl, OutputObject>();
+        private int mergeCounter;
 
         /// <inheritdoc />
         public override string Title => ToString();
 
-        private int mergeCounter;
-        private readonly List<BuildStep> executedSteps = new List<BuildStep>();
-
-        private readonly Dictionary<ObjectUrl, OutputObject> outputObjects = new Dictionary<ObjectUrl, OutputObject>();
         public IDictionary<ObjectUrl, OutputObject> OutputObjects => outputObjects;
 
         /// <inheritdoc/>
         public override IEnumerable<KeyValuePair<ObjectUrl, ObjectId>> OutputObjectIds => outputObjects.Select(x => new KeyValuePair<ObjectUrl, ObjectId>(x.Key, x.Value.ObjectId));
 
-        private readonly Dictionary<ObjectUrl, InputObject> inputObjects = new Dictionary<ObjectUrl, InputObject>();
+        public IEnumerable<BuildStep> Steps => steps;
 
-        public IEnumerable<BuildStep> Steps { get; set; }
+        /// <inheritdoc/>
+        public override string ToString() => $"Build step list ({Count} items)";
 
         public override async Task<ResultStatus> Execute(IExecuteContext executeContext, BuilderContext builderContext)
         {
@@ -288,7 +270,7 @@ namespace SiliconStudio.BuildEngine
             }
         }
 
-        internal OutputObject AddOutputObject(IExecuteContext executeContext, ObjectUrl outputObjectUrl, ObjectId outputObjectId, Command command)
+        private OutputObject AddOutputObject(IExecuteContext executeContext, ObjectUrl outputObjectUrl, ObjectId outputObjectId, Command command)
         {
             OutputObject outputObject;
 
@@ -326,18 +308,12 @@ namespace SiliconStudio.BuildEngine
         }
         
         /// <inheritdoc/>
-        public int Count => children.Count;
-
-        /// <inheritdoc/>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        public int Count => steps.Count;
 
         /// <inheritdoc/>
         public IEnumerator<BuildStep> GetEnumerator()
         {
-            return children.GetEnumerator();
+            return steps.GetEnumerator();
         }
 
         public CommandBuildStep Add(Command command)
@@ -364,62 +340,7 @@ namespace SiliconStudio.BuildEngine
                 throw new InvalidOperationException("Unable to add a build step to an already processed ListBuildStep.");
 
             buildStep.Parent = this;
-            children.Add(buildStep);
+            steps.Add(buildStep);
         }
-
-        /// <inheritdoc/>
-        public void Clear()
-        {
-            children.Clear();
-        }
-
-        /// <inheritdoc/>
-        public bool Contains(BuildStep item)
-        {
-            return children.Contains(item);
-        }
-
-        /// <inheritdoc/>
-        public void CopyTo(BuildStep[] array, int arrayIndex)
-        {
-            children.CopyTo(array, arrayIndex);
-        }
-
-        /// <inheritdoc/>
-        public bool Remove(BuildStep item)
-        {
-            item.Parent = null;
-            return children.Remove(item);
-        }
-
-        /// <inheritdoc/>
-        public int IndexOf(BuildStep item)
-        {
-            return children.IndexOf(item);
-        }
-
-        /// <inheritdoc/>
-        public void Insert(int index, BuildStep item)
-        {
-            item.Parent = this;
-            children.Insert(index, item);
-        }
-
-        /// <inheritdoc/>
-        public void RemoveAt(int index)
-        {
-           children[index].Parent = null;
-           children.RemoveAt(index);
-        }
-
-        /// <inheritdoc/>
-        public BuildStep this[int index]
-        {
-            get { return children[index]; }
-            set { children[index] = value; value.Parent = this; }
-        }
-
-        /// <inheritdoc/>
-        bool ICollection<BuildStep>.IsReadOnly => ((IList<BuildStep>)children).IsReadOnly;
     }
 }

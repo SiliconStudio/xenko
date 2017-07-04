@@ -15,37 +15,48 @@ namespace SiliconStudio.Assets.Analysis
     /// </summary>
     public class BuildDependencyManager
     {
-        public struct BuildNodeDesc
+        /// <summary>
+        /// A structure used as key of the dictionary containing all the build nodes
+        /// </summary>
+        private struct BuildNodeDesc : IEquatable<BuildNodeDesc>
         {
-            public AssetId AssetId;
-            public BuildDependencyType BuildDependencyType;
+            public readonly AssetId AssetId;
+            public readonly Type CompilationContext;
+
+            public BuildNodeDesc(AssetId assetId, Type compilationContext)
+            {
+                AssetId = assetId;
+                CompilationContext = compilationContext;
+            }
+
+            public bool Equals(BuildNodeDesc other)
+            {
+                return AssetId.Equals(other.AssetId) && ReferenceEquals(CompilationContext, other.CompilationContext);
+            }
 
             public override bool Equals(object obj)
             {
-                if (obj == null) return false;
-                var other = (BuildNodeDesc)obj;
-                return AssetId == other.AssetId && BuildDependencyType == other.BuildDependencyType;
+                if (ReferenceEquals(null, obj))
+                    return false;
+                return obj is BuildNodeDesc && Equals((BuildNodeDesc)obj);
             }
 
             public override int GetHashCode()
             {
                 unchecked
                 {
-                    var hash = (int)2166136261;
-                    hash = (hash * 16777619) ^ AssetId.GetHashCode();
-                    hash = (hash * 16777619) ^ BuildDependencyType.GetHashCode();
-                    return hash;
+                    return (AssetId.GetHashCode() * 397) ^ (CompilationContext != null ? CompilationContext.GetHashCode() : 0);
                 }
             }
 
-            public static bool operator ==(BuildNodeDesc x, BuildNodeDesc y)
+            public static bool operator ==(BuildNodeDesc left, BuildNodeDesc right)
             {
-                return x.AssetId == y.AssetId && x.BuildDependencyType == y.BuildDependencyType;
+                return left.Equals(right);
             }
 
-            public static bool operator !=(BuildNodeDesc x, BuildNodeDesc y)
+            public static bool operator !=(BuildNodeDesc left, BuildNodeDesc right)
             {
-                return x.AssetId != y.AssetId || x.BuildDependencyType != y.BuildDependencyType;
+                return !left.Equals(right);
             }
         }
 
@@ -57,76 +68,66 @@ namespace SiliconStudio.Assets.Analysis
         private readonly ConcurrentDictionary<BuildNodeDesc, BuildAssetNode> nodes = new ConcurrentDictionary<BuildNodeDesc, BuildAssetNode>();
 
         /// <summary>
-        /// The context of the build itself, nodes might differ between contexts
-        /// </summary>
-        public Type CompilationContext { get; }
-
-        public BuildDependencyManager(Type compilationContext)
-        {
-            CompilationContext = compilationContext;
-        }
-
-        /// <summary>
         /// Finds or creates a node, notice that this will not perform an analysis on the node, which must be explicitly called on the node
         /// </summary>
         /// <param name="item">The asset item to find or create</param>
-        /// <param name="dependencyType">The type of dependency</param>
+        /// <param name="compilationContext">The context in which the asset is compiled.</param>
         /// <returns>The build node associated with item</returns>
-        public BuildAssetNode FindOrCreateNode(AssetItem item, BuildDependencyType dependencyType)
+        public BuildAssetNode FindOrCreateNode([NotNull] AssetItem item, [NotNull] Type compilationContext)
         {
-            var nodeDesc = new BuildNodeDesc
-            {
-                AssetId = item.Id,
-                BuildDependencyType = dependencyType
-            };
+            if (item == null) throw new ArgumentNullException(nameof(item));
+            if (compilationContext == null) throw new ArgumentNullException(nameof(compilationContext));
+
+            var nodeDesc = new BuildNodeDesc(item.Id, compilationContext);
 
             BuildAssetNode node;
             if (!nodes.TryGetValue(nodeDesc, out node))
             {
-                node = new BuildAssetNode(item, dependencyType, this);
+                node = new BuildAssetNode(item, compilationContext, this);
                 nodes.TryAdd(nodeDesc, node);
             }
             else if (!ReferenceEquals(node.AssetItem, item))
             {               
-                node = new BuildAssetNode(item, dependencyType, this);
+                node = new BuildAssetNode(item, compilationContext, this);
                 nodes[nodeDesc] = node;
             }
 
             return node;
         }
 
-        private static void AnalyzeNode([NotNull] BuildAssetNode node, AssetCompilerContext context)
-        {
-            node.Analyze(context);
-            foreach (var buildAssetNode in node.References)
-            {
-                AnalyzeNode(buildAssetNode, context);
-            }
-        }
+        // TODO: this should be reimplemented at the service level (that consumes the build graph - thumbnails, preview, scene editors...)
+        //private static void AnalyzeNode([NotNull] BuildAssetNode node, [NotNull] AssetCompilerContext context)
+        //{
+        //    if (node == null) throw new ArgumentNullException(nameof(node));
+        //    if (context == null) throw new ArgumentNullException(nameof(context));
+        //    node.Analyze(context);
+        //    foreach (var reference in node.References)
+        //    {
+        //        AnalyzeNode(reference.Target, context);
+        //    }
+        //}
 
-        public void AssetChanged(AssetItem sender)
-        {
-            var node = FindOrCreateNode(sender, BuildDependencyType.Runtime); // update only runtime ones ( as they are root )
-            var context = new AssetCompilerContext();
-            AnalyzeNode(node, context);
-        }
+        //public void AssetChanged(AssetItem sender)
+        //{
+        //    //var node = FindOrCreateNode(sender, typeof(AssetCompilationContext)); // update only runtime ones ( as they are root )
+        //    //var context = new AssetCompilerContext { CompilationContext = typeof(AssetCompilationContext) };
+        //    //AnalyzeNode(node, context);
+        //}
 
         /// <summary>
         /// Finds a node, notice that this will not perform an analysis on the node, which must be explicitly called on the node
         /// </summary>
         /// <param name="item">The asset item to find</param>
-        /// <param name="dependencyType">The type of dependency</param>
+        /// <param name="compilationContext">The context in which the asset is compiled.</param>
         /// <returns>The build node associated with item or null if it was not found</returns>
-        public BuildAssetNode FindNode(AssetItem item, BuildDependencyType dependencyType)
+        public BuildAssetNode FindNode([NotNull] AssetItem item, [NotNull] Type compilationContext)
         {
-            var nodeDesc = new BuildNodeDesc
-            {
-                AssetId = item.Id,
-                BuildDependencyType = dependencyType
-            };
+            if (item == null) throw new ArgumentNullException(nameof(item));
+            if (compilationContext == null) throw new ArgumentNullException(nameof(compilationContext));
 
-            BuildAssetNode node;
-            if (!nodes.TryGetValue(nodeDesc, out node))
+            var nodeDesc = new BuildNodeDesc(item.Id, compilationContext);
+
+            if (!nodes.TryGetValue(nodeDesc, out var node))
             {
                 return null;
             }
@@ -145,8 +146,9 @@ namespace SiliconStudio.Assets.Analysis
         /// </summary>
         /// <param name="item">The asset item to find</param>
         /// <returns>The build nodes associated with item or null if it was not found</returns>
-        public IEnumerable<BuildAssetNode> FindNodes(AssetItem item)
+        public IEnumerable<BuildAssetNode> FindNodes([NotNull] AssetItem item)
         {
+            if (item == null) throw new ArgumentNullException(nameof(item));
             return nodes.Where(x => x.Value.AssetItem == item).Select(x => x.Value);
         }
 
@@ -154,14 +156,10 @@ namespace SiliconStudio.Assets.Analysis
         /// Removes the node from the build graph
         /// </summary>
         /// <param name="node">The node to remove</param>
-        public void RemoveNode(BuildAssetNode node)
+        public void RemoveNode([NotNull] BuildAssetNode node)
         {
-            var nodeDesc = new BuildNodeDesc
-            {
-                AssetId = node.AssetItem.Id,
-                BuildDependencyType = node.DependencyType
-            };
-
+            if (node == null) throw new ArgumentNullException(nameof(node));
+            var nodeDesc = new BuildNodeDesc(node.AssetItem.Id, node.CompilationContext);
             nodes.TryRemove(nodeDesc, out node);
         }
 
@@ -169,13 +167,14 @@ namespace SiliconStudio.Assets.Analysis
         /// Removes the nodes associated with item from the build graph
         /// </summary>
         /// <param name="item">The item to use to find nodes to remove</param>
-        public void RemoveNode(AssetItem item)
+        public void RemoveNode([NotNull] AssetItem item)
         {
+            if (item == null) throw new ArgumentNullException(nameof(item));
             var assetNodes = FindNodes(item).ToList();
             foreach (var buildAssetNode in assetNodes)
             {
-                BuildAssetNode node;
-                nodes.TryRemove(new BuildNodeDesc { AssetId = item.Id, BuildDependencyType = buildAssetNode.DependencyType } , out node);
+                var nodeDesc = new BuildNodeDesc(item.Id, buildAssetNode.CompilationContext);
+                nodes.TryRemove(nodeDesc, out _);
             }
         }
     }
