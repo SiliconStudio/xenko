@@ -53,6 +53,8 @@ namespace SiliconStudio.Xenko.Profiling
 
         private Color4 textColor = Color.LightGreen;
 
+        private PresentInterval userPresentInterval = PresentInterval.Default;  
+
         private struct ProfilingResult : IComparer<ProfilingResult>
         {
             public long AccumulatedTime;
@@ -385,6 +387,12 @@ namespace SiliconStudio.Xenko.Profiling
             Enabled = true;
             Visible = true;
 
+            // Backup current PresentInterval state
+            userPresentInterval = GraphicsDevice.Presenter.PresentInterval;
+
+            // Disable VSync (otherwise GPU results might be incorrect)
+            GraphicsDevice.Presenter.PresentInterval = PresentInterval.Immediate;
+
             if (keys.Length == 0)
             {
                 Profiler.EnableAll();
@@ -418,6 +426,10 @@ namespace SiliconStudio.Xenko.Profiling
         {
             Enabled = false;
             Visible = false;
+
+            // Restore previous PresentInterval state
+            GraphicsDevice.Presenter.PresentInterval = userPresentInterval;
+            userPresentInterval = PresentInterval.Default;
 
             Profiler.DisableAll();
             gcProfiler.Disable();
