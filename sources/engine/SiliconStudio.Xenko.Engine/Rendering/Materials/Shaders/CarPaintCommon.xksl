@@ -3,7 +3,7 @@
 
 shader CarPaintCommon
 {
-    #define CAR_PAINT_PROCEDURAL
+    //#define CAR_PAINT_PROCEDURAL
     
     // Helpers
     inline float UIntToFloat(in uint x) { return ((int)x) - ((x < 0) ? 1 : 0); }
@@ -157,7 +157,7 @@ shader CarPaintCommon
         {
             float3 randomNormal = cellnoise(noiseGenerationPosition + float3(0.0, 0.0, 1.5));
             randomNormal = 2.0 * randomNormal - 1.0;
-            randomNormal = faceforward(randomNormal, float3(0.0, 0.0, 1.0), randomNormal);
+            randomNormal = faceforward(randomNormal, baseNormal, randomNormal);
 
             return randomNormal;
         }
