@@ -25,11 +25,11 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             {
                 if (context.GetParam(MaterialKeys.UsePixelShaderWithDepthPass))
                 {
-                    context.Mixin(mixin, "ShadowMapCasterBaseWithPixelShader");
+                    context.Mixin(mixin, "ShadowMapCasterAlphaDiscard");
                 }
                 else
                 {
-                    context.Mixin(mixin, "ShadowMapCasterBase");
+                    context.Mixin(mixin, "ShadowMapCasterNoPixelShader");
                 }
             }
 

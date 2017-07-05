@@ -340,23 +340,17 @@
     </Compile>
     <Compile Include="Rendering\Materials\ShadingModelShaderBuilder.cs" />
     <Compile Include="Rendering\RenderViewFlags.cs" />
-    <Compile Include="Rendering\Shadows\ShadowMapCasterBaseWithPixelShader.cs">
+    <Compile Include="Rendering\Shadows\ShadowMapCasterAlphaDiscard.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ShadowMapCasterBaseWithPixelShader.xksl</DependentUpon>
+      <DependentUpon>ShadowMapCasterAlphaDiscard.xksl</DependentUpon>
     </Compile>
-    <Compile Include="Rendering\Shadows\ShadowMapCasterCubeMapProjectionWithPixelShader.cs">
+    <Compile Include="Rendering\Shadows\ShadowMapCasterNoPixelShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ShadowMapCasterCubeMapProjectionWithPixelShader.xksl</DependentUpon>
-    </Compile>
-    <Compile Include="Rendering\Shadows\ShadowMapCasterParaboloidProjectionWithPixelShader.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ShadowMapCasterParaboloidProjectionWithPixelShader.xksl</DependentUpon>
+      <DependentUpon>ShadowMapCasterNoPixelShader.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Skyboxes\CubemapSceneRenderer.cs" />
     <Compile Include="Rendering\Lights\LightPointShadowMap.cs" />
@@ -858,9 +852,9 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceNormalStreamShading.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\Shadows\ShadowMapCasterBaseWithPixelShader.xksl">
+    <None Include="Rendering\Shadows\ShadowMapCasterAlphaDiscard.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>ShadowMapCasterBaseWithPixelShader.cs</LastGenOutput>
+      <LastGenOutput>ShadowMapCasterAlphaDiscard.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Shadows\ShadowMapCasterCubeMap.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
@@ -870,9 +864,9 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowMapCasterCubeMapProjection1.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\Shadows\ShadowMapCasterCubeMapProjectionWithPixelShader.xksl">
+    <None Include="Rendering\Shadows\ShadowMapCasterNoPixelShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>ShadowMapCasterCubeMapProjectionWithPixelShader.cs</LastGenOutput>
+      <LastGenOutput>ShadowMapCasterNoPixelShader.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Shadows\ShadowMapCasterParaboloid.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
@@ -881,10 +875,6 @@
     <None Include="Rendering\Shadows\ShadowMapCasterParaboloidProjection.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowMapCasterParaboloidProjection1.cs</LastGenOutput>
-    </None>
-    <None Include="Rendering\Shadows\ShadowMapCasterParaboloidProjectionWithPixelShader.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>ShadowMapCasterParaboloidProjectionWithPixelShader.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Shadows\ShadowMapReceiverPointCubeMap.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
@@ -2557,12 +2547,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Shadows\ShadowMapCasterBase.cs">
-      <DependentUpon>ShadowMapCasterBase.xksl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Rendering\Shadows\ShadowMapCasterVsm.cs">
       <DependentUpon>ShadowMapCasterVsm.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -3946,10 +3930,6 @@
     <None Include="Rendering\Shadows\ShadowMapCaster.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ShadowMapCaster.cs</LastGenOutput>
-    </None>
-    <None Include="Rendering\Shadows\ShadowMapCasterBase.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>ShadowMapCasterBase.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Shadows\ShadowMapCasterVsm.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>

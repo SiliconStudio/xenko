@@ -6,4 +6,18 @@
 // and re-save the associated .xkfx.
 // </auto-generated>
 
-// Nothing to generate
+using System;
+using SiliconStudio.Core;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Shaders;
+using SiliconStudio.Core.Mathematics;
+using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
+
+namespace SiliconStudio.Xenko.Rendering.Shadows
+{
+    public static partial class ShadowMapCasterParaboloidProjectionKeys
+    {
+        public static readonly ValueParameterKey<Vector2> DepthParameters = ParameterKeys.NewValue<Vector2>();
+    }
+}
