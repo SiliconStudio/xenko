@@ -25,12 +25,13 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             {
                 if (context.GetParam(MaterialKeys.UsePixelShaderWithDepthPass))
                 {
-                    context.Mixin(mixin, "ShadowMapCasterParaboloidProjectionWithPixelShader");
+                    context.Mixin(mixin, "ShadowMapCasterAlphaDiscard");
                 }
                 else
                 {
-                    context.Mixin(mixin, "ShadowMapCasterParaboloidProjection");
+                    context.Mixin(mixin, "ShadowMapCasterNoPixelShader");
                 }
+                context.Mixin(mixin, "ShadowMapCasterParaboloidProjection");
             }
 
             [ModuleInitializer]
