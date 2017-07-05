@@ -17,10 +17,10 @@ namespace SiliconStudio.Xenko.Assets.UI
     [AssetCompiler(typeof(UILibraryAsset), typeof(AssetCompilationContext))]
     public sealed class UILibraryAssetCompiler : UIAssetCompilerBase<UILibraryAsset>
     {
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
+        public override IEnumerable<BuildDependencyInfo> GetInputTypes(AssetItem assetItem)
         {
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SpriteFontAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SpriteSheetAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
+            yield return new BuildDependencyInfo(typeof(SpriteFontAsset), typeof(AssetCompilationContext), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
+            yield return new BuildDependencyInfo(typeof(SpriteSheetAsset), typeof(AssetCompilationContext), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
         }
 
         protected override UIConvertCommand Create(string url, UILibraryAsset parameters, Package package)

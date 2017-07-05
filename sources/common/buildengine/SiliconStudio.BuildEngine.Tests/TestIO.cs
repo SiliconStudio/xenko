@@ -321,16 +321,16 @@ namespace SiliconStudio.BuildEngine.Tests
             Utils.GenerateSourceFile("input1", "{99D73F8B-587A-4869-97AE-4A7185D88AC9}");
             var inputDep = new ObjectUrl(UrlType.File, Utils.GetSourcePath("input1"));
 
-            var buildStepList1 = new ListBuildStep
-                {
-                    new ListBuildStep { new InputOutputTestCommand { Delay = 100, Source = inputDep, OutputUrl = "/db/url1", InputDependencies = { inputDep } } },
-                    new InputOutputTestCommand { Delay = 1500, Source = new ObjectUrl(UrlType.Content, "/db/url1"), OutputUrl = "/db/dump1", InputDependencies = { inputDep } },
-                };
-            var buildStepList2 = new ListBuildStep
-                {
-                    new ListBuildStep { new InputOutputTestCommand { Delay = 100, Source = inputDep, OutputUrl = "/db/url1", InputDependencies = { inputDep } } },
-                    new InputOutputTestCommand { Delay = 1500, Source = new ObjectUrl(UrlType.Content, "/db/url1"), OutputUrl = "/db/dump2", InputDependencies = { inputDep } },
-                };
+            var buildStepList1 = new ListBuildStep();
+            var step = new ListBuildStep();
+            step.Add(new InputOutputTestCommand { Delay = 100, Source = inputDep, OutputUrl = "/db/url1", InputDependencies = { inputDep } });
+            buildStepList1.Add(step);
+            buildStepList1.Add(new InputOutputTestCommand { Delay = 1500, Source = new ObjectUrl(UrlType.Content, "/db/url1"), OutputUrl = "/db/dump1", InputDependencies = { inputDep } });
+            var buildStepList2 = new ListBuildStep();
+            step = new ListBuildStep();
+            step.Add(new InputOutputTestCommand { Delay = 100, Source = inputDep, OutputUrl = "/db/url1", InputDependencies = { inputDep } });
+            buildStepList2.Add(step);
+            buildStepList2.Add(new InputOutputTestCommand { Delay = 1500, Source = new ObjectUrl(UrlType.Content, "/db/url1"), OutputUrl = "/db/dump2", InputDependencies = { inputDep } });
 
             var builder = Utils.CreateBuilder(false);
             builder.ThreadCount = 1;

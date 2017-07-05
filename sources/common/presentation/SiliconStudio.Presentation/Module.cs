@@ -2,6 +2,8 @@
 // See LICENSE.md for full license information.
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Translation;
+using SiliconStudio.Translation.Providers;
 
 namespace SiliconStudio.Presentation
 {
@@ -11,6 +13,8 @@ namespace SiliconStudio.Presentation
         public static void Initialize()
         {
             AssemblyRegistry.Register(typeof(Module).Assembly, AssemblyCommonCategories.Assets);
+            // Initialize translation
+            TranslationManager.Instance.RegisterProvider(new GettextTranslationProvider());
         }
     }
 }

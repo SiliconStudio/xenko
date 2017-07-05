@@ -143,12 +143,6 @@ namespace SiliconStudio.BuildEngine
             Execute(executeContext, builderContext);
         }
 
-        /// <summary>
-        /// Clone this Build Step.
-        /// </summary>
-        /// <returns></returns>
-        public abstract BuildStep Clone();
-
         public abstract override string ToString();
 
         public static void LinkBuildSteps(BuildStep parent, BuildStep child)
