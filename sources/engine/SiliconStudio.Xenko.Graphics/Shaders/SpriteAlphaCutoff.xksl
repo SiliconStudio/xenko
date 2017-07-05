@@ -1,7 +1,7 @@
 // Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
-shader SpriteAlphaCutoff : SpriteBase
+shader SpriteAlphaCutoff<bool TSRgb> : SpriteBase
 {
     // -------------------------------------
     // streams
@@ -16,7 +16,7 @@ shader SpriteAlphaCutoff : SpriteBase
     stage override void VSMain()
     {
         base.VSMain();
-        //if (TSRgb)
+        if (TSRgb)
         {
             streams.Color = ColorUtility.ToLinear(streams.Color);
         }
@@ -60,3 +60,12 @@ shader SpriteAlphaCutoff : SpriteBase
         return finalColor;
     }
 };
+
+namespace SiliconStudio.Xenko.Rendering
+{
+    partial effect SpriteAlphaCutoffEffect
+    {
+        using params SpriteBaseKeys;
+        mixin SpriteAlphaCutoff<SpriteBaseKeys.ColorIsSRgb>;
+    };
+}
