@@ -1,0 +1,1207 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2017-07-03 17:12+0900\n"
+"PO-Revision-Date: 2017-07-03 17:13+0900\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.2\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/Properties/PropertiesViewModel.cs:144
+msgctxt "Properties"
+msgid "Loading properties..."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/Properties/SessionObjectPropertiesViewModel.cs:131
+msgctxt "Properties"
+msgid "An error occurred while loading properties of the selection."
+msgstr ""
+
+#. Log message displayed when an operation has been canceled
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/TemplateGeneratorHelper.cs:34
+msgctxt "Log"
+msgid "Operation cancelled."
+msgstr "この操作は中止しました"
+
+#. Message displayed when an exception occurs while generating a template
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/TemplateGeneratorHelper.cs:41
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/TemplateGeneratorHelper.cs:60
+msgctxt "Log"
+msgid "An exception occurred while generating the template."
+msgstr "テンプレートを作る際に例外が発生しました。"
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/Views/ProjectSelectionWindow.xaml.cs:28
+msgctxt "Title"
+msgid "Project selection - {0}"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Services/VisualStudioService.cs:92
+msgctxt "Message"
+msgid "An error occurred while starting Visual Studio."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Services/VisualStudioService.cs:101
+msgctxt "Message"
+msgid "The session currently open is not a Visual Studio session."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Settings/EditorSettings.cs:19
+msgctxt "Settings"
+msgid "Always delete {0} without asking"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Settings/EditorSettings.cs:20
+msgctxt "Settings"
+msgid "Always save newly created scripts without asking"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Settings/EditorSettings.cs:23
+msgctxt "Settings"
+msgid "Environment"
+msgstr "環境"
+
+#: ../editor/SiliconStudio.Assets.Editor/Settings/EditorSettings.cs:24
+msgctxt "Settings"
+msgid "External tools"
+msgstr "外部ツール"
+
+#: ../editor/SiliconStudio.Assets.Editor/Settings/EditorSettings.cs:25
+msgctxt "Settings"
+msgid "Interface"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Settings/EditorSettings.cs:26
+msgctxt "Settings"
+msgid "Tools"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Settings/EditorSettings.cs:32
+msgctxt "Settings"
+msgid "Default text editor"
+msgstr "既定のテキストエディタ"
+
+#: ../editor/SiliconStudio.Assets.Editor/Settings/EditorSettings.cs:36
+msgctxt "Settings"
+msgid "Shader editor"
+msgstr ""
+
+#. IDE: Integrated development environment (http://en.wikipedia.org/wiki/Integrated_development_environment)
+#: ../editor/SiliconStudio.Assets.Editor/Settings/EditorSettings.cs:41
+msgctxt "Settings"
+msgid "Default IDE"
+msgstr "既定のIDE"
+
+#: ../editor/SiliconStudio.Assets.Editor/Settings/EditorSettings.cs:45
+#: ../editor/SiliconStudio.Assets.Editor/Settings/EditorSettings.cs:46
+msgctxt "Settings"
+msgid "Ask confirmation before deleting assets"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Settings/EditorSettings.cs:50
+#: ../editor/SiliconStudio.Assets.Editor/Settings/EditorSettings.cs:51
+msgctxt "Settings"
+msgid "Ask confirmation before reloading assemblies"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Settings/EditorSettings.cs:55
+#: ../editor/SiliconStudio.Assets.Editor/Settings/EditorSettings.cs:56
+msgctxt "Settings"
+msgid "Automatically reload assemblies"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Settings/EditorSettings.cs:60
+#: ../editor/SiliconStudio.Assets.Editor/Settings/EditorSettings.cs:61
+msgctxt "Settings"
+msgid "Ask confirmation before saving newly created scripts"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Settings/EditorSettings.cs:65
+#: ../editor/SiliconStudio.Assets.Editor/Settings/EditorSettings.cs:66
+msgctxt "Settings"
+msgid "Crash report e-mail"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Settings/EditorSettings.cs:70
+msgctxt "Settings"
+msgid "Language"
+msgstr "言語"
+
+#: ../editor/SiliconStudio.Assets.Editor/Settings/EditorSettings.cs:74
+msgctxt "Settings"
+msgid "Reset"
+msgstr "初期化する"
+
+#: ../editor/SiliconStudio.Assets.Editor/Settings/EditorSettings.cs:75
+msgctxt "Settings"
+msgid "Reset Game Studio layout"
+msgstr "Game Studioのレイアウトの初期化"
+
+#: ../editor/SiliconStudio.Assets.Editor/Settings/EditorSettings.cs:79
+msgctxt "Settings"
+msgid "Build cache directory"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Settings/EditorSettings.cs:83
+msgctxt "Settings"
+msgid "Use effect compiler server for mobile platforms"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Settings/EditorSettings.cs:87
+msgctxt "Settings"
+msgid "Automatically reload last session at startup"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Settings/ViewModels/SettingsViewModel.cs:117
+msgctxt "Message"
+msgid "Some changes will be applied after restarting the Game Studio."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Settings/ViewModels/SettingsViewModel.cs:128
+msgctxt "Properties"
+msgid "Select a category of settings."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Settings/ViewModels/SettingsViewModel.cs:138
+msgctxt "Properties"
+msgid "An error occurred while loading this settings page."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/Behaviors/DragDrop/DragDropBehavior.cs:325
+#: ../editor/SiliconStudio.Assets.Editor/View/Behaviors/DragDrop/DragDropBehavior.cs:354
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/AssetCollectionViewModel.cs:1403
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionObjectViewModel.cs:86
+msgctxt "Message"
+msgid "Invalid drop area"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/ValueConverters/ContentReferenceToUrl.cs:25
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:298
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:372
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:572
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:626
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:693
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:717
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:744
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:758
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:941
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:967
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:993
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:1008
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:1073
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:1299
+msgid "(Different values)"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/AssetCollectionViewModel.cs:474
+msgctxt "Message"
+msgid ""
+"Unable to use the selected template because it is not an asset template."
+msgstr ""
+
+#. Error message when the template generator of the selected template is unreachable
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/AssetCollectionViewModel.cs:528
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/PackageViewModel.cs:536
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:284
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:1130
+msgctxt "Message"
+msgid ""
+"Unable to retrieve template generator for the selected template. Aborting."
+msgstr "選択されたテンプレート"
+
+#. Title of the AddAssetWindow
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/AssetCollectionViewModel.cs:534
+msgctxt "Title"
+msgid "Add asset…"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/AssetCollectionViewModel.cs:662
+msgctxt "Message"
+msgid ""
+"Multiple directories/packages selected. Please selected a single directory/"
+"package to create the asset in."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/AssetCollectionViewModel.cs:667
+msgctxt "Message"
+msgid ""
+"No directory/package selected. Please selected a single directory/package to "
+"create the asset in."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/AssetCollectionViewModel.cs:674
+msgctxt "Message"
+msgid ""
+"The selected directory/package is not editable. Please selected a single "
+"directory/package from the local packages to create the asset in."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/AssetCollectionViewModel.cs:747
+msgctxt "Message"
+msgid "Unable to cut a read-only folder."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/AssetCollectionViewModel.cs:762
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:1521
+msgctxt "Message"
+msgid "The asset {0} cannot be deleted due to the following reason:{1}{2}"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/AssetCollectionViewModel.cs:792
+msgctxt "Message"
+msgid "{0} cannot be deleted due to the following reason:{1}{2}"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/AssetCollectionViewModel.cs:839
+msgctxt "Message"
+msgid ""
+"Unable to cut or copy a selection that contains a folder and one of its "
+"subfolders."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/AssetCollectionViewModel.cs:915
+msgctxt "Message"
+msgid "Please select a single valid asset folder to paste selection"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/AssetCollectionViewModel.cs:922
+msgctxt "Message"
+msgid "The selected package or directory cannot be modified."
+msgstr ""
+"このソリューション内に選択されたパッケージとリンクできるパッケージがありませ"
+"ん"
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/AssetCollectionViewModel.cs:1394
+msgctxt "Message"
+msgid ""
+"Invalid location. Please select a package folder in the Solution explorer"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/AssetCollectionViewModel.cs:1400
+msgctxt "Message"
+msgid "Drop files"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/AssetCollectionViewModel.cs:1468
+msgctxt "Message"
+msgid "The selected files are not supported."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/AssetViewModel.cs:578
+msgctxt "Message"
+msgid ""
+"Unable to rename asset to '{0}' because an asset with the same name exists "
+"in the same directory"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/AssetViewModel.cs:583
+msgctxt "Message"
+msgid "Unable to rename asset with an empty name"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/DirectoryViewModel.cs:113
+msgctxt "Message"
+msgid "This directory is contained in a non-editable package"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/DirectoryViewModel.cs:150
+msgctxt "Message"
+msgid "Unable to rename directory: {0}"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/DirectoryViewModel.cs:175
+msgctxt "Message"
+msgid "A directory with the same name exists in its parent directory."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/DirectoryViewModel.cs:197
+msgctxt "Message"
+msgid "Path is a device name"
+msgstr ""
+
+#. Message displayed when the previous attempt to load the startup project failed. {0} is a file name
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/EditorViewModel.cs:118
+msgctxt "Message"
+msgid ""
+"The last attempt to load the project '{0}' did not end successfully. Do you "
+"want to attempt to load it again?"
+msgstr ""
+
+#. Message displayed when the solution file to open does not exist. {0} is a file path
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/EditorViewModel.cs:149
+msgctxt "Message"
+msgid "The file '{0}' does not exist."
+msgstr ""
+
+#. Message displayed when trying to open an unsaved file with the text editor
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/EditorViewModel.cs:178
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:716
+msgctxt "Message"
+msgid "The file must be saved at least once to be opened."
+msgstr "このファイルは保存されていません"
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/EditorViewModel.cs:191
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/EditorViewModel.cs:209
+msgctxt "Message"
+msgid "An error occurred while opening the file."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/PackageViewModel.cs:737
+msgctxt "Message"
+msgid "Unable to rename package: {0}"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/PackageViewModel.cs:768
+msgctxt "Message"
+msgid "a package with the same name already exists in the session."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionObjectViewModel.cs:101
+msgctxt "Message"
+msgid "The name is too long"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionObjectViewModel.cs:107
+msgctxt "Message"
+msgid "The name contains invalid characters."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionObjectViewModel.cs:113
+msgctxt "Message"
+msgid "The name is empty"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:45
+msgid "External Packages"
+msgstr "外部のパッケージ"
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:46
+msgid "Local Packages"
+msgstr "ローカルパッケージ"
+
+#. {0} is a file name
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:569
+msgid "Solution '{0}'"
+msgstr ""
+
+#. Title for the progress window of the session creation
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:257
+msgctxt "Title"
+msgid "Creating session..."
+msgstr "セッションの作成中"
+
+#. Title for the progress window of the session loading
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:369
+msgctxt "Title"
+msgid "Opening session..."
+msgstr "セッションを開いています"
+
+#. Log message displayed when an exception occurs while opening a session.
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:402
+msgctxt "Log"
+msgid "An exception occurred while opening the solution."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:450
+msgctxt "Message"
+msgid "The following dependencies of the package **{0}** require upgrading:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:455
+msgctxt "Message"
+msgid ""
+"- Dependency to **{0}** must be upgraded from version **{1}** to **{2}**"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:459
+msgctxt "Message"
+msgid ""
+"Upgrading assets might break them. We recommend you make a manual backup of "
+"your project before you upgrade."
+msgstr ""
+
+#. Displayed in a button (must be short)
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:463
+msgctxt "Button"
+msgid "Upgrade"
+msgstr ""
+
+#. Displayed in a button (must be short)
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:464
+msgctxt "Button"
+msgid "Skip"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:466
+msgctxt "Message"
+msgid "Do this for all other packages in this solution"
+msgstr ""
+
+#. Message displayed when trying to open a modified asset with the text editor
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:702
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:736
+msgctxt "Message"
+msgid ""
+"This asset has been modified and must be saved in order to be opened. Do you "
+"want to save the session now?"
+msgstr ""
+"このアセットを開くには変更を保存する必要があります。セッションを保存します"
+"か？"
+
+#. Message displayed when an exception occurs while trying to open a file with the text editor
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:724
+msgctxt "Message"
+msgid ""
+"An error occurred while starting the text editor. Please verify that the "
+"path to the text editor set in the Settings is correct."
+msgstr "エディターでエラーが起きました"
+
+#. Error displayed when trying to open the source file of an asset that has no source file
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:755
+msgctxt "Message"
+msgid "This asset does not have a source file to open."
+msgstr ""
+
+#. Message displayed when trying to explore an unsaved asset
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:830
+msgctxt "Message"
+msgid "The asset must be saved at least once to be explored."
+msgstr "アセットが保存されていません"
+
+#. Message displayed when an exception occurs while trying to explore an asset
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:841
+msgctxt "Message"
+msgid "An error occurred while starting the file explorer."
+msgstr "エクスプローラーでエラーが起きました"
+
+#. Title for the progress window of the session saving
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:865
+msgctxt "Title"
+msgid "Saving session..."
+msgstr ""
+
+#. Log message displayed when an exception occurs while saving a session.
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:888
+msgctxt "Log"
+msgid "An exception occurred while saving the solution: {0}"
+msgstr ""
+
+#. Message displayed when closing an unsaved project
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:1008
+msgctxt "Message"
+msgid "The current project has unsaved changes. Would you like to save it?"
+msgstr "現在のプロジェクトは変更を保存されていません。保存しますか？"
+
+#. Message displayed when a session managed to save some files while some others have failed.
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:1018
+msgctxt "Message"
+msgid ""
+"Some assets failed to save. Please check the failed asset files and try "
+"again."
+msgstr ""
+
+#. Title for the progress window of the package creation
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:1108
+msgctxt "Title"
+msgid "Creating package..."
+msgstr "パッケージの作成中"
+
+#. Title for the progress window of the package import
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:1172
+msgctxt "Title"
+msgid "Importing package..."
+msgstr "パッケージをインポートしています"
+
+#. Log message displayed when an exception occurs while importing a package.
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:1192
+msgctxt "Log"
+msgid "An exception occurred while importing the package."
+msgstr "パッケージのインポート中に例外が発生しました。"
+
+#. Message displayed when the selection contains zero or multiple packages but a single one is required
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:1232
+msgctxt "Message"
+msgid "Please select a single package to perform this operation."
+msgstr "この操作を行うために１つのパッケージを選択してください"
+
+#. Message displayed when the user try to add dependencies to a package but no acceptable package is available
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:1283
+msgctxt "Message"
+msgid ""
+"No package in this solution can be added as a dependency to the selected "
+"package."
+msgstr ""
+"このソリューション内に選択されたパッケージとリンクできるパッケージがありませ"
+"ん"
+
+#. Message displayed when a single location is selected but invalid for directory creation
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:1342
+msgctxt "Message"
+msgid ""
+"Unable to create a directory in the selected location. Directories can only "
+"be created in the Assets hierarchy of a package."
+msgstr ""
+"選択された場所でディレクトリが作成できませんでした。ディレクトリはパッケージ"
+"のアセット階層内のみ新規作成ができます。"
+
+#. Message displayed when some of the multiple selected locations are invalid for directory creation
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:1343
+msgctxt "Message"
+msgid ""
+"Unable to create a directory in some of the selected locations. Directories "
+"can only be created in the Assets hierarchy of a package."
+msgstr ""
+"選択された場所の中でいくつかディレクトリの新規作成ができませんでした。ディレ"
+"クトリはパッケージのアセット階層内のみ新規作成ができます。"
+
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:1531
+msgctxt "Message"
+msgid "The directory {0} cannot be deleted due to the following reason:{1}{2}"
+msgstr ""
+
+#. Message displayed when the user tries to delete a system package
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:1577
+msgctxt "Message"
+msgid "Unable to delete the system package."
+msgstr ""
+
+#. Message displayed when the user is about to delete a package from the session
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:1584
+msgctxt "Message"
+msgid ""
+"You're about to delete a package. Are you sure you want to perform this "
+"operation? Note that the package files will remain on the disk."
+msgstr ""
+"パッケージの参照を削除しようとしています。よろしいですか？(このパッケージは"
+"ディクス上に残ります)"
+
+#. Message displayed when the user is about to delete a dependency from the package
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:1610
+msgctxt "Message"
+msgid "Are you sure to delete the selected dependencies?"
+msgstr "選択された依存関係を削除しますか？"
+
+#. Message displayed when the user tries to delete the root asset directory of a package
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:1651
+msgctxt "Message"
+msgid "Unable to delete the asset root directory of a package."
+msgstr "パッケージのルートアセットルートディレクトリは削除できません"
+
+#. Message displayed when the user is about to delete a project from the package
+#: ../editor/SiliconStudio.Assets.Editor/ViewModel/SessionViewModel.cs:1659
+msgctxt "Message"
+msgid "Are you sure to delete the selected projects?"
+msgstr "選択されたプロジェクトを削除しますか？"
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/AddAssets/View/ItemTemplatesWindow.xaml:11
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/Views/AddItemWindow.xaml:10
+msgid "Add asset..."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/AddAssets/View/ItemTemplatesWindow.xaml:33
+msgid "out of {0} file(s)"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/FixAssetReferences/Views/FixAssetReferencesWindow.xaml:14
+msgid "Fix references ({0})"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/FixAssetReferences/Views/FixAssetReferencesWindow.xaml:36
+msgid ""
+"The asset {0} is referenced by other assets. Please select how to handle "
+"these references."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/FixAssetReferences/Views/FixAssetReferencesWindow.xaml:38
+msgctxt "Button"
+msgid "Replace all the references to this asset by reference to:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/FixAssetReferences/Views/FixAssetReferencesWindow.xaml:41
+#: ../editor/SiliconStudio.Assets.Editor/Components/FixAssetReferences/Views/FixAssetReferencesWindow.xaml:60
+msgid "Select an asset"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/FixAssetReferences/Views/FixAssetReferencesWindow.xaml:43
+#: ../editor/SiliconStudio.Assets.Editor/Components/FixAssetReferences/Views/FixAssetReferencesWindow.xaml:55
+msgctxt "ToolTip"
+msgid "Select asset"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/FixAssetReferences/Views/FixAssetReferencesWindow.xaml:49
+msgctxt "Button"
+msgid "Manage reference replacement case-by-case:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/FixAssetReferences/Views/FixAssetReferencesWindow.xaml:57
+msgctxt "Button"
+msgid "Clear this reference"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/FixAssetReferences/Views/FixAssetReferencesWindow.xaml:65
+msgid "Referencer"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/FixAssetReferences/Views/FixAssetReferencesWindow.xaml:66
+msgid "Reference path"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/FixAssetReferences/Views/FixAssetReferencesWindow.xaml:67
+msgid "Replacement asset"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/FixAssetReferences/Views/FixAssetReferencesWindow.xaml:80
+msgctxt "Button"
+msgid "Fix references"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/FixAssetReferences/Views/FixAssetReferencesWindow.xaml:80
+msgctxt "ToolTip"
+msgid "Fix the references for the current asset"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/FixAssetReferences/Views/FixAssetReferencesWindow.xaml:81
+msgctxt "Button"
+msgid "Clear references"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/FixAssetReferences/Views/FixAssetReferencesWindow.xaml:81
+msgctxt "ToolTip"
+msgid "Clear the references of the current asset"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/FixAssetReferences/Views/FixAssetReferencesWindow.xaml:82
+msgctxt "Button"
+msgid "Clear all references"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/FixAssetReferences/Views/FixAssetReferencesWindow.xaml:82
+msgctxt "ToolTip"
+msgid "Clear references for all assets being deleted"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/FixAssetReferences/Views/FixAssetReferencesWindow.xaml:83
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/Views/NewPackageWindow.xaml:31
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/Views/ProjectSelectionWindow.xaml:35
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetPickerWindow.xaml:53
+#: ../editor/SiliconStudio.Assets.Editor/View/PackagePickerWindow.xaml:21
+#: ../editor/SiliconStudio.Assets.Editor/View/SettingsWindow.xaml:31
+#: ../editor/SiliconStudio.Assets.Editor/View/WorkProgressWindow.xaml:32
+msgctxt "Button"
+msgid "Cancel"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/FixAssetReferences/Views/FixAssetReferencesWindow.xaml:83
+msgctxt "ToolTip"
+msgid "Cancel operation"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/Views/AddItemUserControl.xaml:21
+msgid "Search"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/Views/AddItemUserControl.xaml:38
+msgctxt "ToolTip"
+msgid "Import directly from files"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/Views/NewPackageWindow.xaml:11
+msgid "New..."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/Views/NewPackageWindow.xaml:25
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/Views/ProjectSelectionWindow.xaml:29
+msgctxt "Button"
+msgid "Select"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/Views/NewPackageWindow.xaml:26
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/Views/ProjectSelectionWindow.xaml:30
+msgctxt "ToolTip"
+msgid "Use the selected template"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/Views/NewPackageWindow.xaml:31
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/Views/ProjectSelectionWindow.xaml:35
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetPickerWindow.xaml:53
+#: ../editor/SiliconStudio.Assets.Editor/View/PackagePickerWindow.xaml:21
+#: ../editor/SiliconStudio.Assets.Editor/View/SettingsWindow.xaml:31
+msgctxt "ToolTip"
+msgid "Cancel (Esc)"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/Views/NewPackageWindow.xaml:57
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/Views/ProjectSelectionWindow.xaml:64
+msgid "Name:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/Views/NewPackageWindow.xaml:63
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/Views/ProjectSelectionWindow.xaml:70
+msgid "Location:"
+msgstr ""
+
+#. This button opens a file dialog
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/Views/NewPackageWindow.xaml:65
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/Views/ProjectSelectionWindow.xaml:72
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:953
+msgctxt "ToolTip"
+msgid "Browse directory"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/Views/ProjectSelectionWindow.xaml:24
+msgctxt "Button"
+msgid "Browse for existing project"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/Views/ProjectSelectionWindow.xaml:25
+msgctxt "Button"
+msgid "Reload last session automatically at startup"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/Views/ProjectSelectionWindow.xaml:82
+msgid "Solution name:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/Views/ProjectSelectionWindow.xaml:83
+msgid "(Auto-generate solution name)"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/Views/ProjectSelectionWindow.xaml:89
+msgid "Solution location:"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/Components/TemplateDescriptions/Views/ProjectSelectionWindow.xaml:94
+msgid "(Same location)"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetPickerWindow.xaml:14
+msgid "Asset picker"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetPickerWindow.xaml:25
+msgctxt "Menu"
+msgid "Asset"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetPickerWindow.xaml:26
+msgctxt "Menu"
+msgid "Delete"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetPickerWindow.xaml:28
+msgctxt "Menu"
+msgid "Rename"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetPickerWindow.xaml:30
+msgctxt "Menu"
+msgid "Explore"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetPickerWindow.xaml:31
+msgctxt "Menu"
+msgid "OpenWithTextEditor"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetPickerWindow.xaml:33
+msgctxt "Menu"
+msgid "OpenAssetFile"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetPickerWindow.xaml:35
+msgctxt "Menu"
+msgid "OpenSourceFile"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetPickerWindow.xaml:37
+msgctxt "Menu"
+msgid "ShowInExplorer"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetPickerWindow.xaml:48
+#: ../editor/SiliconStudio.Assets.Editor/View/PackagePickerWindow.xaml:15
+#: ../editor/SiliconStudio.Assets.Editor/View/SettingsWindow.xaml:26
+msgctxt "Button"
+msgid "Ok"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetPickerWindow.xaml:48
+msgctxt "ToolTip"
+msgid "Pick the selected asset(s)"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:87
+msgid "Url: {0}"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:88
+msgid "Type: {0}"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:89
+msgid "Tags: {0}"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:92
+msgid "Included to build as root"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:96
+msgid "Included to build as dependency"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:100
+msgid "Excluded from build"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:182
+msgid "Name"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:183
+msgid "Type"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:184
+msgid "Url"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:185
+msgid "Included"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:243
+msgctxt "ToolTip"
+msgid "Add asset to the selected location"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:247
+msgid "Add asset"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:268
+msgctxt "ToolTip"
+msgid "Update assets whose source files has changed"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:295
+msgctxt "ToolTip"
+msgid "Import last effects compiled remotely"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:321
+msgctxt "ToolTip"
+msgid "Open the editor of the selected asset"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:330
+msgctxt "ToolTip"
+msgid "Asset view options"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:335
+msgctxt "Menu"
+msgid "Display"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:336
+msgctxt "Menu"
+msgid "Assets in selected folder only"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:339
+msgctxt "Menu"
+msgid "Assets in selected folder and subfolder"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:340
+msgctxt "ToolTip"
+msgid "Display assets of selected locations recursively"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:343
+msgctxt "Menu"
+msgid "Assets and folders in selected folder"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:348
+msgctxt "Menu"
+msgid "Sort by asset name"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:351
+msgctxt "Menu"
+msgid "Sort by type"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:354
+msgctxt "Menu"
+msgid "Sort by unsaved changes"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:357
+msgctxt "Menu"
+msgid "Sort by date modified"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:366
+msgctxt "ToolTip"
+msgid "Zoom in"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:371
+msgctxt "ToolTip"
+msgid "Zoom out"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:376
+msgctxt "Menu"
+msgid "Grid view"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:377
+msgctxt "ToolTip"
+msgid "Display assets in a grid view"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:385
+msgctxt "Menu"
+msgid "Tile view"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:386
+msgctxt "ToolTip"
+msgid "Display assets in a tile view"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:398
+msgid "Add a filter..."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:427
+msgid "Filter assets by name, type or tags."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:429
+msgid "Hold SHIFT to replace filters."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:434
+msgctxt "ToolTip"
+msgid "Clear filters"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:476
+msgid ""
+"No asset to display in this folder or no folder selected. Check your active "
+"filters."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/AssetViewUserControl.xaml:479
+msgid "You can also drop files here to import assets."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:29
+msgctxt "ToolTip"
+msgid "Add a new item to the list"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:54
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:335
+msgctxt "ToolTip"
+msgid "Create an instance with the selected type"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:131
+msgctxt "ToolTip"
+msgid "Delete item"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:407
+msgid "List"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:408
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:472
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:530
+msgid "{0} item"
+msgid_plural "{0} items"
+msgstr[0] ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:450
+msgid "Add to {0}"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:467
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:493
+msgctxt "ToolTip"
+msgid "Add a new entry to the dictionary"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:471
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:529
+msgid "Dictionary"
+msgstr ""
+
+#. Keep the colon (:)
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:504
+msgid "Key name:"
+msgstr ""
+
+#. Default name for a new key in a dictionary
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:506
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:522
+msgid "New key"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:555
+msgctxt "ToolTIp"
+msgid "Character"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:562
+msgctxt "ToolTip"
+msgid "Unicode value"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:932
+msgctxt "ToolTip"
+msgid "Angle in degrees"
+msgstr ""
+
+#. This button opens a file dialog
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:979
+msgctxt "ToolTip"
+msgid "Browse file"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:1021
+msgctxt "Button"
+msgid "Change values..."
+msgstr ""
+
+#. As for "Select all items"
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:1030
+msgctxt "Button"
+msgid "All"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:1030
+msgctxt "ToolTip"
+msgid "Select all values"
+msgstr ""
+
+#. As for "Clear selection"
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:1032
+msgctxt "Button"
+msgid "None"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:1032
+msgctxt "ToolTip"
+msgid "Clear selection"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:1034
+msgctxt "Buttont"
+msgid "Inver"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:1034
+msgctxt "ToolTip"
+msgid "Invert selection"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:1151
+msgid "Select the referenced asset"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:1156
+msgid "Pick an asset up"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:1161
+msgid "Clear this reference"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:1171
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:1214
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:1237
+msgctxt "ToolTip"
+msgid "Pick an asset up"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:1175
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:1242
+msgctxt "ToolTip"
+msgid "Clear the reference"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:1179
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:1203
+msgctxt "ToolTip"
+msgid "Select the referenced asset"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:1255
+msgctxt "ToolTip"
+msgid "Create an instance of this structure"
+msgstr ""
+
+#. It is ok to keep "null" in english
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:1260
+msgctxt "ToolTip"
+msgid "Clear value (Set to null)"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:1267
+msgid "(null)"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/DefaultPropertyTemplateProviders.xaml:1312
+msgid "Unable to load the object of type {0} from assembly {1}"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/NotificationWindow.xaml:6
+msgid "Notification"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/PackagePickerWindow.xaml:10
+msgid "Package Picker"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/PackagePickerWindow.xaml:15
+msgctxt "ToolTip"
+msgid "Pick the package(s)"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/SettingsWindow.xaml:15
+msgid "Settings"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/SettingsWindow.xaml:26
+msgctxt "ToolTip"
+msgid "Validate changes and close this window"
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/WorkProgressWindow.xaml:19
+msgid "Operation completed."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/WorkProgressWindow.xaml:20
+msgid "Operation failed."
+msgstr ""
+
+#. Log message displayed when an operation has been canceled
+#: ../editor/SiliconStudio.Assets.Editor/View/WorkProgressWindow.xaml:21
+msgid "Operation cancelled."
+msgstr ""
+
+#: ../editor/SiliconStudio.Assets.Editor/View/WorkProgressWindow.xaml:27
+msgctxt "Button"
+msgid "Close"
+msgstr ""
