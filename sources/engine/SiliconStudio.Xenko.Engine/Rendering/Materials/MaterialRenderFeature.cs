@@ -76,6 +76,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             public bool HasNormalMap;
 
+            /// <summary>
+            /// Indicates that material requries using pixel shader stage during depth-only pass (Z prepass or shadow map rendering).
+            /// Used by transparent and cut off materials.
+            /// </summary>
+            public bool UsePixelShaderWithDepthPass;
+
             public MaterialInfo(MaterialPass materialPass)
             {
                 MaterialPass = materialPass;
@@ -218,6 +224,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                                 materialInfo.PixelStageSurfaceShaders = material.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders);
                                 materialInfo.PixelStageStreamInitializer = material.Parameters.Get(MaterialKeys.PixelStageStreamInitializer);
                                 materialInfo.HasNormalMap = material.Parameters.Get(MaterialKeys.HasNormalMap);
+                                materialInfo.UsePixelShaderWithDepthPass = material.Parameters.Get(MaterialKeys.UsePixelShaderWithDepthPass);
 
                                 materialInfo.MaterialParameters = material.Parameters;
                                 materialInfo.ParametersChanged = isMaterialParametersChanged;
@@ -249,6 +256,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.PixelStageStreamInitializer, materialInfo.PixelStageStreamInitializer);
                     if (materialInfo.HasNormalMap)
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasNormalMap, materialInfo.HasNormalMap);
+                    if (materialInfo.UsePixelShaderWithDepthPass)
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.UsePixelShaderWithDepthPass, materialInfo.UsePixelShaderWithDepthPass);
                 }
             });
 

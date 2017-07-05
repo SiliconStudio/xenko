@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             streams.matDiffuseSpecularAlphaBlend = 1.0f;
             streams.matAlphaBlendColor = 1.0f;
-            streams.matAlphaDiscard = 0.0f;
+            streams.matAlphaDiscard = 0.1f;
         }
 
         float GetFilterSquareRoughnessAdjustment(float3 averageNormal)

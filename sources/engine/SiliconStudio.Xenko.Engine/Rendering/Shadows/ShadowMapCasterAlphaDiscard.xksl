@@ -1,0 +1,17 @@
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// See LICENSE.md for full license information.
+namespace SiliconStudio.Xenko.Rendering.Shadows
+{
+    /// <summary>
+    /// Shadow map caster with pixel shader performing alpha discard test.
+    /// </summary>
+    shader ShadowMapCasterAlphaDiscard : Transformation, ShaderBase, PositionStream, MaterialPixelStream
+    {
+        override stage void PSMain()
+        {
+            base.PSMain();
+
+            clip(streams.ColorTarget.a - streams.matAlphaDiscard);
+        }
+    };
+}
