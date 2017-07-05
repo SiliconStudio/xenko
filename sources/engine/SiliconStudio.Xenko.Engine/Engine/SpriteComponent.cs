@@ -105,6 +105,15 @@ namespace SiliconStudio.Xenko.Engine
         [Display("Ignore Depth")]
         public bool IgnoreDepth;
 
+        /// <summary>
+        /// Discard pixels with low alpha value when rendering the sprite by performing alpha cut off test.
+        /// </summary>
+        /// <userdoc>Ignore pixels with low alpha value when rendering the sprite by performing alpha cut off test.</userdoc>
+        [DataMember(65)]
+        [DefaultValue(false)]
+        [Display("Is Alpha Cutoff")]
+        public bool IsAlphaCutoff;
+
 
         /// <summary>
         /// Specifies the texture sampling method to be used for this sprite

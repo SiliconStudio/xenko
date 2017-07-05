@@ -85,6 +85,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                 // Note! It doesn't really matter in what order we build the bitmask, the result is not preserved anywhere except in this method
                 var currentBatchState = isPicking ? 0U : sprite.IsTransparent ? (spriteComp.PremultipliedAlpha ? 1U : 2U) : 3U;
                 currentBatchState = (currentBatchState << 1) + (renderSprite.SpriteComponent.IgnoreDepth ? 1U : 0U);
+                currentBatchState = (currentBatchState << 1) + (spriteComp.IsAlphaCutoff ? 1U : 0U);
                 currentBatchState = (currentBatchState << 2) + ((uint)renderSprite.SpriteComponent.Sampler);
 
                 if (previousBatchState != currentBatchState)
@@ -92,6 +93,11 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                     var blendState = isPicking ? BlendStates.Default : sprite.IsTransparent ? (spriteComp.PremultipliedAlpha ? BlendStates.AlphaBlend : BlendStates.NonPremultiplied) : BlendStates.Opaque;
                     var currentEffect = isPicking ? batchContext.GetOrCreatePickingSpriteEffect(RenderSystem.EffectSystem) : null; // TODO remove this code when material are available
                     var depthStencilState = renderSprite.SpriteComponent.IgnoreDepth ? DepthStencilStates.None : DepthStencilStates.Default;
+
+                    if (spriteComp.IsAlphaCutoff)
+                    {
+                        currentEffect = batchContext.GetOrCreateAlphaCutoffSpriteEffect(RenderSystem.EffectSystem);
+                    }
 
                     var samplerState = context.GraphicsDevice.SamplerStates.LinearClamp;
                     if (renderSprite.SpriteComponent.Sampler != SpriteComponent.SpriteSampler.LinearClamp)
@@ -182,6 +188,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         private class ThreadContext : IDisposable
         {
             private EffectInstance pickingEffect;
+            private EffectInstance alphaCutoffEffect;
 
             public Sprite3DBatch SpriteBatch { get; }
 
@@ -193,6 +200,11 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             public EffectInstance GetOrCreatePickingSpriteEffect(EffectSystem effectSystem)
             {
                 return pickingEffect ?? (pickingEffect = new EffectInstance(effectSystem.LoadEffect("SpritePicking").WaitForResult()));
+            }
+
+            public EffectInstance GetOrCreateAlphaCutoffSpriteEffect(EffectSystem effectSystem)
+            {
+                return alphaCutoffEffect ?? (alphaCutoffEffect = new EffectInstance(effectSystem.LoadEffect("SpriteAlphaCutoff").WaitForResult()));
             }
 
             public void Dispose()
