@@ -187,6 +187,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
 
         private class ThreadContext : IDisposable
         {
+            private bool isSrgb;
             private EffectInstance pickingEffect;
             private EffectInstance alphaCutoffEffect;
 
@@ -194,6 +195,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
 
             public ThreadContext(GraphicsDevice device)
             {
+                isSrgb = device.ColorSpace == ColorSpace.Gamma;
                 SpriteBatch = new Sprite3DBatch(device);
             }
 
@@ -204,7 +206,13 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
 
             public EffectInstance GetOrCreateAlphaCutoffSpriteEffect(EffectSystem effectSystem)
             {
-                return alphaCutoffEffect ?? (alphaCutoffEffect = new EffectInstance(effectSystem.LoadEffect("SpriteAlphaCutoff").WaitForResult()));
+                if (alphaCutoffEffect != null)
+                    return alphaCutoffEffect;
+
+                alphaCutoffEffect = new EffectInstance(effectSystem.LoadEffect("SpriteAlphaCutoffEffect").WaitForResult());
+                alphaCutoffEffect.Parameters.Set(SpriteBaseKeys.ColorIsSRgb, isSrgb);
+
+                return alphaCutoffEffect;
             }
 
             public void Dispose()
