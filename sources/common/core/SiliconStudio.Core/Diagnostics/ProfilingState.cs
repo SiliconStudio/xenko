@@ -15,7 +15,6 @@ namespace SiliconStudio.Core.Diagnostics
     /// </remarks>
     public struct ProfilingState : IDisposable
     {
-        private static readonly Logger Logger = Profiler.Logger;
         private bool isEnabled;
         private Dictionary<object, object> attributes;
         private long startTime;
@@ -115,18 +114,10 @@ namespace SiliconStudio.Core.Diagnostics
         }
 
         /// <summary>
-        /// Emits a Begin profiling event.
-        /// </summary>
-        public void Begin()
-        {
-            EmitEvent(ProfilingMessageType.Begin);
-        }
-
-        /// <summary>
         /// Emits a Begin profiling event with the specified text.
         /// </summary>
         /// <param name="text">The text.</param>
-        public void Begin(string text)
+        public void Begin(string text = null)
         {
             EmitEvent(ProfilingMessageType.Begin, text);
         }
@@ -157,7 +148,6 @@ namespace SiliconStudio.Core.Diagnostics
         /// <summary>
         /// Emits a Begin event with the specified formatted text.
         /// </summary>
-        /// <param name="text"></param>
         /// <param name="value0">Can be int, float, long or double</param>
         /// <param name="value1">Can be int, float, long or double</param>
         /// <param name="value2">Can be int, float, long or double</param>
