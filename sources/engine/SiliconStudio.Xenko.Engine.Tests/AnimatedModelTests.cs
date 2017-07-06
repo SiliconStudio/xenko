@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
         public AnimatedModelTests()
         {
-            CurrentVersion = 16; // Environment lighting GGX LUT
+            CurrentVersion = 17; // Removed incorrect normal anti-aliasing
 
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_3 };

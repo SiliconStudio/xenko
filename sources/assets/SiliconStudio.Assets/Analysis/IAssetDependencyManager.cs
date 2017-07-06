@@ -16,7 +16,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <param name="linkTypes">The type of links to visit while computing the dependencies</param>
         /// <param name="visited">The list of element already visited.</param>
         /// <returns>The dependencies, or <c>null</c> if the object is not tracked.</returns>
-        [NotNull]
+        [CanBeNull]
         AssetDependencies ComputeDependencies(AssetId assetId, AssetDependencySearchOptions dependenciesOptions = AssetDependencySearchOptions.All, ContentLinkType linkTypes = ContentLinkType.Reference, HashSet<AssetId> visited = null);
     }
 }
