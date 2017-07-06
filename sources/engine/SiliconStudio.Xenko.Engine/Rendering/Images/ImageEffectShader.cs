@@ -37,6 +37,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             EffectInstance = new DynamicEffectInstance(effectName, Parameters);
             EnableSetRenderTargets = !delaySetRenderTargets;
             this.delaySetRenderTargets = delaySetRenderTargets;
+            if (effectName != null)
+                Name = effectName;
         }
 
         /// <inheritdoc/>
