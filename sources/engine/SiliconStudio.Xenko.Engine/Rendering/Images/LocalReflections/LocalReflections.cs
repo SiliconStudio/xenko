@@ -1,4 +1,6 @@
-﻿// Copyright (c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
+#define SSLR_DEBUG
+
+// Copyright (c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -82,10 +84,23 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [DefaultValue(0.01f)]
         public float WorldAntiSelfOcclusionBias { get; set; } = 0.01f;
 
+#if SSLR_DEBUG
+
+        public enum DebugModes
+        {
+            None,
+            RayCast,
+            ConeTrace,
+        }
+
+        public DebugModes DebugMode = DebugModes.None;
+
+#endif
+
         protected override void InitializeCore()
         {
             base.InitializeCore();
-
+            
             blurPassShader = ToLoadAndUnload(new ImageEffectShader("SSLRBlurPassEffect"));
             rayTracePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRRayTracePass"));
             coneTracePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRConeTracePass"));
@@ -234,7 +249,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // Note: we convole color buffer into half size because it's super fast
             var traceBuffersSize = GetTraceBufferResolution(outputBuffer);
             var colorBuffersSize = new Size2(outputBuffer.Width / 2, outputBuffer.Height / 2);
+#if SSLR_DEBUG
+            Texture rayTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R32G32B32A32_Float, 1);
+#else
             Texture rayTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R8G8_UNorm, 1);
+#endif
             Texture coneTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R11G11B10_Float, 1);
             Texture colorBuffer0 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, PixelFormat.R11G11B10_Float, MipMapCount.Auto);
             Texture colorBuffer1 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, PixelFormat.R11G11B10_Float, MipMapCount.Auto);
@@ -260,7 +279,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     cachedColorBuffer1Mips[mipIndex] = colorBuffer1.ToTextureView(ViewType.Single, 0, mipIndex);
                 }
             }
-
+            
             // Clone scene frame to mip 0 of colorBuffer0
             Scaler.SetInput(0, colorBuffer);
             Scaler.SetOutput(cachedColorBuffer0Mips[0]);
@@ -318,13 +337,23 @@ namespace SiliconStudio.Xenko.Rendering.Images
             combinePassShader.SetOutput(outputBuffer);
             combinePassShader.Draw(context, "Combine");
 
-            // Debug preview of temp targets
-            /*//context.CommandList.Clear(outputBuffer, Color.BlueViolet);
-            //Scaler.SetInput(0, cachedColorBuffer0Mips[3]);
-            //Scaler.SetInput(0, rayTraceBuffer);
-            Scaler.SetInput(0, coneTraceBuffer);
-            Scaler.SetOutput(outputBuffer);
-            Scaler.Draw(context);*/
+#if SSLR_DEBUG
+            if (DebugMode != DebugModes.None)
+            {
+                // Debug preview of temp targets
+                switch (DebugMode)
+                {
+                    case DebugModes.RayCast:
+                        Scaler.SetInput(0, rayTraceBuffer);
+                        break;
+                    case DebugModes.ConeTrace:
+                        Scaler.SetInput(0, coneTraceBuffer);
+                        break;
+                }
+                Scaler.SetOutput(outputBuffer);
+                Scaler.Draw(context);
+            }
+#endif
         }
     }
 }
