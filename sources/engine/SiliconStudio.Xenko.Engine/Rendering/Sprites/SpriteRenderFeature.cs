@@ -90,14 +90,24 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
 
                 if (previousBatchState != currentBatchState)
                 {
-                    var blendState = isPicking ? BlendStates.Default : sprite.IsTransparent ? (spriteComp.PremultipliedAlpha ? BlendStates.AlphaBlend : BlendStates.NonPremultiplied) : BlendStates.Opaque;
-                    var currentEffect = isPicking ? batchContext.GetOrCreatePickingSpriteEffect(RenderSystem.EffectSystem) : null; // TODO remove this code when material are available
-                    var depthStencilState = renderSprite.SpriteComponent.IgnoreDepth ? DepthStencilStates.None : DepthStencilStates.Default;
-
-                    if (spriteComp.IsAlphaCutoff)
+                    BlendStateDescription blendState;
+                    EffectInstance currentEffect = null;
+                    if (isPicking)
                     {
-                        currentEffect = batchContext.GetOrCreateAlphaCutoffSpriteEffect(RenderSystem.EffectSystem);
+                        blendState = BlendStates.Default;
+                        currentEffect = batchContext.GetOrCreatePickingSpriteEffect(RenderSystem.EffectSystem);
                     }
+                    else
+                    {
+                        if (sprite.IsTransparent)
+                            blendState = spriteComp.PremultipliedAlpha ? BlendStates.AlphaBlend : BlendStates.NonPremultiplied;
+                        else
+                            blendState = BlendStates.Opaque;
+
+                        if (spriteComp.IsAlphaCutoff)
+                            currentEffect = batchContext.GetOrCreateAlphaCutoffSpriteEffect(RenderSystem.EffectSystem);
+                    }
+                    var depthStencilState = renderSprite.SpriteComponent.IgnoreDepth ? DepthStencilStates.None : DepthStencilStates.Default;
 
                     var samplerState = context.GraphicsDevice.SamplerStates.LinearClamp;
                     if (renderSprite.SpriteComponent.Sampler != SpriteComponent.SpriteSampler.LinearClamp)
