@@ -52,6 +52,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         stage override void PSMain()
         {
+            base.PSMain();
+
             streams.PixelDepth = streams.DepthVS;
         }
     };

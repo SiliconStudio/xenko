@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// Performs the shading of a material according to the lights
     /// </summary>
-    shader MaterialSurfaceLightingAndShading : IMaterialSurfacePixel, DirectLightGroupArray, EnvironmentLightArray, MaterialPixelShadingStream, Math, Transformation
+    shader MaterialSurfaceLightingAndShading : IMaterialSurfacePixel, DirectLightGroupArray, EnvironmentLightArray, MaterialPixelShadingStream, Math, Transformation, ShaderBaseStream
     {
         compose IMaterialSurfaceShading surfaces[];
 
@@ -14,6 +14,14 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             // Before performing the shading for all lights, update the NormalVS with the latest normal
             // In case normal mapping is not used, this is a no-op
             UpdateNormalFromTangentSpace(streams.matNormal);
+            
+            // Flip the normal so it is facing the right direction for back faces
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D && SILICONSTUDIO_XENKO_GRAPHICS_PROFILE < GRAPHICS_PROFILE_LEVEL_10_0
+            streams.normalWS = streams.normalWS * sign(streams.IsFrontFace);
+#else
+            if(!streams.IsFrontFace)
+                streams.normalWS = -streams.normalWS;
+#endif
 
             // Make sure that light stream is reset
             ResetLightStream();
