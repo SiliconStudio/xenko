@@ -1,7 +1,6 @@
 // Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
@@ -58,9 +57,6 @@ namespace SiliconStudio.Core.Diagnostics
     {
         internal static Logger Logger = GlobalLogger.GetLogger("Profiler"); // Global logger for all profiling
         private static readonly FastList<ProfilingEvent> events = new FastList<ProfilingEvent>();
-        private static readonly Dictionary<ProfilingKey, ProfilingResult> eventsByKey = new Dictionary<ProfilingKey, ProfilingResult>();
-        private static readonly List<ProfilingResult> profilingResults = new List<ProfilingResult>();
-        private static readonly StringBuilder profilerResultBuilder = new StringBuilder();
         private static readonly object Locker = new object();
         private static bool enableAll;
         private static int profileId;
@@ -159,26 +155,11 @@ namespace SiliconStudio.Core.Diagnostics
         /// being profiled. See remarks.
         /// </summary>
         /// <param name="profilingKey">The profile key.</param>
-        /// <returns>A profiler state.</returns>
-        /// <remarks>It is recommended to call this method with <c>using (var profile = Profiler.Profile(...))</c> in order to make sure that the Dispose() method will be called on the
-        /// <see cref="ProfilingState" /> returned object.</remarks>
-        public static ProfilingState Begin([NotNull] ProfilingKey profilingKey)
-        {
-            var profiler = New(profilingKey);
-            profiler.Begin();
-            return profiler;
-        }
-
-        /// <summary>
-        /// Creates a profiler with the specified key. The returned object must be disposed at the end of the section
-        /// being profiled. See remarks.
-        /// </summary>
-        /// <param name="profilingKey">The profile key.</param>
         /// <param name="text">The text to log with the profile.</param>
         /// <returns>A profiler state.</returns>
         /// <remarks>It is recommended to call this method with <c>using (var profile = Profiler.Profile(...))</c> in order to make sure that the Dispose() method will be called on the
         /// <see cref="ProfilingState" /> returned object.</remarks>
-        public static ProfilingState Begin([NotNull] ProfilingKey profilingKey, string text)
+        public static ProfilingState Begin([NotNull] ProfilingKey profilingKey, string text = null)
         {
             var profiler = New(profilingKey);
             profiler.Begin(text);
@@ -271,15 +252,6 @@ namespace SiliconStudio.Core.Diagnostics
             if ((profilingEvent.Key.Flags & ProfilingKeyFlags.Log) != 0)
                 Logger.Log(new ProfilingMessage(profilingEvent.Id, profilingEvent.Key, profilingEvent.Type) { Attributes = profilingEvent.Attributes, ElapsedTime = new TimeSpan((profilingEvent.ElapsedTime * 10000000) / Stopwatch.Frequency), Text = profilingEvent.Text });
         }
-
-        private struct ProfilingResult
-        {
-            public ProfilingKey Key;
-            public long AccumulatedTime;
-            public long MinTime;
-            public long MaxTime;
-            public int Count;
-        }
         
         public static ProfilingEvent[] GetEvents()
         {
@@ -290,111 +262,8 @@ namespace SiliconStudio.Core.Diagnostics
                 var res = events.ToArray();
 
                 events.Clear();
-                eventsByKey.Clear();
 
                 return res;
-            }
-        }
-
-        [NotNull]
-        public static string ReportEvents()
-        {
-            lock (Locker)
-            {
-                if (events.Count == 0)
-                    return "No profiling events.";
-
-                if (GpuTimestampFrequencyRatio <= 0.0)
-                {
-                    throw new ArgumentOutOfRangeException("Invalid GPU clock frequency ratio (value has not been set and/or is <= 0)");
-                }
-
-                // Group by profiling keys
-                var elapsedTime = events.Count > 0 ? events[events.Count - 1].TimeStamp - events[0].TimeStamp : 0;
-
-                foreach (var profilingEvent in events)
-                {
-                    ProfilingResult profilingResult;
-                    if (!eventsByKey.TryGetValue(profilingEvent.Key, out profilingResult))
-                    {
-                        profilingResult.Key = profilingEvent.Key;
-                        profilingResult.MinTime = long.MaxValue;
-                    }
-
-                    //if (profilingEvent.Type == ProfilingMessageType.Begin)
-                    //{
-                    //    Console.WriteLine("{0} {1}: {2}", profilingEvent.TimeStamp, profilingEvent.Type, profilingEvent.Key.Name);
-                    //}
-                    //else if (profilingEvent.Type == ProfilingMessageType.End)
-                    //{
-                    //    Console.WriteLine("{0} {1}: {2} ({3})", profilingEvent.TimeStamp, profilingEvent.Type, profilingEvent.Key.Name, profilingEvent.ElapsedTime);
-                    //}
-
-                    if (profilingEvent.Type == ProfilingMessageType.End)
-                    {
-                        profilingResult.AccumulatedTime += profilingEvent.ElapsedTime;
-                        if (profilingEvent.ElapsedTime < profilingResult.MinTime)
-                            profilingResult.MinTime = profilingEvent.ElapsedTime;
-                        if (profilingEvent.ElapsedTime > profilingResult.MaxTime)
-                            profilingResult.MaxTime = profilingEvent.ElapsedTime;
-
-                    }
-                    else // counter incremented only for Begin and Mark
-                    {
-                        profilingResult.Count++;
-                    }
-
-                    eventsByKey[profilingResult.Key] = profilingResult;
-                }
-
-                foreach (var profilingResult in eventsByKey)
-                {
-                    profilingResults.Add(profilingResult.Value);
-                }
-
-                // Clear events
-                events.Clear();
-                eventsByKey.Clear();
-
-                // Sort by accumulated time
-                profilingResults.Sort((x1, x2) => Math.Sign(x2.AccumulatedTime - x1.AccumulatedTime));
-
-                // Generate result string
-                foreach (var profilingResult in profilingResults)
-                {
-                    profilerResultBuilder.AppendFormat("{0,5:P1} | ", (double)profilingResult.AccumulatedTime / (double)elapsedTime);
-
-                    if ((profilingResult.Key.Flags & ProfilingKeyFlags.GpuProfiling) == ProfilingKeyFlags.GpuProfiling)
-                    {                
-                        double minTimeMs = profilingResult.MinTime / GpuTimestampFrequencyRatio;
-                        double accTimeMs = (profilingResult.Count != 0 ? profilingResult.AccumulatedTime / (double)profilingResult.Count : 0.0) / GpuTimestampFrequencyRatio;
-                        double maxTimeMs = profilingResult.MaxTime / GpuTimestampFrequencyRatio;
-
-                        profilerResultBuilder.AppendFormat("{0:000.000}ms", accTimeMs);
-                        profilerResultBuilder.Append(" |  ");
-                        profilerResultBuilder.AppendFormat("{0:000.000}ms", minTimeMs);
-                        profilerResultBuilder.Append(" |  ");
-                        profilerResultBuilder.AppendFormat("{0:000.000}ms", maxTimeMs);
-                    }
-                    else
-                    {
-                        AppendTime(profilerResultBuilder, profilingResult.AccumulatedTime);
-                        profilerResultBuilder.Append(" |  ");
-                        AppendTime(profilerResultBuilder, profilingResult.MinTime);
-                        profilerResultBuilder.Append(" |  ");
-                        AppendTime(profilerResultBuilder, profilingResult.Count != 0 ? profilingResult.AccumulatedTime / profilingResult.Count : 0);
-                        profilerResultBuilder.Append(" |  ");
-                        AppendTime(profilerResultBuilder, profilingResult.MaxTime);
-                    }
-                    profilerResultBuilder.AppendFormat(" | {0:00000} | {1}", profilingResult.Count, profilingResult.Key);
-                    profilerResultBuilder.AppendLine();
-                }
-
-                profilingResults.Clear();
-
-                var result = profilerResultBuilder.ToString();
-                profilerResultBuilder.Clear();
-                return result;
             }
         }
 
