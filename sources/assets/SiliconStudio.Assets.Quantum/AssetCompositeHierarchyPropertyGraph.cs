@@ -4,13 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Assets.Quantum.Visitors;
-using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Assets.Quantum
@@ -27,7 +24,7 @@ namespace SiliconStudio.Assets.Quantum
         /// A dictionary mapping a tuple of (base part id, instance id) to the corresponding asset part in this asset.
         /// </summary>
         /// <remarks>Part stored here are preserved after being removed, in case they have to come back later, for example if a part in the base is being moved (removed + added again).</remarks>
-        private readonly Dictionary<Tuple<Guid, Guid>, TAssetPart> baseInstanceMapping = new Dictionary<Tuple<Guid, Guid>, TAssetPart>();
+        private readonly Dictionary<Tuple<Guid, Guid>, TAssetPartDesign> baseInstanceMapping = new Dictionary<Tuple<Guid, Guid>, TAssetPartDesign>();
 
         /// <summary>
         /// A mapping of (base part id, instance id) corresponding to deleted parts in specific instances of this asset which base part exists in the base asset.
@@ -610,7 +607,7 @@ namespace SiliconStudio.Assets.Quantum
                 }
 
                 // Update mapping
-                baseInstanceMapping[Tuple.Create(part.Base.BasePartId, part.Base.InstanceId)] = part.Part;
+                baseInstanceMapping[Tuple.Create(part.Base.BasePartId, part.Base.InstanceId)] = part;
 
                 // Update common ancestors
                 Guid ancestorId;
@@ -680,17 +677,15 @@ namespace SiliconStudio.Assets.Quantum
 
                     // This add could actually be a move (remove + add). So we compare to the existing baseInstanceMapping and perform another remap if necessary
                     var mappingKey = Tuple.Create(ids.Key, instanceId);
-                    if (!deletedPartsInstanceMapping.Contains(mappingKey) && baseInstanceMapping.TryGetValue(mappingKey, out TAssetPart existingPart))
+                    if (!deletedPartsInstanceMapping.Contains(mappingKey) && baseInstanceMapping.TryGetValue(mappingKey, out TAssetPartDesign existingPart))
                     {
                         // Replace the cloned part by the one to restore in the list of root if needed
                         if (baseHierarchy.RootParts.Remove(clone.Part))
-                            baseHierarchy.RootParts.Add(existingPart);
+                            baseHierarchy.RootParts.Add(existingPart.Part);
 
-                        // Overwrite the Ids of the cloned part with the id of the existing one so the cloned part will be considered as a proxy object by the fix reference pass
-                        RewriteIds(clone.Part, existingPart);
-                        // Replace the cloned part itself by the existing part.
-                        var part = Container.NodeContainer.GetOrCreateNode(clone);
-                        part[PartName].Update(existingPart);
+                        // Replace the cloned part by the one to restore in the list of parts if needed
+                        if (baseHierarchy.Parts.Remove(clone.Part.Id))
+                            baseHierarchy.Parts.Add(existingPart);
                     }
                 }
 
