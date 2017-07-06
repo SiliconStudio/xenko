@@ -4,9 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Quantum.Commands;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
@@ -32,9 +30,6 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         public NodeContainer NodeContainer { get; }
         
-        /// <inheritdoc/>
-        public ICollection<INodeCommand> AvailableCommands { get; } = new List<INodeCommand>();
-
         /// <inheritdoc/>
         public INodeFactory NodeFactory { get; set; } = new DefaultNodeFactory();
 
@@ -98,8 +93,8 @@ namespace SiliconStudio.Quantum
             if (isRootNode)
             {
                 // If we're visiting a value type as "object" we need to use a special "boxed" node.
-                var content = descriptor.Type.IsValueType ? NodeFactory.CreateBoxedContent(this, rootGuid, obj, descriptor, IsPrimitiveType(descriptor.Type))
-                    : NodeFactory.CreateObjectContent(this, rootGuid, obj, descriptor, IsPrimitiveType(descriptor.Type));
+                var content = descriptor.Type.IsValueType ? NodeFactory.CreateBoxedNode(this, rootGuid, obj, descriptor)
+                    : NodeFactory.CreateObjectNode(this, rootGuid, obj, descriptor);
 
                 currentDescriptor = content.Descriptor;
                 rootNode = (IInitializingObjectNode)content;
@@ -156,7 +151,7 @@ namespace SiliconStudio.Quantum
             // If this member should contains a reference, create it now.
             var containerNode = (IInitializingObjectNode)GetContextNode();
             var guid = Guid.NewGuid();
-            var content = (MemberNode)NodeFactory.CreateMemberContent(this, guid, containerNode, member, IsPrimitiveType(member.Type), value);
+            var content = (MemberNode)NodeFactory.CreateMemberNode(this, guid, containerNode, member, value);
             containerNode.AddMember(content);
 
             if (content.IsReference)

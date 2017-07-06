@@ -25,12 +25,6 @@ namespace SiliconStudio.Quantum
         Type Type { get; }
 
         /// <summary>
-        /// Gets whether this node hold a primitive type value.
-        /// </summary>
-        /// <remarks>Types registered as primitive types in the <see cref="INodeBuilder"/> used to build this content are taken in account by this property.</remarks>
-        bool IsPrimitive { get; }
-
-        /// <summary>
         /// Gets or sets the type descriptor of this content
         /// </summary>
         [NotNull]

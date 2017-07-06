@@ -14,9 +14,5 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 		{
 			return mul(world, Transformation.ViewProjection);
 		}
-
-        stage override void PSMain()
-        {
-        }
     };
 }

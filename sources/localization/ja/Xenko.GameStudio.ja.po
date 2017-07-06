@@ -1,0 +1,873 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2017-07-03 17:11+0900\n"
+"PO-Revision-Date: 2017-07-03 17:11+0900\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.2\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/DebuggingViewModel.cs:47
+msgctxt "Title"
+msgid "Output"
+msgstr "ビルドログ"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/DebuggingViewModel.cs:184
+msgctxt "Message"
+msgid ""
+"Some game code files have been modified. Do you want to reload the "
+"assemblies now?"
+msgstr ""
+
+#. Displayed when user tries to run a project that is not on a supported platform (for execution).
+#: ../editor/SiliconStudio.Xenko.GameStudio/DebuggingViewModel.cs:305
+#: ../editor/SiliconStudio.Xenko.GameStudio/DebuggingViewModel.cs:440
+#: ../editor/SiliconStudio.Xenko.GameStudio/DebuggingViewModel.cs:447
+msgctxt "Message"
+msgid "Platform {0} is not supported for execution."
+msgstr "{0}のプラットフォームはサポートされていません"
+
+#. Displayed when user tries to run Android project without an Android device attached.
+#: ../editor/SiliconStudio.Xenko.GameStudio/DebuggingViewModel.cs:402
+msgctxt "Message"
+msgid "No Android device found for execution."
+msgstr "デバイスが見つかりません"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/DebuggingViewModel.cs:455
+#: ../editor/SiliconStudio.Xenko.GameStudio/DebuggingViewModel.cs:619
+msgctxt "Message"
+msgid "Unable to load and compile project {0}"
+msgstr ""
+
+#. Log message displayed when the executable can't be found after building the project. {0}: the expected executable path
+#: ../editor/SiliconStudio.Xenko.GameStudio/DebuggingViewModel.cs:472
+#: ../editor/SiliconStudio.Xenko.GameStudio/DebuggingViewModel.cs:519
+msgctxt "Message"
+msgid "Unable to reach to output executable: {0}"
+msgstr "実行ファイルが見つかりません:{0}"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/DebuggingViewModel.cs:489
+msgctxt "Message"
+msgid "Could not find Android Package name for {0}."
+msgstr "{0}が見つかりません。"
+
+#. Displayed when Android tools "adb" can't be found
+#: ../editor/SiliconStudio.Xenko.GameStudio/DebuggingViewModel.cs:499
+msgctxt "Message"
+msgid ""
+"Android tool \"\"adb\"\" could not be found (no running process, in "
+"registry, or on the PATH). Please add it to your PATH."
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/DebuggingViewModel.cs:506
+msgctxt "Message"
+msgid "Can't run Android app with adb: {0}"
+msgstr "adbで実行できません:{0}"
+
+#. Displayed when starting a game on a platform requiring credentials but none were provided.
+#: ../editor/SiliconStudio.Xenko.GameStudio/DebuggingViewModel.cs:531
+msgctxt "Message"
+msgid ""
+"No credentials were provided. Please add your credentials to allow "
+"deployement."
+msgstr ""
+
+#. Message displayed when launching fails for some reason.
+#: ../editor/SiliconStudio.Xenko.GameStudio/DebuggingViewModel.cs:540
+msgctxt "Message"
+msgid "Unable to launch project {0}"
+msgstr ""
+
+#. Message displayed to inform user a deployment was succesful.
+#: ../editor/SiliconStudio.Xenko.GameStudio/DebuggingViewModel.cs:548
+msgctxt "Message"
+msgid "Deployment of {0} was successful."
+msgstr ""
+
+#. Log message displayed when an exception occurs while building the project. {0}: The exception message
+#: ../editor/SiliconStudio.Xenko.GameStudio/DebuggingViewModel.cs:554
+#: ../editor/SiliconStudio.Xenko.GameStudio/DebuggingViewModel.cs:628
+msgctxt "Message"
+msgid "An exception occurred while compiling the project: {0}"
+msgstr "ビルド中に例外が発生しました:{0}"
+
+#. Message displayed when the user tries to build without having selected a current project
+#: ../editor/SiliconStudio.Xenko.GameStudio/DebuggingViewModel.cs:564
+#: ../editor/SiliconStudio.Xenko.GameStudio/Debugging/XenkoDebugService.cs:41
+msgctxt "Message"
+msgid ""
+"An executable project must be set as current project in the session explorer "
+"in order to process build."
+msgstr ""
+"ビルドをするためにセッションエクスプローラー内で現在のプロジェクトに設定する"
+"必要があります"
+
+#. Message displayed when the user cancels the saving of the current session when trying to build
+#: ../editor/SiliconStudio.Xenko.GameStudio/DebuggingViewModel.cs:572
+msgctxt "Message"
+msgid "This project must be saved to be built."
+msgstr "このプロジェクトは保存する必要があります"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioViewModel.cs:80
+msgctxt "Message"
+msgid "The file {0} does not exist."
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml.cs:80
+msgctxt "Message"
+msgid ""
+"This will close and re-open all asset and document editors. Ok to proceed?"
+msgstr ""
+
+#. Generic error message when we are unable to launch a game on a remote host.
+#: ../editor/SiliconStudio.Xenko.GameStudio/RemoteFacilities.cs:128
+msgctxt "Message"
+msgid "Unable to launch {0} on host {1}"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/Settings/XenkoEditorSettings.cs:14
+msgctxt "Settings"
+msgid "Remote"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/Settings/XenkoEditorSettings.cs:22
+msgctxt "Settings"
+msgid "Default session to load"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/Settings/XenkoEditorSettings.cs:26
+msgctxt "Settings"
+msgid "Host"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/Settings/XenkoEditorSettings.cs:30
+msgctxt "Settings"
+msgid "Port"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/Settings/XenkoEditorSettings.cs:34
+msgctxt "Settings"
+msgid "Username"
+msgstr "ユーザー名"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/Settings/XenkoEditorSettings.cs:38
+msgctxt "Settings"
+msgid "Password"
+msgstr ""
+
+#. Location where to deploy.
+#: ../editor/SiliconStudio.Xenko.GameStudio/Settings/XenkoEditorSettings.cs:42
+msgctxt "Settings"
+msgid "Location"
+msgstr ""
+
+#. Ask if we should prompt user with the crendential dialogs if necessary.
+#: ../editor/SiliconStudio.Xenko.GameStudio/Settings/XenkoEditorSettings.cs:46
+msgctxt "Settings"
+msgid "Ask for credentials when deploying game"
+msgstr ""
+
+#. Name of X display where to launch game.
+#: ../editor/SiliconStudio.Xenko.GameStudio/Settings/XenkoEditorSettings.cs:50
+msgctxt "Settings"
+msgid "X Display"
+msgstr ""
+
+#. Ask if we want to execute remotely using CoreCLR.
+#: ../editor/SiliconStudio.Xenko.GameStudio/Settings/XenkoEditorSettings.cs:54
+msgctxt "Settings"
+msgid "Use CoreCLR"
+msgstr ""
+
+#. Confirmation message when everything is correct while testing credentials.
+#: ../editor/SiliconStudio.Xenko.GameStudio/View/CredentialsDialog.xaml.cs:74
+msgctxt "Credentials"
+msgid "Congratulations! Your credentials are correct"
+msgstr ""
+
+#. Display error message when host does not respond.
+#: ../editor/SiliconStudio.Xenko.GameStudio/View/CredentialsDialog.xaml.cs:77
+msgctxt "Credentials"
+msgid "Specified host is not reachable"
+msgstr ""
+
+#. Display error message when credentials data is invalid.
+#: ../editor/SiliconStudio.Xenko.GameStudio/View/CredentialsDialog.xaml.cs:80
+msgctxt "Credentials"
+msgid "Your credentials are invalid, please check and try again"
+msgstr ""
+
+#. Display error message when location does not exist.
+#: ../editor/SiliconStudio.Xenko.GameStudio/View/CredentialsDialog.xaml.cs:83
+msgctxt "Credentials"
+msgid "The location specified does not exist"
+msgstr ""
+
+#. Whenever something not expected happens while checking for credentials.
+#: ../editor/SiliconStudio.Xenko.GameStudio/View/CredentialsDialog.xaml.cs:86
+msgctxt "Credentials"
+msgid "Unknown error occurred"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:40
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:209
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:476
+msgctxt "Menu"
+msgid "Asset"
+msgstr "アセット"
+
+#. Open the asset editor
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:41
+msgctxt "Menu"
+msgid "Edit asset..."
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:42
+msgctxt "Menu"
+msgid "Do not include in build as root asset"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:42
+msgctxt "Menu"
+msgid "Include in build as root asset"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:69
+msgctxt "Menu"
+msgid "Copy with dependencies"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:73
+msgctxt "Menu"
+msgid "Copy asset URL"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:74
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:207
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:474
+msgctxt "Menu"
+msgid "Rename"
+msgstr "名前変更"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:76
+msgctxt "Menu"
+msgid "CreateDirectory"
+msgstr "ディレクトリ"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:77
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:210
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:477
+msgctxt "Menu"
+msgid "Add asset..."
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:78
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:211
+msgctxt "Menu"
+msgid "Update selected assets from their source"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:79
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:212
+msgctxt "Menu"
+msgid "Update all assets with modified source"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:81
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:213
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:479
+msgctxt "Menu"
+msgid "Explore"
+msgstr "エクスプローラー"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:82
+msgctxt "Menu"
+msgid "Open with text editor"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:83
+msgctxt "Menu"
+msgid "Open asset file"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:84
+msgctxt "Menu"
+msgid "Open source file"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:85
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:214
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:480
+msgctxt "Menu"
+msgid "Show in Explorer"
+msgstr "エクスプローラー"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:122
+msgctxt "Menu"
+msgid "File"
+msgstr "ファイル"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:125
+msgctxt "Menu"
+msgid "Open recent"
+msgstr "最近使ったファイル"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:141
+msgctxt "Menu"
+msgid "Clear list"
+msgstr "リストのクリア"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:145
+msgctxt "Menu"
+msgid "Reload project"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:147
+msgctxt "Menu"
+msgid "Quit"
+msgstr "終了"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:154
+msgctxt "Menu"
+msgid "Edit"
+msgstr "編集"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:163
+msgctxt "Menu"
+msgid "Settings"
+msgstr "設定"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:166
+msgctxt "Menu"
+msgid "Project"
+msgstr "プロジェクト"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:167
+msgctxt "Menu"
+msgid "Build project"
+msgstr "ビルド"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:168
+msgctxt "Menu"
+msgid "Start project"
+msgstr "プロジェクトの開始"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:170
+msgctxt "Menu"
+msgid "Start live-scripting"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:171
+msgctxt "Menu"
+msgid "Cancel build"
+msgstr "ビルドの中止"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:172
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:437
+msgctxt "Menu"
+msgid "Directory"
+msgstr "ディレクトリ"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:173
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:438
+msgctxt "Menu"
+msgid "Create subfolder"
+msgstr "ディレクトリの作成"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:175
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:440
+msgctxt "Menu"
+msgid "Package"
+msgstr "パッケージ"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:176
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:441
+msgctxt "Menu"
+msgid "Update package"
+msgstr "プロジェクトに新規追加"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:194
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:459
+msgctxt "Menu"
+msgid "Add existing project..."
+msgstr "既存のプロジェクトの追加..."
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:195
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:460
+msgctxt "Menu"
+msgid "Add dependency..."
+msgstr "依存関係の追加..."
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:196
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:461
+msgctxt "Menu"
+msgid "Set as current package"
+msgstr "現在のパッケージに設定"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:197
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:462
+msgctxt "Menu"
+msgid "Package properties"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:199
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:464
+msgctxt "Menu"
+msgid "Solution"
+msgstr "ソリューション"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:200
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:465
+msgctxt "Menu"
+msgid "New package..."
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:201
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:466
+msgctxt "Menu"
+msgid "Add existing package..."
+msgstr "既存のプロジェクトの追加..."
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:202
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:467
+msgctxt "Menu"
+msgid "Open in IDE"
+msgstr "IDEで開く"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:203
+msgctxt "Menu"
+msgid "Reload game assemblies"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:205
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:469
+msgctxt "Menu"
+msgid "Actions"
+msgstr "アクション"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:206
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:473
+msgctxt "Menu"
+msgid "Delete"
+msgstr "削除"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:217
+msgctxt "Menu"
+msgid "View"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:218
+msgctxt "Menu"
+msgid "Visualization"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:219
+msgctxt "Menu"
+msgid "Solution explorer"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:220
+msgctxt "Menu"
+msgid "Asset view"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:221
+msgctxt "Menu"
+msgid "References"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:223
+msgctxt "Menu"
+msgid "Asset preview"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:225
+msgctxt "Menu"
+msgid "Edition"
+msgstr "編集"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:226
+msgctxt "Menu"
+msgid "Property grid"
+msgstr "プロパティグリッド"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:227
+msgctxt "Menu"
+msgid "Action history"
+msgstr "アクション履歴"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:229
+msgctxt "Menu"
+msgid "Information"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:230
+msgctxt "Menu"
+msgid "Asset errors"
+msgstr "アセットログ"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:231
+msgctxt "Menu"
+msgid "Output"
+msgstr "ビルドログ"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:235
+msgctxt "Menu"
+msgid "Help"
+msgstr "ヘルプ"
+
+#. Link to the documentation
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:236
+msgctxt "Menu"
+msgid "Online documentation"
+msgstr ""
+
+#. Link to the answer hub
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:238
+msgctxt "Menu"
+msgid "Questions and answers"
+msgstr ""
+
+#. Link to GitHub issues
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:239
+msgctxt "Menu"
+msgid "Report an issue"
+msgstr ""
+
+#. Link to the forums
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:240
+msgctxt "Menu"
+msgid "Community forums"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:242
+msgctxt "Menu"
+msgid "Show debug window"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:244
+msgctxt "Menu"
+msgid "About..."
+msgstr "Xenkoについて..."
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:270
+msgctxt "ToolTip"
+msgid "Create a new project"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:274
+msgctxt "ToolTip"
+msgid "Open an existing project"
+msgstr "既存のプロジェクトを開く"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:278
+msgctxt "ToolTip"
+msgid "Open recent"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:289
+msgctxt "ToolTip"
+msgid "Save current project and all its documents"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:294
+msgctxt "ToolTip"
+msgid "Reload the current project (Ask to save)"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:299
+msgctxt "ToolTip"
+msgid "Undo last action"
+msgstr "最後のアクションを元に戻す"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:303
+msgctxt "ToolTip"
+msgid "Redo last cancelled action"
+msgstr "最後に中止したアクションをやり直す"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:309
+msgctxt "ToolTip"
+msgid "Open in IDE"
+msgstr "プロジェクトの新規作成"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:313
+msgctxt "ToolTip"
+msgid "Open with..."
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:324
+msgctxt "ToolTip"
+msgid "Reload game assemblies and update scripts"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:345
+msgctxt "ToolTip"
+msgid "Build the current project"
+msgstr "現在のプロジェクトのビルド"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:349
+msgctxt "ToolTip"
+msgid "Build the current project and start the game"
+msgstr "現在のプロジェクトのビルドとゲームの開始"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:355
+msgctxt "ToolTip"
+msgid "Start project in live-scripting mode"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:360
+msgctxt "ToolTip"
+msgid "Cancel the current build"
+msgstr "ビルドの中止"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:386
+msgctxt "View"
+msgid "Solution explorer"
+msgstr "ソリューション"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:393
+msgctxt "ToolTip"
+msgid "Create a new package to the solution..."
+msgstr "ソリューション内にパッケージを新規作成"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:397
+msgctxt "ToolTip"
+msgid "Create a new folder in selected folder(s)"
+msgstr "選択されたフォルダ内にフォルダの新規作成"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:402
+msgctxt "ToolTip"
+msgid "Display the properties of the selected package in the property grid"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:406
+msgctxt "ToolTip"
+msgid "Rename the selected folder or package"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:410
+msgctxt "ToolTip"
+msgid "Delete the selected items in solution"
+msgstr "ソリューション内の選択されたアイテムを削除"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:415
+msgctxt "ToolTip"
+msgid "Expand all asset folders"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:419
+msgctxt "ToolTip"
+msgid "Expand all"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:423
+msgctxt "ToolTip"
+msgid "Collapse all"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:428
+msgctxt "ToolTip"
+msgid "Show folder in explorer"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:521
+msgctxt "View"
+msgid "Asset view"
+msgstr "アセットビュー"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:542
+msgctxt "View"
+msgid "References"
+msgstr "参照"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:559
+msgid "Referencees"
+msgstr "参照先"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:560
+msgid "Referencers"
+msgstr "参照元"
+
+#. {0}: The number of errors
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:571
+msgctxt "View"
+msgid "Asset error ({0})"
+msgid_plural "Asset errors ({0})"
+msgstr[0] ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:585
+msgid "Build"
+msgstr "ビルド"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:599
+msgid "Live-scripting"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:623
+msgctxt "View"
+msgid "Property grid"
+msgstr "プロパティグリッド"
+
+#. Translation must not be longer that the english words
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:638
+msgid "Add new tag"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:648
+msgctxt "ToolTip"
+msgid "Previous selection"
+msgstr "以前の選択"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:651
+msgctxt "ToolTip"
+msgid "Next selection"
+msgstr "次の選択"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:669
+msgctxt "ToolTip"
+msgid "Add tag to all"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:686
+msgid "Open this asset in editor"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:688
+msgid "Show this asset in editor"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:695
+msgctxt "ToolTip"
+msgid "Display only overridden properties"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:698
+msgid "Search properties"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:726
+msgctxt "Menu"
+msgid "Reset to base value"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:840
+msgctxt "View"
+msgid "Asset preview"
+msgstr "アセットプレビュー"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:848
+msgctxt "View"
+msgid "Action history"
+msgstr "アクション履歴"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:900
+msgctxt "StatusBar"
+msgid "{0} item"
+msgid_plural "{0} items"
+msgstr[0] "{0} 項目"
+
+#. Keep parenthesis - {0} is a number
+#: ../editor/SiliconStudio.Xenko.GameStudio/GameStudioWindow.xaml:901
+msgctxt "StatusBar"
+msgid "({0} selected)"
+msgid_plural "({0} selected)"
+msgstr[0] "({0}を選択)"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/View/AboutPage.xaml:10
+msgctxt "About"
+msgid "About Xenko"
+msgstr "Xenkoについて"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/View/AboutPage.xaml:45
+msgctxt "About"
+msgid "Xenko version"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/View/AboutPage.xaml:47
+msgctxt "About"
+msgid "All rights reserved."
+msgstr "全著作権所有"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/View/AboutPage.xaml:52
+msgctxt "About"
+msgid "This product uses open source software."
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/View/AboutPage.xaml:55
+msgctxt "About"
+msgid "See list here"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/View/AboutPage.xaml:62
+msgctxt "About"
+msgid "End User License Agreement"
+msgstr "エンドユーザーライセンス契約"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/View/AboutPage.xaml:67
+msgctxt "About"
+msgid "Privacy Policy"
+msgstr "個人情報保護方針"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/View/AboutPage.xaml:73
+msgctxt "About"
+msgid "Close"
+msgstr "閉じる"
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/View/CredentialsDialog.xaml:9
+msgctxt "Credentials"
+msgid "Credentials"
+msgstr ""
+
+#. Explanation of the purpose of the credentials dialog.
+#: ../editor/SiliconStudio.Xenko.GameStudio/View/CredentialsDialog.xaml:13
+msgctxt "Credentials"
+msgid ""
+"Access to a remote host requires its name, a username and password, and a "
+"location where files will be copied. Your password is stored *encrypted* on "
+"this machine."
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/View/CredentialsDialog.xaml:15
+msgctxt "Credentials"
+msgid "Host"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/View/CredentialsDialog.xaml:18
+msgctxt "Credentials"
+msgid "Port"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/View/CredentialsDialog.xaml:21
+msgctxt "Credentials"
+msgid "Username"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/View/CredentialsDialog.xaml:24
+msgctxt "Credentials"
+msgid "Password"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/View/CredentialsDialog.xaml:27
+msgctxt "Credentials"
+msgid "Location"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/View/CredentialsDialog.xaml:34
+msgctxt "Credentials"
+msgid "Do not ask again"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/View/CredentialsDialog.xaml:35
+msgctxt "Credentials"
+msgid "Test settings"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.GameStudio/View/CredentialsDialog.xaml:45
+msgctxt "Credentials"
+msgid "Cancel"
+msgstr ""

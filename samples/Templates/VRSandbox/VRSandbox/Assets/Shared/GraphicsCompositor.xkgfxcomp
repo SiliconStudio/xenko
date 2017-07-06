@@ -1,6 +1,6 @@
 !GraphicsCompositorAsset
 Id: 8d329486-e5dc-4222-be4d-93c697dcdae8
-SerializedVersion: {Xenko: 2.0.0.0}
+SerializedVersion: {Xenko: 2.1.0.2}
 Tags: []
 Archetype: 823a81bf-bac0-4552-9267-aeed499c40df:DefaultGraphicsCompositorLevel10
 Cameras:
@@ -143,6 +143,8 @@ SharedRenderers:
         PostEffects*: null
         LightShafts*:
             Enabled: false
+            LightBufferDownsampleLevel: 2
+            BoundingVolumeBufferDownsampleLevel: 8
         VRSettings:
             Enabled*: true
             IgnoreCameraRotation*: false
@@ -177,7 +179,9 @@ SharedRenderers:
             878c20cfd251f3f7ba1b1ebfdc0850f7: ref!! c0524e55-4061-464d-84dd-7c4c70f70e0e
         GBufferRenderStage: ref!! 07a126dc-39ad-4bf7-88e9-6b051a66b1eb
         PostEffects: null
-        LightShafts: {}
+        LightShafts:
+            LightBufferDownsampleLevel: 2
+            BoundingVolumeBufferDownsampleLevel: 8
         VRSettings:
             Enabled: false
             IgnoreCameraRotation: false

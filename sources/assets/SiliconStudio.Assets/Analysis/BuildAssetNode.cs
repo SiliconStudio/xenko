@@ -14,27 +14,116 @@ using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Analysis
 {
+    /// <summary>
+    /// A structure representing a link (a dependency) between two <see cref="BuildAssetNode"/> instances (assets).
+    /// </summary>
+    public struct BuildAssetLink : IEquatable<BuildAssetLink>
+    {
+        /// <summary>
+        /// Initialize a new instance of the <see cref="BuildAssetLink"/> structure.
+        /// </summary>
+        /// <param name="source">The source asset of the dependency.</param>
+        /// <param name="target">The target asset of the dependency.</param>
+        /// <param name="dependencyType">The type of dependency.</param>
+        public BuildAssetLink(BuildAssetNode source, BuildAssetNode target, BuildDependencyType dependencyType)
+        {
+            Source = source;
+            Target = target;
+            DependencyType = dependencyType;
+        }
+
+        /// <summary>
+        /// The type of dependency.
+        /// </summary>
+        public BuildDependencyType DependencyType { get; }
+
+        /// <summary>
+        /// The source asset of the dependency.
+        /// </summary>
+        public BuildAssetNode Source { get; }
+
+        /// <summary>
+        /// The target asset of the dependency.
+        /// </summary>
+        public BuildAssetNode Target { get; }
+
+        /// <summary>
+        /// Indicates whether this <see cref="BuildAssetLink"/> has at least one of the dependency of the given flags.
+        /// </summary>
+        /// <param name="type">A bitset of <see cref="BuildDependencyType"/>.</param>
+        /// <returns>True if it has at least one of the given dependencies, false otherwise.</returns>
+        public bool HasOne(BuildDependencyType type)
+        {
+            return (DependencyType & type) != 0;
+        }
+
+        /// <summary>
+        /// Indicates whether this <see cref="BuildAssetLink"/> has at all dependencies of the given flags.
+        /// </summary>
+        /// <param name="type">A bitset of <see cref="BuildDependencyType"/>.</param>
+        /// <returns>True if it has all the given dependencies, false otherwise.</returns>
+        public bool HasAll(BuildDependencyType type)
+        {
+            return (DependencyType & type) == type;
+        }
+
+        /// <inheritdoc/>
+        public bool Equals(BuildAssetLink other)
+        {
+            return DependencyType == other.DependencyType && Equals(Source, other.Source) && Equals(Target, other.Target);
+        }
+
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+            return obj is BuildAssetLink && Equals((BuildAssetLink)obj);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (int)DependencyType;
+                hashCode = (hashCode * 397) ^ (Source != null ? Source.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Target != null ? Target.GetHashCode() : 0);
+                return hashCode;
+            }
+        }
+
+        /// <inheritdoc/>
+        public static bool operator ==(BuildAssetLink left, BuildAssetLink right)
+        {
+            return left.Equals(right);
+        }
+
+        /// <inheritdoc/>
+        public static bool operator !=(BuildAssetLink left, BuildAssetLink right)
+        {
+            return !left.Equals(right);
+        }
+    }
+
     public class BuildAssetNode
     {
         public static PropertyKey<bool> VisitRuntimeTypes = new PropertyKey<bool>("VisitRuntimeTypes", typeof(BuildAssetNode));
 
         private readonly BuildDependencyManager buildDependencyManager;
-        private readonly ConcurrentDictionary<AssetId, BuildAssetNode> references = new ConcurrentDictionary<AssetId, BuildAssetNode>();
-        private readonly ConcurrentDictionary<BuildAssetNode, AssetId> referencedBy = new ConcurrentDictionary<BuildAssetNode, AssetId>();
+        private readonly ConcurrentDictionary<BuildAssetLink, BuildAssetLink> references = new ConcurrentDictionary<BuildAssetLink, BuildAssetLink>();
         private long version = -1;
 
         public AssetItem AssetItem { get; }
 
-        public BuildDependencyType DependencyType { get; }
+        public Type CompilationContext { get; }
 
-        public ICollection<BuildAssetNode> References => references.Values;
+        public ICollection<BuildAssetLink> References => references.Values;
 
-        public ICollection<BuildAssetNode> ReferencedBy => referencedBy.Keys;
-
-        public BuildAssetNode(AssetItem assetItem, BuildDependencyType type, BuildDependencyManager dependencyManager)
+        public BuildAssetNode(AssetItem assetItem, Type compilationContext, BuildDependencyManager dependencyManager)
         {
             AssetItem = assetItem;
-            DependencyType = type;
+            CompilationContext = compilationContext;
             buildDependencyManager = dependencyManager;
         }
 
@@ -44,46 +133,42 @@ namespace SiliconStudio.Assets.Analysis
         /// <param name="context">The compiler context</param>
         public void Analyze(AssetCompilerContext context)
         {
-            var mainCompiler = BuildDependencyManager.AssetCompilerRegistry.GetCompiler(AssetItem.Asset.GetType(), buildDependencyManager.CompilationContext);
-            if (mainCompiler == null)
-                return; //scripts and such don't have compiler
-
             var assetVersion = AssetItem.Version;
             if (Interlocked.Exchange(ref version, assetVersion) == assetVersion)
                 return; //same version, skip analysis, do not clear links
 
-            var typesToInclude = new HashSet<KeyValuePair<Type, BuildDependencyType>>(mainCompiler.GetInputTypes(AssetItem));
+            var mainCompiler = BuildDependencyManager.AssetCompilerRegistry.GetCompiler(AssetItem.Asset.GetType(), CompilationContext);
+            if (mainCompiler == null)
+                return; //scripts and such don't have compiler
+
+            var typesToInclude = new HashSet<BuildDependencyInfo>(mainCompiler.GetInputTypes(AssetItem));
             var typesToExclude = new HashSet<Type>(mainCompiler.GetInputTypesToExclude(AssetItem));
 
-            //rebuild the dependency links, we clean first
-            //remove self from current childs
-            foreach (var buildAssetNode in references)
-            {
-                referencedBy.TryRemove(buildAssetNode.Value, out AssetId _);
-            }
             //clean up our references
             references.Clear();
 
             //DependencyManager check
             //for now we use the dependency manager itself to resolve runtime dependencies, in the future we might want to unify the builddependency manager with the dependency manager
             var dependencies = AssetItem.Package.Session.DependencyManager.ComputeDependencies(AssetItem.Id, AssetDependencySearchOptions.Out);
-            foreach (var assetDependency in dependencies.LinksOut)
+            if (dependencies != null)
             {
-                var assetType = assetDependency.Item.Asset.GetType();
-                if (!typesToExclude.Contains(assetType)) //filter out what we do not need
+                foreach (var assetDependency in dependencies.LinksOut)
                 {
-                    foreach (var input in typesToInclude.Where(x => x.Key == assetType))
+                    var assetType = assetDependency.Item.Asset.GetType();
+                    if (!typesToExclude.Contains(assetType)) //filter out what we do not need
                     {
-                        var dependencyType = input.Value;
-                        var node = buildDependencyManager.FindOrCreateNode(assetDependency.Item, dependencyType);
-                        references.TryAdd(assetDependency.Item.Id, node);
-                        node.referencedBy.TryAdd(this, AssetItem.Id); //add this as referenced by child
+                        foreach (var input in typesToInclude.Where(x => x.AssetType == assetType))
+                        {
+                            var node = buildDependencyManager.FindOrCreateNode(assetDependency.Item, input.CompilationContext);
+                            var link = new BuildAssetLink(this, node, input.DependencyType);
+                            references.TryAdd(link, link);
+                        }
                     }
                 }
             }
 
             //Input files required
-            foreach (var inputFile in mainCompiler.GetInputFiles(AssetItem)) //directly resolve by input files, in the future we might just want this pass
+            foreach (var inputFile in new HashSet<ObjectUrl>(mainCompiler.GetInputFiles(AssetItem))) //directly resolve by input files, in the future we might just want this pass
             {
                 if (inputFile.Type == UrlType.Content || inputFile.Type == UrlType.ContentLink)
                 {
@@ -93,10 +178,11 @@ namespace SiliconStudio.Assets.Analysis
 
                     if (!typesToExclude.Contains(asset.GetType()))
                     {
+                        // TODO: right now, we consider that assets returned by GetInputFiles must be compiled in AssetCompilationContext. At some point, we might need to be able to specify a custom context.
                         var dependencyType = inputFile.Type == UrlType.Content ? BuildDependencyType.CompileContent : BuildDependencyType.CompileAsset; //Content means we need to load the content, the rest is just asset dependency
-                        var node = buildDependencyManager.FindOrCreateNode(asset, dependencyType);
-                        references.TryAdd(asset.Id, node);
-                        node.referencedBy.TryAdd(this, AssetItem.Id); //add this as referenced by child
+                        var node = buildDependencyManager.FindOrCreateNode(asset, typeof(AssetCompilationContext));
+                        var link = new BuildAssetLink(this, node, dependencyType);
+                        references.TryAdd(link, link);
                     }
                 }
             }
@@ -112,10 +198,11 @@ namespace SiliconStudio.Assets.Analysis
                     var asset = AssetItem.Package.FindAsset(reference.Id);
                     if (asset != null)
                     {
+                        // TODO: right now, we consider that assets found with RuntimeDependenciesCollector must be compiled in AssetCompilationContext. At some point, we might need to be able to specify a custom context.
                         var dependencyType = BuildDependencyType.Runtime;
-                        var node = buildDependencyManager.FindOrCreateNode(asset, dependencyType);
-                        references.TryAdd(asset.Id, node);
-                        node.referencedBy.TryAdd(this, AssetItem.Id); //add this as referenced by child
+                        var node = buildDependencyManager.FindOrCreateNode(asset, typeof(AssetCompilationContext));
+                        var link = new BuildAssetLink(this, node, dependencyType);
+                        references.TryAdd(link, link);
                     }
                 }
             }
