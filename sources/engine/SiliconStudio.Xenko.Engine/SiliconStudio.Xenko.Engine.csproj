@@ -224,7 +224,6 @@
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\QueryManager.cs" />
-    <Compile Include="Rendering\Images\ImageEffectProfilingKeys.cs" />
     <Compile Include="Rendering\Images\ImageScaler\SamplingPattern.cs" />
     <Compile Include="Rendering\Images\LightShafts\AdditiveLightEffect.cs">
       <AutoGen>True</AutoGen>

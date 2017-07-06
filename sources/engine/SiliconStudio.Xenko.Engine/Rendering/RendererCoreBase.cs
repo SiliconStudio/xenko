@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Reflection;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
@@ -21,8 +20,10 @@ namespace SiliconStudio.Xenko.Rendering
     [DataContract]
     public abstract class RendererCoreBase : ComponentBase, IGraphicsRendererCore
     {
+        public ProfilingKey ProfilingKey => profilingKey ?? (profilingKey = new ProfilingKey(Name, ProfilingKeyFlags.GpuProfiling));
+
         [DataMemberIgnore]
-        public readonly ProfilingKey ProfilingKey;
+        private ProfilingKey profilingKey;
 
         private bool isInDrawCore;
         private readonly List<GraphicsResource> scopedResources = new List<GraphicsResource>();
@@ -46,7 +47,6 @@ namespace SiliconStudio.Xenko.Rendering
             Enabled = true;
             subRenderersToUnload = new List<IGraphicsRendererCore>();
             Profiling = true;
-            ProfilingKey = new ProfilingKey(Name ?? nameof(RendererCoreBase), ProfilingKeyFlags.GpuProfiling);
         }
 
         /// <summary>
@@ -227,7 +227,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             EnsureContext(context.RenderContext);
 
-            if (ProfilingKey.Name != nameof(RendererCoreBase) && Profiling)
+            if (ProfilingKey.Name != null && Profiling)
             {
                 context.QueryManager.BeginProfile(Color.Green, ProfilingKey);
             }
@@ -259,7 +259,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             PostDrawCore(context);
 
-            if (ProfilingKey.Name != nameof(RendererCoreBase) && Profiling)
+            if (ProfilingKey.Name != null && Profiling)
             {
                 context.QueryManager.EndProfile(ProfilingKey);
             }
