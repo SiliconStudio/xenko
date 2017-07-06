@@ -398,9 +398,17 @@ namespace SiliconStudio.Core.Diagnostics
             }
         }
 
-        public static void AppendTime([NotNull] StringBuilder builder, long accumulatedTime)
+        /// <summary>
+        /// Append the provided time properly formated at the end of the string. 
+        /// <paramref name="tickFrequency"/> is used to convert the ticks into time.
+        /// If <paramref name="tickFrequency"/> is 0 then <see cref="Stopwatch.Frequency"/> is used to perform the calculation.
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="accumulatedTicks"></param>
+        /// <param name="tickFrequency"></param>
+        public static void AppendTime([NotNull] StringBuilder builder, long accumulatedTicks, long tickFrequency = 0)
         {
-            var accumulatedTimeSpan = new TimeSpan((accumulatedTime * 10000000) / Stopwatch.Frequency);
+            var accumulatedTimeSpan = new TimeSpan((accumulatedTicks * 10000000) / (tickFrequency != 0? tickFrequency: Stopwatch.Frequency));
             if (accumulatedTimeSpan > new TimeSpan(0, 0, 1, 0))
             {
                 builder.AppendFormat("{0:000.000}m ", accumulatedTimeSpan.TotalMinutes);

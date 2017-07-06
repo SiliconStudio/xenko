@@ -1,7 +1,6 @@
 // Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -25,18 +24,22 @@ namespace SiliconStudio.Xenko.Profiling
 
     public enum GameProfilingFiltering
     {
-        ALL,
         CPU,
-        GPU,
+        GPU
     }
 
     public class GameProfilingSystem : GameSystemBase
     {
+        private readonly Point textDrawStartOffset = new Point(5, 10);
+        private const int TextRowHeight = 16;
+        private const int TopRowHeight = TextRowHeight + 2;
+
         private readonly GcProfiling gcProfiler;
 
         private readonly StringBuilder gcMemoryStringBuilder = new StringBuilder();
         private string gcMemoryString = "";
         private readonly string gcMemoryStringBase;
+
         private readonly StringBuilder gcCollectionsStringBuilder = new StringBuilder();
         private string gcCollectionsString = "";
         private readonly string gcCollectionsStringBase;
@@ -44,10 +47,13 @@ namespace SiliconStudio.Xenko.Profiling
         private readonly StringBuilder fpsStatStringBuilder = new StringBuilder();
         private string fpsStatString = "";
 
-        private FastTextRenderer fastTextRenderer = null;
+        private readonly StringBuilder gpuInfoStringBuilder = new StringBuilder();
+        private string gpuInfoString = "";
 
         private readonly StringBuilder profilersStringBuilder = new StringBuilder();
         private string profilersString = "";
+
+        private FastTextRenderer fastTextRenderer;
 
         private readonly object stringLock = new object();
 
@@ -55,12 +61,20 @@ namespace SiliconStudio.Xenko.Profiling
 
         private PresentInterval userPresentInterval = PresentInterval.Default;  
 
+        private int lastUpdate = -1;
+        private int lastDraw = -1;
+
+        private float viewportHeight = 1000;
+
+        private uint numberOfPages;
+
         private struct ProfilingResult : IComparer<ProfilingResult>
         {
             public long AccumulatedTime;
             public long MinTime;
             public long MaxTime;
             public int Count;
+            public int MarkCount;
             public ProfilingEvent? Event;
 
             public ProfilingCustomValue? Custom0;
@@ -91,218 +105,225 @@ namespace SiliconStudio.Xenko.Profiling
         private readonly Stopwatch dumpTiming = Stopwatch.StartNew();
 
         private Task stringBuilderTask;
+        private Size2 renderTargetSize;
 
         public override void Update(GameTime gameTime)
         {
-            if (dumpTiming.ElapsedMilliseconds > 500)
-            {
-                dumpTiming.Restart();
-            }
-            else
-            {
+            if (dumpTiming.ElapsedMilliseconds < RefreshTime || FilteringMode == GameProfilingFiltering.GPU)
                 return;
-            }
+            
+            dumpTiming.Restart();
 
             if(stringBuilderTask != null && !stringBuilderTask.IsCompleted) return;
 
-            stringBuilderTask = new Task(() =>
-            {
-                //Advance any profiler that needs it
-                gcProfiler.Tick();
-
-                //Copy events from profiler ( this will also clean up the profiler )
-                //todo do we really need this copy?
-                var eventsCopy = Profiler.GetEvents();
-                if (eventsCopy == null) return;
-
-                long elapsedTime = 0;
-
-                //update strings that need update
-                foreach (var e in eventsCopy)
-                {
-                    bool isGpuProfilingKey = (e.Key.Flags & ProfilingKeyFlags.GpuProfiling) == ProfilingKeyFlags.GpuProfiling;
-                    bool isProfilingKeyFiltered = (isGpuProfilingKey && FilteringMode == GameProfilingFiltering.CPU)
-                                                  || (!isGpuProfilingKey && FilteringMode == GameProfilingFiltering.GPU);
-
-                    if (isProfilingKeyFiltered)
-                    {
-                        continue;
-                    }
-
-                    //gc profiling is a special case
-                    if (e.Key == GcProfiling.GcMemoryKey && e.Custom0.HasValue && e.Custom1.HasValue && e.Custom2.HasValue)
-                    {
-                        gcMemoryStringBuilder.Clear();
-                        gcMemoryStringBuilder.AppendFormat(gcMemoryStringBase, e.Custom0.Value.LongValue, e.Custom2.Value.LongValue, e.Custom1.Value.LongValue);
-                        continue;
-                    }
-
-                    if (e.Key == GcProfiling.GcCollectionCountKey && e.Custom0.HasValue && e.Custom1.HasValue && e.Custom2.HasValue)
-                    {
-                        gcCollectionsStringBuilder.Clear();
-                        gcCollectionsStringBuilder.AppendFormat(gcCollectionsStringBase, e.Custom0.Value.IntValue, e.Custom1.Value.IntValue, e.Custom2.Value.IntValue);
-                        continue;
-                    }
-
-                    if (e.Key == GameProfilingKeys.GameDrawFPS && e.Type == ProfilingMessageType.End)
-                    {
-                        fpsStatStringBuilder.Clear();
-                        fpsStatStringBuilder.AppendFormat(e.Text, e.Custom0.Value.IntValue, e.Custom1.Value.DoubleValue, e.Custom2.Value.DoubleValue, e.Custom3.Value.FloatValue);
-                        continue;
-                    }
-
-                    ProfilingResult profilingResult;
-                    if (!profilingResultsDictionary.TryGetValue(e.Key, out profilingResult))
-                    {
-                        profilingResult.MinTime = long.MaxValue;
-                    }
-
-                    if (e.Type == ProfilingMessageType.End)
-                    {
-                        elapsedTime += e.ElapsedTime;
-                        profilingResult.AccumulatedTime += e.ElapsedTime;
-
-                        if (e.ElapsedTime < profilingResult.MinTime)
-                            profilingResult.MinTime = e.ElapsedTime;
-                        if (e.ElapsedTime > profilingResult.MaxTime)
-                            profilingResult.MaxTime = e.ElapsedTime;
-
-                        profilingResult.Event = e;
-                    }
-                    else if (e.Type == ProfilingMessageType.Mark) // counter incremented only Mark!
-                    {
-                        profilingResult.Count++;
-                    }
-
-                    if (e.Custom0.HasValue)
-                    {
-                        profilingResult.Custom0 = e.Custom0.Value;
-                    }
-                    if (e.Custom1.HasValue)
-                    {
-                        profilingResult.Custom1 = e.Custom1.Value;
-                    }
-                    if (e.Custom2.HasValue)
-                    {
-                        profilingResult.Custom2 = e.Custom2.Value;
-                    }
-                    if (e.Custom3.HasValue)
-                    {
-                        profilingResult.Custom3 = e.Custom3.Value;
-                    }
-
-                    if (e.Key == MicroThreadProfilingKeys.ProfilingKey)
-                    {
-                        scriptsProfilingResultsDictionary[e.Text] = profilingResult;
-                    }
-                    else
-                    {
-                        profilingResultsDictionary[e.Key] = profilingResult;
-                    }
-                }
-
-                profilersStringBuilder.Clear();
-                profilingResults.Clear();
-
-                foreach (var profilingResult in profilingResultsDictionary)
-                {
-                    if (!profilingResult.Value.Event.HasValue) continue;
-                    profilingResults.Add(profilingResult.Value);
-                }
-
-                profilingResultsDictionary.Clear();
-
-                if (SortingMode == GameProfilingSorting.ByTime)
-                {
-                    profilingResults.Sort((x1, x2) => Math.Sign(x2.AccumulatedTime - x1.AccumulatedTime));
-                }
-                else
-                {
-                    // Can't be null because we skip those events without values
-                    // ReSharper disable PossibleInvalidOperationException
-                    profilingResults.Sort((x1, x2) => string.Compare(x1.Event.Value.Key.Name, x2.Event.Value.Key.Name, StringComparison.Ordinal));
-                    // ReSharper restore PossibleInvalidOperationException
-                }
-
-                foreach (var result in profilingResults)
-                {
-                    AppendEvent(result, result.Event.Value, elapsedTime);
-                }
-
-                profilingResults.Clear();
-
-                foreach (var profilingResult in scriptsProfilingResultsDictionary)
-                {
-                    if (!profilingResult.Value.Event.HasValue) continue;
-                    profilingResults.Add(profilingResult.Value);
-                }
-
-                scriptsProfilingResultsDictionary.Clear();
-
-                if (SortingMode == GameProfilingSorting.ByTime)
-                {
-                    profilingResults.Sort((x1, x2) => Math.Sign(x2.AccumulatedTime - x1.AccumulatedTime));
-                }
-                else
-                {
-                    // Can't be null because we skip those events without values
-                    // ReSharper disable PossibleInvalidOperationException
-                    profilingResults.Sort((x1, x2) => string.Compare(x1.Event.Value.Key.Name, x2.Event.Value.Key.Name, StringComparison.Ordinal));
-                    // ReSharper restore PossibleInvalidOperationException
-                }
-
-                foreach (var result in profilingResults)
-                {
-                    AppendEvent(result, result.Event.Value, elapsedTime);
-                }
-
-                lock (stringLock)
-                {
-                    gcCollectionsString = gcCollectionsStringBuilder.ToString();
-                    gcMemoryString = gcMemoryStringBuilder.ToString();
-                    profilersString = profilersStringBuilder.ToString();
-                    fpsStatString = fpsStatStringBuilder.ToString();
-                }
-            });
+            stringBuilderTask = new Task(UpdateProfilingStrings);
             stringBuilderTask.Start();
         }
 
-        private void AppendEvent(ProfilingResult profilingResult, ProfilingEvent e, double elapsedTime)
+        private void UpdateProfilingStrings()
         {
-            profilersStringBuilder.AppendFormat("{0,-7:P1}", profilingResult.AccumulatedTime / elapsedTime);
-            profilersStringBuilder.Append(" |  ");
+            //Advance any profiler that needs it
+            gcProfiler.Tick();
 
-            if ((e.Key.Flags & ProfilingKeyFlags.GpuProfiling) == ProfilingKeyFlags.GpuProfiling)
+            // calculate elaspsed frames
+            var newUpdate = Game.UpdateTime.FrameCount;
+            var newDraw = Game.DrawTime.FrameCount;
+            var elapsedUpdates = newUpdate - lastUpdate;
+            var elapsedDraws = newDraw - lastDraw;
+            lastUpdate = newUpdate;
+            lastDraw = newDraw;
+
+            //Copy events from profiler ( this will also clean up the profiler )
+            var eventsCopy = Profiler.GetEvents();
+            if (eventsCopy == null) return;
+
+            var containsMarks = false;
+
+            //update strings that need update
+            foreach (var e in eventsCopy)
             {
-                double gpuTimestampFrequency = GraphicsDevice.TimestampFrequency / 1000.0;
+                bool isGpuProfilingKey = (e.Key.Flags & ProfilingKeyFlags.GpuProfiling) == ProfilingKeyFlags.GpuProfiling;
+                bool isProfilingKeyFiltered = (isGpuProfilingKey && FilteringMode == GameProfilingFiltering.CPU)
+                                              || (!isGpuProfilingKey && FilteringMode == GameProfilingFiltering.GPU);
 
-                double minTimeMs = profilingResult.MinTime / gpuTimestampFrequency;
-                double accTimeMs = (profilingResult.Count != 0 ? profilingResult.AccumulatedTime / (double)profilingResult.Count : 0.0) / gpuTimestampFrequency;
-                double maxTimeMs = profilingResult.MaxTime / gpuTimestampFrequency;
+                if (isProfilingKeyFiltered && e.Key != GameProfilingKeys.GameDrawFPS)
+                {
+                    continue;
+                }
 
-                profilersStringBuilder.AppendFormat("{0:000.000}ms", minTimeMs);
-                profilersStringBuilder.Append(" |  ");
-                profilersStringBuilder.AppendFormat("{0:000.000}ms", accTimeMs);
-                profilersStringBuilder.Append(" |  ");
-                profilersStringBuilder.AppendFormat("{0:000.000}ms", maxTimeMs);
+                //gc profiling is a special case
+                if (e.Key == GcProfiling.GcMemoryKey && e.Custom0.HasValue && e.Custom1.HasValue && e.Custom2.HasValue)
+                {
+                    gcMemoryStringBuilder.Clear();
+                    gcMemoryStringBuilder.AppendFormat(gcMemoryStringBase, e.Custom0.Value.LongValue, e.Custom2.Value.LongValue, e.Custom1.Value.LongValue);
+                    continue;
+                }
+
+                if (e.Key == GcProfiling.GcCollectionCountKey && e.Custom0.HasValue && e.Custom1.HasValue && e.Custom2.HasValue)
+                {
+                    gcCollectionsStringBuilder.Clear();
+                    gcCollectionsStringBuilder.AppendFormat(gcCollectionsStringBase, e.Custom0.Value.IntValue, e.Custom1.Value.IntValue, e.Custom2.Value.IntValue);
+                    continue;
+                }
+
+                if (e.Key == GameProfilingKeys.GameDrawFPS && e.Type == ProfilingMessageType.End)
+                {
+                    fpsStatStringBuilder.Clear();
+                    fpsStatStringBuilder.AppendFormat(e.Text, e.Custom0.Value.IntValue, e.Custom1.Value.DoubleValue, e.Custom2.Value.DoubleValue, e.Custom3.Value.FloatValue);
+                    continue;
+                }
+
+                gpuInfoStringBuilder.Clear();
+                gpuInfoStringBuilder.AppendFormat("Graphics> Device={0}, Platform={1}, Profile={2}, Resolution={3}", GraphicsDevice.Adapter.Description, GraphicsDevice.Platform, GraphicsDevice.ShaderProfile, renderTargetSize);
+
+                bool newEntry;
+                ProfilingResult profilingResult;
+                if (e.Key == MicroThreadProfilingKeys.ProfilingKey)
+                {
+                    newEntry = !scriptsProfilingResultsDictionary.TryGetValue(e.Text, out profilingResult);
+                }
+                else
+                {
+                    newEntry = !profilingResultsDictionary.TryGetValue(e.Key, out profilingResult);
+                }
+                if(newEntry)
+                    profilingResult.MinTime = long.MaxValue;
+
+
+                if (e.Type == ProfilingMessageType.End)
+                {
+                    ++profilingResult.Count;
+                    profilingResult.AccumulatedTime += e.ElapsedTime;
+
+                    if (e.ElapsedTime < profilingResult.MinTime)
+                        profilingResult.MinTime = e.ElapsedTime;
+                    if (e.ElapsedTime > profilingResult.MaxTime)
+                        profilingResult.MaxTime = e.ElapsedTime;
+
+                    profilingResult.Event = e;
+                }
+                else if (e.Type == ProfilingMessageType.Mark)
+                {
+                    profilingResult.MarkCount++;
+                    containsMarks = true;
+                }
+
+                if (e.Custom0.HasValue)
+                {
+                    profilingResult.Custom0 = e.Custom0.Value;
+                }
+                if (e.Custom1.HasValue)
+                {
+                    profilingResult.Custom1 = e.Custom1.Value;
+                }
+                if (e.Custom2.HasValue)
+                {
+                    profilingResult.Custom2 = e.Custom2.Value;
+                }
+                if (e.Custom3.HasValue)
+                {
+                    profilingResult.Custom3 = e.Custom3.Value;
+                }
+
+                if (e.Key == MicroThreadProfilingKeys.ProfilingKey)
+                {
+                    scriptsProfilingResultsDictionary[e.Text] = profilingResult;
+                }
+                else
+                {
+                    profilingResultsDictionary[e.Key] = profilingResult;
+                }
+            }
+
+            profilersStringBuilder.Clear();
+            profilingResults.Clear();
+
+            foreach (var profilingResult in profilingResultsDictionary)
+            {
+                if (!profilingResult.Value.Event.HasValue) continue;
+                profilingResults.Add(profilingResult.Value);
+            }
+            profilingResultsDictionary.Clear();
+
+            foreach (var profilingResult in scriptsProfilingResultsDictionary)
+            {
+                if (!profilingResult.Value.Event.HasValue) continue;
+                profilingResults.Add(profilingResult.Value);
+            }
+            scriptsProfilingResultsDictionary.Clear();
+            
+            if (SortingMode == GameProfilingSorting.ByTime)
+            {
+                profilingResults.Sort((x1, x2) => Math.Sign(x2.AccumulatedTime - x1.AccumulatedTime));
             }
             else
             {
-                Profiler.AppendTime(profilersStringBuilder, profilingResult.MinTime);
-                profilersStringBuilder.Append(" |  ");
-                Profiler.AppendTime(profilersStringBuilder, profilingResult.Count != 0 ? profilingResult.AccumulatedTime / profilingResult.Count : 0);
-                profilersStringBuilder.Append(" |  ");
-                Profiler.AppendTime(profilersStringBuilder, profilingResult.MaxTime);
+                // Can't be null because we skip those events without values
+                // ReSharper disable PossibleInvalidOperationException
+                profilingResults.Sort((x1, x2) => string.Compare(x1.Event.Value.Key.Name, x2.Event.Value.Key.Name, StringComparison.Ordinal));
+                // ReSharper restore PossibleInvalidOperationException
+            }
+            
+            var availableDisplayHeight = viewportHeight - 2 * TextRowHeight - (FilteringMode == GameProfilingFiltering.CPU? 3: 2) * TopRowHeight;
+            var elementsPerPage = (int)Math.Floor(availableDisplayHeight / TextRowHeight);
+            numberOfPages = (uint) Math.Ceiling(profilingResults.Count / (float) elementsPerPage);
+            CurrentResultPage = Math.Min(CurrentResultPage, numberOfPages);
+            
+            profilersStringBuilder.AppendFormat("AVG/FRAME | AVG/CALL  | MIN/CALL  | MAX/CALL  | CALLS/FRAME | ");
+            if (containsMarks)
+                profilersStringBuilder.AppendFormat("MARKS/FRAME | ");
+            profilersStringBuilder.AppendFormat("PROFILING KEY \n");
+
+            for (int i = 0; i < Math.Min(profilingResults.Count - (CurrentResultPage-1) * elementsPerPage, elementsPerPage); i++)
+            {
+                AppendEvent(profilingResults[((int)CurrentResultPage-1)*elementsPerPage + i], elapsedUpdates, elapsedDraws, containsMarks);
+            }
+            profilingResults.Clear();
+
+            if(numberOfPages > 1)
+                profilersStringBuilder.AppendFormat("PAGE {0} OF {1}", CurrentResultPage, numberOfPages);
+
+            lock (stringLock)
+            {
+                gcCollectionsString = gcCollectionsStringBuilder.ToString();
+                gcMemoryString = gcMemoryStringBuilder.ToString();
+                profilersString = profilersStringBuilder.ToString();
+                fpsStatString = fpsStatStringBuilder.ToString();
+                gpuInfoString = gpuInfoStringBuilder.ToString();
+            }
+        }
+
+        private void AppendEvent(ProfilingResult profilingResult, int elapsedUpdates, int elapsedDraws, bool displayMarkCount)
+        {
+            var profilingEvent = profilingResult.Event.Value;
+            var isGpuProfilingKey = (profilingEvent.Key.Flags & ProfilingKeyFlags.GpuProfiling) == ProfilingKeyFlags.GpuProfiling;
+            var tickFrequency = isGpuProfilingKey ? GraphicsDevice.TimestampFrequency : Stopwatch.Frequency;
+            var elapsedFrames = isGpuProfilingKey ? elapsedDraws : elapsedUpdates;
+
+            Profiler.AppendTime(profilersStringBuilder, profilingResult.AccumulatedTime / elapsedFrames, tickFrequency);
+            profilersStringBuilder.Append(" | ");
+            Profiler.AppendTime(profilersStringBuilder, profilingResult.AccumulatedTime / profilingResult.Count, tickFrequency);
+            profilersStringBuilder.Append(" | ");
+            Profiler.AppendTime(profilersStringBuilder, profilingResult.MinTime, tickFrequency);
+            profilersStringBuilder.Append(" | ");
+            Profiler.AppendTime(profilersStringBuilder, profilingResult.MaxTime, tickFrequency);
+            profilersStringBuilder.Append(" | ");
+            profilersStringBuilder.AppendFormat("  {0:000.000}  ", profilingResult.Count / (double)elapsedFrames);
+            profilersStringBuilder.Append(" | ");
+
+            if (displayMarkCount)
+            {
+                profilersStringBuilder.AppendFormat("  {0:000.000}", profilingResult.MarkCount / (double)elapsedFrames);
+                profilersStringBuilder.Append("   | ");
             }
 
-            profilersStringBuilder.Append(" | ");
-            profilersStringBuilder.Append(e.Key);
+            profilersStringBuilder.Append(profilingEvent.Key);
             profilersStringBuilder.Append(" ");
             // ReSharper disable once ReplaceWithStringIsNullOrEmpty
             // This was creating memory allocation (GetEnumerable())
-            if (e.Text != null && e.Text != "")
+            if (profilingEvent.Text != null && profilingEvent.Text != "")
             {
-                profilersStringBuilder.AppendFormat(e.Text, GetValue(profilingResult.Custom0), GetValue(profilingResult.Custom1), GetValue(profilingResult.Custom2), GetValue(profilingResult.Custom3));
+                profilersStringBuilder.AppendFormat(profilingEvent.Text, GetValue(profilingResult.Custom0), GetValue(profilingResult.Custom1), GetValue(profilingResult.Custom2), GetValue(profilingResult.Custom3));
             }
 
             profilersStringBuilder.Append("\n");
@@ -347,6 +368,21 @@ namespace SiliconStudio.Xenko.Profiling
 
         public override void Draw(GameTime gameTime)
         {
+            if (dumpTiming.ElapsedMilliseconds > RefreshTime && FilteringMode == GameProfilingFiltering.GPU)
+            {
+                dumpTiming.Restart();
+
+                renderTargetSize = new Size2(Game.GraphicsContext.CommandList.RenderTarget.Width, Game.GraphicsContext.CommandList.RenderTarget.Height);
+
+                if (stringBuilderTask == null || stringBuilderTask.IsCompleted)
+                {
+                    stringBuilderTask = new Task(UpdateProfilingStrings);
+                    stringBuilderTask.Start();
+                }
+            }
+
+            viewportHeight = Game.GraphicsContext.CommandList.Viewport.Height;
+
             if (fastTextRenderer == null)
             {
                 fastTextRenderer = new FastTextRenderer
@@ -361,17 +397,24 @@ namespace SiliconStudio.Xenko.Profiling
             fastTextRenderer.Begin(Game.GraphicsContext);
             lock (stringLock)
             {
-                fastTextRenderer.DrawString(Game.GraphicsContext, $"Display: {FilteringMode}, {fpsStatString}", 10, 10);
+                var currentHeight = textDrawStartOffset.Y;
+                fastTextRenderer.DrawString(Game.GraphicsContext, $"Display: {FilteringMode}, {fpsStatString}", textDrawStartOffset.X, currentHeight);
+                currentHeight += TopRowHeight;
 
-                bool isGpuFiltered = (FilteringMode == GameProfilingFiltering.GPU);
-                
-                if (!isGpuFiltered)
+                if (FilteringMode != GameProfilingFiltering.GPU)
                 {
-                    fastTextRenderer.DrawString(Game.GraphicsContext, gcMemoryString, 10, 30);
-                    fastTextRenderer.DrawString(Game.GraphicsContext, gcCollectionsString, 10, 50);
+                    fastTextRenderer.DrawString(Game.GraphicsContext, gcMemoryString, textDrawStartOffset.X, currentHeight);
+                    currentHeight += TopRowHeight;
+                    fastTextRenderer.DrawString(Game.GraphicsContext, gcCollectionsString, textDrawStartOffset.X, currentHeight);
+                    currentHeight += TopRowHeight;
+                }
+                else
+                {
+                    fastTextRenderer.DrawString(Game.GraphicsContext, gpuInfoString, textDrawStartOffset.X, currentHeight);
+                    currentHeight += TopRowHeight;
                 }
 
-                fastTextRenderer.DrawString(Game.GraphicsContext, profilersString, 10, isGpuFiltered ? 30 : 70);
+                fastTextRenderer.DrawString(Game.GraphicsContext, profilersString, textDrawStartOffset.X, currentHeight);
             }
 
             fastTextRenderer.End(Game.GraphicsContext);
@@ -457,6 +500,16 @@ namespace SiliconStudio.Xenko.Profiling
         /// <summary>
         /// Sets or gets which data should be displayed on screen.
         /// </summary>
-        public GameProfilingFiltering FilteringMode { get; set; } = GameProfilingFiltering.ALL;
+        public GameProfilingFiltering FilteringMode { get; set; } = GameProfilingFiltering.CPU;
+
+        /// <summary>
+        /// Sets or gets the refreshing time of the profiling information in milliseconds.
+        /// </summary>
+        public double RefreshTime { get; set; } = 500;
+
+        /// <summary>
+        /// Sets or gets the profiling result page to display.
+        /// </summary>
+        public uint CurrentResultPage { get ; set; } = 1;
     }
 }
