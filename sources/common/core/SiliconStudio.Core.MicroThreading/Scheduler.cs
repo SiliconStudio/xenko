@@ -167,7 +167,8 @@ namespace SiliconStudio.Core.MicroThreading
 
                         MicroThreadCallbackStart?.Invoke(this, new SchedulerThreadEventArgs(microThread, managedThreadId));
 
-                        using (Profiler.Begin(MicroThreadProfilingKeys.ProfilingKey, microThread.ScriptId))
+                        var profilingKey = microThread.ProfilingKey ?? schedulerEntry.ProfilingKey ?? MicroThreadProfilingKeys.ProfilingKey;
+                        using (Profiler.Begin(profilingKey))
                         {
                             var callback = callbacks.First;
                             while (callback != null)
@@ -222,7 +223,11 @@ namespace SiliconStudio.Core.MicroThreading
                 {
                     try
                     {
-                        schedulerEntry.Action();
+                        var profilingKey = schedulerEntry.ProfilingKey ?? MicroThreadProfilingKeys.ProfilingKey;
+                        using (Profiler.Begin(profilingKey))
+                        {
+                            schedulerEntry.Action();
+                        }
                     }
                     catch (Exception e)
                     {
@@ -300,9 +305,9 @@ namespace SiliconStudio.Core.MicroThreading
         }
 
         // TODO: We will need a better API than exposing PriorityQueueNode<SchedulerEntry> before we can make this public.
-        internal PriorityQueueNode<SchedulerEntry> Add(Action simpleAction, int priority = 0, object token = null)
+        internal PriorityQueueNode<SchedulerEntry> Add(Action simpleAction, int priority = 0, object token = null, ProfilingKey profilingKey = null)
         {
-            var schedulerEntryNode = new PriorityQueueNode<SchedulerEntry>(new SchedulerEntry(simpleAction, priority) { Token = token });
+            var schedulerEntryNode = new PriorityQueueNode<SchedulerEntry>(new SchedulerEntry(simpleAction, priority) { Token = token, ProfilingKey = profilingKey});
             Schedule(schedulerEntryNode, ScheduleMode.Last);
             return schedulerEntryNode;
         }
