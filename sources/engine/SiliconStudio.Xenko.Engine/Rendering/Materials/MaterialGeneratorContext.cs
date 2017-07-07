@@ -93,6 +93,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         public int PassCount { get; private set; } = 1;
 
         /// <summary>
+        /// The current material descriptor on the material stack
+        /// </summary>
+        public IMaterialDescriptor CurrentMaterialDescriptor => materialStack.Count > 0 ? materialStack.Peek() : null;
+
+        /// <summary>
         /// Register this material with multiple passes. This is only possible once.
         /// </summary>
         /// <param name="module">The module</param>
