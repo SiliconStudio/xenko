@@ -74,7 +74,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			
 			// Calculate reflecion color
 			float3 viewVector = normalize(CameraPosWS.xyz - positionWS);
-			float NoV = saturate(dot(normalVS, viewVector));
+			float NoV = saturate(dot(normalWS, viewVector));
 			sceneColor.rgb += ssr * EnvBRDFApprox(specularColor, roughness, NoV);
 			
 			return sceneColor;

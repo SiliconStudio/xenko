@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         private ImageEffectShader coneTracePassShader;
         private ImageEffectShader combinePassShader;
 
-        private Texture blueNoiseTexture;
+        public Texture blueNoiseTexture;
         private Texture temporalBuffer;
 
         private Texture[] cachedColorBuffer0Mips;
@@ -103,6 +103,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
 
         // TODO: EnableRayReuse and ReduceFireflies because macro permutation instead of dynamic params?
+        public bool UseColorBufferMips { get; set; } = false; // use true later
         public bool EnableRayReuse { get; set; } = true;
         public bool ReduceFireflies { get; set; } = true;
         
@@ -236,6 +237,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.VP, viewProjectionMatrix);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.IVP, inverseViewProjectionMatrix);
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.P, projectionMatrix);
 
             resolvePassShader.Parameters.Set(SSLRCommonKeys.MaxColorMiplevel, Texture.CalculateMipMapCount(0, outputBuffer.Width, outputBuffer.Height) - 1);
             resolvePassShader.Parameters.Set(SSLRCommonKeys.TraceSizeMax, Math.Max(traceBufferSize.Width, traceBufferSize.Height) / 2.0f);
@@ -342,10 +344,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
             Texture rayTraceMaskBuffer = NewScopedRenderTarget2D(rayTraceBuffersSize.Width, rayTraceBuffersSize.Height, PixelFormat.R16_Float, 1);
             Texture resolveBuffer = NewScopedRenderTarget2D(resolveBuffersSize.Width, resolveBuffersSize.Height, reflectionsFormat, 1);
 
-            Texture colorBuffer0 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, PixelFormat.R11G11B10_Float, MipMapCount.Auto);
-            Texture colorBuffer1 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, PixelFormat.R11G11B10_Float, MipMapCount.Auto);
-            // TODO: we don't use colorBuffer1 mip0, could be optimized
-
             // Check if resize depth
             if (DepthResolution != ResolutionMode.Full)
             {
@@ -353,57 +351,77 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 throw new NotImplementedException("finish depth downscale");
                 //Texture smallerDepth = NewScopedRenderTarget2D(depthBuffersSize.Width, depthBuffersSize.Height, PixelFormat.R32_Float, 1);
             }
-
-            // Cache per color buffer mip views
-            int colorMipLevels = colorBuffer0.MipLevels;
-            if (cachedColorBuffer0Mips == null || cachedColorBuffer0Mips.Length != colorMipLevels || cachedColorBuffer0Mips[0].ParentTexture != colorBuffer0)
-            {
-                cachedColorBuffer0Mips?.ForEach(view => view?.Dispose());
-                cachedColorBuffer0Mips = new Texture[colorMipLevels];
-                for (int mipIndex = 0; mipIndex < colorMipLevels; mipIndex++)
-                {
-                    cachedColorBuffer0Mips[mipIndex] = colorBuffer0.ToTextureView(ViewType.Single, 0, mipIndex);
-                }
-            }
-            if (cachedColorBuffer1Mips == null || cachedColorBuffer1Mips.Length != colorMipLevels || cachedColorBuffer1Mips[0].ParentTexture != colorBuffer1)
-            {
-                cachedColorBuffer1Mips?.ForEach(view => view?.Dispose());
-                cachedColorBuffer1Mips = new Texture[colorMipLevels];
-                for (int mipIndex = 0; mipIndex < colorMipLevels; mipIndex++)
-                {
-                    cachedColorBuffer1Mips[mipIndex] = colorBuffer1.ToTextureView(ViewType.Single, 0, mipIndex);
-                }
-            }
             
-            // Clone scene frame to mip 0 of colorBuffer0
-            Scaler.SetInput(0, colorBuffer);
-            Scaler.SetOutput(cachedColorBuffer0Mips[0]);
-            Scaler.Draw(context, "Copy frame");
-
             // Blur Pass
-            for (int mipLevel = 1; mipLevel < colorMipLevels; mipLevel++)
+            Texture blurPassBuffer;
+            if (UseColorBufferMips)
             {
-                int mipWidth = colorBuffer0.Width >> mipLevel;
-                int mipHeight = colorBuffer1.Height >> mipLevel;
+                // Get temp targets
+                Texture colorBuffer0 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, PixelFormat.R11G11B10_Float, MipMapCount.Auto);
+                Texture colorBuffer1 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, PixelFormat.R11G11B10_Float, MipMapCount.Auto);
+                // TODO: we don't use colorBuffer1 mip0, could be optimized
 
-                blurPassShader.Parameters.Set(SSLRCommonKeys.TexelSize, new Vector2(1.0f / mipWidth, 1.0f / mipHeight));
+                // Cache per color buffer mip views
+                int colorMipLevels = colorBuffer0.MipLevels;
+                if (cachedColorBuffer0Mips == null || cachedColorBuffer0Mips.Length != colorMipLevels || cachedColorBuffer0Mips[0].ParentTexture != colorBuffer0)
+                {
+                    cachedColorBuffer0Mips?.ForEach(view => view?.Dispose());
+                    cachedColorBuffer0Mips = new Texture[colorMipLevels];
+                    for (int mipIndex = 0; mipIndex < colorMipLevels; mipIndex++)
+                    {
+                        cachedColorBuffer0Mips[mipIndex] = colorBuffer0.ToTextureView(ViewType.Single, 0, mipIndex);
+                    }
+                }
+                if (cachedColorBuffer1Mips == null || cachedColorBuffer1Mips.Length != colorMipLevels || cachedColorBuffer1Mips[0].ParentTexture != colorBuffer1)
+                {
+                    cachedColorBuffer1Mips?.ForEach(view => view?.Dispose());
+                    cachedColorBuffer1Mips = new Texture[colorMipLevels];
+                    for (int mipIndex = 0; mipIndex < colorMipLevels; mipIndex++)
+                    {
+                        cachedColorBuffer1Mips[mipIndex] = colorBuffer1.ToTextureView(ViewType.Single, 0, mipIndex);
+                    }
+                }
 
-                // Blur H
-                //var srcMip = mipLevel == 0 ? cachedColorBuffer0Mips[0] : cachedColorBuffer0Mips[mipLevel - 1];
-                var srcMip = cachedColorBuffer0Mips[mipLevel - 1];
-                var dstMip = cachedColorBuffer1Mips[mipLevel];
-                blurPassShader.SetInput(0, srcMip);
-                blurPassShader.SetOutput(dstMip);
-                blurPassShader.Parameters.Set(SSLRBlurPassParams.ConvolveVertical, 0);
-                blurPassShader.Draw(context, "Blur H");
+                // Clone scene frame to mip 0 of colorBuffer0
+                Scaler.SetInput(0, colorBuffer);
+                Scaler.SetOutput(cachedColorBuffer0Mips[0]);
+                Scaler.Draw(context, "Copy frame");
+
+                // Downscale with gaussian blur
+                for (int mipLevel = 1; mipLevel < colorMipLevels; mipLevel++)
+                {
+                    int mipWidth = colorBuffer0.Width >> mipLevel;
+                    int mipHeight = colorBuffer1.Height >> mipLevel;
+
+                    blurPassShader.Parameters.Set(SSLRCommonKeys.TexelSize, new Vector2(1.0f / mipWidth, 1.0f / mipHeight));
+
+                    // Blur H
+                    //var srcMip = mipLevel == 0 ? cachedColorBuffer0Mips[0] : cachedColorBuffer0Mips[mipLevel - 1];
+                    var srcMip = cachedColorBuffer0Mips[mipLevel - 1];
+                    var dstMip = cachedColorBuffer1Mips[mipLevel];
+                    blurPassShader.SetInput(0, srcMip);
+                    blurPassShader.SetOutput(dstMip);
+                    blurPassShader.Parameters.Set(SSLRBlurPassParams.ConvolveVertical, 0);
+                    blurPassShader.Draw(context, "Blur H");
+
+                    // Blur V
+                    srcMip = dstMip;
+                    dstMip = cachedColorBuffer0Mips[mipLevel];
+                    blurPassShader.SetInput(0, srcMip);
+                    blurPassShader.SetOutput(dstMip);
+                    blurPassShader.Parameters.Set(SSLRBlurPassParams.ConvolveVertical, 1);
+                    blurPassShader.Draw(context, "Blur V");
+                }
+
+                blurPassBuffer = colorBuffer0;
+            }
+            else
+            {
+                // Don't use color buffer with mip maps
+                blurPassBuffer = colorBuffer;
                 
-                // Blur V
-                srcMip = dstMip;
-                dstMip = cachedColorBuffer0Mips[mipLevel];
-                blurPassShader.SetInput(0, srcMip);
-                blurPassShader.SetOutput(dstMip);
-                blurPassShader.Parameters.Set(SSLRBlurPassParams.ConvolveVertical, 1);
-                blurPassShader.Draw(context, "Blur V");
+                cachedColorBuffer0Mips?.ForEach(view => view?.Dispose());
+                cachedColorBuffer1Mips?.ForEach(view => view?.Dispose());
             }
 
             // Ray Trace Pass
@@ -416,7 +434,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             rayTracePassShader.Draw(context, "Ray Trace");
 
             // Resolve Pass
-            resolvePassShader.SetInput(0, colorBuffer0);
+            resolvePassShader.SetInput(0, blurPassBuffer);
             resolvePassShader.SetInput(1, depthBuffer);
             resolvePassShader.SetInput(2, normalsBuffer);
             resolvePassShader.SetInput(3, specularRoughnessBuffer);
