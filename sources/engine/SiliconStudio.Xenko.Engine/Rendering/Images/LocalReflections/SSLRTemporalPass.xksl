@@ -1,0 +1,53 @@
+﻿// Copyright (c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Images
+{
+    /// <summary>
+	/// Screen Space Local Reflections shader for Temporal Pass
+    /// </summary>
+    shader SSLRTemporalPass : ImageEffectShader, SSLRCommon, Texturing
+    {
+        override stage float4 Shading()
+        {
+			// Inputs Mapping:
+			// Texture0 - Resolved reflections
+			// Texture1 - Previous frame resolved reflections
+			
+			float2 uv = streams.TexCoord;
+
+            float2 velocity = 0; // TODO: use velocity buffer
+
+            float2 prevUV = uv - velocity;
+
+            float4 current = Texture0.SampleLevel(LinearSampler, uv, 0);
+            float4 previous = Texture1.SampleLevel(LinearSampler, prevUV, 0);
+
+            float2 du = float2(Texture0TexelSize.x, 0.0);
+            float2 dv = float2(0.0, Texture0TexelSize.y);
+
+            float4 currentTopLeft = Texture0.SampleLevel(LinearSampler, uv.xy - dv - du, 0);
+            float4 currentTopCenter = Texture0.SampleLevel(LinearSampler, uv.xy - dv, 0);
+            float4 currentTopRight = Texture0.SampleLevel(LinearSampler, uv.xy - dv + du, 0);
+            float4 currentMiddleLeft = Texture0.SampleLevel(LinearSampler, uv.xy - du, 0);
+            float4 currentMiddleCenter = Texture0.SampleLevel(LinearSampler, uv.xy, 0);
+            float4 currentMiddleRight = Texture0.SampleLevel(LinearSampler, uv.xy + du, 0);
+            float4 currentBottomLeft = Texture0.SampleLevel(LinearSampler, uv.xy + dv - du, 0);
+            float4 currentBottomCenter = Texture0.SampleLevel(LinearSampler, uv.xy + dv, 0);
+            float4 currentBottomRight = Texture0.SampleLevel(LinearSampler, uv.xy + dv + du, 0);
+
+            float4 currentMin = min(currentTopLeft, min(currentTopCenter, min(currentTopRight, min(currentMiddleLeft, min(currentMiddleCenter, min(currentMiddleRight, min(currentBottomLeft, min(currentBottomCenter, currentBottomRight))))))));
+            float4 currentMax = max(currentTopLeft, max(currentTopCenter, max(currentTopRight, max(currentMiddleLeft, max(currentMiddleCenter, max(currentMiddleRight, max(currentBottomLeft, max(currentBottomCenter, currentBottomRight))))))));
+
+            float scale = TemporalScale;
+
+            float4 center = (currentMin + currentMax) * 0.5f;
+            currentMin = (currentMin - center) * scale + center;
+            currentMax = (currentMax - center) * scale + center;
+
+            previous = clamp(previous, currentMin, currentMax);
+
+            return lerp(current, previous, TemporalResponse);
+        }
+    };
+}

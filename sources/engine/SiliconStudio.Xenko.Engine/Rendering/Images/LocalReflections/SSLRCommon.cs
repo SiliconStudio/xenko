@@ -24,6 +24,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
         public static readonly ValueParameterKey<Vector2> SSRtexelSize = ParameterKeys.NewValue<Vector2>();
         public static readonly ValueParameterKey<float> RoughnessFade = ParameterKeys.NewValue<float>();
         public static readonly ValueParameterKey<float> MaxTraceSamples = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> UseTemporal = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> TemporalResponse = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> TemporalScale = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> Padding0 = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> Time = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> BRDFBias = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<Vector2> Padding1 = ParameterKeys.NewValue<Vector2>();
         public static readonly ValueParameterKey<float> ViewFarPlane = ParameterKeys.NewValue<float>();
         public static readonly ValueParameterKey<float> RayStepScale = ParameterKeys.NewValue<float>();
         public static readonly ValueParameterKey<Vector2> ScreenSize = ParameterKeys.NewValue<Vector2>();

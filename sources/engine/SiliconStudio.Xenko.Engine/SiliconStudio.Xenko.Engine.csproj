@@ -223,12 +223,24 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Images\LocalReflections\SSLRResolvePass.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SSLRResolvePass.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Images\LocalReflections\SSLRTemporalPass.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SSLRTemporalPass.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\QueryManager.cs" />
     <Compile Include="Rendering\Images\ImageEffectProfilingKeys.cs" />
     <Compile Include="Rendering\Images\ImageScaler\SamplingPattern.cs" />
-	<Compile Include="Rendering\Images\LocalReflections\LocalReflections.cs" />
+    <Compile Include="Rendering\Images\LocalReflections\LocalReflections.cs" />
     <Compile Include="Rendering\Images\LocalReflections\SSLRBlurPass.cs">
-	  <AutoGen>True</AutoGen>
+      <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SSLRBlurPass.xksl</DependentUpon>
@@ -246,11 +258,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LightShaftsEffect.xkfx</DependentUpon>
     </Compile>
-	<Compile Include="Rendering\Images\LocalReflections\SSLRCombinePass.cs">
-	  <AutoGen>True</AutoGen>
+    <Compile Include="Rendering\Images\LocalReflections\SSLRCombinePass.cs">
+      <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-	  <DependentUpon>SSLRCombinePass.xksl</DependentUpon>
+      <DependentUpon>SSLRCombinePass.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Images\LocalReflections\SSLRCommon.cs">
       <AutoGen>True</AutoGen>
@@ -269,9 +281,9 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SSLRRayTracePass.xksl</DependentUpon>
-	</Compile>
+    </Compile>
     <Compile Include="Rendering\Images\LightShafts\LightShaftsEffectKeys.cs" />
-	<None Include="Rendering\Core\NormalUpdate.xksl">
+    <None Include="Rendering\Core\NormalUpdate.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>NormalUpdate.cs</LastGenOutput>
     </None>
@@ -470,6 +482,14 @@
     <None Include="Rendering\Images\LightShafts\LightShaftsEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>LightShaftsEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\LocalReflections\SSLRResolvePass.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SSLRResolvePass.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\LocalReflections\SSLRTemporalPass.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SSLRTemporalPass.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Images\RangeConversion\RangeCompressorShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>

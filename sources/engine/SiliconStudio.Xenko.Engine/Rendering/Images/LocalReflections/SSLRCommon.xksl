@@ -18,6 +18,15 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			stage float RoughnessFade;
 			stage float MaxTraceSamples;
 			
+            stage float UseTemporal;
+            stage float TemporalResponse;
+            stage float TemporalScale;
+            stage float Padding0;
+
+            stage float Time;
+            stage float BRDFBias;
+            stage float2 Padding1;
+
 			stage float ViewFarPlane;
 			stage float RayStepScale;
 			stage float2 ScreenSize;
@@ -53,13 +62,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
 		// 1:-1 to 0:1
         float2 ClipToUv(float2 clipPos)
         {
-			return mad(clipPos, float2(0.5, -0.5), float2(0.5, 0.5));
+			return clipPos * float2(0.5, -0.5) + float2(0.5, 0.5);
         }
 		
         // 0:1 to 1:-1
         float2 UvToClip(float2 uv)
         {
-			return mad(uv, float2(2, -2), float2(-1, 1));
+			return uv * float2(2, -2) + float2(-1, 1);
         }
 		
 		float3 ComputeWorldPosition(float2 uv)
@@ -80,7 +89,18 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			float eyeZ = LinearizeZ(rawDepth) * ViewFarPlane;
 			return float3(UvToClip(uv) * ViewInfo.xy * eyeZ, eyeZ);
         }
-		
+
+        float3 SampleViewPosition(float2 uv)
+        {
+            float rawDepth = SampleZ(uv);
+            return ComputeViewPosition(uv, rawDepth);
+        }
+        
+        float3 ScreenToView(float2 uv, float depth)
+        {
+			return float3(UvToClip(uv) * ViewInfo.xy, depth);
+        }
+
 		// go into clip space (-1:1 from bottom/left to up/right)
         float3 ProjectWorldToClip(float3 wsPos)
         {
