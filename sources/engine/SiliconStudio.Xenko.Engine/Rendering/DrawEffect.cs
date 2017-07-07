@@ -67,6 +67,8 @@ namespace SiliconStudio.Xenko.Rendering
                 // return scaler ?? (scaler = Context.GetSharedEffect<ImageScaler>());
                 if (scaler == null || SamplingPattern != scaler.FilterPattern)
                 {
+                    scaler?.Dispose();
+                    
                     // Scaler typically get random input and output from allocator, so we delay the set of render targets to avoid potential D3D11 warnings
                     scaler = new ImageScaler(SamplingPattern, true);
                     scaler.Initialize(Context);
