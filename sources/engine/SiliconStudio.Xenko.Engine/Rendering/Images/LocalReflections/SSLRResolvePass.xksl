@@ -4,18 +4,14 @@
 namespace SiliconStudio.Xenko.Rendering.Images
 {
     /// <summary>
-	/// Screen Space Local Reflections shader for Ray Trace Pass
+	/// Screen Space Local Reflections shader for Resolve Pass
     /// </summary>
-    shader SSLRRayTracePass : ImageEffectShader, SSLRCommon, NormalPack, Math
+    shader SSLRResolvePass : ImageEffectShader, SSLRCommon, NormalPack, Math, BRDFMicrofacet
     {
 		// Parmeter to control minimum Z of view space normal of the pixel to be used in SSR
 		#define SSR_MIN_Z_REFLECT 0.1f
-		
-		// Enable/disable debug visualization of the SSR hit points
-		#define SSR_DEBUG_HITS 0
-			
 
-            // TODO: move this to lib or sth
+        // TODO: move this to lib or sth
         float RandN(float2 pos, float2 random)
         {
 	        return frac(sin(dot(pos.xy + random, float2(12.9898, 78.233))) * 43758.5453);
@@ -122,21 +118,55 @@ namespace SiliconStudio.Xenko.Rendering.Images
 	        return float4(H, pdf); 
         }
 
+        float BRDF_Unity_Weight(float3 V, float3 L, float3 N, float Roughness)
+        {
+            float3 H = normalize(L + V);
+
+            float NdotH = saturate(dot(N,H));
+            float NdotL = saturate(dot(N,L));
+            float NdotV = saturate(dot(N,V));
+
+            half G = VisibilitySmithGGXCorrelated(Roughness, NdotL, NdotV);
+            half D = NormalDistributionGGX(Roughness, NdotH);
+
+            return (D * G) * (PI / 4.0);
+        }
+
+
+
+        static const float2 offset[4] =
+{
+	float2(0, 0),
+	float2(2, -2),
+	float2(-2, -2),
+	float2(0, 2)
+};
+
+
+float RayAttenBorder (float2 pos, float value)
+{
+	float borderDist = min(1.0 - max(pos.x, pos.y), min(pos.x, pos.y));
+	return saturate(borderDist > value ? 1.0 : borderDist / value);
+}
+
 
 
         override stage float4 Shading()
         {
 			// Inputs Mapping:
-			// Texture0 - Scene Color
+			// Texture0 - Scene Color (with blurred mip maps chain)
 			// Texture1 - Depth
 			// Texture2 - World Space Normals
 			// Texture3 - Specular Color + Roughness
             // Texture4 - Blue Noise
+			// Texture5 - Ray Trace result
+			// Texture6 - Ray Trace Mask result
 
-            streams.ColorTarget1 = 0;
-			
 			float2 uv = streams.TexCoord;
 			
+            if(Texture6.SampleLevel(LinearSampler, uv, 0).r <= 0.0001)
+                return 0;
+            
 			// Sample material roughness
 			float4 specularRoughnessBuffer = Texture3.SampleLevel(PointSampler, uv, 0);
 			float roughness = specularRoughnessBuffer.a;
@@ -145,16 +175,22 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			float depth = SampleZ(uv);
 			float3 positionVS = ComputeViewPosition(uv, depth);
 			
+            //return float4(uv, 1, 1);
+            //return float4(Texture6.SampleLevel(LinearSampler, uv, 0).r, 1, 1, 1);
             //return pow(depth.xxxx, 8) / 6;
 
 			// Reject invalid pixels
 			if(positionVS.z > 100.0f || roughness > RoughnessFade)
 				return 0;
-			
+
 			// Calculate view space normal vector
 			float4 normalsBuffer = Texture2.SampleLevel(PointSampler, uv, 0);
 			float3 normalWS = DecodeNormal(normalsBuffer.rgb);
 			float3 normalVS = mul(normalWS, (float3x3)V);
+			
+            float3 positionWS = ComputeWorldPosition(uv, depth);
+			float3 viewWS = normalize(positionWS - CameraPosWS.xyz);
+			float3 reflectWS = reflect(viewWS, normalWS);
 			
 			// TODO: dont use reflectVS, only reflectWS ??
 			
@@ -169,119 +205,73 @@ namespace SiliconStudio.Xenko.Rendering.Images
 		    float2 Xi = jitter;
 		    Xi.y = lerp(Xi.y, 0.0, BRDFBias);
 
-            //return float4(jitter, 0, 1);
+            float2 blueNoise = jitter.xy * 2.0 - 1.0; // TODO: use blue noise texture
+            float2x2 offsetRotationMatrix = float2x2(blueNoise.x, blueNoise.y, -blueNoise.y, blueNoise.x);
 
-            float4 H = TangentToWorld(normalWS, ImportanceSampleGGX(Xi, roughness));
+            int NumResolve = 4; // TODO: use param
 
-            //return float4(H.rgb, 1);
+            float NdotV = saturate(dot(normalWS, -viewWS));
+		    float coneTangent = lerp(0.0, roughness * (1.0 - BRDFBias), pow(NdotV, 1.5) * sqrt(roughness));
 
-			// Calculate normalized view space reflection vector
-			float3 reflectVS = normalize(reflect(positionVS, normalVS));
-			
-			// Check if there is any chance to see the reflection
-			//if(reflectVS.z < SSR_MIN_Z_REFLECT) 
-			//	return 0;
-			
-			float3 positionWS = ComputeWorldPosition(uv, depth);
-			float3 viewWS = normalize(positionWS - CameraPosWS.xyz);
-			//float3 reflectWS = reflect(viewWS, normalWS);
-			float3 reflectWS = reflect(viewWS, H.xyz);
-			
-			// Parameter WorldAntiSelfOcclusionBias is packed in CameraPosWS.w
-			#define WorldAntiSelfOcclusionBias CameraPosWS.w
-			
-			// TODO: cleanup unsused constants
-			
-			// TODO: optimzie some stuff, less view space <-> world space oeprations, less math etc.
-			
-			float3 startWS = positionWS + normalWS * WorldAntiSelfOcclusionBias;
-            float3 startUV = ProjectWorldToUv(startWS);
-            float3 endUV = ProjectWorldToUv(startWS + reflectWS);
-			
-            float3 rayUV = endUV - startUV;
-			float screenStep = 1.0f / ScreenSize.x;
-			rayUV *= screenStep / max2(abs(rayUV.xy));
-			float3 startUv = startUV + rayUV * 2;
-			
-			float3 currOffset = startUv;
-			float3 rayStep = rayUV * 2;
-			
-			// Calculate number of samples
-			float3 samplesToEdge = ((sign(rayStep.xyz) * 0.5 + 0.5) - currOffset.xyz) / rayStep.xyz;
-			samplesToEdge.x = min(samplesToEdge.x, min(samplesToEdge.y, samplesToEdge.z)) * 1.05f;
-			float numSamples = min(MaxTraceSamples, samplesToEdge.x);
-			rayStep *= samplesToEdge.x / numSamples;
-			
-			// Calculate depth diffrence error
-			float depthDiffError = 2.0f * abs(rayStep.z);
-			
-			// Ray trace
-			float currSampleIndex = 0;
-			float currSample, depthDiff;
-			[loop]
-			while (currSampleIndex < numSamples)
-			{
-				// Sample depth buffer
-				currSample = SampleZ(currOffset.xy);
-				
-				// Calculate depth diffrence
-				depthDiff = currOffset.z - currSample;
-				
-				// Check intersection
-				if(depthDiff >= 0)
-				{
-					// Check if it isn't false intersection
-					if(depthDiff >= depthDiffError)
-					{
-						// No hit
-		#if SSR_DEBUG_HITS == 1
-						// Debug amount of fetched samples
-						return float4(float3(1, 1, 0) * (currSampleIndex / MaxTraceSamples), 1);
-		#else
-						currSampleIndex = numSamples;
-						// TODO: test return 0; here or weight set to 0 and use more liner math instead of ifs
-		#endif
-					}
-					
-					// End
-					break;
-				}
-				
-				// Move forward
-				currOffset += rayStep;
-				currSampleIndex++;
-			}
-			
-			// Check if has valid result after ray traycing
-			if(currSampleIndex >= numSamples)
-			{
-				// All samples done but no result
-		#if SSR_DEBUG_HITS == 1
-				return float4(1, 0, 0, 1);
-		#else
-				return 0;
-		#endif
-			}
-			
-		#if SSR_DEBUG_HITS == 1
-			return float4(0, 1, 0, 1);
-		#else
-			
-			// Calculate intersection texture coordinate
-			//float3 lastOffset = currOffset - rayStep;
-			//float2 hitUV = lastOffset.xy + (currSample - lastOffset.z) * rayStep.xy;
-			float2 hitUV = currOffset.xy;
-			
-			// Debug scene color preview:
-			//return Texture0.Sample(PointSampler, hitUV.xy);
-			
-            // Set mask to 1
-            streams.ColorTarget1 = 1;
+		    float maxMipLevel = (float)MaxColorMiplevel;// - 1.0;
 
-			//return float4(hitUV, 1, 1);
+            float3 vectorV = normalize(-positionVS);
 
-            // Output: xy: hitUV, z: hitZ, w: PDF
-			return float4(currOffset.xyz, H.w);
+            //return float4(1, 0, 1, 1);
+
+		    float4 result = 0.0;
+            float weightSum = 0.0;	
+            for(int i = 0; i < NumResolve; i++)
+            {
+                float2 offsetUV = offset[i] * SSRtexelSize;
+                offsetUV =  mul(offsetRotationMatrix, offsetUV);
+
+                // "uv" is the location of the current (or "local") pixel. We want to resolve the local pixel using
+                // intersections spawned from neighboring pixels. The neighboring pixel is this one:
+                float2 neighborUv = uv + offsetUV;
+
+                // Now we fetch the intersection point and the PDF that the neighbor's ray hit.
+                float4 hitPacked = Texture5.SampleLevel(LinearSampler, neighborUv, 0); // TODO: test with PointSampler
+                float2 hitUv = hitPacked.xy;
+                float hitZ = hitPacked.z;
+                float hitPDF = hitPacked.w;
+                float hitMask = Texture6.SampleLevel(LinearSampler, neighborUv, 0).r;
+
+                float3 hitViewPos = ScreenToView(hitUv, hitZ);
+
+                //return float4(hitViewPos, 1);
+
+                // We assume that the hit point of the neighbor's ray is also visible for our ray, and we blindly pretend
+                // that the current pixel shot that ray. To do that, we treat the hit point as a tiny light source. To calculate
+                // a lighting contribution from it, we evaluate the BRDF. Finally, we need to account for the probability of getting
+                // this specific position of the "light source", and that is approximately 1/PDF, where PDF comes from the neighbor.
+                // Finally, the weight is BRDF/PDF. BRDF uses the local pixel's normal and roughness, but PDF comes from the neighbor.
+                //float weight = BRDF_Unity_Weight(vectorV /*V*/, normalize(hitViewPos - positionVS) /*L*/, normalVS /*N*/, roughness) / max(1e-5, hitPDF);
+                float weight = 1.0f;
+                
+                //return float4(weight.xxx, 1);
+
+                float intersectionCircleRadius = coneTangent * length(hitUv - uv);
+                float mip = clamp(log2(intersectionCircleRadius * TraceSizeMax), 0.0, maxMipLevel); // TODO; rename TraceSizeMax to ResolveSizeMax
+
+                float4 sampleColor = float4(0.0, 0.0, 0.0, 1.0);
+                sampleColor.rgb = Texture0.SampleLevel(LinearSampler, hitUv, mip).rgb;
+
+                //sampleColor.a = RayAttenBorder(hitUv, _EdgeFactor) * hitMask; // TODO: use border att (maybe only in final pass?
+
+                //if(_Fireflies == 1) // TODO: use param for Fireflies
+                //    sampleColor.rgb /= 1 + Luminance(sampleColor.rgb);
+
+                result += sampleColor * weight;
+                weightSum += weight;
+            }
+            result /= weightSum;
+
+		    //if(_Fireflies == 1) // TODO: use param for Fireflies
+			//    result.rgb /= 1 - Luminance(result.rgb);
+
+            
+    	    return max(1e-5, result);
         }
     };
 }

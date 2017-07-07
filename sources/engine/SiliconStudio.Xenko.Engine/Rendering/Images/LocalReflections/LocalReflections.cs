@@ -5,10 +5,13 @@
 
 using System;
 using System.ComponentModel;
+using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Rendering.Images
 {
@@ -20,8 +23,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
     {
         private ImageEffectShader blurPassShader;
         private ImageEffectShader rayTracePassShader;
+        private ImageEffectShader resolvePassShader;
+        private ImageEffectShader temporalPassShader;
         private ImageEffectShader coneTracePassShader;
         private ImageEffectShader combinePassShader;
+
+        private Texture blueNoiseTexture;
+        private Texture temporalBuffer;
 
         private Texture[] cachedColorBuffer0Mips;
         private Texture[] cachedColorBuffer1Mips;
@@ -31,37 +39,46 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         public LocalReflections()
         {
-            ResolutionDivisor = ResolutionDivisors.Half;
         }
 
-        [DataContract("ResolutionDivisors")]
-        public enum ResolutionDivisors
+        [DataContract("ResolutionMode")]
+        public enum ResolutionMode
         {
             /// <summary>
-            /// Use a small size.
+            /// Use full resolution.
             /// </summary>
-            /// <userodc>1/4 resolution</userodc>
-            [Display("/ 4")]
-            Quarter,
+            /// <userodc>Full resolution.</userodc>
+            [Display("Full")]
+            Full = 1,
 
             /// <summary>
-            /// Use a medium size.
+            /// Use hald resolution.
             /// </summary>
-            /// <userodc>1/2 resolution</userodc>
-            [Display("/ 2")]
-            Half,
-
-            /// <summary>
-            /// Use a large size.
-            /// </summary>
-            /// <userodc>x 1 resolution</userodc>
-            [Display("x 1")]
-            Full
+            /// <userodc>Half resolution.</userodc>
+            [Display("Half")]
+            Half = 2
         }
 
-        [Display("Resolution divisor")]
-        [DefaultValue(ResolutionDivisors.Half)]
-        public ResolutionDivisors ResolutionDivisor { get; set; }
+        /// <summary>
+        /// Gets or sets the input depth resolution mode.
+        /// </summary>
+        [Display("Depth resolution")]
+        [DefaultValue(ResolutionMode.Full)]
+        public ResolutionMode DepthResolution { get; set; } = ResolutionMode.Full;
+
+        /// <summary>
+        /// Gets or sets the ray trace pass resolution mode.
+        /// </summary>
+        [Display("Ray trace pass resolution")]
+        [DefaultValue(ResolutionMode.Half)]
+        public ResolutionMode RayTracePassResolution { get; set; } = ResolutionMode.Half;   
+        
+        /// <summary>
+        /// Gets or sets the resolve pass resolution mode.
+        /// </summary>
+        [Display("Resolve pass resolution")]
+        [DefaultValue(ResolutionMode.Half)]
+        public ResolutionMode ResolvePassResolution { get; set; } = ResolutionMode.Half;
 
         /// <summary>
         /// Maximum allowed amount of dynamic iterations in the ray trace pass.
@@ -84,59 +101,68 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [DefaultValue(0.01f)]
         public float WorldAntiSelfOcclusionBias { get; set; } = 0.01f;
 
+
+        // TODO: EnableRayReuse and ReduceFireflies because macro permutation instead of dynamic params?
+        public bool EnableRayReuse { get; set; } = true;
+        public bool ReduceFireflies { get; set; } = true;
+        
+        // TODO: add docs
+        public float BRDFBias { get; set; } = 0.7f;
+        public bool UseTemporal { get; set; } = true;
+        public float TemporalScale { get; set; } = 1.5f;
+        public float TemporalResponse { get; set; } = 0.85f;
+        
 #if SSLR_DEBUG
 
         public enum DebugModes
         {
             None,
-            RayCast,
-            ConeTrace,
+            RayTrace,
+            RayTraceMask,
+            Resolve,
+            Temporal,
         }
 
-        public DebugModes DebugMode = DebugModes.None;
+        public DebugModes DebugMode = DebugModes.RayTrace;
 
 #endif
 
         protected override void InitializeCore()
         {
             base.InitializeCore();
-            
+
             blurPassShader = ToLoadAndUnload(new ImageEffectShader("SSLRBlurPassEffect"));
             rayTracePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRRayTracePass"));
+            resolvePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRResolvePass"));
+            temporalPassShader = ToLoadAndUnload(new ImageEffectShader("SSLRTemporalPass"));
             coneTracePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRConeTracePass"));
             combinePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRCombinePass"));
+
+            Texture obj = AttachedReferenceManager.CreateProxyObject<Texture>(new AssetId("aF02239B-3697-4EBB-9F37-FE880659E64B"), "BlueNoise_256x256_UNI");
+            string url = AttachedReferenceManager.GetUrl(obj);
+
+            //blueNoiseTexture = AttachedReferenceManager.CreateProxyObject<Texture>(new AssetId("aF02239B-3697-4EBB-9F37-FE880659E64B"), "BlueNoise_256x256_UNI");
+            //blueNoiseTexture = Content.Load<Texture>("BlueNoise_256x256_UNI");
+            //blueNoiseTexture = Content.Load<Texture>(url);
         }
 
         protected override void Destroy()
         {
+            if (temporalBuffer != null)
+            {
+                temporalBuffer.Dispose();
+                temporalBuffer = null;
+            }
+
             cachedColorBuffer0Mips?.ForEach(view => view?.Dispose());
             cachedColorBuffer1Mips?.ForEach(view => view?.Dispose());
 
             base.Destroy();
         }
 
-        private int GetResolutionDivisor()
+        private Size3 GetBufferResolution(Texture fullResTarget, ResolutionMode mode)
         {
-            int divisor = 1;
-            switch (ResolutionDivisor)
-            {
-                case ResolutionDivisors.Full:
-                    divisor = 1;
-                    break;
-                case ResolutionDivisors.Half:
-                    divisor = 2;
-                    break;
-                case ResolutionDivisors.Quarter:
-                    divisor = 4;
-                    break;
-            }
-            return divisor;
-        }
-
-        private Size3 GetTraceBufferResolution(Texture fullResTarget)
-        {
-            var divisor = GetResolutionDivisor();
-            return new Size3(fullResTarget.Width / divisor, fullResTarget.Height / divisor, 1);
+            return new Size3(fullResTarget.Width / (int)mode, fullResTarget.Height / (int)mode, 1);
         }
         
         /// <summary>
@@ -185,13 +211,16 @@ namespace SiliconStudio.Xenko.Rendering.Images
             float fieldOfView = (float)(2.0f * Math.Atan2(projectionMatrix.M11, aspect));
             Vector4 ViewInfo = new Vector4(1.0f / projectionMatrix.M11, 1.0f / projectionMatrix.M22, farclip / (farclip - nearclip), (-farclip * nearclip) / (farclip - nearclip) / farclip);
             Vector4 CameraPosWS = new Vector4(eye.X, eye.Y, eye.Z, WorldAntiSelfOcclusionBias);
+            
+            float time = (float)(context.RenderContext.Time.Total.TotalSeconds);
 
-            var traceBufferSize = GetTraceBufferResolution(outputBuffer);
+            var traceBufferSize = GetBufferResolution(outputBuffer, RayTracePassResolution);
             Vector2 ScreenSize = new Vector2(traceBufferSize.Width, traceBufferSize.Height);
             var roughnessFade = MathUtil.Clamp(MaxRoughness, 0.0f, 1.0f);
             var maxTraceSamples = MathUtil.Clamp(MaxStepsAmount, 1, 128);
 
             // ViewInfo    :  x-1/Projection[0,0]   y-1/Projection[1,1]   z-(Far / (Far - Near)   w-(-Far * Near) / (Far - Near) / Far)
+
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.ViewInfo, ViewInfo);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.ViewFarPlane, farclip);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.RoughnessFade, roughnessFade);
@@ -199,9 +228,52 @@ namespace SiliconStudio.Xenko.Rendering.Images
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.CameraPosWS, CameraPosWS);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.ScreenSize, ScreenSize);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.RayStepScale, 2.0f / outputBuffer.Width);
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.Time, time);
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.BRDFBias, BRDFBias);
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.UseTemporal, UseTemporal ? 1 : 0);
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.TemporalResponse, TemporalResponse);
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.TemporalScale, TemporalScale);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.VP, viewProjectionMatrix);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.IVP, inverseViewProjectionMatrix);
+
+            resolvePassShader.Parameters.Set(SSLRCommonKeys.MaxColorMiplevel, Texture.CalculateMipMapCount(0, outputBuffer.Width, outputBuffer.Height) - 1);
+            resolvePassShader.Parameters.Set(SSLRCommonKeys.TraceSizeMax, Math.Max(traceBufferSize.Width, traceBufferSize.Height) / 2.0f);
+            resolvePassShader.Parameters.Set(SSLRCommonKeys.SSRtexelSize, new Vector2(1.0f / traceBufferSize.Width, 1.0f / traceBufferSize.Height));
+            resolvePassShader.Parameters.Set(SSLRCommonKeys.ViewInfo, ViewInfo);
+            resolvePassShader.Parameters.Set(SSLRCommonKeys.ViewFarPlane, farclip);
+            resolvePassShader.Parameters.Set(SSLRCommonKeys.RoughnessFade, roughnessFade);
+            resolvePassShader.Parameters.Set(SSLRCommonKeys.MaxTraceSamples, maxTraceSamples);
+            resolvePassShader.Parameters.Set(SSLRCommonKeys.CameraPosWS, CameraPosWS);
+            resolvePassShader.Parameters.Set(SSLRCommonKeys.ScreenSize, ScreenSize);
+            resolvePassShader.Parameters.Set(SSLRCommonKeys.RayStepScale, 2.0f / outputBuffer.Width);
+            resolvePassShader.Parameters.Set(SSLRCommonKeys.Time, time);
+            resolvePassShader.Parameters.Set(SSLRCommonKeys.BRDFBias, BRDFBias);
+            resolvePassShader.Parameters.Set(SSLRCommonKeys.UseTemporal, UseTemporal ? 1 : 0);
+            resolvePassShader.Parameters.Set(SSLRCommonKeys.TemporalResponse, TemporalResponse);
+            resolvePassShader.Parameters.Set(SSLRCommonKeys.TemporalScale, TemporalScale);
+            resolvePassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
+            resolvePassShader.Parameters.Set(SSLRCommonKeys.VP, viewProjectionMatrix);
+            resolvePassShader.Parameters.Set(SSLRCommonKeys.IVP, inverseViewProjectionMatrix);
+
+            temporalPassShader.Parameters.Set(SSLRCommonKeys.MaxColorMiplevel, Texture.CalculateMipMapCount(0, outputBuffer.Width, outputBuffer.Height) - 1);
+            temporalPassShader.Parameters.Set(SSLRCommonKeys.TraceSizeMax, Math.Max(traceBufferSize.Width, traceBufferSize.Height) / 2.0f);
+            temporalPassShader.Parameters.Set(SSLRCommonKeys.SSRtexelSize, new Vector2(1.0f / traceBufferSize.Width, 1.0f / traceBufferSize.Height));
+            temporalPassShader.Parameters.Set(SSLRCommonKeys.ViewInfo, ViewInfo);
+            temporalPassShader.Parameters.Set(SSLRCommonKeys.ViewFarPlane, farclip);
+            temporalPassShader.Parameters.Set(SSLRCommonKeys.RoughnessFade, roughnessFade);
+            temporalPassShader.Parameters.Set(SSLRCommonKeys.MaxTraceSamples, maxTraceSamples);
+            temporalPassShader.Parameters.Set(SSLRCommonKeys.CameraPosWS, CameraPosWS);
+            temporalPassShader.Parameters.Set(SSLRCommonKeys.ScreenSize, ScreenSize);
+            temporalPassShader.Parameters.Set(SSLRCommonKeys.RayStepScale, 2.0f / outputBuffer.Width);
+            temporalPassShader.Parameters.Set(SSLRCommonKeys.Time, time);
+            temporalPassShader.Parameters.Set(SSLRCommonKeys.BRDFBias, BRDFBias);
+            temporalPassShader.Parameters.Set(SSLRCommonKeys.UseTemporal, UseTemporal ? 1 : 0);
+            temporalPassShader.Parameters.Set(SSLRCommonKeys.TemporalResponse, TemporalResponse);
+            temporalPassShader.Parameters.Set(SSLRCommonKeys.TemporalScale, TemporalScale);
+            temporalPassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
+            temporalPassShader.Parameters.Set(SSLRCommonKeys.VP, viewProjectionMatrix);
+            temporalPassShader.Parameters.Set(SSLRCommonKeys.IVP, inverseViewProjectionMatrix);
 
             // TODO: check which keys are used by coneTracePassShader
 
@@ -215,6 +287,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
             coneTracePassShader.Parameters.Set(SSLRCommonKeys.CameraPosWS, eye);
             coneTracePassShader.Parameters.Set(SSLRCommonKeys.ScreenSize, ScreenSize);
             coneTracePassShader.Parameters.Set(SSLRCommonKeys.RayStepScale, 2.0f / outputBuffer.Width);
+            coneTracePassShader.Parameters.Set(SSLRCommonKeys.Time, time);
+            coneTracePassShader.Parameters.Set(SSLRCommonKeys.BRDFBias, BRDFBias);
+            coneTracePassShader.Parameters.Set(SSLRCommonKeys.UseTemporal, UseTemporal ? 1 : 0);
+            coneTracePassShader.Parameters.Set(SSLRCommonKeys.TemporalResponse, TemporalResponse);
+            coneTracePassShader.Parameters.Set(SSLRCommonKeys.TemporalScale, TemporalScale);
             coneTracePassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
             coneTracePassShader.Parameters.Set(SSLRCommonKeys.VP, viewProjectionMatrix);
             coneTracePassShader.Parameters.Set(SSLRCommonKeys.IVP, inverseViewProjectionMatrix);
@@ -229,6 +306,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
             combinePassShader.Parameters.Set(SSLRCommonKeys.CameraPosWS, eye);
             combinePassShader.Parameters.Set(SSLRCommonKeys.ScreenSize, ScreenSize);
             combinePassShader.Parameters.Set(SSLRCommonKeys.RayStepScale, 2.0f / outputBuffer.Width);
+            combinePassShader.Parameters.Set(SSLRCommonKeys.Time, time);
+            combinePassShader.Parameters.Set(SSLRCommonKeys.BRDFBias, BRDFBias);
+            combinePassShader.Parameters.Set(SSLRCommonKeys.UseTemporal, UseTemporal ? 1 : 0);
+            combinePassShader.Parameters.Set(SSLRCommonKeys.TemporalResponse, TemporalResponse);
+            combinePassShader.Parameters.Set(SSLRCommonKeys.TemporalScale, TemporalScale);
             combinePassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
             combinePassShader.Parameters.Set(SSLRCommonKeys.VP, viewProjectionMatrix);
             combinePassShader.Parameters.Set(SSLRCommonKeys.IVP, inverseViewProjectionMatrix);
@@ -236,6 +318,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         protected override void DrawCore(RenderDrawContext context)
         {
+            //if(blueNoiseTexture == null)
+            //    blueNoiseTexture = Content.Load<Texture>("BlueNoise_256x256_UNI");
+
             // Inputs:
             Texture colorBuffer = GetSafeInput(0);
             Texture depthBuffer = GetSafeInput(1);
@@ -245,19 +330,29 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // Output:
             Texture outputBuffer = GetSafeOutput(0);
 
-            // Get temporary buffers (use small formats, we don't want to kill performance)
-            // Note: we convole color buffer into half size because it's super fast
-            var traceBuffersSize = GetTraceBufferResolution(outputBuffer);
+            var depthBuffersSize = GetBufferResolution(outputBuffer, DepthResolution);
+            var rayTraceBuffersSize = GetBufferResolution(outputBuffer, RayTracePassResolution);
+            var resolveBuffersSize = GetBufferResolution(outputBuffer, ResolvePassResolution);
             var colorBuffersSize = new Size2(outputBuffer.Width / 2, outputBuffer.Height / 2);
-#if SSLR_DEBUG
-            Texture rayTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R32G32B32A32_Float, 1);
-#else
-            Texture rayTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R8G8_UNorm, 1);
-#endif
-            Texture coneTraceBuffer = NewScopedRenderTarget2D(traceBuffersSize.Width, traceBuffersSize.Height, PixelFormat.R11G11B10_Float, 1);
+
+            // Get temporary buffers
+            // TODO: try optimize formats
+            var reflectionsFormat = PixelFormat.R16G16B16A16_Float;
+            Texture rayTraceBuffer = NewScopedRenderTarget2D(rayTraceBuffersSize.Width, rayTraceBuffersSize.Height, PixelFormat.R16G16B16A16_Float, 1);
+            Texture rayTraceMaskBuffer = NewScopedRenderTarget2D(rayTraceBuffersSize.Width, rayTraceBuffersSize.Height, PixelFormat.R16_Float, 1);
+            Texture resolveBuffer = NewScopedRenderTarget2D(resolveBuffersSize.Width, resolveBuffersSize.Height, reflectionsFormat, 1);
+
             Texture colorBuffer0 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, PixelFormat.R11G11B10_Float, MipMapCount.Auto);
             Texture colorBuffer1 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, PixelFormat.R11G11B10_Float, MipMapCount.Auto);
             // TODO: we don't use colorBuffer1 mip0, could be optimized
+
+            // Check if resize depth
+            if (DepthResolution != ResolutionMode.Full)
+            {
+                // TODO: use half res depth as default
+                throw new NotImplementedException("finish depth downscale");
+                //Texture smallerDepth = NewScopedRenderTarget2D(depthBuffersSize.Width, depthBuffersSize.Height, PixelFormat.R32_Float, 1);
+            }
 
             // Cache per color buffer mip views
             int colorMipLevels = colorBuffer0.MipLevels;
@@ -316,24 +411,51 @@ namespace SiliconStudio.Xenko.Rendering.Images
             rayTracePassShader.SetInput(1, depthBuffer);
             rayTracePassShader.SetInput(2, normalsBuffer);
             rayTracePassShader.SetInput(3, specularRoughnessBuffer);
-            rayTracePassShader.SetOutput(rayTraceBuffer);
+            rayTracePassShader.SetInput(4, blueNoiseTexture);
+            rayTracePassShader.SetOutput(rayTraceBuffer, rayTraceMaskBuffer);
             rayTracePassShader.Draw(context, "Ray Trace");
 
-            // Cone Trace Pass
-            coneTracePassShader.SetInput(0, colorBuffer0);
-            coneTracePassShader.SetInput(1, depthBuffer);
-            coneTracePassShader.SetInput(2, normalsBuffer);
-            coneTracePassShader.SetInput(3, specularRoughnessBuffer);
-            coneTracePassShader.SetInput(4, rayTraceBuffer);
-            coneTracePassShader.SetOutput(coneTraceBuffer);
-            coneTracePassShader.Draw(context, "Cone Trace");
+            // Resolve Pass
+            resolvePassShader.SetInput(0, colorBuffer0);
+            resolvePassShader.SetInput(1, depthBuffer);
+            resolvePassShader.SetInput(2, normalsBuffer);
+            resolvePassShader.SetInput(3, specularRoughnessBuffer);
+            resolvePassShader.SetInput(4, blueNoiseTexture);
+            resolvePassShader.SetInput(5, rayTraceBuffer);
+            resolvePassShader.SetInput(6, rayTraceMaskBuffer);
+            resolvePassShader.SetOutput(resolveBuffer);
+            resolvePassShader.Draw(context, "Resolve");
+
+            // Temporal Pass
+            Texture reflectionsBuffer = resolveBuffer;
+            if (UseTemporal)
+            {
+                var temporalSize = outputBuffer.Size;
+                if (temporalBuffer == null || temporalBuffer.Size != temporalSize)
+                {
+                    if (temporalBuffer != null)
+                        temporalBuffer.Dispose();
+                    temporalBuffer = Texture.New2D(GraphicsDevice, temporalSize.Width, temporalSize.Height, 1, reflectionsFormat, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
+                }
+
+                Texture temporalBuffer0 = NewScopedRenderTarget2D(temporalSize.Width, temporalSize.Height, reflectionsFormat, 1);
+
+                temporalPassShader.SetInput(0, resolveBuffer);
+                temporalPassShader.SetInput(1, temporalBuffer);
+                temporalPassShader.SetOutput(temporalBuffer0);
+                temporalPassShader.Draw(context, "Temporal");
+
+                context.CommandList.Copy(temporalBuffer0, temporalBuffer);
+
+                reflectionsBuffer = temporalBuffer;
+            }
 
             // Combine Pass
             combinePassShader.SetInput(0, colorBuffer);
             combinePassShader.SetInput(1, depthBuffer);
             combinePassShader.SetInput(2, normalsBuffer);
             combinePassShader.SetInput(3, specularRoughnessBuffer);
-            combinePassShader.SetInput(4, coneTraceBuffer);
+            combinePassShader.SetInput(4, reflectionsBuffer);
             combinePassShader.SetOutput(outputBuffer);
             combinePassShader.Draw(context, "Combine");
 
@@ -343,11 +465,17 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 // Debug preview of temp targets
                 switch (DebugMode)
                 {
-                    case DebugModes.RayCast:
+                    case DebugModes.RayTrace:
                         Scaler.SetInput(0, rayTraceBuffer);
                         break;
-                    case DebugModes.ConeTrace:
-                        Scaler.SetInput(0, coneTraceBuffer);
+                    case DebugModes.RayTraceMask:
+                        Scaler.SetInput(0, rayTraceMaskBuffer);
+                        break;
+                    case DebugModes.Resolve:
+                        Scaler.SetInput(0, resolveBuffer);
+                        break;
+                    case DebugModes.Temporal:
+                        Scaler.SetInput(0, temporalBuffer);
                         break;
                 }
                 Scaler.SetOutput(outputBuffer);
