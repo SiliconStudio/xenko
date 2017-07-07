@@ -90,7 +90,6 @@ namespace SiliconStudio.Xenko.Profiling
 
         private readonly List<ProfilingResult> profilingResults = new List<ProfilingResult>();
         private readonly Dictionary<ProfilingKey, ProfilingResult> profilingResultsDictionary = new Dictionary<ProfilingKey, ProfilingResult>();
-        private readonly Dictionary<string, ProfilingResult> scriptsProfilingResultsDictionary = new Dictionary<string, ProfilingResult>();
 
         public GameProfilingSystem(IServiceRegistry registry) : base(registry)
         {
@@ -175,19 +174,12 @@ namespace SiliconStudio.Xenko.Profiling
 
                 gpuInfoStringBuilder.Clear();
                 gpuInfoStringBuilder.AppendFormat("Graphics> Device={0}, Platform={1}, Profile={2}, Resolution={3}", GraphicsDevice.Adapter.Description, GraphicsDevice.Platform, GraphicsDevice.ShaderProfile, renderTargetSize);
-
-                bool newEntry;
+                
                 ProfilingResult profilingResult;
-                if (e.Key == MicroThreadProfilingKeys.ProfilingKey)
+                if (!profilingResultsDictionary.TryGetValue(e.Key, out profilingResult))
                 {
-                    newEntry = !scriptsProfilingResultsDictionary.TryGetValue(e.Text, out profilingResult);
-                }
-                else
-                {
-                    newEntry = !profilingResultsDictionary.TryGetValue(e.Key, out profilingResult);
-                }
-                if(newEntry)
                     profilingResult.MinTime = long.MaxValue;
+                }
 
 
                 if (e.Type == ProfilingMessageType.End)
@@ -225,14 +217,7 @@ namespace SiliconStudio.Xenko.Profiling
                     profilingResult.Custom3 = e.Custom3.Value;
                 }
 
-                if (e.Key == MicroThreadProfilingKeys.ProfilingKey)
-                {
-                    scriptsProfilingResultsDictionary[e.Text] = profilingResult;
-                }
-                else
-                {
-                    profilingResultsDictionary[e.Key] = profilingResult;
-                }
+                profilingResultsDictionary[e.Key] = profilingResult;
             }
 
             profilersStringBuilder.Clear();
@@ -244,13 +229,6 @@ namespace SiliconStudio.Xenko.Profiling
                 profilingResults.Add(profilingResult.Value);
             }
             profilingResultsDictionary.Clear();
-
-            foreach (var profilingResult in scriptsProfilingResultsDictionary)
-            {
-                if (!profilingResult.Value.Event.HasValue) continue;
-                profilingResults.Add(profilingResult.Value);
-            }
-            scriptsProfilingResultsDictionary.Clear();
             
             if (SortingMode == GameProfilingSorting.ByTime)
             {

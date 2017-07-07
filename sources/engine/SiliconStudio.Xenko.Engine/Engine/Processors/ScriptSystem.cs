@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 var startupScript = script as StartupScript;
                 if (startupScript != null)
                 {
-                    startupScript.StartSchedulerNode = Scheduler.Add(startupScript.Start, startupScript.Priority);
+                    startupScript.StartSchedulerNode = Scheduler.Add(startupScript.Start, startupScript.Priority, startupScript, startupScript.ProfilingKey);
                 }
                 else
                 {
@@ -86,6 +86,8 @@ namespace SiliconStudio.Xenko.Engine.Processors
                     if (asyncScript != null)
                     {
                         asyncScript.MicroThread = AddTask(asyncScript.Execute, asyncScript.Priority & UpdateBit);
+                        asyncScript.MicroThread.ProfilingKey = asyncScript.ProfilingKey;
+
                     }
                 }
             }
@@ -172,6 +174,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             {
                 syncScript.UpdateSchedulerNode = Scheduler.Create(syncScript.Update, syncScript.Priority & UpdateBit);
                 syncScript.UpdateSchedulerNode.Value.Token = syncScript;
+                syncScript.UpdateSchedulerNode.Value.ProfilingKey = syncScript.ProfilingKey;
                 syncScripts.Add(syncScript);
             }
         }

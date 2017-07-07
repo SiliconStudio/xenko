@@ -2,12 +2,14 @@
 // See LICENSE.md for full license information.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Audio;
 using SiliconStudio.Xenko.Engine.Design;
@@ -31,6 +33,36 @@ namespace SiliconStudio.Xenko.Engine
     public abstract class ScriptComponent : EntityComponent, IScriptContext
     {
         public const uint LiveScriptingMask = 128;
+
+        /// <summary>
+        /// The global profiling key for scripts. Activate/deactivate this key to activate/deactivate profiling for all your scripts.
+        /// </summary>
+        public static ProfilingKey ScriptGlobalProfilingKey = new ProfilingKey("Script");
+
+        private static Dictionary<Type, ProfilingKey> scriptToProfilingKey = new Dictionary<Type, ProfilingKey>();
+
+        private ProfilingKey profilingKey;
+
+        /// <summary>
+        /// Gets the profiling key to activate/deactivate profiling for the current script class.
+        /// </summary>
+        public ProfilingKey ProfilingKey
+        {
+            get
+            {
+                if (profilingKey == null)
+                {
+                    var scriptType = GetType();
+                    if (!scriptToProfilingKey.TryGetValue(scriptType, out profilingKey))
+                    {
+                        profilingKey = new ProfilingKey(ScriptGlobalProfilingKey, scriptType.FullName);
+                        scriptToProfilingKey[scriptType] = profilingKey;
+                    }
+                }
+
+                return profilingKey;
+            }
+        }
 
         private IGraphicsDeviceService graphicsDeviceService;
         private Logger logger;
