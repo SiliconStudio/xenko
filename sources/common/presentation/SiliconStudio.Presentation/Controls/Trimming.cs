@@ -99,18 +99,37 @@ namespace SiliconStudio.Presentation.Controls
             var trimming = GetTextTrimming(control);
             var source = GetTrimmingSource(control);
             var wordSeparators = GetWordSeparators(control);
-            return ProcessTrimming(control, text, availableWidth, trimming, source, wordSeparators);
+            return ProcessTrimming(control, text, trimming, source, wordSeparators, availableWidth);
         }
 
-        private static string ProcessTrimming(Control control, string text, double availableWidth, TextTrimming trimming, TrimmingSource source, string wordSeparators)
+        public static string ProcessTrimming([NotNull] Control control, string text, TextTrimming trimming, TrimmingSource source, string wordSeparators, double availableWidth)
+        {
+            var typeface = new Typeface(control.FontFamily, control.FontStyle, control.FontWeight, control.FontStretch);
+            return ProcessTrimming(text, typeface, control.FontSize, trimming, source, wordSeparators, availableWidth);
+        }
+
+        public static string ProcessTrimming([NotNull] TextBlock textBlock, string text, double availableWidth)
+        {
+            var trimming = GetTextTrimming(textBlock);
+            var source = GetTrimmingSource(textBlock);
+            var wordSeparators = GetWordSeparators(textBlock);
+            return ProcessTrimming(textBlock, text, trimming, source, wordSeparators, availableWidth);
+        }
+
+        public static string ProcessTrimming([NotNull] TextBlock textBlock, string text, TextTrimming trimming, TrimmingSource source, string wordSeparators, double availableWidth)
+        {
+            var typeface = new Typeface(textBlock.FontFamily, textBlock.FontStyle, textBlock.FontWeight, textBlock.FontStretch);
+            return ProcessTrimming(text, typeface, textBlock.FontSize, trimming, source, wordSeparators, availableWidth);
+        }
+
+        private static string ProcessTrimming(string text, [NotNull] Typeface typeface, double fontSize, TextTrimming trimming, TrimmingSource source, string wordSeparators, double availableWidth)
         {
             if (trimming == TextTrimming.None)
             {
                 return text;
             }
 
-            double[] sizes;
-            var textWidth = GetTextWidth(control, text, trimming, out sizes);
+            var textWidth = GetTextWidth(text, trimming, typeface, fontSize, wordSeparators, out double[] sizes);
             if (availableWidth >= textWidth)
             {
                 return text;
@@ -135,12 +154,12 @@ namespace SiliconStudio.Presentation.Controls
             }
 
             var firstWord = true;
-            
+
             switch (source)
             {
                 case TrimmingSource.Begin:
                 {
-                    var currentWidth = GetTextWidth(control, Ellipsis, trimming);
+                    var currentWidth = GetTextWidth(Ellipsis, trimming, typeface, fontSize, wordSeparators, out _);
 
                     var ending = new StringBuilder();
                     for (var i = words.Count - 1; i >= 0; --i)
@@ -152,7 +171,7 @@ namespace SiliconStudio.Presentation.Controls
                             // If there's not enough room for a single word, fall back on character trimming from the beginning
                             if (trimming == TextTrimming.WordEllipsis && firstWord)
                             {
-                                return ProcessTrimming(control, words[i], availableWidth, TextTrimming.CharacterEllipsis, TrimmingSource.Begin, wordSeparators);
+                                return ProcessTrimming(words[i], typeface, fontSize, TextTrimming.CharacterEllipsis, TrimmingSource.Begin, wordSeparators, availableWidth);
                             }
                             break;
                         }
@@ -165,7 +184,7 @@ namespace SiliconStudio.Presentation.Controls
                 }
                 case TrimmingSource.Middle:
                 {
-                    var currentWidth = GetTextWidth(control, Ellipsis, trimming);
+                    var currentWidth = GetTextWidth(Ellipsis, trimming, typeface, fontSize, wordSeparators, out _);
 
                     var begin = new StringBuilder();
                     var ending = new StringBuilder();
@@ -178,7 +197,7 @@ namespace SiliconStudio.Presentation.Controls
                             // If there's not enough room for a single word, fall back on character trimming from the end
                             if (trimming == TextTrimming.WordEllipsis && firstWord)
                             {
-                                return ProcessTrimming(control, words[j], availableWidth, TextTrimming.CharacterEllipsis, TrimmingSource.End, wordSeparators);
+                                return ProcessTrimming(words[j], typeface, fontSize, TextTrimming.CharacterEllipsis, TrimmingSource.End, wordSeparators, availableWidth);
                             }
                             break;
                         }
@@ -194,7 +213,7 @@ namespace SiliconStudio.Presentation.Controls
                 }
                 case TrimmingSource.End:
                 {
-                    var currentWidth = GetTextWidth(control, Ellipsis, trimming);
+                    var currentWidth = GetTextWidth(Ellipsis, trimming, typeface, fontSize, wordSeparators, out _);
 
                     var begin = new StringBuilder();
                     for (var i = 0; i < words.Count; ++i)
@@ -206,7 +225,7 @@ namespace SiliconStudio.Presentation.Controls
                             // If there's not enough room for a single word, fall back on character trimming from the end
                             if (trimming == TextTrimming.WordEllipsis && firstWord)
                             {
-                                return ProcessTrimming(control, words[i], availableWidth, TextTrimming.CharacterEllipsis, TrimmingSource.Begin, wordSeparators);
+                                return ProcessTrimming(words[i], typeface, fontSize, TextTrimming.CharacterEllipsis, TrimmingSource.Begin, wordSeparators, availableWidth);
                             }
                             break;
                         }
@@ -223,20 +242,11 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
-        private static double GetTextWidth([NotNull] Control control, [NotNull] string text, TextTrimming trimming)
+        private static double GetTextWidth([NotNull] string text, TextTrimming trimming, [NotNull] Typeface typeface, double fontSize, string wordSeparators, [NotNull] out double[] sizes)
         {
-            double[] dummy;
-            return GetTextWidth(control, text, trimming, out dummy);
-        }
-
-        private static double GetTextWidth([NotNull] Control control, [NotNull] string text, TextTrimming trimming, [NotNull] out double[] sizes)
-        {
-            var wordSeparators = GetWordSeparators(control);
-
-            var typeface = new Typeface(control.FontFamily, control.FontStyle, control.FontWeight, control.FontStretch);
             var totalWidth = 0.0;
             // We use a period to ensure space characters will have their actual size used.
-            var period = new FormattedText(".", CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeface, control.FontSize, Brushes.Black);
+            var period = new FormattedText(".", CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeface, fontSize, Brushes.Black);
             var periodWidth = period.Width;
 
             switch (trimming)
@@ -246,7 +256,7 @@ namespace SiliconStudio.Presentation.Controls
                     for (var i = 0; i < text.Length; i++)
                     {
                         var token = text[i].ToString(CultureInfo.CurrentUICulture) + ".";
-                        var formattedText = new FormattedText(token, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeface, control.FontSize, Brushes.Black);
+                        var formattedText = new FormattedText(token, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeface, fontSize, Brushes.Black);
                         var width = formattedText.Width - periodWidth;
                         sizes[i] = width;
                         totalWidth += width;
@@ -258,7 +268,7 @@ namespace SiliconStudio.Presentation.Controls
                     for (var i = 0; i < words.Count; i++)
                     {
                         var token = words[i] + ".";
-                        var formattedText = new FormattedText(token, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeface, control.FontSize, Brushes.Black);
+                        var formattedText = new FormattedText(token, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeface, fontSize, Brushes.Black);
                         var width = formattedText.Width - periodWidth;
                         sizes[i] = width;
                         totalWidth += width;
