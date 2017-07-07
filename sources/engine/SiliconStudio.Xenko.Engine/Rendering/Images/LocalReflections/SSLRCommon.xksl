@@ -38,6 +38,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			stage float4x4 V;
 			stage float4x4 VP;
 			stage float4x4 IVP;
+			stage float4x4 P;
         };
 		
 		// Sample raw device depth buffer

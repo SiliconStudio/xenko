@@ -39,5 +39,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
         public static readonly ValueParameterKey<Matrix> V = ParameterKeys.NewValue<Matrix>();
         public static readonly ValueParameterKey<Matrix> VP = ParameterKeys.NewValue<Matrix>();
         public static readonly ValueParameterKey<Matrix> IVP = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<Matrix> P = ParameterKeys.NewValue<Matrix>();
     }
 }
