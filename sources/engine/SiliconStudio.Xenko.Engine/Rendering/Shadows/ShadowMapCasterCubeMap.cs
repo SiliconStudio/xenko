@@ -14,6 +14,7 @@ using SiliconStudio.Xenko.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
+using SiliconStudio.Xenko.Rendering.Materials;
 namespace SiliconStudio.Xenko.Rendering.Shadows
 {
     internal static partial class ShaderMixins
@@ -22,6 +23,14 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         {
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
+                if (context.GetParam(MaterialKeys.UsePixelShaderWithDepthPass))
+                {
+                    context.Mixin(mixin, "ShadowMapCasterAlphaDiscard");
+                }
+                else
+                {
+                    context.Mixin(mixin, "ShadowMapCasterNoPixelShader");
+                }
                 context.Mixin(mixin, "ShadowMapCasterCubeMapProjection");
             }
 

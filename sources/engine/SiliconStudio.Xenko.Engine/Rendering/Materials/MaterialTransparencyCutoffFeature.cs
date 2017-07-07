@@ -46,6 +46,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             alpha.ClampFloat(0, 1);
             context.SetStream(AlphaDiscardStream.Stream, alpha, MaterialKeys.AlphaDiscardMap, MaterialKeys.AlphaDiscardValue, new Color(DefaultAlpha));
 
+            context.MaterialPass.Parameters.Set(MaterialKeys.UsePixelShaderWithDepthPass, true);
+
             if (!context.Tags.Get(HasFinalCallback))
             {
                 context.Tags.Set(HasFinalCallback, true);

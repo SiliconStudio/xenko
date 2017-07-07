@@ -164,7 +164,6 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 // TODO: it may have more variables like this one.
             }
 
-
             var shaderStreamsUsage = new List<StreamStageUsage>();
             
             // store these methods to prevent their renaming
@@ -444,7 +443,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                     var nonSemVar = new List<IDeclaration>();
                     foreach (var variable in nextStreamUsage.OutStreamList)
                     {
-                        var sem = (variable as Variable).Qualifiers.OfType<Semantic>().FirstOrDefault();
+                        var sem = ((Variable)variable).Qualifiers.OfType<Semantic>().FirstOrDefault();
                         if (sem != null && (sem.Name.Text.StartsWith("SV_Target") || sem.Name.Text == "SV_Depth"))
                             semVar.Add(variable);
                         else
@@ -456,16 +455,32 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
                 // NOTE: from this point, nextStreamUsage.OutStreamList is correct.
 
+                List<IDeclaration> stageExclusiveInputStreams = new List<IDeclaration>();
+
                 // add necessary variables to output and input of previous stage
                 foreach (var variable in nextStreamUsage.InStreamList)
                 {
                     if (!prevStreamUsage.OutStreamList.Contains(variable))
                     {
+                        var sem = ((Variable)variable).Qualifiers.OfType<Semantic>().FirstOrDefault();
+                        if (sem != null && sem.Name.Text == "SV_IsFrontFace") // PS input only
+                        {
+                            stageExclusiveInputStreams.Add(variable);
+                            continue;
+                        }
+
                         prevStreamUsage.OutStreamList.Add(variable);
 
                         if (!prevStreamUsage.InStreamList.Contains(variable))
                             prevStreamUsage.InStreamList.Add(variable);
                     }
+                }
+
+                // Move stage exclusive input streams to the end of the declaration list
+                foreach (var variable in stageExclusiveInputStreams)
+                {
+                    nextStreamUsage.InStreamList.Remove(variable);
+                    nextStreamUsage.InStreamList.Add(variable);
                 }
 
                 // keep variable from prev output only if they are necessary to next stage OR their semantics force them to be in it
@@ -509,18 +524,18 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// <param name="entryPoint">the entrypoint function</param>
         /// <param name="streamStageUsage">the stream usage in this stage</param>
         /// <param name="stageName">the name of the stage</param>
-        /// <param name="prevOuputStructure">the output structutre from the previous stage</param>
+        /// <param name="prevOutputStructure">the output structutre from the previous stage</param>
         /// <returns>the new output structure</returns>
-        private StructType GenerateStreams(MethodDefinition entryPoint, StreamStageUsage streamStageUsage, string stageName, StructType prevOuputStructure, bool autoGenSem = true)
+        private StructType GenerateStreams(MethodDefinition entryPoint, StreamStageUsage streamStageUsage, string stageName, StructType prevOutputStructure /* FIXME */, bool autoGenSem = true)
         {
             if (entryPoint != null)
             {
                 // create the stream structures
-                var inStreamStruct = prevOuputStructure ?? CreateStreamStructure(streamStageUsage.InStreamList, stageName + "_INPUT");
+                var inStreamStruct = CreateInputStreamStructure(prevOutputStructure, streamStageUsage.InStreamList, stageName + "_INPUT");
                 var outStreamStruct = CreateStreamStructure(streamStageUsage.OutStreamList, stageName + "_OUTPUT", true, autoGenSem);
 
                 var intermediateStreamStruct = CreateIntermediateStructType(streamStageUsage, stageName);
-
+                
                 // modify the entrypoint
                 if (inStreamStruct.Fields.Count != 0)
                 {
@@ -543,9 +558,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 PropagateStreamsParameter(entryPoint, inStreamStruct, intermediateStreamStruct, outStreamStruct, visitedMethods, methodsWithStreams);
                 
                 CheckCrossStageMethodCall(streamStageUsage.ShaderStage, methodsWithStreams);
-
-                if (prevOuputStructure == null)
-                    shader.Members.Insert(0, inStreamStruct);
+                
+                shader.Members.Insert(0, inStreamStruct);
                 if (outStreamStruct.Fields.Count != 0)
                     shader.Members.Insert(0, outStreamStruct);
                 shader.Members.Insert(0, intermediateStreamStruct);
@@ -553,7 +567,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 return outStreamStruct;
             }
 
-            return prevOuputStructure;
+            return prevOutputStructure;
         }
 
         /// <summary>
@@ -562,13 +576,13 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// <param name="entryPoint">the entrypoint function</param>
         /// <param name="streamStageUsage">the stream usage in this stage</param>
         /// <param name="stageName">the name of the stage</param>
-        /// <param name="prevOuputStructure">the output structutre from the previous stage</param>
+        /// <param name="prevOutputStructure">the output structutre from the previous stage</param>
         /// <returns>the new output structure</returns>
-        private StructType GenerateStreamsWithSpecialDataInput(MethodDefinition entryPoint, StreamStageUsage streamStageUsage, string stageName, StructType prevOuputStructure)
+        private StructType GenerateStreamsWithSpecialDataInput(MethodDefinition entryPoint, StreamStageUsage streamStageUsage, string stageName, StructType prevOutputStructure)
         {
             if (entryPoint != null)
             {
-                var inStreamStruct = prevOuputStructure ?? CreateStreamStructure(streamStageUsage.InStreamList, stageName + "_INPUT");
+                var inStreamStruct = CreateInputStreamStructure(prevOutputStructure, streamStageUsage.InStreamList, stageName + "_INPUT");
                 var outStreamStruct = CreateStreamStructure(streamStageUsage.OutStreamList, stageName + "_OUTPUT");
 
                 var mixin = entryPoint.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
@@ -597,16 +611,15 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 PropagateStreamsParameter(entryPoint, inStreamStruct, intermediateStreamStruct, outStreamStruct, streamsVisitedMethods, methodsWithStreams);
 
                 CheckCrossStageMethodCall(streamStageUsage.ShaderStage, methodsWithStreams);
-
-                if (prevOuputStructure == null)
-                    shader.Members.Insert(0, inStreamStruct);
+                
+                shader.Members.Insert(0, inStreamStruct);
                 shader.Members.Insert(0, outStreamStruct);
                 shader.Members.Insert(0, intermediateStreamStruct);
 
                 return outStreamStruct;
             }
 
-            return prevOuputStructure;
+            return prevOutputStructure;
         }
 
         /// <summary>
@@ -632,15 +645,15 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// <param name="entryPointHSConstant">entrypoint for the hull shader constant</param>
         /// <param name="streamStageUsage">the stream usage in this stage</param>
         /// <param name="stageName">the name of the stage</param>
-        /// <param name="prevOuputStructure">the output structutre from the previous stage</param>
+        /// <param name="prevOutputStructure">the output structutre from the previous stage</param>
         /// <returns>the new output structure</returns>
-        private StructType GenerateStreamsForHullShader(MethodDefinition entryPoint, MethodDefinition entryPointHSConstant, StreamStageUsage streamStageUsage, string stageName, StructType prevOuputStructure)
+        private StructType GenerateStreamsForHullShader(MethodDefinition entryPoint, MethodDefinition entryPointHSConstant, StreamStageUsage streamStageUsage, string stageName, StructType prevOutputStructure)
         {
             if (entryPoint != null)
             {
                 // same behavior as geometry shader
-                var outStreamStruct = GenerateStreamsWithSpecialDataInput(entryPoint, streamStageUsage, stageName, prevOuputStructure);
-                var inStreamStruct = prevOuputStructure ?? shader.Members.OfType<StructType>().FirstOrDefault(x => x.Name.Text == stageName + "_INPUT");
+                var outStreamStruct = GenerateStreamsWithSpecialDataInput(entryPoint, streamStageUsage, stageName, prevOutputStructure);
+                var inStreamStruct = shader.Members.OfType<StructType>().FirstOrDefault(x => x.Name.Text == stageName + "_INPUT");
                 var intermediateStreamStruct = shader.Members.OfType<StructType>().FirstOrDefault(x => x.Name.Text == stageName + "_STREAMS");
 
                 if (inStreamStruct == null)
@@ -668,7 +681,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 return outStreamStruct;
             }
 
-            return prevOuputStructure;
+            return prevOutputStructure;
         }
 
         /// <summary>
@@ -717,13 +730,13 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// <param name="entryPoint">the entrypoint function</param>
         /// <param name="streamStageUsage">the stream usage in this stage</param>
         /// <param name="stageName">the name of the stage</param>
-        /// <param name="prevOuputStructure">the output structutre from the previous stage</param>
+        /// <param name="prevOutputStructure">the output structutre from the previous stage</param>
         /// <returns>the new output structure</returns>
-        private StructType GenerateStreamsForDomainShader(MethodDefinition entryPoint, StreamStageUsage streamStageUsage, string stageName, StructType prevOuputStructure)
+        private StructType GenerateStreamsForDomainShader(MethodDefinition entryPoint, StreamStageUsage streamStageUsage, string stageName, StructType prevOutputStructure)
         {
             if (entryPoint != null)
             {
-                var outStreamStruct = GenerateStreamsForHullShader(entryPoint, null, streamStageUsage, stageName, prevOuputStructure);
+                var outStreamStruct = GenerateStreamsForHullShader(entryPoint, null, streamStageUsage, stageName, prevOutputStructure);
 
                 var visitedMethods = new Stack<MethodDeclaration>();
                 RecursiveRename(entryPoint, null, null, null, new TypeName("HS_CONSTANTS"), visitedMethods);
@@ -731,7 +744,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 return outStreamStruct;
             }
 
-            return prevOuputStructure;
+            return prevOutputStructure;
         }
 
         /// <summary>
@@ -1149,6 +1162,48 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 }
             }
             return tempStruct;
+        }
+
+        /// <summary>
+        /// Generate a stream structure from a previous output structure if specified
+        /// </summary>
+        /// <param name="prevStreamStageUsage">The previous stream stage to match the new structure's layout to (optional)</param>
+        /// <param name="streamsDeclarationList">the list of the declarations</param>
+        /// <param name="structName">the name of the structure</param>
+        /// <returns>the structure</returns>
+        private static StructType CreateInputStreamStructure(StructType prevOutputStructure, List<IDeclaration> streamsDeclarationList, string structName, bool useSem = true,
+            bool autoAddSem = true)
+        {
+            var declarations = new List<IDeclaration>();
+            var semanticNames = new HashSet<string>();
+            var fieldNames = new HashSet<string>();
+
+            if (prevOutputStructure != null)
+            {
+                foreach (var variable in prevOutputStructure.Fields)
+                {
+                    var sem = variable.Qualifiers.OfType<Semantic>().FirstOrDefault();
+                    declarations.Add(variable);
+                    fieldNames.Add(variable.Name);
+                    if (sem != null)
+                    {
+                        semanticNames.Add(sem.Name);
+                    }
+                }
+            }
+
+            foreach (var decl in streamsDeclarationList)
+            {
+                var variable = (Variable)decl;
+                var sem = variable.Qualifiers.OfType<Semantic>().FirstOrDefault();
+                if (!fieldNames.Contains(variable.Name) && (sem == null || !semanticNames.Contains(sem.Name)))
+                {
+                    declarations.Add(decl);
+                    if(sem != null) semanticNames.Add(sem.Name);
+                    fieldNames.Add(variable.Name);
+                }
+            }
+            return CreateStreamStructure(declarations, structName, useSem, autoAddSem);
         }
 
         /// <summary>

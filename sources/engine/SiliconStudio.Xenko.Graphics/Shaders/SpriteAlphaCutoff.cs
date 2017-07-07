@@ -14,31 +14,28 @@ using SiliconStudio.Xenko.Shaders;
 using SiliconStudio.Core.Mathematics;
 using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
-using SiliconStudio.Xenko.Rendering.Materials;
-namespace SiliconStudio.Xenko.Rendering.Shadows
+namespace SiliconStudio.Xenko.Rendering
+{
+    public static partial class SpriteAlphaCutoffKeys
+    {
+    }
+}
+namespace SiliconStudio.Xenko.Rendering
 {
     internal static partial class ShaderMixins
     {
-        internal partial class ShadowMapCasterParaboloid  : IShaderMixinBuilder
+        internal partial class SpriteAlphaCutoffEffect  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                if (context.GetParam(MaterialKeys.UsePixelShaderWithDepthPass))
-                {
-                    context.Mixin(mixin, "ShadowMapCasterAlphaDiscard");
-                }
-                else
-                {
-                    context.Mixin(mixin, "ShadowMapCasterNoPixelShader");
-                }
-                context.Mixin(mixin, "ShadowMapCasterParaboloidProjection");
+                context.Mixin(mixin, "SpriteAlphaCutoff", context.GetParam(SpriteBaseKeys.ColorIsSRgb));
             }
 
             [ModuleInitializer]
             internal static void __Initialize__()
 
             {
-                ShaderMixinManager.Register("ShadowMapCasterParaboloid", new ShadowMapCasterParaboloid());
+                ShaderMixinManager.Register("SpriteAlphaCutoffEffect", new SpriteAlphaCutoffEffect());
             }
         }
     }

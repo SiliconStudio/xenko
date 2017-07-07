@@ -461,6 +461,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Localization", "00-Localization", "{FC791F56-C1F1-4C41-A193-868D8197F8E2}"
 	ProjectSection(SolutionItems) = preProject
 		..\sources\localization\SiliconStudio.Assets.Editor.pot = ..\sources\localization\SiliconStudio.Assets.Editor.pot
+		..\sources\localization\SiliconStudio.Presentation.pot = ..\sources\localization\SiliconStudio.Presentation.pot
 		..\sources\localization\SiliconStudio.Xenko.Assets.Presentation.pot = ..\sources\localization\SiliconStudio.Xenko.Assets.Presentation.pot
 		..\sources\localization\Xenko.GameStudio.pot = ..\sources\localization\Xenko.GameStudio.pot
 	EndProjectSection
