@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         public class FastTextRenderer : ComponentBase
         {
-            private const int VertexBufferCount = 3;
+            private const int VertexBufferCount = 2;
 
             private const int IndexStride = sizeof(int);
 
@@ -33,6 +33,8 @@ namespace SiliconStudio.Xenko.Graphics
             private InputElementDescription[][] inputElementDescriptions;
 
             private int charsToRenderCount;
+
+            private int VertexBufferLength => MaxCharactersPerLine * MaxCharactersLines * 4;
 
             public static FastTextRenderer New([NotNull] GraphicsContext graphicsContext)
             {
@@ -113,11 +115,9 @@ namespace SiliconStudio.Xenko.Graphics
                 indexBufferBinding = new IndexBufferBinding(Buffer.Index.New(graphicsContext.CommandList.GraphicsDevice, new DataPointer(indexPointer, indexBufferSize)), true, indexBufferLength);
 
                 // Create vertex buffers
-                var vertexBufferLength = MaxCharactersPerLine * MaxCharactersLines * 4;
-
                 vertexBuffers = new Buffer[VertexBufferCount];
                 for (int j = 0; j < VertexBufferCount; j++)
-                    vertexBuffers[j] = Buffer.Vertex.New(graphicsContext.CommandList.GraphicsDevice, new VertexPositionNormalTexture[vertexBufferLength], GraphicsResourceUsage.Dynamic);
+                    vertexBuffers[j] = Buffer.Vertex.New(graphicsContext.CommandList.GraphicsDevice, new VertexPositionNormalTexture[VertexBufferLength], GraphicsResourceUsage.Dynamic);
 
                 vertexBuffersBinding = new VertexBufferBinding[VertexBufferCount];
                 for (int j = 0; j < VertexBufferCount; j++)
@@ -160,6 +160,9 @@ namespace SiliconStudio.Xenko.Graphics
                 // Map the vertex buffer to write to
                 mappedVertexBuffer = graphicsContext.CommandList.MapSubresource(vertexBuffers[activeVertexBufferIndex], 0, MapMode.WriteDiscard);
                 mappedVertexBufferPointer = mappedVertexBuffer.DataBox.DataPointer;
+
+                // Clear buffer first (because of the buffer mapping mode used)
+                Utilities.ClearMemory(mappedVertexBufferPointer, 0x0, VertexBufferLength);
             }
 
             /// <summary>
