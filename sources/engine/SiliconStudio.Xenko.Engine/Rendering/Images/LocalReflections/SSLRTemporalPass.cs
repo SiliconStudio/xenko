@@ -6,4 +6,19 @@
 // and re-save the associated .xkfx.
 // </auto-generated>
 
-// Nothing to generate
+using System;
+using SiliconStudio.Core;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Shaders;
+using SiliconStudio.Core.Mathematics;
+using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
+
+namespace SiliconStudio.Xenko.Rendering.Images
+{
+    public static partial class SSLRTemporalPassKeys
+    {
+        public static readonly ValueParameterKey<float> TemporalResponse = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> TemporalScale = ParameterKeys.NewValue<float>();
+    }
+}
