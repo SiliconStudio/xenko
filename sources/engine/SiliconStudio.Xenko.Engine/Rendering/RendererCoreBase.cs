@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Rendering
         public bool Profiling { get; set; }
 
         [DataMemberIgnore]
-        public ProfilingKey ProfilingKey => profilingKey ?? (profilingKey = new ProfilingKey(Name, ProfilingKeyFlags.GpuProfiling));
+        public ProfilingKey ProfilingKey => profilingKey ?? (profilingKey = new ProfilingKey(Name));
 
         [DataMemberIgnore]
         protected RenderContext Context { get; private set; }

@@ -19,6 +19,7 @@ namespace SiliconStudio.Core.Diagnostics
         private Dictionary<object, object> attributes;
         private long startTime;
         private string beginText;
+        private ProfilingEventType eventType;
 
         internal ProfilingState(int profilingId, ProfilingKey profilingKey, bool isEnabled)
         {
@@ -29,6 +30,7 @@ namespace SiliconStudio.Core.Diagnostics
             attributes = null;
             beginText = null;
             startTime = 0;
+            eventType = ProfilingEventType.CpuProfilingEvent;
         }
 
         /// <summary>
@@ -157,8 +159,9 @@ namespace SiliconStudio.Core.Diagnostics
             EmitEvent(ProfilingMessageType.Begin, null, value0, value1, value2, value3);
         }
 
-        public void Begin(long timeStamp)
+        internal void Begin(long timeStamp)
         {
+            eventType = ProfilingEventType.GpuProfilingEVent;
             EmitEvent(ProfilingMessageType.Begin, null, timeStamp);
         }
 
@@ -268,7 +271,7 @@ namespace SiliconStudio.Core.Diagnostics
             EmitEvent(ProfilingMessageType.End, null, value0, value1, value2, value3);
         }
 
-        public void End(long timeStamp)
+        internal void End(long timeStamp)
         {
             EmitEvent(ProfilingMessageType.End, null, timeStamp);
         }
@@ -299,7 +302,7 @@ namespace SiliconStudio.Core.Diagnostics
             var profilerEvent = new ProfilingEvent(ProfilingId, ProfilingKey, profilingType, timeStamp, timeStamp - startTime, text, attributes);
 
             // Send profiler event to Profiler
-            Profiler.ProcessEvent(ref profilerEvent);
+            Profiler.ProcessEvent(ref profilerEvent, eventType);
         }
 
         private void EmitEvent(ProfilingMessageType profilingType, string text = null)
@@ -329,7 +332,7 @@ namespace SiliconStudio.Core.Diagnostics
             var profilerEvent = new ProfilingEvent(ProfilingId, ProfilingKey, profilingType, timeStamp, timeStamp - startTime, text, attributes);
 
             // Send profiler event to Profiler
-            Profiler.ProcessEvent(ref profilerEvent);
+            Profiler.ProcessEvent(ref profilerEvent, eventType);
         }
 
         private void EmitEvent(ProfilingMessageType profilingType, string textFormat, params object[] textFormatArguments)
@@ -358,7 +361,7 @@ namespace SiliconStudio.Core.Diagnostics
             var profilerEvent = new ProfilingEvent(ProfilingId, ProfilingKey, profilingType, timeStamp, timeStamp - startTime, text, attributes);
 
             // Send profiler event to Profiler
-            Profiler.ProcessEvent(ref profilerEvent);
+            Profiler.ProcessEvent(ref profilerEvent, eventType);
         }
 
         private void EmitEvent(ProfilingMessageType profilingType, string text, ProfilingCustomValue? value0, ProfilingCustomValue? value1, ProfilingCustomValue? value2, ProfilingCustomValue? value3)
@@ -388,13 +391,7 @@ namespace SiliconStudio.Core.Diagnostics
             }
 
             // Send profiler event to Profiler
-            Profiler.ProcessEvent(ref profilerEvent);
-        }
-
-        private TimeSpan GetElapsedTime()
-        {
-            var delta = Stopwatch.GetTimestamp() - startTime;
-            return new TimeSpan((delta * 10000000) / Stopwatch.Frequency);
+            Profiler.ProcessEvent(ref profilerEvent, eventType);
         }
     }
 }
