@@ -122,13 +122,56 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [DefaultValue(true)]
         public bool ReduceFireflies { get; set; } = true;
 
-        public bool UseColorBufferMips { get; set; } = false; // use true later, test perf diff on 4k (resolve should pass run faster but check it)
+        /// <summary>
+        /// Gets or sets a value indicating whether use color buffer mipsmaps chain; otherwise will use raw input color buffer to sample reflections color.
+        /// Using mipmaps improves resolve pass performance and reduces GPU cache misses.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [use color buffer mips]; otherwise, <c>false</c>.
+        /// </value>
+        public bool UseColorBufferMips { get; set; } = false;
 
-        // TODO: add docs
-        public float BRDFBias { get; set; } = 0.7f;
-        public bool UseTemporal { get; set; } = true;
+        /// <summary>
+        /// Gets or sets the BRDF bias. This value controlls source roughness effect on reflections blur.
+        /// Smaller values produce wider reflections spread but also introduce more noise.
+        /// Higher values provide more mirror-like reflections. Default value is 0.8.
+        /// </summary>
+        /// <value>
+        /// The BRDF bias.
+        /// </value>
+        [Display("BRDF Bias")]
+        [DefaultValue(0.8f)]
+        public float BRDFBias { get; set; } = 0.8f;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether use temporal effect to smooth reflections.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if use temporal effect to smooth reflections; otherwise, <c>false</c>.
+        /// </value>
+        [Display("Temporal Enable")]
+        [DefaultValue(true)]
+        public bool TemporalEnabled { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets the temporal effect scale.
+        /// </summary>
+        /// <value>
+        /// The temporal effect scale.
+        /// </value>
+        [Display("Temporal Scale")]
+        [DefaultValue(1.5f)]
         public float TemporalScale { get; set; } = 1.5f;
-        public float TemporalResponse { get; set; } = 0.85f;
+
+        /// <summary>
+        /// Gets or sets the temporal response.
+        /// </summary>
+        /// <value>
+        /// The temporal response.
+        /// </value>
+        [Display("Temporal Response")]
+        [DefaultValue(0.9f)]
+        public float TemporalResponse { get; set; } = 0.9f;
         
 #if SSLR_DEBUG
 
@@ -230,6 +273,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // ViewInfo    :  x-1/Projection[0,0]   y-1/Projection[1,1]   z-(Far / (Far - Near)   w-(-Far * Near) / (Far - Near) / Far)
 
+            // TODO: pack UseTemporal * Time and scale it
+
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.ViewInfo, ViewInfo);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.ViewFarPlane, farclip);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.RoughnessFade, roughnessFade);
@@ -239,7 +284,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.RayStepScale, 2.0f / outputBuffer.Width);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.Time, time);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.BRDFBias, BRDFBias);
-            rayTracePassShader.Parameters.Set(SSLRCommonKeys.UseTemporal, UseTemporal ? 1 : 0);
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.UseTemporal, TemporalEnabled ? 1 : 0);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.TemporalResponse, TemporalResponse);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.TemporalScale, TemporalScale);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
@@ -259,7 +304,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             resolvePassShader.Parameters.Set(SSLRCommonKeys.RayStepScale, 2.0f / outputBuffer.Width);
             resolvePassShader.Parameters.Set(SSLRCommonKeys.Time, time);
             resolvePassShader.Parameters.Set(SSLRCommonKeys.BRDFBias, BRDFBias);
-            resolvePassShader.Parameters.Set(SSLRCommonKeys.UseTemporal, UseTemporal ? 1 : 0);
+            resolvePassShader.Parameters.Set(SSLRCommonKeys.UseTemporal, TemporalEnabled ? 1 : 0);
             resolvePassShader.Parameters.Set(SSLRCommonKeys.TemporalResponse, TemporalResponse);
             resolvePassShader.Parameters.Set(SSLRCommonKeys.TemporalScale, TemporalScale);
             resolvePassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
@@ -283,7 +328,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             combinePassShader.Parameters.Set(SSLRCommonKeys.RayStepScale, 2.0f / outputBuffer.Width);
             combinePassShader.Parameters.Set(SSLRCommonKeys.Time, time);
             combinePassShader.Parameters.Set(SSLRCommonKeys.BRDFBias, BRDFBias);
-            combinePassShader.Parameters.Set(SSLRCommonKeys.UseTemporal, UseTemporal ? 1 : 0);
+            combinePassShader.Parameters.Set(SSLRCommonKeys.UseTemporal, TemporalEnabled ? 1 : 0);
             combinePassShader.Parameters.Set(SSLRCommonKeys.TemporalResponse, TemporalResponse);
             combinePassShader.Parameters.Set(SSLRCommonKeys.TemporalScale, TemporalScale);
             combinePassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
@@ -419,7 +464,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // Temporal Pass
             Texture reflectionsBuffer = resolveBuffer;
-            if (UseTemporal)
+            if (TemporalEnabled)
             {
                 var temporalSize = outputBuffer.Size;
                 if (temporalBuffer == null || temporalBuffer.Size != temporalSize)
