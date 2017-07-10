@@ -20,20 +20,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
             float2( 2,  2),
         };
 
-        float2 RandN2(float2 pos, float2 random)
-        {
-	        return frac(sin(dot(pos.xy + random, float2(12.9898, 78.233))) * float2(43758.5453, 28001.8384));
-        }
-
-        float4 TangentToWorld(float3 N, float4 H)
-        {
-	        float3 UpVector = abs(N.z) < 0.999 ? float3(0.0, 0.0, 1.0) : float3(1.0, 0.0, 0.0);
-	        float3 T = normalize( cross( UpVector, N ) );
-	        float3 B = cross( N, T );
-				 
-	        return float4((T * H.x) + (B * H.y) + (N * H.z), H.w);
-        }
-
         // Brian Karis, Epic Games "Real Shading in Unreal Engine 4"
         float4 ImportanceSampleGGX(float2 Xi, float Roughness)
         {

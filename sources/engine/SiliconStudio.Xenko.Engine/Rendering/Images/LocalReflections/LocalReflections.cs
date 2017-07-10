@@ -1,4 +1,7 @@
+#if DEBUG
+// Enables/disables Screen Space Local Reflections effect debugging
 #define SSLR_DEBUG
+#endif
 
 // Copyright (c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
@@ -11,7 +14,6 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Rendering.Images
 {
@@ -33,13 +35,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         private Texture[] cachedColorBuffer0Mips;
         private Texture[] cachedColorBuffer1Mips;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LocalReflections"/> class.
-        /// </summary>
-        public LocalReflections()
-        {
-        }
 
         [DataContract("ResolutionMode")]
         public enum ResolutionMode
@@ -78,17 +73,20 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         [Display("Resolve pass resolution")]
         [DefaultValue(ResolutionMode.Half)]
-        public ResolutionMode ResolvePassResolution { get; set; } = ResolutionMode.Half;
+        public ResolutionMode ResolvePassResolution { get; set; } = ResolutionMode.Full;
 
         /// <summary>
         /// Maximum allowed amount of dynamic iterations in the ray trace pass.
+        /// Higher value provides better ray tracing quality but decreases the performance.
+        /// Default value is 60.
         /// </summary>
         [Display("Max steps amount")]
-        [DefaultValue(24)]
-        public int MaxStepsAmount { get; set; } = 24;
+        [DefaultValue(60)]
+        public int MaxStepsAmount { get; set; } = 60;
 
         /// <summary>
         /// Maximum allowed surface roughness value to use local reflections.
+        /// Pixels with higher values won't be affected by the effect.
         /// </summary>
         [Display("Max roughness")]
         [DefaultValue(0.6f)]
