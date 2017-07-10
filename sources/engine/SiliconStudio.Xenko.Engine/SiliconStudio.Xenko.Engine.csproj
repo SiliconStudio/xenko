@@ -223,6 +223,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Images\LocalReflections\SSLRDepthPass.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SSLRDepthPass.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Images\LocalReflections\SSLRKeys.cs" />
     <Compile Include="Rendering\Images\LocalReflections\SSLRResolvePass.cs">
       <AutoGen>True</AutoGen>
@@ -303,6 +309,10 @@
     <None Include="Rendering\Images\LocalReflections\SSLRConeTracePass.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>SSLRConeTracePass.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\LocalReflections\SSLRDepthPass.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SSLRDepthPass.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Images\LocalReflections\SSLRRayTracePass.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
