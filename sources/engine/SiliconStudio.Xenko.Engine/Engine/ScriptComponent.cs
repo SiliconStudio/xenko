@@ -37,32 +37,11 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// The global profiling key for scripts. Activate/deactivate this key to activate/deactivate profiling for all your scripts.
         /// </summary>
-        public static ProfilingKey ScriptGlobalProfilingKey = new ProfilingKey("Script");
+        public static readonly ProfilingKey ScriptGlobalProfilingKey = new ProfilingKey("Script");
 
-        private static Dictionary<Type, ProfilingKey> scriptToProfilingKey = new Dictionary<Type, ProfilingKey>();
+        private static readonly Dictionary<Type, ProfilingKey> ScriptToProfilingKey = new Dictionary<Type, ProfilingKey>();
 
         private ProfilingKey profilingKey;
-
-        /// <summary>
-        /// Gets the profiling key to activate/deactivate profiling for the current script class.
-        /// </summary>
-        public ProfilingKey ProfilingKey
-        {
-            get
-            {
-                if (profilingKey == null)
-                {
-                    var scriptType = GetType();
-                    if (!scriptToProfilingKey.TryGetValue(scriptType, out profilingKey))
-                    {
-                        profilingKey = new ProfilingKey(ScriptGlobalProfilingKey, scriptType.FullName);
-                        scriptToProfilingKey[scriptType] = profilingKey;
-                    }
-                }
-
-                return profilingKey;
-            }
-        }
 
         private IGraphicsDeviceService graphicsDeviceService;
         private Logger logger;
@@ -85,6 +64,28 @@ namespace SiliconStudio.Xenko.Engine
             EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
             Audio = Services.GetSafeServiceAs<AudioSystem>();
             SpriteAnimation = Services.GetSafeServiceAs<SpriteAnimationSystem>();
+        }
+
+        /// <summary>
+        /// Gets the profiling key to activate/deactivate profiling for the current script class.
+        /// </summary>
+        [DataMemberIgnore]
+        public ProfilingKey ProfilingKey
+        {
+            get
+            {
+                if (profilingKey != null)
+                    return profilingKey;
+
+                var scriptType = GetType();
+                if (!ScriptToProfilingKey.TryGetValue(scriptType, out profilingKey))
+                {
+                    profilingKey = new ProfilingKey(ScriptGlobalProfilingKey, scriptType.FullName);
+                    ScriptToProfilingKey[scriptType] = profilingKey;
+                }
+
+                return profilingKey;
+            }
         }
 
         [DataMemberIgnore]
