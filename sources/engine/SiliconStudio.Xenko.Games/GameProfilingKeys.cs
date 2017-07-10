@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Games
         /// <summary>
         /// Profiling Draw() method of a <see cref="GameBase"/>. This profiling is only used through markers published every seconds.
         /// </summary>
-        public static readonly ProfilingKey GameDrawFPS = new ProfilingKey(Game, "DrawFPS", ProfilingKeyFlags.GpuProfiling);
+        public static readonly ProfilingKey GameDrawFPS = new ProfilingKey(Game, "DrawFPS");
 
         /// <summary>
         /// Profiling Object Database initialization.

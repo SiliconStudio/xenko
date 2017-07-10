@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     [DataContract(DefaultMemberMode = DataMemberMode.Never)]
     public class ShadowMapRenderer : IShadowMapRenderer
     {
-        public static readonly ProfilingKey ProfilingKey = new ProfilingKey(nameof(ShadowMapRenderer), ProfilingKeyFlags.GpuProfiling);
+        public static readonly ProfilingKey ProfilingKey = new ProfilingKey(nameof(ShadowMapRenderer));
 
         // TODO: Extract a common interface and implem for shadow renderer (not only shadow maps)
         private readonly int MaximumTextureSize = (int)(ReferenceShadowSize * ComputeSizeFactor(LightShadowMapSize.XLarge) * 2.0f);

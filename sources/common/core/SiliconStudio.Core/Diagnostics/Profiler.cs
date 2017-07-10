@@ -56,7 +56,8 @@ namespace SiliconStudio.Core.Diagnostics
     public static class Profiler
     {
         internal static Logger Logger = GlobalLogger.GetLogger("Profiler"); // Global logger for all profiling
-        private static readonly FastList<ProfilingEvent> events = new FastList<ProfilingEvent>();
+        private static readonly FastList<ProfilingEvent> cpuEvents = new FastList<ProfilingEvent>();
+        private static readonly FastList<ProfilingEvent> gpuEvents = new FastList<ProfilingEvent>();
         private static readonly object Locker = new object();
         private static bool enableAll;
         private static int profileId;
@@ -224,13 +225,6 @@ namespace SiliconStudio.Core.Diagnostics
             return profiler;
         }
 
-        public static ProfilingState Begin([NotNull] ProfilingKey profilingKey, long timeStamp)
-        {
-            var profiler = New(profilingKey);
-            profiler.Begin(timeStamp);
-            return profiler;
-        }
-
         /// <summary>
         /// Resets the id counter to zero and disable all registered profiles.
         /// </summary>
@@ -240,28 +234,42 @@ namespace SiliconStudio.Core.Diagnostics
             profileId = 0;
         }
 
-        public static void ProcessEvent(ref ProfilingEvent profilingEvent)
+        public static void ProcessEvent(ref ProfilingEvent profilingEvent, ProfilingEventType eventType)
         {
             // Add event
             lock (Locker)
             {
-                events.Add(profilingEvent);
+                var list = eventType == ProfilingEventType.CpuProfilingEvent ? cpuEvents : gpuEvents;
+                list.Add(profilingEvent);
             }
 
             // Log it
             if ((profilingEvent.Key.Flags & ProfilingKeyFlags.Log) != 0)
                 Logger.Log(new ProfilingMessage(profilingEvent.Id, profilingEvent.Key, profilingEvent.Type) { Attributes = profilingEvent.Attributes, ElapsedTime = new TimeSpan((profilingEvent.ElapsedTime * 10000000) / Stopwatch.Frequency), Text = profilingEvent.Text });
         }
-        
-        public static ProfilingEvent[] GetEvents()
+
+        /// <summary>
+        /// Retrieve the selected type of events and returns the number of elapsed frames.
+        /// </summary>
+        /// <param name="eventType">The type of events to retrieve</param>
+        /// <param name="clearOtherEventTypes">if true, also clears the event types to avoid event over-accumulation.</param>
+        /// <returns></returns>
+        public static ProfilingEvent[] GetEvents(ProfilingEventType eventType, bool clearOtherEventTypes = true)
         {
             lock (Locker)
             {
+                var events = eventType == ProfilingEventType.CpuProfilingEvent ? cpuEvents : gpuEvents;
                 if (events.Count == 0) return null;
 
                 var res = events.ToArray();
 
                 events.Clear();
+
+                if (clearOtherEventTypes)
+                {
+                    cpuEvents.Clear();
+                    gpuEvents.Clear();
+                }
 
                 return res;
             }

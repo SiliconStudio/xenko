@@ -22,12 +22,6 @@ namespace SiliconStudio.Xenko.Profiling
         ByName
     }
 
-    public enum GameProfilingFiltering
-    {
-        CPU,
-        GPU
-    }
-
     public class GameProfilingSystem : GameSystemBase
     {
         private readonly Point textDrawStartOffset = new Point(5, 10);
@@ -108,7 +102,7 @@ namespace SiliconStudio.Xenko.Profiling
 
         public override void Update(GameTime gameTime)
         {
-            if (dumpTiming.ElapsedMilliseconds < RefreshTime || FilteringMode == GameProfilingFiltering.GPU)
+            if (dumpTiming.ElapsedMilliseconds < RefreshTime || FilteringMode == ProfilingEventType.GpuProfilingEVent)
                 return;
             
             dumpTiming.Restart();
@@ -132,24 +126,18 @@ namespace SiliconStudio.Xenko.Profiling
             lastUpdate = newUpdate;
             lastDraw = newDraw;
 
+            var elapsedFrames = FilteringMode == ProfilingEventType.CpuProfilingEvent ? elapsedUpdates : elapsedDraws;
+            var tickFrequency = FilteringMode == ProfilingEventType.CpuProfilingEvent ? GraphicsDevice.TimestampFrequency : Stopwatch.Frequency;
+
             //Copy events from profiler ( this will also clean up the profiler )
-            var eventsCopy = Profiler.GetEvents();
-            if (eventsCopy == null) return;
+            var events = Profiler.GetEvents(FilteringMode);
+            if (events == null) return;
 
             var containsMarks = false;
 
             //update strings that need update
-            foreach (var e in eventsCopy)
+            foreach (var e in events)
             {
-                bool isGpuProfilingKey = (e.Key.Flags & ProfilingKeyFlags.GpuProfiling) == ProfilingKeyFlags.GpuProfiling;
-                bool isProfilingKeyFiltered = (isGpuProfilingKey && FilteringMode == GameProfilingFiltering.CPU)
-                                              || (!isGpuProfilingKey && FilteringMode == GameProfilingFiltering.GPU);
-
-                if (isProfilingKeyFiltered && e.Key != GameProfilingKeys.GameDrawFPS)
-                {
-                    continue;
-                }
-
                 //gc profiling is a special case
                 if (e.Key == GcProfiling.GcMemoryKey && e.Custom0.HasValue && e.Custom1.HasValue && e.Custom2.HasValue)
                 {
@@ -166,15 +154,8 @@ namespace SiliconStudio.Xenko.Profiling
                 }
 
                 if (e.Key == GameProfilingKeys.GameDrawFPS && e.Type == ProfilingMessageType.End)
-                {
-                    fpsStatStringBuilder.Clear();
-                    fpsStatStringBuilder.AppendFormat(e.Text, e.Custom0.Value.IntValue, e.Custom1.Value.DoubleValue, e.Custom2.Value.DoubleValue, e.Custom3.Value.FloatValue);
                     continue;
-                }
 
-                gpuInfoStringBuilder.Clear();
-                gpuInfoStringBuilder.AppendFormat("Graphics> Device={0}, Platform={1}, Profile={2}, Resolution={3}", GraphicsDevice.Adapter.Description, GraphicsDevice.Platform, GraphicsDevice.ShaderProfile, renderTargetSize);
-                
                 ProfilingResult profilingResult;
                 if (!profilingResultsDictionary.TryGetValue(e.Key, out profilingResult))
                 {
@@ -220,6 +201,12 @@ namespace SiliconStudio.Xenko.Profiling
                 profilingResultsDictionary[e.Key] = profilingResult;
             }
 
+            gpuInfoStringBuilder.Clear();
+            gpuInfoStringBuilder.AppendFormat("Graphics> Device={0}, Platform={1}, Profile={2}, Resolution={3}", GraphicsDevice.Adapter.Description, GraphicsDevice.Platform, GraphicsDevice.ShaderProfile, renderTargetSize);
+
+            fpsStatStringBuilder.Clear();
+            fpsStatStringBuilder.AppendFormat("Frame={0}, Update={1:0.000}ms, Draw={2:0.000}ms, FPS={3:0.00}", Game.DrawTime.FrameCount, Game.UpdateTime.TimePerFrame.TotalMilliseconds, Game.DrawTime.TimePerFrame.TotalMilliseconds, Game.DrawTime.FramePerSecond);
+
             profilersStringBuilder.Clear();
             profilingResults.Clear();
 
@@ -242,7 +229,7 @@ namespace SiliconStudio.Xenko.Profiling
                 // ReSharper restore PossibleInvalidOperationException
             }
             
-            var availableDisplayHeight = viewportHeight - 2 * TextRowHeight - (FilteringMode == GameProfilingFiltering.CPU? 3: 2) * TopRowHeight;
+            var availableDisplayHeight = viewportHeight - 2 * TextRowHeight - (FilteringMode == ProfilingEventType.CpuProfilingEvent? 3: 2) * TopRowHeight;
             var elementsPerPage = (int)Math.Floor(availableDisplayHeight / TextRowHeight);
             numberOfPages = (uint) Math.Ceiling(profilingResults.Count / (float) elementsPerPage);
             CurrentResultPage = Math.Min(CurrentResultPage, numberOfPages);
@@ -254,7 +241,7 @@ namespace SiliconStudio.Xenko.Profiling
 
             for (int i = 0; i < Math.Min(profilingResults.Count - (CurrentResultPage-1) * elementsPerPage, elementsPerPage); i++)
             {
-                AppendEvent(profilingResults[((int)CurrentResultPage-1)*elementsPerPage + i], elapsedUpdates, elapsedDraws, containsMarks);
+                AppendEvent(profilingResults[((int)CurrentResultPage-1)*elementsPerPage + i], elapsedFrames, tickFrequency, containsMarks);
             }
             profilingResults.Clear();
 
@@ -271,12 +258,9 @@ namespace SiliconStudio.Xenko.Profiling
             }
         }
 
-        private void AppendEvent(ProfilingResult profilingResult, int elapsedUpdates, int elapsedDraws, bool displayMarkCount)
+        private void AppendEvent(ProfilingResult profilingResult, int elapsedFrames, long tickFrequency, bool displayMarkCount)
         {
             var profilingEvent = profilingResult.Event.Value;
-            var isGpuProfilingKey = (profilingEvent.Key.Flags & ProfilingKeyFlags.GpuProfiling) == ProfilingKeyFlags.GpuProfiling;
-            var tickFrequency = isGpuProfilingKey ? GraphicsDevice.TimestampFrequency : Stopwatch.Frequency;
-            var elapsedFrames = isGpuProfilingKey ? elapsedDraws : elapsedUpdates;
 
             Profiler.AppendTime(profilersStringBuilder, profilingResult.AccumulatedTime / elapsedFrames, tickFrequency);
             profilersStringBuilder.Append(" | ");
@@ -346,7 +330,7 @@ namespace SiliconStudio.Xenko.Profiling
 
         public override void Draw(GameTime gameTime)
         {
-            if (dumpTiming.ElapsedMilliseconds > RefreshTime && FilteringMode == GameProfilingFiltering.GPU)
+            if (dumpTiming.ElapsedMilliseconds > RefreshTime && FilteringMode == ProfilingEventType.GpuProfilingEVent)
             {
                 dumpTiming.Restart();
 
@@ -379,7 +363,7 @@ namespace SiliconStudio.Xenko.Profiling
                 fastTextRenderer.DrawString(Game.GraphicsContext, $"Display: {FilteringMode}, {fpsStatString}", textDrawStartOffset.X, currentHeight);
                 currentHeight += TopRowHeight;
 
-                if (FilteringMode != GameProfilingFiltering.GPU)
+                if (FilteringMode != ProfilingEventType.GpuProfilingEVent)
                 {
                     fastTextRenderer.DrawString(Game.GraphicsContext, gcMemoryString, textDrawStartOffset.X, currentHeight);
                     currentHeight += TopRowHeight;
@@ -478,7 +462,7 @@ namespace SiliconStudio.Xenko.Profiling
         /// <summary>
         /// Sets or gets which data should be displayed on screen.
         /// </summary>
-        public GameProfilingFiltering FilteringMode { get; set; } = GameProfilingFiltering.CPU;
+        public ProfilingEventType FilteringMode { get; set; } = ProfilingEventType.CpuProfilingEvent;
 
         /// <summary>
         /// Sets or gets the refreshing time of the profiling information in milliseconds.
