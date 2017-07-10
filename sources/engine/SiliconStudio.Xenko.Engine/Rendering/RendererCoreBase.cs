@@ -20,12 +20,8 @@ namespace SiliconStudio.Xenko.Rendering
     [DataContract]
     public abstract class RendererCoreBase : ComponentBase, IGraphicsRendererCore
     {
-        public ProfilingKey ProfilingKey => profilingKey ?? (profilingKey = new ProfilingKey(Name, ProfilingKeyFlags.GpuProfiling));
-
-        [DataMemberIgnore]
-        private ProfilingKey profilingKey;
-
         private bool isInDrawCore;
+        private ProfilingKey profilingKey;
         private readonly List<GraphicsResource> scopedResources = new List<GraphicsResource>();
         private readonly List<IGraphicsRendererCore> subRenderersToUnload;
 
@@ -60,6 +56,9 @@ namespace SiliconStudio.Xenko.Rendering
 
         [DataMemberIgnore]
         public bool Profiling { get; set; }
+
+        [DataMemberIgnore]
+        public ProfilingKey ProfilingKey => profilingKey ?? (profilingKey = new ProfilingKey(Name, ProfilingKeyFlags.GpuProfiling));
 
         [DataMemberIgnore]
         protected RenderContext Context { get; private set; }
