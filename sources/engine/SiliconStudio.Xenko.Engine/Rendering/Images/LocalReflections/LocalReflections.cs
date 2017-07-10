@@ -23,6 +23,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     [DataContract("LocalReflections")]
     public sealed class LocalReflections : ImageEffect
     {
+        private ImageEffectShader depthPassShader;
         private ImageEffectShader blurPassShader;
         private ImageEffectShader rayTracePassShader;
         private ImageEffectShader resolvePassShader;
@@ -58,7 +59,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         [Display("Depth resolution")]
         [DefaultValue(ResolutionMode.Full)]
-        public ResolutionMode DepthResolution { get; set; } = ResolutionMode.Full;
+        public ResolutionMode DepthResolution { get; set; } = ResolutionMode.Half;
 
         /// <summary>
         /// Gets or sets the ray trace pass resolution mode.
@@ -148,6 +149,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             base.InitializeCore();
 
+            depthPassShader = ToLoadAndUnload(new ImageEffectShader("SSLRDepthPass"));
             blurPassShader = ToLoadAndUnload(new ImageEffectShader("SSLRBlurPassEffect"));
             rayTracePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRRayTracePass"));
             resolvePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRResolvePassEffect"));
@@ -199,17 +201,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
         protected override void PreDrawCore(RenderDrawContext context)
         {
             Texture outputBuffer = GetSafeOutput(0);
-
-            if (!blurPassShader.Initialized)
-                blurPassShader.Initialize(context.RenderContext);
-            if (!rayTracePassShader.Initialized)
-                rayTracePassShader.Initialize(context.RenderContext);
-            if (!resolvePassShader.Initialized)
-                resolvePassShader.Initialize(context.RenderContext);
-            if (!temporalPassShader.Initialized)
-                temporalPassShader.Initialize(context.RenderContext);
-            if (!combinePassShader.Initialized)
-                combinePassShader.Initialize(context.RenderContext);
 
             // TODO: cleanup that stuff
 
@@ -324,15 +315,17 @@ namespace SiliconStudio.Xenko.Rendering.Images
             Texture resolveBuffer = NewScopedRenderTarget2D(resolveBuffersSize.Width, resolveBuffersSize.Height, reflectionsFormat, 1);
 
             // Check if resize depth
+            Texture smallerDepthBuffer = depthBuffer;
             if (DepthResolution != ResolutionMode.Full)
             {
-                var depthBuffersSize = GetBufferResolution(outputBuffer, DepthResolution);
+                var depthBuffersSize = GetBufferResolution(depthBuffer, DepthResolution);
+                smallerDepthBuffer = NewScopedRenderTarget2D(depthBuffersSize.Width, depthBuffersSize.Height, PixelFormat.R32_Float, 1);
 
-                // TODO: use half res depth as default
-                throw new NotImplementedException("finish depth downscale");
-                //Texture smallerDepth = NewScopedRenderTarget2D(depthBuffersSize.Width, depthBuffersSize.Height, PixelFormat.R32_Float, 1);
+                depthPassShader.SetInput(0, depthBuffer);
+                depthPassShader.SetOutput(smallerDepthBuffer);
+                depthPassShader.Draw(context, "Downscale Depth");
             }
-            
+
             // Blur Pass
             Texture blurPassBuffer;
             if (UseColorBufferMips)
@@ -340,7 +333,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 // Note: using color buffer mips maps helps with reducing artifacts
                 // and improves resolve pass performance (faster color texture lookups, less cache misses)
                 // Also for high surface roughness values it adds more blur to the reflection tail which looks more realistic.
-                
+
                 // Get temp targets
                 var colorBuffersSize = new Size2(outputBuffer.Width / 2, outputBuffer.Height / 2);
                 Texture colorBuffer0 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, PixelFormat.R11G11B10_Float, MipMapCount.Auto);
@@ -377,7 +370,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 for (int mipLevel = 1; mipLevel < colorMipLevels; mipLevel++)
                 {
                     // Blur H
-                    //var srcMip = mipLevel == 0 ? cachedColorBuffer0Mips[0] : cachedColorBuffer0Mips[mipLevel - 1];
                     var srcMip = cachedColorBuffer0Mips[mipLevel - 1];
                     var dstMip = cachedColorBuffer1Mips[mipLevel];
                     blurPassShader.SetInput(0, srcMip);
@@ -407,7 +399,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // Ray Trace Pass
             rayTracePassShader.SetInput(0, colorBuffer);
-            rayTracePassShader.SetInput(1, depthBuffer);
+            rayTracePassShader.SetInput(1, RayTracePassResolution == ResolutionMode.Full ? depthBuffer : smallerDepthBuffer);
             rayTracePassShader.SetInput(2, normalsBuffer);
             rayTracePassShader.SetInput(3, specularRoughnessBuffer);
             rayTracePassShader.SetInput(4, blueNoiseTexture);
@@ -416,7 +408,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // Resolve Pass
             resolvePassShader.SetInput(0, blurPassBuffer);
-            resolvePassShader.SetInput(1, depthBuffer);
+            resolvePassShader.SetInput(1, ResolvePassResolution == ResolutionMode.Full ? depthBuffer : smallerDepthBuffer);
             resolvePassShader.SetInput(2, normalsBuffer);
             resolvePassShader.SetInput(3, specularRoughnessBuffer);
             resolvePassShader.SetInput(4, blueNoiseTexture);

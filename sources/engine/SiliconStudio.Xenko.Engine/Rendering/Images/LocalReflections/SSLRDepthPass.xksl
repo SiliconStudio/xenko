@@ -1,0 +1,17 @@
+﻿// Copyright (c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Images
+{
+    /// <summary>
+	/// Screen Space Local Reflections shader for Depth Pass
+    /// </summary>
+    shader SSLRDepthPass : ImageEffectShader
+    {			
+		override stage float4 Shading()
+		{
+			float depth = Texture0.Sample(PointSampler, streams.TexCoord).r;
+			return depth.xxxx;
+		}
+    };
+}
