@@ -24,7 +24,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
     public sealed class LocalReflections : ImageEffect
     {
         private ImageEffectShader depthPassShader;
-        private ImageEffectShader blurPassShader;
+        private ImageEffectShader blurPassShaderH;
+        private ImageEffectShader blurPassShaderV;
         private ImageEffectShader rayTracePassShader;
         private ImageEffectShader resolvePassShader;
         private ImageEffectShader temporalPassShader;
@@ -127,9 +128,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Using mipmaps improves resolve pass performance and reduces GPU cache misses.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if [use color buffer mips]; otherwise, <c>false</c>.
+        ///   <c>true</c> if use color buffer mips; otherwise, <c>false</c>.
         /// </value>
-        public bool UseColorBufferMips { get; set; } = false;
+        [Display("Use Color Buffer Mips")]
+        [DefaultValue(true)]
+        public bool UseColorBufferMips { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the BRDF bias. This value controlls source roughness effect on reflections blur.
@@ -193,7 +196,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             base.InitializeCore();
 
             depthPassShader = ToLoadAndUnload(new ImageEffectShader("SSLRDepthPass"));
-            blurPassShader = ToLoadAndUnload(new ImageEffectShader("SSLRBlurPassEffect"));
+            blurPassShaderH = ToLoadAndUnload(new ImageEffectShader("SSLRBlurPassEffectH"));
+            blurPassShaderV = ToLoadAndUnload(new ImageEffectShader("SSLRBlurPassEffectV"));
             rayTracePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRRayTracePass"));
             resolvePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRResolvePassEffect"));
             temporalPassShader = ToLoadAndUnload(new ImageEffectShader("SSLRTemporalPass"));
@@ -384,7 +388,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 Texture colorBuffer0 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, PixelFormat.R11G11B10_Float, MipMapCount.Auto);
                 Texture colorBuffer1 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, PixelFormat.R11G11B10_Float, MipMapCount.Auto);
                 // TODO: we don't use colorBuffer1 mip0, could be optimized
-
+                
                 // Cache per color buffer mip views
                 int colorMipLevels = colorBuffer0.MipLevels;
                 if (cachedColorBuffer0Mips == null || cachedColorBuffer0Mips.Length != colorMipLevels || cachedColorBuffer0Mips[0].ParentTexture != colorBuffer0)
@@ -417,18 +421,16 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     // Blur H
                     var srcMip = cachedColorBuffer0Mips[mipLevel - 1];
                     var dstMip = cachedColorBuffer1Mips[mipLevel];
-                    blurPassShader.SetInput(0, srcMip);
-                    blurPassShader.SetOutput(dstMip);
-                    blurPassShader.Parameters.Set(SSLRBlurPassParams.ConvolveVertical, 0);
-                    blurPassShader.Draw(context, "Blur H");
+                    blurPassShaderH.SetInput(0, srcMip);
+                    blurPassShaderH.SetOutput(dstMip);
+                    blurPassShaderH.Draw(context, "Blur H");
 
                     // Blur V
                     srcMip = dstMip;
                     dstMip = cachedColorBuffer0Mips[mipLevel];
-                    blurPassShader.SetInput(0, srcMip);
-                    blurPassShader.SetOutput(dstMip);
-                    blurPassShader.Parameters.Set(SSLRBlurPassParams.ConvolveVertical, 1);
-                    blurPassShader.Draw(context, "Blur V");
+                    blurPassShaderV.SetInput(0, srcMip);
+                    blurPassShaderV.SetOutput(dstMip);
+                    blurPassShaderV.Draw(context, "Blur V");
                 }
 
                 blurPassBuffer = colorBuffer0;

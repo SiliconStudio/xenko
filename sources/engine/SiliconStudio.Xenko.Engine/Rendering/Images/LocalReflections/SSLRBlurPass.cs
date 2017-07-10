@@ -19,17 +19,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
     public static partial class SSLRBlurPassKeys
     {
     }
-    [DataContract]public partial class SSLRBlurPassParams : ShaderMixinParameters
-    {
-        public static readonly PermutationParameterKey<int> ConvolveVertical = ParameterKeys.NewPermutation<int>();
-    };
     internal static partial class ShaderMixins
     {
-        internal partial class SSLRBlurPassEffect  : IShaderMixinBuilder
+        internal partial class SSLRBlurPassEffectH  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                mixin.AddMacro("CONVOLVE_VERTICAL", context.GetParam(SSLRBlurPassParams.ConvolveVertical));
+                mixin.AddMacro("CONVOLVE_VERTICAL", 0);
                 context.Mixin(mixin, "SSLRBlurPass");
             }
 
@@ -37,7 +33,25 @@ namespace SiliconStudio.Xenko.Rendering.Images
             internal static void __Initialize__()
 
             {
-                ShaderMixinManager.Register("SSLRBlurPassEffect", new SSLRBlurPassEffect());
+                ShaderMixinManager.Register("SSLRBlurPassEffectH", new SSLRBlurPassEffectH());
+            }
+        }
+    }
+    internal static partial class ShaderMixins
+    {
+        internal partial class SSLRBlurPassEffectV  : IShaderMixinBuilder
+        {
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
+            {
+                mixin.AddMacro("CONVOLVE_VERTICAL", 1);
+                context.Mixin(mixin, "SSLRBlurPass");
+            }
+
+            [ModuleInitializer]
+            internal static void __Initialize__()
+
+            {
+                ShaderMixinManager.Register("SSLRBlurPassEffectV", new SSLRBlurPassEffectV());
             }
         }
     }

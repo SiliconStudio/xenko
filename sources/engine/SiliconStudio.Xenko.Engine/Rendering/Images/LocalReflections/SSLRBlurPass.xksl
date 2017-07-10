@@ -73,16 +73,15 @@ namespace SiliconStudio.Xenko.Rendering.Images
 		}
     };
 
-    params SSLRBlurPassParams
+    effect SSLRBlurPassEffectH
     {
-        int ConvolveVertical;
-    }
+        mixin macro CONVOLVE_VERTICAL = 0;
+        mixin SSLRBlurPass;
+    };
 
-    effect SSLRBlurPassEffect
+    effect SSLRBlurPassEffectV
     {
-        using params SSLRBlurPassParams;
-		
-        mixin macro CONVOLVE_VERTICAL = SSLRBlurPassParams.ConvolveVertical;
+        mixin macro CONVOLVE_VERTICAL = 1;
         mixin SSLRBlurPass;
     };
 }
