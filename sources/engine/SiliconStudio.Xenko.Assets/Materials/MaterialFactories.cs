@@ -160,6 +160,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
                     SpecularModel = new MaterialSpecularMicrofacetModelFeature(),
                     Specular = new MaterialMetalnessCarPaintFeature(),
                     MicroSurface = new MaterialGlossinessCarPaintFeature(),
+                    Surface = new MaterialNormalMapCarPaint()
                 }
             };
 

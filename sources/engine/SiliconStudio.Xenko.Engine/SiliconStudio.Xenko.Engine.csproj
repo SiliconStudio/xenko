@@ -231,6 +231,7 @@
     </Compile>
     <Compile Include="Rendering\Materials\MaterialGlossinessCarPaintFeature.cs" />
     <Compile Include="Rendering\Materials\MaterialMetalnessCarPaintFeature.cs" />
+    <Compile Include="Rendering\Materials\MaterialNormalMapCarPaint.cs" />
     <Compile Include="Rendering\Materials\Shaders\CarPaintCommon.cs">
       <DependentUpon>CarPaintCommon.xksl</DependentUpon>
       <AutoGen>True</AutoGen>

@@ -56,16 +56,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             int passIndex = context.PassIndex % 2;
 
-            if (passIndex == 0)
-            {
-                context.MaterialPass.BlendState = new BlendStateDescription(Blend.Zero, Blend.SourceColor) { RenderTarget0 = { AlphaSourceBlend = Blend.One, AlphaDestinationBlend = Blend.Zero } };
-            }
-            else if (passIndex == 1)
+            context.MaterialPass.BlendState = new BlendStateDescription(Blend.One, Blend.One);
+
+            if (passIndex == 1)
             {
                 temporaryScalar = GlossinessMap;
                 GlossinessMap = ClearCoatGlossinessMap;
-
-                context.MaterialPass.BlendState = BlendStates.Additive;
             }
 
             base.GenerateShader(context);
