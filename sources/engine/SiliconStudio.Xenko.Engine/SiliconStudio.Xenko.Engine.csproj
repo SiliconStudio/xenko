@@ -229,6 +229,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Rendering\Materials\MaterialGlossinessCarPaintFeature.cs" />
     <Compile Include="Rendering\Materials\Shaders\CarPaintCommon.cs">
       <DependentUpon>CarPaintCommon.xksl</DependentUpon>
       <AutoGen>True</AutoGen>

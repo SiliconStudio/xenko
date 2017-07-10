@@ -156,7 +156,13 @@ namespace SiliconStudio.Xenko.Assets.Materials
                         // Mazda Soul Red Paint (Approximation)
                         DiffuseMap = new ComputeColor(new Color4(0.274509817f, 0.003921569f, 0.0470588244f, 1.0f))
                     },
-                    DiffuseModel = null,
+                    DiffuseModel = new MaterialDiffuseLambertModelFeature(),
+                    SpecularModel = new MaterialSpecularMicrofacetModelFeature(),
+                    Specular = new MaterialMetalnessMapFeature
+                    {
+                        MetalnessMap = new ComputeFloat(0.0f)
+                    },
+                    MicroSurface = new MaterialGlossinessCarPaintFeature(),
                 }
             };
 
