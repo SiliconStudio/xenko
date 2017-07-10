@@ -200,8 +200,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
     effect SSLRResolvePassEffect
     {
-        // TODO: use params for permutations
+        using params SSLRKeys;
 
-        mixin SSLRResolvePass<4>;
+        mixin SSLRResolvePass<SSLRKeys.ResolveSamples>;
     }
 }

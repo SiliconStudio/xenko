@@ -101,10 +101,19 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [DefaultValue(0.01f)]
         public float WorldAntiSelfOcclusionBias { get; set; } = 0.01f;
 
+        /// <summary>
+        /// Gets or sets the resolve pass samples amount. Higher values provide better quality but reduce effect performance.
+        /// Default value is 4. Use 1 for the highest speed.
+        /// </summary>
+        /// <value>
+        /// The resolve samples amount.
+        /// </value>
+        [Display("Resolve Samples")]
+        [DefaultValue(4)]
+        public int ResolveSamples { get; set; } = 4;
 
         // TODO: EnableRayReuse and ReduceFireflies because macro permutation instead of dynamic params?
         public bool UseColorBufferMips { get; set; } = false; // use true later
-        public bool EnableRayReuse { get; set; } = true;
         public bool ReduceFireflies { get; set; } = true;
         
         // TODO: add docs
@@ -257,6 +266,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             resolvePassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
             resolvePassShader.Parameters.Set(SSLRCommonKeys.VP, viewProjectionMatrix);
             resolvePassShader.Parameters.Set(SSLRCommonKeys.IVP, inverseViewProjectionMatrix);
+            resolvePassShader.Parameters.Set(SSLRKeys.ResolveSamples, MathUtil.Clamp(ResolveSamples, 1, 8));
 
             temporalPassShader.Parameters.Set(SSLRCommonKeys.MaxColorMiplevel, Texture.CalculateMipMapCount(0, outputBuffer.Width, outputBuffer.Height) - 1);
             temporalPassShader.Parameters.Set(SSLRCommonKeys.TraceSizeMax, Math.Max(traceBufferSize.Width, traceBufferSize.Height) / 2.0f);

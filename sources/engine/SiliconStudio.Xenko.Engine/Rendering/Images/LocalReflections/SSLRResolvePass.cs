@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                context.Mixin(mixin, "SSLRResolvePass", 4);
+                context.Mixin(mixin, "SSLRResolvePass", context.GetParam(SSLRKeys.ResolveSamples));
             }
 
             [ModuleInitializer]

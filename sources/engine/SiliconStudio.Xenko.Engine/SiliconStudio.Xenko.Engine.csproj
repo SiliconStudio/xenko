@@ -223,6 +223,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Images\LocalReflections\SSLRKeys.cs" />
     <Compile Include="Rendering\Images\LocalReflections\SSLRResolvePass.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
