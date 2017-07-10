@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
 	/// Screen Space Local Reflections shader for Resolve Pass
     /// </summary>
-    shader SSLRResolvePass<int ResolveSamples> : ImageEffectShader, SSLRCommon, NormalPack, Math, BRDFMicrofacet
+    shader SSLRResolvePass<int ResolveSamples, bool ReduceFireflies> : ImageEffectShader, SSLRCommon, NormalPack, Math, BRDFMicrofacet
     {
         static const float2 Offsets[8] =
         {
@@ -166,9 +166,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 float mip = clamp(log2(intersectionCircleRadius * TraceSizeMax), 0.0, maxMipLevel); // TODO; rename TraceSizeMax to ResolveSizeMax
 
                 float4 sampleColor = float4(Texture0.SampleLevel(LinearSampler, hitUv, mip).rgb, 1) * hitMask;
-                
-                //if(_Fireflies == 1) // TODO: use param for Fireflies
-                //    sampleColor.rgb /= 1 + Luminance(sampleColor.rgb);
+                if(ReduceFireflies)
+                    sampleColor.rgb /= 1 + Luminance(sampleColor.rgb);
 
                 result += sampleColor * weight;
                 weightSum += weight;
@@ -176,10 +175,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
             result /= weightSum;
             result.rgb *= result.a;
 
-		    //if(_Fireflies == 1) // TODO: use param for Fireflies
-			//    result.rgb /= 1 - Luminance(result.rgb);
+		    if(ReduceFireflies)
+			    result.rgb /= 1 - Luminance(result.rgb);
 
-            
     	    return max(1e-5, result);
         }
     };
@@ -188,6 +186,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
     {
         using params SSLRKeys;
 
-        mixin SSLRResolvePass<SSLRKeys.ResolveSamples>;
+        mixin SSLRResolvePass<SSLRKeys.ResolveSamples, SSLRKeys.ReduceFireflies>;
     }
 }

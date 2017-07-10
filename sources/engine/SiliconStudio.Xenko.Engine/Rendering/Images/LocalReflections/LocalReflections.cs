@@ -110,9 +110,17 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [DefaultValue(4)]
         public int ResolveSamples { get; set; } = 4;
 
-        // TODO: EnableRayReuse and ReduceFireflies because macro permutation instead of dynamic params?
-        public bool UseColorBufferMips { get; set; } = false; // use true later
+        /// <summary>
+        /// Gets or sets a value indicating whether reduce fireflies during resolve pass.
+        /// Performs filtering on sampled pixels to smooth luminance bursts.
+        /// It helps to provide softer image with reduced amount of highlights.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if reduce fireflies; otherwise, <c>false</c>.
+        /// </value>
         public bool ReduceFireflies { get; set; } = true;
+
+        public bool UseColorBufferMips { get; set; } = false; // use true later
         
         // TODO: add docs
         public float BRDFBias { get; set; } = 0.7f;
@@ -265,6 +273,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             resolvePassShader.Parameters.Set(SSLRCommonKeys.VP, viewProjectionMatrix);
             resolvePassShader.Parameters.Set(SSLRCommonKeys.IVP, inverseViewProjectionMatrix);
             resolvePassShader.Parameters.Set(SSLRKeys.ResolveSamples, MathUtil.Clamp(ResolveSamples, 1, 8));
+            resolvePassShader.Parameters.Set(SSLRKeys.ReduceFireflies, ReduceFireflies);
 
             temporalPassShader.Parameters.Set(SSLRCommonKeys.MaxColorMiplevel, Texture.CalculateMipMapCount(0, outputBuffer.Width, outputBuffer.Height) - 1);
             temporalPassShader.Parameters.Set(SSLRCommonKeys.TraceSizeMax, Math.Max(traceBufferSize.Width, traceBufferSize.Height) / 2.0f);
