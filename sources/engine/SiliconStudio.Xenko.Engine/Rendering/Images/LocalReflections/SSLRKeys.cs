@@ -9,5 +9,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
     public static class SSLRKeys
     {
         public static readonly PermutationParameterKey<int> ResolveSamples = ParameterKeys.NewPermutation(1);
+        public static readonly PermutationParameterKey<bool> ReduceFireflies = ParameterKeys.NewPermutation(true);
     }
 }
