@@ -44,20 +44,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
         public IComputeScalar ClearCoatGlossinessMap { get; set; } = new ComputeFloat(1.0f);
 
-        public override void MultipassGeneration(MaterialGeneratorContext context)
-        {
-            int passCount = 2;
-            context.SetMultiplePasses("CarPaint", passCount);
-        }
-
         public override void GenerateShader(MaterialGeneratorContext context)
         {
             IComputeScalar temporaryScalar = null;
 
             int passIndex = context.PassIndex % 2;
-
-            context.MaterialPass.BlendState = new BlendStateDescription(Blend.One, Blend.One);
-
+            
             if (passIndex == 1)
             {
                 temporaryScalar = GlossinessMap;
@@ -68,6 +60,15 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             if (temporaryScalar != null)
                 GlossinessMap = temporaryScalar;
+
+            if (passIndex == 0)
+            {
+                context.MaterialPass.BlendState = BlendStates.Additive;
+            }
+            else if (passIndex == 1)
+            {
+                context.MaterialPass.BlendState = new BlendStateDescription(Blend.Zero, Blend.SourceColor) { RenderTarget0 = { AlphaSourceBlend = Blend.One, AlphaDestinationBlend = Blend.Zero } };
+            }
         }
     }
 }
