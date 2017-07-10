@@ -134,7 +134,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             blurPassShader = ToLoadAndUnload(new ImageEffectShader("SSLRBlurPassEffect"));
             rayTracePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRRayTracePass"));
-            resolvePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRResolvePass"));
+            resolvePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRResolvePassEffect"));
             temporalPassShader = ToLoadAndUnload(new ImageEffectShader("SSLRTemporalPass"));
             coneTracePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRConeTracePass"));
             combinePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRCombinePass"));
