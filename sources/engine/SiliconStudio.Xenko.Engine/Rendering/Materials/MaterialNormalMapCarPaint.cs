@@ -10,7 +10,7 @@ using SiliconStudio.Xenko.Shaders;
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
     [DataContract("MaterialNormalMapCarPaint")]
-    [Display("Car Paint")]
+    [Display("Car Paint Normal Map")]
     public class MaterialNormalMapCarPaint : MaterialNormalMapFeature
     {
         /// <summary>
@@ -24,15 +24,20 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [Display("Orange Peel Normal Map")]
         [NotNull]
         public IComputeColor ClearCoatLayerNormalMap { get; set; }
-        
+
+        public override void MultipassGeneration(MaterialGeneratorContext context)
+        {
+            int passCount = 2;
+
+            context.SetMultiplePasses("CarPaint", passCount);
+        }
+
         public override void GenerateShader(MaterialGeneratorContext context)
         {
             IComputeColor temporaryMap = null;
 
             int passIndex = context.PassIndex % 2;
-
-            context.MaterialPass.BlendState = new BlendStateDescription(Blend.SourceColor, Blend.DestinationColor);
-
+            
             if (passIndex == 1)
             {
                 temporaryMap = NormalMap;
@@ -43,6 +48,15 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             if (temporaryMap != null)
                 NormalMap = temporaryMap;
+            
+            if (passIndex == 0)
+            {
+                context.MaterialPass.BlendState = BlendStates.Additive;
+            }
+            else if (passIndex == 1)
+            {
+                context.MaterialPass.BlendState = new BlendStateDescription(Blend.Zero, Blend.SourceColor) { RenderTarget0 = { AlphaSourceBlend = Blend.One, AlphaDestinationBlend = Blend.Zero } };             
+            }
         }
 
         public bool Equals(MaterialSpecularThinGlassModelFeature other) => base.Equals(other);

@@ -46,9 +46,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             IComputeScalar temporaryScalar = null;
 
             int passIndex = context.PassIndex % 2;
-
-            context.MaterialPass.BlendState = new BlendStateDescription(Blend.One, Blend.One);
-
+            
             if (passIndex == 1)
             {
                 temporaryScalar = MetalnessMap;
@@ -59,6 +57,15 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             if (temporaryScalar != null)
                 MetalnessMap = temporaryScalar;
+
+            if (passIndex == 0)
+            {
+                context.MaterialPass.BlendState = BlendStates.Additive;
+            }
+            else if (passIndex == 1)
+            {
+                context.MaterialPass.BlendState = new BlendStateDescription(Blend.Zero, Blend.SourceColor) { RenderTarget0 = { AlphaSourceBlend = Blend.One, AlphaDestinationBlend = Blend.Zero } };
+            }
         }      
     }
 }
