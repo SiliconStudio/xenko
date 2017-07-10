@@ -142,4 +142,30 @@ namespace SiliconStudio.Xenko.Assets.Materials
             return Create();
         }
     }
+
+    public class CarPaintMaterialFactory : AssetFactory<MaterialAsset>
+    {
+        public static MaterialAsset Create()
+        {
+            var material = new MaterialAsset
+            {
+                Attributes =
+                {
+                    Diffuse = new MaterialDiffuseMapFeature
+                    {
+                        // Mazda Soul Red Paint (Approximation)
+                        DiffuseMap = new ComputeColor(new Color4(0.274509817f, 0.003921569f, 0.0470588244f, 1.0f))
+                    },
+                    DiffuseModel = null,
+                }
+            };
+
+            return material;
+        }
+
+        public override MaterialAsset New()
+        {
+            return Create();
+        }
+    }
 }
