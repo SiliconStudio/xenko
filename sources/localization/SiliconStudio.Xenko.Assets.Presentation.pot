@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2017-07-03 19:05:02+0900\n"
-"PO-Revision-Date: 2017-07-03 19:05:02+0900\n"
+"POT-Creation-Date: 2017-07-11 11:45:43+0900\n"
+"PO-Revision-Date: 2017-07-11 11:45:43+0900\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -392,7 +392,7 @@ msgstr ""
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:143
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:137
 msgctxt "Menu"
-msgid "Duplicate selection"
+msgid "Duplicate"
 msgstr ""
 
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:137
@@ -486,7 +486,7 @@ msgstr ""
 
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:471
 msgctxt "ToolTip"
-msgid "Light probes and cubemaps"
+msgid "Light probes and cubemaps..."
 msgstr ""
 
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:481
@@ -517,7 +517,7 @@ msgstr ""
 
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:512
 msgctxt "ToolTip"
-msgid "Generate a cubemap from the scene and save it as a texture file"
+msgid "Generate a cubemap from the scene view and save as a texture"
 msgstr ""
 
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:516
@@ -526,7 +526,7 @@ msgstr ""
 
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:524
 msgctxt "ToolTip"
-msgid "Navigation visibility"
+msgid "Navigation visibility..."
 msgstr ""
 
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:534
@@ -549,7 +549,7 @@ msgstr ""
 
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:562
 msgctxt "ToolTip"
-msgid "Grid and gizmo options"
+msgid "Grid and gizmo options..."
 msgstr ""
 
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:572
@@ -582,7 +582,7 @@ msgstr ""
 
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:611
 msgctxt "ToolTip"
-msgid "Editor camera options"
+msgid "Editor camera options..."
 msgstr ""
 
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:621
@@ -797,7 +797,7 @@ msgstr ""
 
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:90
 msgctxt "ToolTip"
-msgid "If selected, the sprite uses the given color as transparency"
+msgid "If enabled, the sprite uses the given color as transparency"
 msgstr ""
 
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/SpriteEditor/Views/SpriteEditorView.xaml:118
