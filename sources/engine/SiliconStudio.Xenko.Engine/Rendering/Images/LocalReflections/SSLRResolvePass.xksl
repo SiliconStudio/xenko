@@ -6,85 +6,24 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
 	/// Screen Space Local Reflections shader for Resolve Pass
     /// </summary>
-    shader SSLRResolvePass : ImageEffectShader, SSLRCommon, NormalPack, Math, BRDFMicrofacet
+    shader SSLRResolvePass<int ResolveSamples> : ImageEffectShader, SSLRCommon, NormalPack, Math, BRDFMicrofacet
     {
-		// Parmeter to control minimum Z of view space normal of the pixel to be used in SSR
-		#define SSR_MIN_Z_REFLECT 0.1f
-
-        // TODO: move this to lib or sth
-        float RandN(float2 pos, float2 random)
+        static const float2 Offsets[8] =
         {
-	        return frac(sin(dot(pos.xy + random, float2(12.9898, 78.233))) * 43758.5453);
-
-        }
+            float2( 0,  0),
+            float2( 2, -2),
+            float2(-2, -2),
+            float2( 0,  2),
+            float2(-2,  0),
+            float2( 0, -2),
+            float2( 2,  0),
+            float2( 2,  2),
+        };
 
         float2 RandN2(float2 pos, float2 random)
         {
 	        return frac(sin(dot(pos.xy + random, float2(12.9898, 78.233))) * float2(43758.5453, 28001.8384));
         }
-
-        float RandS(float2 pos, float2 random)
-        {
-	        return RandN(pos, random) * 2.0 - 1.0;
-        }
-
-        // [Jimenez 2014] "Next Generation Post Processing In Call Of Duty Advanced Warfare"  
-        float InterleavedGradientNoise (float2 pos, float2 random)
-        {
-	        float3 magic = float3(0.06711056, 0.00583715, 52.9829189);
-	        return frac(magic.z * frac(dot(pos.xy + random, magic.xy)));
-        }
-
-
-        // https://www.shadertoy.com/view/4sBSDW
-        float Step1(float2 uv,float n)
-        {
-	        float 
-	        a = 1.0,
-	        b = 2.0,
-	        c = -12.0,
-	        t = 1.0;
-		   
-	        return (1.0/(a*4.0+b*4.0-c))*(
-			          RandS(uv+float2(-1.0,-1.0)*t,n)*a+
-			          RandS(uv+float2( 0.0,-1.0)*t,n)*b+
-			          RandS(uv+float2( 1.0,-1.0)*t,n)*a+
-			          RandS(uv+float2(-1.0, 0.0)*t,n)*b+
-			          RandS(uv+float2( 0.0, 0.0)*t,n)*c+
-			          RandS(uv+float2( 1.0, 0.0)*t,n)*b+
-			          RandS(uv+float2(-1.0, 1.0)*t,n)*a+
-			          RandS(uv+float2( 0.0, 1.0)*t,n)*b+
-			          RandS(uv+float2( 1.0, 1.0)*t,n)*a+
-			         0.0);
-        }
-
-        float Step2(float2 uv,float n)
-        {
-	        float a=1.0,b=2.0,c=-2.0,t=1.0;   
-	        return (4.0/(a*4.0+b*4.0-c))*(
-			          Step1(uv+float2(-1.0,-1.0)*t,n)*a+
-			          Step1(uv+float2( 0.0,-1.0)*t,n)*b+
-			          Step1(uv+float2( 1.0,-1.0)*t,n)*a+
-			          Step1(uv+float2(-1.0, 0.0)*t,n)*b+
-			          Step1(uv+float2( 0.0, 0.0)*t,n)*c+
-			          Step1(uv+float2( 1.0, 0.0)*t,n)*b+
-			          Step1(uv+float2(-1.0, 1.0)*t,n)*a+
-			          Step1(uv+float2( 0.0, 1.0)*t,n)*b+
-			          Step1(uv+float2( 1.0, 1.0)*t,n)*a+
-			         0.0);
-        }
-
-        float3 Step3T(float2 uv, float time)
-        {
-	        float a=Step2(uv, 0.07*(frac(time)+1.0));    
-	        float b=Step2(uv, 0.11*(frac(time)+1.0));    
-	        float c=Step2(uv, 0.13*(frac(time)+1.0));
-	        return float3(a,b,c);
-        }
-
-
-
-
 
         float4 TangentToWorld(float3 N, float4 H)
         {
@@ -132,21 +71,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
             return (D * G) * (PI / 4.0);
         }
 
-
-
-        static const float2 offset[4] =
-{
-	float2(0, 0),
-	float2(2, -2),
-	float2(-2, -2),
-	float2(0, 2)
-};
-
-
-
-
-
-
         override stage float4 Shading()
         {
 			// Inputs Mapping:
@@ -160,7 +84,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
 			float2 uv = streams.TexCoord;
 			
-            if(Texture6.SampleLevel(LinearSampler, uv, 0).r <= 0.0001)
+            if(Texture6.SampleLevel(LinearSampler, uv, 0).r <= 0.001)
                 return 0;
             
 			// Sample material roughness
@@ -171,8 +95,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			float depth = SampleZ(uv);
 			float3 positionVS = ComputeViewPosition(uv, depth);
 			
+            //if(length(Texture5.SampleLevel(PointSampler, uv, 0).rg) < 0.001f)
+            //    return float4(0, 1, 0, 1);
+
             //return float4(uv, 1, 1);
-            //return float4(Texture6.SampleLevel(LinearSampler, uv, 0).r, 1, 1, 1);
+            //return float4(Texture0.SampleLevel(PointSampler, Texture5.SampleLevel(PointSampler, uv, 0).rg, 0).rgb, 1);
             //return pow(depth.xxxx, 8) / 6;
 
 			// Reject invalid pixels
@@ -206,10 +133,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             float2x2 offsetRotationMatrix = float2x2(blueNoise.x, blueNoise.y, -blueNoise.y, blueNoise.x);
 
-            int NumResolve = 4; // TODO: use param
-
             float NdotV = saturate(dot(normalWS, -viewWS));
 		    float coneTangent = lerp(0.0, roughness * (1.0 - BRDFBias), pow(NdotV, 1.5) * sqrt(roughness));
+		    //float coneTangent = lerp(NdotV * 2.0, 1.0, sqrt(roughness)); // TODO: test this calc version
 
 		    float maxMipLevel = (float)MaxColorMiplevel;// - 1.0;
 
@@ -219,9 +145,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
 		    float4 result = 0.0;
             float weightSum = 0.0;	
-            for(int i = 0; i < NumResolve; i++)
+            for(int i = 0; i < ResolveSamples; i++)
             {
-                float2 offsetUV = offset[i] * SSRtexelSize;
+                float2 offsetUV = Offsets[i] * Texture5TexelSize;
                 offsetUV =  mul(offsetRotationMatrix, offsetUV);
 
                 // "uv" is the location of the current (or "local") pixel. We want to resolve the local pixel using
@@ -233,11 +159,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 float2 hitUv = hitPacked.xy;
                 float hitZ = hitPacked.z;
                 float hitPDF = hitPacked.w;
-                float hitMask = Texture6.SampleLevel(LinearSampler, neighborUv, 0).r;
+                float hitMask = Texture6.SampleLevel(PointSampler, neighborUv, 0).r;
 
                 float3 hitViewPos = ScreenToView(hitUv, hitZ);
 
                 //return float4(hitViewPos, 1);
+                //return float4(hitMask.xxx, 1);
 
                 // We assume that the hit point of the neighbor's ray is also visible for our ray, and we blindly pretend
                 // that the current pixel shot that ray. To do that, we treat the hit point as a tiny light source. To calculate
@@ -252,7 +179,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 float intersectionCircleRadius = coneTangent * length(hitUv - uv);
                 float mip = clamp(log2(intersectionCircleRadius * TraceSizeMax), 0.0, maxMipLevel); // TODO; rename TraceSizeMax to ResolveSizeMax
 
-                float4 sampleColor = float4(Texture0.SampleLevel(LinearSampler, hitUv, mip).rgb, hitMask);
+                float4 sampleColor = float4(Texture0.SampleLevel(LinearSampler, hitUv, mip).rgb, 1) * hitMask;
                 
                 //if(_Fireflies == 1) // TODO: use param for Fireflies
                 //    sampleColor.rgb /= 1 + Luminance(sampleColor.rgb);
@@ -270,4 +197,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
     	    return max(1e-5, result);
         }
     };
+
+    effect SSLRResolvePassEffect
+    {
+        // TODO: use params for permutations
+
+        mixin SSLRResolvePass<4>;
+    }
 }
