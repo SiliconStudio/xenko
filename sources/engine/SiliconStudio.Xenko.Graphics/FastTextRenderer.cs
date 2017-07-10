@@ -161,8 +161,11 @@ namespace SiliconStudio.Xenko.Graphics
                 mappedVertexBuffer = graphicsContext.CommandList.MapSubresource(vertexBuffers[activeVertexBufferIndex], 0, MapMode.WriteDiscard);
                 mappedVertexBufferPointer = mappedVertexBuffer.DataBox.DataPointer;
 
-                // Clear buffer first (because of the buffer mapping mode used)
-                Utilities.ClearMemory(mappedVertexBufferPointer, 0x0, VertexBufferLength);
+                unsafe
+                {
+                    // Clear buffer first (because of the buffer mapping mode used)
+                    Utilities.ClearMemory(mappedVertexBufferPointer, 0x0, VertexBufferLength * sizeof(VertexPositionNormalTexture));
+                }
             }
 
             /// <summary>
