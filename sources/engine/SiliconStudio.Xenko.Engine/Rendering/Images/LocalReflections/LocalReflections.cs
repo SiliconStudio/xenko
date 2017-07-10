@@ -27,7 +27,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
         private ImageEffectShader rayTracePassShader;
         private ImageEffectShader resolvePassShader;
         private ImageEffectShader temporalPassShader;
-        private ImageEffectShader coneTracePassShader;
         private ImageEffectShader combinePassShader;
 
         public Texture blueNoiseTexture;
@@ -118,10 +117,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <value>
         ///   <c>true</c> if reduce fireflies; otherwise, <c>false</c>.
         /// </value>
+        [Display("Reduce Fireflies")]
+        [DefaultValue(true)]
         public bool ReduceFireflies { get; set; } = true;
 
-        public bool UseColorBufferMips { get; set; } = false; // use true later
-        
+        public bool UseColorBufferMips { get; set; } = false; // use true later, test perf diff on 4k (resolve should pass run faster but check it)
+
         // TODO: add docs
         public float BRDFBias { get; set; } = 0.7f;
         public bool UseTemporal { get; set; } = true;
@@ -151,7 +152,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
             rayTracePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRRayTracePass"));
             resolvePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRResolvePassEffect"));
             temporalPassShader = ToLoadAndUnload(new ImageEffectShader("SSLRTemporalPass"));
-            coneTracePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRConeTracePass"));
             combinePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRCombinePass"));
 
             Texture obj = AttachedReferenceManager.CreateProxyObject<Texture>(new AssetId("aF02239B-3697-4EBB-9F37-FE880659E64B"), "BlueNoise_256x256_UNI");
@@ -204,8 +204,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 blurPassShader.Initialize(context.RenderContext);
             if (!rayTracePassShader.Initialized)
                 rayTracePassShader.Initialize(context.RenderContext);
-            if (!coneTracePassShader.Initialized)
-                coneTracePassShader.Initialize(context.RenderContext);
+            if (!resolvePassShader.Initialized)
+                resolvePassShader.Initialize(context.RenderContext);
+            if (!temporalPassShader.Initialized)
+                temporalPassShader.Initialize(context.RenderContext);
             if (!combinePassShader.Initialized)
                 combinePassShader.Initialize(context.RenderContext);
 
@@ -275,45 +277,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             resolvePassShader.Parameters.Set(SSLRKeys.ResolveSamples, MathUtil.Clamp(ResolveSamples, 1, 8));
             resolvePassShader.Parameters.Set(SSLRKeys.ReduceFireflies, ReduceFireflies);
 
-            temporalPassShader.Parameters.Set(SSLRCommonKeys.MaxColorMiplevel, Texture.CalculateMipMapCount(0, outputBuffer.Width, outputBuffer.Height) - 1);
-            temporalPassShader.Parameters.Set(SSLRCommonKeys.TraceSizeMax, Math.Max(traceBufferSize.Width, traceBufferSize.Height) / 2.0f);
-            temporalPassShader.Parameters.Set(SSLRCommonKeys.SSRtexelSize, new Vector2(1.0f / traceBufferSize.Width, 1.0f / traceBufferSize.Height));
-            temporalPassShader.Parameters.Set(SSLRCommonKeys.ViewInfo, ViewInfo);
-            temporalPassShader.Parameters.Set(SSLRCommonKeys.ViewFarPlane, farclip);
-            temporalPassShader.Parameters.Set(SSLRCommonKeys.RoughnessFade, roughnessFade);
-            temporalPassShader.Parameters.Set(SSLRCommonKeys.MaxTraceSamples, maxTraceSamples);
-            temporalPassShader.Parameters.Set(SSLRCommonKeys.CameraPosWS, CameraPosWS);
-            temporalPassShader.Parameters.Set(SSLRCommonKeys.ScreenSize, ScreenSize);
-            temporalPassShader.Parameters.Set(SSLRCommonKeys.RayStepScale, 2.0f / outputBuffer.Width);
-            temporalPassShader.Parameters.Set(SSLRCommonKeys.Time, time);
-            temporalPassShader.Parameters.Set(SSLRCommonKeys.BRDFBias, BRDFBias);
-            temporalPassShader.Parameters.Set(SSLRCommonKeys.UseTemporal, UseTemporal ? 1 : 0);
-            temporalPassShader.Parameters.Set(SSLRCommonKeys.TemporalResponse, TemporalResponse);
-            temporalPassShader.Parameters.Set(SSLRCommonKeys.TemporalScale, TemporalScale);
-            temporalPassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
-            temporalPassShader.Parameters.Set(SSLRCommonKeys.VP, viewProjectionMatrix);
-            temporalPassShader.Parameters.Set(SSLRCommonKeys.IVP, inverseViewProjectionMatrix);
-
-            // TODO: check which keys are used by coneTracePassShader
-
-            coneTracePassShader.Parameters.Set(SSLRCommonKeys.MaxColorMiplevel, Texture.CalculateMipMapCount(0, outputBuffer.Width, outputBuffer.Height) - 1);
-            coneTracePassShader.Parameters.Set(SSLRCommonKeys.TraceSizeMax, Math.Max(traceBufferSize.Width, traceBufferSize.Height) / 2.0f);
-            coneTracePassShader.Parameters.Set(SSLRCommonKeys.SSRtexelSize, new Vector2(1.0f / traceBufferSize.Width, 1.0f / traceBufferSize.Height));
-            coneTracePassShader.Parameters.Set(SSLRCommonKeys.ViewInfo, ViewInfo);
-            coneTracePassShader.Parameters.Set(SSLRCommonKeys.ViewFarPlane, farclip);
-            coneTracePassShader.Parameters.Set(SSLRCommonKeys.RoughnessFade, roughnessFade);
-            coneTracePassShader.Parameters.Set(SSLRCommonKeys.MaxTraceSamples, maxTraceSamples);
-            coneTracePassShader.Parameters.Set(SSLRCommonKeys.CameraPosWS, eye);
-            coneTracePassShader.Parameters.Set(SSLRCommonKeys.ScreenSize, ScreenSize);
-            coneTracePassShader.Parameters.Set(SSLRCommonKeys.RayStepScale, 2.0f / outputBuffer.Width);
-            coneTracePassShader.Parameters.Set(SSLRCommonKeys.Time, time);
-            coneTracePassShader.Parameters.Set(SSLRCommonKeys.BRDFBias, BRDFBias);
-            coneTracePassShader.Parameters.Set(SSLRCommonKeys.UseTemporal, UseTemporal ? 1 : 0);
-            coneTracePassShader.Parameters.Set(SSLRCommonKeys.TemporalResponse, TemporalResponse);
-            coneTracePassShader.Parameters.Set(SSLRCommonKeys.TemporalScale, TemporalScale);
-            coneTracePassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
-            coneTracePassShader.Parameters.Set(SSLRCommonKeys.VP, viewProjectionMatrix);
-            coneTracePassShader.Parameters.Set(SSLRCommonKeys.IVP, inverseViewProjectionMatrix);
+            temporalPassShader.Parameters.Set(SSLRTemporalPassKeys.TemporalResponse, TemporalResponse);
+            temporalPassShader.Parameters.Set(SSLRTemporalPassKeys.TemporalScale, TemporalScale);
 
             combinePassShader.Parameters.Set(SSLRCommonKeys.MaxColorMiplevel, Texture.CalculateMipMapCount(0, outputBuffer.Width, outputBuffer.Height) - 1);
             combinePassShader.Parameters.Set(SSLRCommonKeys.TraceSizeMax, Math.Max(traceBufferSize.Width, traceBufferSize.Height) / 2.0f);
@@ -349,14 +314,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // Output:
             Texture outputBuffer = GetSafeOutput(0);
 
-            var depthBuffersSize = GetBufferResolution(outputBuffer, DepthResolution);
-            var rayTraceBuffersSize = GetBufferResolution(outputBuffer, RayTracePassResolution);
-            var resolveBuffersSize = GetBufferResolution(outputBuffer, ResolvePassResolution);
-            var colorBuffersSize = new Size2(outputBuffer.Width / 2, outputBuffer.Height / 2);
-
             // Get temporary buffers
             // TODO: try optimize formats
             var reflectionsFormat = PixelFormat.R16G16B16A16_Float;
+            var rayTraceBuffersSize = GetBufferResolution(outputBuffer, RayTracePassResolution);
+            var resolveBuffersSize = GetBufferResolution(outputBuffer, ResolvePassResolution);
             Texture rayTraceBuffer = NewScopedRenderTarget2D(rayTraceBuffersSize.Width, rayTraceBuffersSize.Height, PixelFormat.R16G16B16A16_Float, 1);
             Texture rayTraceMaskBuffer = NewScopedRenderTarget2D(rayTraceBuffersSize.Width, rayTraceBuffersSize.Height, PixelFormat.R16_Float, 1);
             Texture resolveBuffer = NewScopedRenderTarget2D(resolveBuffersSize.Width, resolveBuffersSize.Height, reflectionsFormat, 1);
@@ -364,6 +326,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // Check if resize depth
             if (DepthResolution != ResolutionMode.Full)
             {
+                var depthBuffersSize = GetBufferResolution(outputBuffer, DepthResolution);
+
                 // TODO: use half res depth as default
                 throw new NotImplementedException("finish depth downscale");
                 //Texture smallerDepth = NewScopedRenderTarget2D(depthBuffersSize.Width, depthBuffersSize.Height, PixelFormat.R32_Float, 1);
@@ -373,7 +337,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
             Texture blurPassBuffer;
             if (UseColorBufferMips)
             {
+                // Note: using color buffer mips maps helps with reducing artifacts
+                // and improves resolve pass performance (faster color texture lookups, less cache misses)
+                // Also for high surface roughness values it adds more blur to the reflection tail which looks more realistic.
+                
                 // Get temp targets
+                var colorBuffersSize = new Size2(outputBuffer.Width / 2, outputBuffer.Height / 2);
                 Texture colorBuffer0 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, PixelFormat.R11G11B10_Float, MipMapCount.Auto);
                 Texture colorBuffer1 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, PixelFormat.R11G11B10_Float, MipMapCount.Auto);
                 // TODO: we don't use colorBuffer1 mip0, could be optimized
@@ -407,11 +376,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 // Downscale with gaussian blur
                 for (int mipLevel = 1; mipLevel < colorMipLevels; mipLevel++)
                 {
-                    int mipWidth = colorBuffer0.Width >> mipLevel;
-                    int mipHeight = colorBuffer1.Height >> mipLevel;
-
-                    blurPassShader.Parameters.Set(SSLRCommonKeys.TexelSize, new Vector2(1.0f / mipWidth, 1.0f / mipHeight));
-
                     // Blur H
                     //var srcMip = mipLevel == 0 ? cachedColorBuffer0Mips[0] : cachedColorBuffer0Mips[mipLevel - 1];
                     var srcMip = cachedColorBuffer0Mips[mipLevel - 1];
@@ -480,7 +444,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 temporalPassShader.SetOutput(temporalBuffer0);
                 temporalPassShader.Draw(context, "Temporal");
 
-                context.CommandList.Copy(temporalBuffer0, temporalBuffer);
+                context.CommandList.Copy(temporalBuffer0, temporalBuffer); // TODO: use Texture.Swap from ContentStreaming branch to make it faster!
 
                 reflectionsBuffer = temporalBuffer;
             }

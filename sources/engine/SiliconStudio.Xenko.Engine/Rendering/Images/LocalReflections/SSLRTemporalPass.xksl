@@ -6,8 +6,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
 	/// Screen Space Local Reflections shader for Temporal Pass
     /// </summary>
-    shader SSLRTemporalPass : ImageEffectShader, SSLRCommon, Texturing
+    shader SSLRTemporalPass : ImageEffectShader, Texturing
     {
+        stage float TemporalResponse;
+        stage float TemporalScale;
+
         override stage float4 Shading()
         {
 			// Inputs Mapping:
