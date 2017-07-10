@@ -158,10 +158,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
                     },
                     DiffuseModel = new MaterialDiffuseLambertModelFeature(),
                     SpecularModel = new MaterialSpecularMicrofacetModelFeature(),
-                    Specular = new MaterialMetalnessMapFeature
-                    {
-                        MetalnessMap = new ComputeFloat(0.0f)
-                    },
+                    Specular = new MaterialMetalnessCarPaintFeature(),
                     MicroSurface = new MaterialGlossinessCarPaintFeature(),
                 }
             };
