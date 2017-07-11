@@ -277,12 +277,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SSLRCommon.xksl</DependentUpon>
     </Compile>
-    <Compile Include="Rendering\Images\LocalReflections\SSLRConeTracePass.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>SSLRConeTracePass.xksl</DependentUpon>
-    </Compile>
     <Compile Include="Rendering\Images\LocalReflections\SSLRRayTracePass.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -305,10 +299,6 @@
     <None Include="Rendering\Images\LocalReflections\SSLRCommon.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>SSLRCommon.cs</LastGenOutput>
-    </None>
-    <None Include="Rendering\Images\LocalReflections\SSLRConeTracePass.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>SSLRConeTracePass.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Images\LocalReflections\SSLRDepthPass.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>

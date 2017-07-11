@@ -10,35 +10,23 @@ namespace SiliconStudio.Xenko.Rendering.Images
     {	
 		cbuffer Data
         {
-			stage float MaxColorMiplevel;
-			stage float TraceSizeMax;
-			stage float2 TexelSize;
-			
-			stage float2 SSRtexelSize;
-			stage float RoughnessFade;
-			stage float MaxTraceSamples;
-			
-            stage float UseTemporal;
-            stage float TemporalResponse;
-            stage float TemporalScale;
-            stage float Padding0;
+            stage float MaxColorMiplevel;
+            stage float TraceSizeMax;
+            stage float MaxTraceSamples;
+            //stage float Padding0;
 
-            stage float Time;
+            stage float RoughnessFade;
+            stage float TemporalTime;
             stage float BRDFBias;
-            stage float2 Padding1;
-
-			stage float ViewFarPlane;
-			stage float RayStepScale;
-			stage float2 ScreenSize;
+            stage float ViewFarPlane;
+            
+            stage float4 ViewInfo;
 			
-			stage float4 ViewInfo;
-			
-			stage float4 CameraPosWS;
+            stage float3 CameraPosWS;
+            stage float WorldAntiSelfOcclusionBias;
 
-			stage float4x4 V;
-			stage float4x4 VP;
-			stage float4x4 IVP;
-			stage float4x4 P;
+            stage float4x4 V;
+            stage float4x4 IVP;
         };
 		
 		// Sample raw device depth buffer
@@ -102,21 +90,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			return float3(UvToClip(uv) * ViewInfo.xy, depth);
         }
 
-		// go into clip space (-1:1 from bottom/left to up/right)
-        float3 ProjectWorldToClip(float3 wsPos)
-        {
-            float4 uv = mul(float4(wsPos, 1), VP);
-            uv /= uv.w;
-            return uv.xyz;
-        }
-		
-        // go into UV space. (0:1 from top/left to bottom/right)
-        float3 ProjectWorldToUv(float3 wsPos)
-        {
-            float3 pos = ProjectWorldToClip(wsPos);
-            return float3(ClipToUv(pos.xy), pos.z);
-        }
-		
 		float max2(float2 v)
 		{
 			return max(v.x, v.y);

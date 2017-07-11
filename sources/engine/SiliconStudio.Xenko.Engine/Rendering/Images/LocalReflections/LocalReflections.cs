@@ -260,9 +260,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
             float aspect = currentCamera.AspectRatio;
             float fieldOfView = (float)(2.0f * Math.Atan2(projectionMatrix.M11, aspect));
             Vector4 ViewInfo = new Vector4(1.0f / projectionMatrix.M11, 1.0f / projectionMatrix.M22, farclip / (farclip - nearclip), (-farclip * nearclip) / (farclip - nearclip) / farclip);
-            Vector4 CameraPosWS = new Vector4(eye.X, eye.Y, eye.Z, WorldAntiSelfOcclusionBias);
+            Vector3 CameraPosWS = new Vector3(eye.X, eye.Y, eye.Z);
             
             float time = (float)(context.RenderContext.Time.Total.TotalSeconds);
+            float temporalTime = TemporalEnabled ? time : 0;
 
             var traceBufferSize = GetBufferResolution(outputBuffer, RayTracePassResolution);
             Vector2 ScreenSize = new Vector2(traceBufferSize.Width, traceBufferSize.Height);
@@ -280,35 +281,23 @@ namespace SiliconStudio.Xenko.Rendering.Images
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.RoughnessFade, roughnessFade);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.MaxTraceSamples, maxTraceSamples);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.CameraPosWS, CameraPosWS);
-            rayTracePassShader.Parameters.Set(SSLRCommonKeys.ScreenSize, ScreenSize);
-            rayTracePassShader.Parameters.Set(SSLRCommonKeys.RayStepScale, 2.0f / outputBuffer.Width);
-            rayTracePassShader.Parameters.Set(SSLRCommonKeys.Time, time);
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.WorldAntiSelfOcclusionBias, WorldAntiSelfOcclusionBias);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.BRDFBias, BRDFBias);
-            rayTracePassShader.Parameters.Set(SSLRCommonKeys.UseTemporal, TemporalEnabled ? 1 : 0);
-            rayTracePassShader.Parameters.Set(SSLRCommonKeys.TemporalResponse, TemporalResponse);
-            rayTracePassShader.Parameters.Set(SSLRCommonKeys.TemporalScale, TemporalScale);
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.TemporalTime, temporalTime);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
-            rayTracePassShader.Parameters.Set(SSLRCommonKeys.VP, viewProjectionMatrix);
+            rayTracePassShader.Parameters.Set(SSLRRayTracePassKeys.VP, viewProjectionMatrix);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.IVP, inverseViewProjectionMatrix);
-            rayTracePassShader.Parameters.Set(SSLRCommonKeys.P, projectionMatrix);
-
+            
             resolvePassShader.Parameters.Set(SSLRCommonKeys.MaxColorMiplevel, Texture.CalculateMipMapCount(0, outputBuffer.Width, outputBuffer.Height) - 1);
             resolvePassShader.Parameters.Set(SSLRCommonKeys.TraceSizeMax, Math.Max(traceBufferSize.Width, traceBufferSize.Height) / 2.0f);
-            resolvePassShader.Parameters.Set(SSLRCommonKeys.SSRtexelSize, new Vector2(1.0f / traceBufferSize.Width, 1.0f / traceBufferSize.Height));
             resolvePassShader.Parameters.Set(SSLRCommonKeys.ViewInfo, ViewInfo);
             resolvePassShader.Parameters.Set(SSLRCommonKeys.ViewFarPlane, farclip);
             resolvePassShader.Parameters.Set(SSLRCommonKeys.RoughnessFade, roughnessFade);
             resolvePassShader.Parameters.Set(SSLRCommonKeys.MaxTraceSamples, maxTraceSamples);
             resolvePassShader.Parameters.Set(SSLRCommonKeys.CameraPosWS, CameraPosWS);
-            resolvePassShader.Parameters.Set(SSLRCommonKeys.ScreenSize, ScreenSize);
-            resolvePassShader.Parameters.Set(SSLRCommonKeys.RayStepScale, 2.0f / outputBuffer.Width);
-            resolvePassShader.Parameters.Set(SSLRCommonKeys.Time, time);
+            resolvePassShader.Parameters.Set(SSLRCommonKeys.TemporalTime, temporalTime);
             resolvePassShader.Parameters.Set(SSLRCommonKeys.BRDFBias, BRDFBias);
-            resolvePassShader.Parameters.Set(SSLRCommonKeys.UseTemporal, TemporalEnabled ? 1 : 0);
-            resolvePassShader.Parameters.Set(SSLRCommonKeys.TemporalResponse, TemporalResponse);
-            resolvePassShader.Parameters.Set(SSLRCommonKeys.TemporalScale, TemporalScale);
             resolvePassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
-            resolvePassShader.Parameters.Set(SSLRCommonKeys.VP, viewProjectionMatrix);
             resolvePassShader.Parameters.Set(SSLRCommonKeys.IVP, inverseViewProjectionMatrix);
             resolvePassShader.Parameters.Set(SSLRKeys.ResolveSamples, MathUtil.Clamp(ResolveSamples, 1, 8));
             resolvePassShader.Parameters.Set(SSLRKeys.ReduceFireflies, ReduceFireflies);
@@ -324,21 +313,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             combinePassShader.Parameters.Set(SSLRCommonKeys.MaxColorMiplevel, Texture.CalculateMipMapCount(0, outputBuffer.Width, outputBuffer.Height) - 1);
             combinePassShader.Parameters.Set(SSLRCommonKeys.TraceSizeMax, Math.Max(traceBufferSize.Width, traceBufferSize.Height) / 2.0f);
-            combinePassShader.Parameters.Set(SSLRCommonKeys.SSRtexelSize, new Vector2(1.0f / traceBufferSize.Width, 1.0f / traceBufferSize.Height));
             combinePassShader.Parameters.Set(SSLRCommonKeys.ViewInfo, ViewInfo);
             combinePassShader.Parameters.Set(SSLRCommonKeys.ViewFarPlane, farclip);
             combinePassShader.Parameters.Set(SSLRCommonKeys.RoughnessFade, roughnessFade);
             combinePassShader.Parameters.Set(SSLRCommonKeys.MaxTraceSamples, maxTraceSamples);
-            combinePassShader.Parameters.Set(SSLRCommonKeys.CameraPosWS, eye);
-            combinePassShader.Parameters.Set(SSLRCommonKeys.ScreenSize, ScreenSize);
-            combinePassShader.Parameters.Set(SSLRCommonKeys.RayStepScale, 2.0f / outputBuffer.Width);
-            combinePassShader.Parameters.Set(SSLRCommonKeys.Time, time);
+            combinePassShader.Parameters.Set(SSLRCommonKeys.CameraPosWS, CameraPosWS);
             combinePassShader.Parameters.Set(SSLRCommonKeys.BRDFBias, BRDFBias);
-            combinePassShader.Parameters.Set(SSLRCommonKeys.UseTemporal, TemporalEnabled ? 1 : 0);
-            combinePassShader.Parameters.Set(SSLRCommonKeys.TemporalResponse, TemporalResponse);
-            combinePassShader.Parameters.Set(SSLRCommonKeys.TemporalScale, TemporalScale);
             combinePassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
-            combinePassShader.Parameters.Set(SSLRCommonKeys.VP, viewProjectionMatrix);
             combinePassShader.Parameters.Set(SSLRCommonKeys.IVP, inverseViewProjectionMatrix);
         }
 
