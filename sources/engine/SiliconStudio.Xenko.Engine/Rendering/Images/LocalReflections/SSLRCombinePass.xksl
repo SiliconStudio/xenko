@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			
 			// Sample material specular color and roughness
 			float4 specularRoughnessBuffer = Texture3.SampleLevel(PointSampler, uv, 0);
-			float specularColor = specularRoughnessBuffer.rgb;
+			float3 specularColor = specularRoughnessBuffer.rgb;
 			float roughness = specularRoughnessBuffer.a;
 			
 			// Calculate reflecion color
