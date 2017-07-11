@@ -160,6 +160,7 @@
     <Compile Include="ValueConverters\ConverterHelper.cs" />
     <Compile Include="ValueConverters\DegreeAngleSingle.cs" />
     <Compile Include="ValueConverters\EmptyStringToBool.cs" />
+    <Compile Include="ValueConverters\Take.cs" />
     <Compile Include="ValueConverters\UDirectoryToString.cs" />
     <Compile Include="ValueConverters\ValueToUnset.cs" />
     <Compile Include="ValueConverters\ToLower.cs" />
