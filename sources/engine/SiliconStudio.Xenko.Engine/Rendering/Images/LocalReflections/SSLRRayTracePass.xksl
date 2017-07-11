@@ -56,9 +56,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			// Texture1 - Depth
 			// Texture2 - World Space Normals
 			// Texture3 - Specular Color + Roughness
-            
-            streams.ColorTarget1 = 0;
-			
+
 			float2 uv = streams.TexCoord;
 			
 			// Sample material roughness
@@ -69,8 +67,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			float depth = SampleZ(uv);
 			float3 positionVS = ComputeViewPosition(uv, depth);
 			
-            //return pow(depth.xxxx, 8) / 6;
-
 			// Reject invalid pixels
 			if(positionVS.z > 100.0f || roughness > RoughnessFade)
 				return 0;
@@ -161,15 +157,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
 				return 0;
 			}
 
-			// Calculate intersection texture coordinate
-			//float3 lastOffset = currOffset - rayStep;
-			//float2 hitUV = lastOffset.xy + (currSample - lastOffset.z) * rayStep.xy;
 			float2 hitUV = currOffset.xy;
 			
             const float EdgeFactor = 0.1f; // TODO: promote to param for user
-
-			// Debug scene color preview:
-			//return Texture0.Sample(PointSampler, hitUV.xy);
 
 			// Fade rays close to screen edge
 			const float fadeStart = 0.9f;
@@ -184,11 +174,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			// Fade rays on high roughness
 			float roughnessFade = saturate((RoughnessFade - roughness) * 20);
 
-			// Compute final pixel mask
-            streams.ColorTarget1 = fadeOnBorder * roughnessFade;
-            
-            // Output: xy: hitUV, z: hitZ, w: PDF
-			return float4(currOffset.xyz, H.w);
+            // Output: xy: hitUV, z: hitMask, w: unused
+			return float4(hitUV, fadeOnBorder * roughnessFade, 0);
         }
     };
 }

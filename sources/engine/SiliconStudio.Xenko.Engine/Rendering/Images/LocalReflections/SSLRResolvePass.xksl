@@ -28,12 +28,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			// Texture2 - World Space Normals
 			// Texture3 - Specular Color + Roughness
 			// Texture4 - Ray Trace result
-			// Texture5 - Ray Trace Mask result
-
+			
 			float2 uv = streams.TexCoord;
 			
             // Early out for pixels with no hit result
-            if(Texture5.SampleLevel(LinearSampler, uv, 0).r <= 0.001)
+            if(Texture4.SampleLevel(LinearSampler, uv, 0).z <= 0.001)
                 return 0;
             
 			// Sample material roughness
@@ -88,10 +87,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 // intersections spawned from neighboring pixels. The neighboring pixel is this one:
                 float2 neighborUv = uv + offsetUV;
 
-                // Now we fetch the intersection point and the PDF that the neighbor's ray hit.
-                float4 hitPacked = Texture4.SampleLevel(LinearSampler, neighborUv, 0); // TODO: test with PointSampler
+                // Now we fetch the intersection point
+                float4 hitPacked = Texture4.SampleLevel(LinearSampler, neighborUv, 0);
                 float2 hitUv = hitPacked.xy;
-                float hitMask = Texture5.SampleLevel(PointSampler, neighborUv, 0).r;
+                float hitMask = hitPacked.z;
 
                 float intersectionCircleRadius = coneTangent * length(hitUv - uv);
                 float mip = clamp(log2(intersectionCircleRadius * TraceSizeMax), 0.0, maxMipLevel);
