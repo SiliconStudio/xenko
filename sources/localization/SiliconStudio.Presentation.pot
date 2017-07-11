@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2017-06-06 14:25:25+0900\n"
-"PO-Revision-Date: 2017-06-06 14:25:25+0900\n"
+"POT-Creation-Date: 2017-07-11 11:53:10+0900\n"
+"PO-Revision-Date: 2017-07-11 11:53:10+0900\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -11,119 +11,119 @@ msgstr ""
 "X-Generator: MonoDevelop Gettext addin\n"
 
 
-#: Windows/DialogHelper.cs:31
+#: ../common/presentation/SiliconStudio.Presentation/Windows/DialogHelper.cs:32
 msgid "Don't ask me again"
 msgstr ""
 
-#: Windows/MessageBox.cs:71
+#: ../common/presentation/SiliconStudio.Presentation/Windows/MessageBox.cs:70
 msgctxt "KeyGesture"
 msgid "N"
 msgstr ""
 
-#: Windows/MessageBox.cs:100
+#: ../common/presentation/SiliconStudio.Presentation/Windows/MessageBox.cs:99
 msgctxt "KeyGesture"
 msgid "Y"
 msgstr ""
 
-#: Themes/generic.xaml:344
-#: Themes/ExpressionDark/Theme.xaml:613
+#: ../common/presentation/SiliconStudio.Presentation/Themes/generic.xaml:344
+#: ../common/presentation/SiliconStudio.Presentation/Themes/ExpressionDark/Theme.xaml:613
 msgctxt "RGBA"
 msgid "R:"
 msgstr ""
 
-#: Themes/generic.xaml:344
-#: Themes/ExpressionDark/Theme.xaml:613
+#: ../common/presentation/SiliconStudio.Presentation/Themes/generic.xaml:344
+#: ../common/presentation/SiliconStudio.Presentation/Themes/ExpressionDark/Theme.xaml:613
 msgctxt "ToolTip"
 msgid "Red"
 msgstr ""
 
-#: Themes/generic.xaml:353
-#: Themes/ExpressionDark/Theme.xaml:622
+#: ../common/presentation/SiliconStudio.Presentation/Themes/generic.xaml:353
+#: ../common/presentation/SiliconStudio.Presentation/Themes/ExpressionDark/Theme.xaml:622
 msgctxt "RGBA"
 msgid "G:"
 msgstr ""
 
-#: Themes/generic.xaml:353
-#: Themes/ExpressionDark/Theme.xaml:622
+#: ../common/presentation/SiliconStudio.Presentation/Themes/generic.xaml:353
+#: ../common/presentation/SiliconStudio.Presentation/Themes/ExpressionDark/Theme.xaml:622
 msgctxt "ToolTip"
 msgid "Green"
 msgstr ""
 
-#: Themes/generic.xaml:362
-#: Themes/ExpressionDark/Theme.xaml:631
+#: ../common/presentation/SiliconStudio.Presentation/Themes/generic.xaml:362
+#: ../common/presentation/SiliconStudio.Presentation/Themes/ExpressionDark/Theme.xaml:631
 msgctxt "RGBA"
 msgid "B:"
 msgstr ""
 
-#: Themes/generic.xaml:362
-#: Themes/ExpressionDark/Theme.xaml:631
+#: ../common/presentation/SiliconStudio.Presentation/Themes/generic.xaml:362
+#: ../common/presentation/SiliconStudio.Presentation/Themes/ExpressionDark/Theme.xaml:631
 msgctxt "ToolTip"
 msgid "Blue"
 msgstr ""
 
-#: Themes/generic.xaml:371
-#: Themes/ExpressionDark/Theme.xaml:640
+#: ../common/presentation/SiliconStudio.Presentation/Themes/generic.xaml:371
+#: ../common/presentation/SiliconStudio.Presentation/Themes/ExpressionDark/Theme.xaml:640
 msgctxt "RGBA"
 msgid "A:"
 msgstr ""
 
-#: Themes/generic.xaml:371
-#: Themes/ExpressionDark/Theme.xaml:640
+#: ../common/presentation/SiliconStudio.Presentation/Themes/generic.xaml:371
+#: ../common/presentation/SiliconStudio.Presentation/Themes/ExpressionDark/Theme.xaml:640
 msgctxt "ToolTip"
 msgid "Alpha"
 msgstr ""
 
-#: Themes/generic.xaml:384
-#: Themes/ExpressionDark/Theme.xaml:653
+#: ../common/presentation/SiliconStudio.Presentation/Themes/generic.xaml:384
+#: ../common/presentation/SiliconStudio.Presentation/Themes/ExpressionDark/Theme.xaml:653
 msgctxt "HSB"
 msgid "H:"
 msgstr ""
 
-#: Themes/generic.xaml:384
-#: Themes/ExpressionDark/Theme.xaml:653
+#: ../common/presentation/SiliconStudio.Presentation/Themes/generic.xaml:384
+#: ../common/presentation/SiliconStudio.Presentation/Themes/ExpressionDark/Theme.xaml:653
 msgctxt "ToolTip"
 msgid "Hue"
 msgstr ""
 
-#: Themes/generic.xaml:393
-#: Themes/ExpressionDark/Theme.xaml:662
+#: ../common/presentation/SiliconStudio.Presentation/Themes/generic.xaml:393
+#: ../common/presentation/SiliconStudio.Presentation/Themes/ExpressionDark/Theme.xaml:662
 msgctxt "HSB"
 msgid "S:"
 msgstr ""
 
-#: Themes/generic.xaml:393
-#: Themes/ExpressionDark/Theme.xaml:662
+#: ../common/presentation/SiliconStudio.Presentation/Themes/generic.xaml:393
+#: ../common/presentation/SiliconStudio.Presentation/Themes/ExpressionDark/Theme.xaml:662
 msgctxt "ToolTip"
 msgid "Saturation"
 msgstr ""
 
-#: Themes/generic.xaml:402
-#: Themes/ExpressionDark/Theme.xaml:671
+#: ../common/presentation/SiliconStudio.Presentation/Themes/generic.xaml:402
+#: ../common/presentation/SiliconStudio.Presentation/Themes/ExpressionDark/Theme.xaml:671
 msgctxt "HSB"
 msgid "B:"
 msgstr ""
 
-#: Themes/generic.xaml:402
-#: Themes/ExpressionDark/Theme.xaml:671
+#: ../common/presentation/SiliconStudio.Presentation/Themes/generic.xaml:402
+#: ../common/presentation/SiliconStudio.Presentation/Themes/ExpressionDark/Theme.xaml:671
 msgctxt "ToolTip"
 msgid "Value"
 msgstr ""
 
-#: Themes/ExpressionDark/Theme.xaml:3861
+#: ../common/presentation/SiliconStudio.Presentation/Themes/ExpressionDark/Theme.xaml:3861
 msgctxt "ToolTip"
 msgid "Toggle editing mode"
 msgstr ""
 
-#: Themes/ExpressionDark/Theme.xaml:4117
-#: Themes/ExpressionDark/Theme.xaml:4187
-#: Themes/ExpressionDark/Theme.xaml:4266
+#: ../common/presentation/SiliconStudio.Presentation/Themes/ExpressionDark/Theme.xaml:4117
+#: ../common/presentation/SiliconStudio.Presentation/Themes/ExpressionDark/Theme.xaml:4187
+#: ../common/presentation/SiliconStudio.Presentation/Themes/ExpressionDark/Theme.xaml:4266
 msgctxt "ToolTip"
 msgid "Advanced options"
 msgstr ""
 
-#: Themes/ExpressionDark/Theme.xaml:4126
-#: Themes/ExpressionDark/Theme.xaml:4195
-#: Themes/ExpressionDark/Theme.xaml:4275
+#: ../common/presentation/SiliconStudio.Presentation/Themes/ExpressionDark/Theme.xaml:4126
+#: ../common/presentation/SiliconStudio.Presentation/Themes/ExpressionDark/Theme.xaml:4195
+#: ../common/presentation/SiliconStudio.Presentation/Themes/ExpressionDark/Theme.xaml:4275
 msgid "All components:"
 msgstr ""
 
