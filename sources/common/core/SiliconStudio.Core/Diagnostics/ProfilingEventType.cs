@@ -7,6 +7,6 @@ namespace SiliconStudio.Core.Diagnostics
     {
         CpuProfilingEvent,
 
-        GpuProfilingEVent,
+        GpuProfilingEvent,
     }
 }

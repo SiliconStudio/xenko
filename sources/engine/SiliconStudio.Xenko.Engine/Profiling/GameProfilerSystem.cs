@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using Color = SiliconStudio.Core.Mathematics.Color;
@@ -54,9 +53,8 @@ namespace SiliconStudio.Xenko.Profiling
         private Color4 textColor = Color.LightGreen;
 
         private PresentInterval userPresentInterval = PresentInterval.Default;  
-
-        private int lastUpdate = -1;
-        private int lastDraw = -1;
+        
+        private int lastFrame = -1;
 
         private float viewportHeight = 1000;
 
@@ -119,21 +117,16 @@ namespace SiliconStudio.Xenko.Profiling
             gcProfiler.Tick();
 
             // calculate elaspsed frames
-            var newUpdate = Game.UpdateTime.FrameCount;
             var newDraw = Game.DrawTime.FrameCount;
-            var elapsedUpdates = newUpdate - lastUpdate;
-            var elapsedDraws = newDraw - lastDraw;
-            lastUpdate = newUpdate;
-            lastDraw = newDraw;
-
-            var elapsedFrames = FilteringMode == ProfilingEventType.CpuProfilingEvent ? elapsedUpdates : elapsedDraws;
-            var tickFrequency = FilteringMode == ProfilingEventType.CpuProfilingEvent ? GraphicsDevice.TimestampFrequency : Stopwatch.Frequency;
-
-            //Copy events from profiler ( this will also clean up the profiler )
+            var elapsedFrames = newDraw - lastFrame;
+            lastFrame = newDraw;
+            
+            // Get events from the profiler ( this will also clean up the profiler )
             var events = Profiler.GetEvents(FilteringMode);
             if (events == null) return;
 
             var containsMarks = false;
+            var tickFrequency = FilteringMode == ProfilingEventType.GpuProfilingEVent ? GraphicsDevice.TimestampFrequency : Stopwatch.Frequency;
 
             //update strings that need update
             foreach (var e in events)

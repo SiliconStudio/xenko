@@ -2901,7 +2901,6 @@
     <Compile Include="Engine\Network\SocketSerializer.cs" />
     <Compile Include="Engine\Design\EntityCloner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Engine\ScriptContext.cs" />
     <Compile Include="Rendering\Shaders\RenderTargetKeys.cs" />
     <Compile Include="Rendering\Shaders\Transformation.cs">
       <AutoGen>True</AutoGen>

@@ -17,6 +17,7 @@ using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Profiling;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Sprites;
 
@@ -30,7 +31,7 @@ namespace SiliconStudio.Xenko.Engine
     [Display(Expand = ExpandRule.Once)]
     [AllowMultipleComponents]
     [ComponentOrder(1000)]
-    public abstract class ScriptComponent : EntityComponent, IScriptContext
+    public abstract class ScriptComponent : EntityComponent
     {
         public const uint LiveScriptingMask = 128;
 
@@ -64,6 +65,7 @@ namespace SiliconStudio.Xenko.Engine
             EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
             Audio = Services.GetSafeServiceAs<AudioSystem>();
             SpriteAnimation = Services.GetSafeServiceAs<SpriteAnimationSystem>();
+            GameProfiler = Services.GetSafeServiceAs<GameProfilingSystem>();
         }
 
         /// <summary>
@@ -102,6 +104,9 @@ namespace SiliconStudio.Xenko.Engine
 
         [DataMemberIgnore]
         public ContentManager Content { get; private set; }
+
+        [DataMemberIgnore]
+        public GameProfilingSystem GameProfiler { get; private set; }
 
         [DataMemberIgnore]
         public GraphicsDevice GraphicsDevice => graphicsDeviceService?.GraphicsDevice;
