@@ -20,5 +20,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     {
         public static readonly ValueParameterKey<float> TemporalResponse = ParameterKeys.NewValue<float>();
         public static readonly ValueParameterKey<float> TemporalScale = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<Matrix> IVP = ParameterKeys.NewValue<Matrix>();
+        public static readonly ValueParameterKey<Matrix> prevVP = ParameterKeys.NewValue<Matrix>();
     }
 }
