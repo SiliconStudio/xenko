@@ -184,7 +184,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             None,
             RayTrace,
-            RayTraceMask,
             Resolve,
             Temporal,
         }
@@ -359,8 +358,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var reflectionsFormat = PixelFormat.R16G16B16A16_Float;
             var rayTraceBuffersSize = GetBufferResolution(outputBuffer, RayTracePassResolution);
             var resolveBuffersSize = GetBufferResolution(outputBuffer, ResolvePassResolution);
-            Texture rayTraceBuffer = NewScopedRenderTarget2D(rayTraceBuffersSize.Width, rayTraceBuffersSize.Height, PixelFormat.R16G16B16A16_Float, 1);
-            Texture rayTraceMaskBuffer = NewScopedRenderTarget2D(rayTraceBuffersSize.Width, rayTraceBuffersSize.Height, PixelFormat.R16_Float, 1);
+            Texture rayTraceBuffer = NewScopedRenderTarget2D(rayTraceBuffersSize.Width, rayTraceBuffersSize.Height, PixelFormat.R11G11B10_Float, 1);
             Texture resolveBuffer = NewScopedRenderTarget2D(resolveBuffersSize.Width, resolveBuffersSize.Height, reflectionsFormat, 1);
 
             // Check if resize depth
@@ -449,7 +447,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             rayTracePassShader.SetInput(1, RayTracePassResolution == ResolutionMode.Full ? depthBuffer : smallerDepthBuffer);
             rayTracePassShader.SetInput(2, normalsBuffer);
             rayTracePassShader.SetInput(3, specularRoughnessBuffer);
-            rayTracePassShader.SetOutput(rayTraceBuffer, rayTraceMaskBuffer);
+            rayTracePassShader.SetOutput(rayTraceBuffer);
             rayTracePassShader.Draw(context, "Ray Trace");
 
             // Resolve Pass
@@ -458,7 +456,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
             resolvePassShader.SetInput(2, normalsBuffer);
             resolvePassShader.SetInput(3, specularRoughnessBuffer);
             resolvePassShader.SetInput(4, rayTraceBuffer);
-            resolvePassShader.SetInput(5, rayTraceMaskBuffer);
             resolvePassShader.SetOutput(resolveBuffer);
             resolvePassShader.Draw(context, "Resolve");
 
@@ -504,8 +501,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     case DebugModes.RayTrace:
                         Scaler.SetInput(0, rayTraceBuffer);
                         break;
-                    case DebugModes.RayTraceMask:
-                        Scaler.SetInput(0, rayTraceMaskBuffer);
                         break;
                     case DebugModes.Resolve:
                         Scaler.SetInput(0, resolveBuffer);
