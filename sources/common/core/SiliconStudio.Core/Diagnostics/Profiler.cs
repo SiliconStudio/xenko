@@ -1,6 +1,7 @@
 // Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
@@ -55,9 +56,34 @@ namespace SiliconStudio.Core.Diagnostics
     /// </remarks>
     public static class Profiler
     {
+        private class RollingBuffer
+        {
+            private const int rollingBufferCount = 2;
+            private int currentBufferIndex;
+            private readonly List<FastList<ProfilingEvent>> rollingBuffers = new List<FastList<ProfilingEvent>>(rollingBufferCount);
+
+            public RollingBuffer()
+            {
+                for (int i = 0; i < rollingBufferCount; i++)
+                    rollingBuffers.Add(new FastList<ProfilingEvent>());
+            }
+
+            public FastList<ProfilingEvent> GetBuffer()
+            {
+                return rollingBuffers[currentBufferIndex];
+            }
+
+            public void MoveToNextBuffer()
+            {
+                currentBufferIndex = (currentBufferIndex + 1) % rollingBufferCount;
+                rollingBuffers[currentBufferIndex].Clear();
+            }
+        }
+
         internal static Logger Logger = GlobalLogger.GetLogger("Profiler"); // Global logger for all profiling
-        private static readonly FastList<ProfilingEvent> cpuEvents = new FastList<ProfilingEvent>();
-        private static readonly FastList<ProfilingEvent> gpuEvents = new FastList<ProfilingEvent>();
+        
+        private static readonly RollingBuffer cpuEvents = new RollingBuffer();
+        private static readonly RollingBuffer gpuEvents= new RollingBuffer();
         private static readonly object Locker = new object();
         private static bool enableAll;
         private static int profileId;
@@ -239,7 +265,7 @@ namespace SiliconStudio.Core.Diagnostics
             // Add event
             lock (Locker)
             {
-                var list = eventType == ProfilingEventType.CpuProfilingEvent ? cpuEvents : gpuEvents;
+                var list = eventType == ProfilingEventType.CpuProfilingEvent ? cpuEvents.GetBuffer() : gpuEvents.GetBuffer();
                 list.Add(profilingEvent);
             }
 
@@ -254,24 +280,22 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="eventType">The type of events to retrieve</param>
         /// <param name="clearOtherEventTypes">if true, also clears the event types to avoid event over-accumulation.</param>
         /// <returns></returns>
-        public static ProfilingEvent[] GetEvents(ProfilingEventType eventType, bool clearOtherEventTypes = true)
+        public static FastList<ProfilingEvent> GetEvents(ProfilingEventType eventType, bool clearOtherEventTypes = true)
         {
             lock (Locker)
             {
-                var events = eventType == ProfilingEventType.CpuProfilingEvent ? cpuEvents : gpuEvents;
-                if (events.Count == 0) return null;
+                var returnValue = eventType == ProfilingEventType.CpuProfilingEvent ? cpuEvents.GetBuffer() : gpuEvents.GetBuffer();
 
-                var res = events.ToArray();
-
-                events.Clear();
-
-                if (clearOtherEventTypes)
+                if (eventType == ProfilingEventType.CpuProfilingEvent || clearOtherEventTypes)
                 {
-                    cpuEvents.Clear();
-                    gpuEvents.Clear();
+                    cpuEvents.MoveToNextBuffer();
+                }
+                if (eventType == ProfilingEventType.GpuProfilingEVent || clearOtherEventTypes)
+                {
+                    gpuEvents.MoveToNextBuffer();
                 }
 
-                return res;
+                return returnValue;
             }
         }
 
