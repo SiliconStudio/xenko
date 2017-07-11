@@ -30,9 +30,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
         private ImageEffectShader resolvePassShader;
         private ImageEffectShader temporalPassShader;
         private ImageEffectShader combinePassShader;
-
-        public Texture blueNoiseTexture;
+        
         private Texture temporalBuffer;
+        // ReSharper disable once InconsistentNaming
         private Matrix prevVP;
 
         private Texture[] cachedColorBuffer0Mips;
@@ -145,6 +145,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </value>
         [Display("BRDF Bias")]
         [DefaultValue(0.8f)]
+        // ReSharper disable once InconsistentNaming
         public float BRDFBias { get; set; } = 0.8f;
 
         /// <summary>
@@ -158,17 +159,17 @@ namespace SiliconStudio.Xenko.Rendering.Images
         public bool TemporalEnabled { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets the temporal effect scale.
+        /// Gets or sets the temporal effect scale. Default is 2.
         /// </summary>
         /// <value>
         /// The temporal effect scale.
         /// </value>
         [Display("Temporal Scale")]
         [DefaultValue(1.5f)]
-        public float TemporalScale { get; set; } = 1.5f;
+        public float TemporalScale { get; set; } = 2.0f;
 
         /// <summary>
-        /// Gets or sets the temporal response.
+        /// Gets or sets the temporal response. Default is 0.9.
         /// </summary>
         /// <value>
         /// The temporal response.
@@ -203,13 +204,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
             resolvePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRResolvePassEffect"));
             temporalPassShader = ToLoadAndUnload(new ImageEffectShader("SSLRTemporalPass"));
             combinePassShader = ToLoadAndUnload(new ImageEffectShader("SSLRCombinePass"));
-
-            Texture obj = AttachedReferenceManager.CreateProxyObject<Texture>(new AssetId("aF02239B-3697-4EBB-9F37-FE880659E64B"), "BlueNoise_256x256_UNI");
-            string url = AttachedReferenceManager.GetUrl(obj);
-
-            //blueNoiseTexture = AttachedReferenceManager.CreateProxyObject<Texture>(new AssetId("aF02239B-3697-4EBB-9F37-FE880659E64B"), "BlueNoise_256x256_UNI");
-            //blueNoiseTexture = Content.Load<Texture>("BlueNoise_256x256_UNI");
-            //blueNoiseTexture = Content.Load<Texture>(url);
         }
 
         protected override void Destroy()
@@ -351,9 +345,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         protected override void DrawCore(RenderDrawContext context)
         {
-            //if(blueNoiseTexture == null)
-            //    blueNoiseTexture = Content.Load<Texture>("BlueNoise_256x256_UNI");
-
             // Inputs:
             Texture colorBuffer = GetSafeInput(0);
             Texture depthBuffer = GetSafeInput(1);
@@ -458,7 +449,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
             rayTracePassShader.SetInput(1, RayTracePassResolution == ResolutionMode.Full ? depthBuffer : smallerDepthBuffer);
             rayTracePassShader.SetInput(2, normalsBuffer);
             rayTracePassShader.SetInput(3, specularRoughnessBuffer);
-            rayTracePassShader.SetInput(4, blueNoiseTexture);
             rayTracePassShader.SetOutput(rayTraceBuffer, rayTraceMaskBuffer);
             rayTracePassShader.Draw(context, "Ray Trace");
 
@@ -467,9 +457,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             resolvePassShader.SetInput(1, ResolvePassResolution == ResolutionMode.Full ? depthBuffer : smallerDepthBuffer);
             resolvePassShader.SetInput(2, normalsBuffer);
             resolvePassShader.SetInput(3, specularRoughnessBuffer);
-            resolvePassShader.SetInput(4, blueNoiseTexture);
-            resolvePassShader.SetInput(5, rayTraceBuffer);
-            resolvePassShader.SetInput(6, rayTraceMaskBuffer);
+            resolvePassShader.SetInput(4, rayTraceBuffer);
+            resolvePassShader.SetInput(5, rayTraceMaskBuffer);
             resolvePassShader.SetOutput(resolveBuffer);
             resolvePassShader.Draw(context, "Resolve");
 
@@ -480,8 +469,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 var temporalSize = outputBuffer.Size;
                 if (temporalBuffer == null || temporalBuffer.Size != temporalSize)
                 {
-                    if (temporalBuffer != null)
-                        temporalBuffer.Dispose();
+                    temporalBuffer?.Dispose();
                     temporalBuffer = Texture.New2D(GraphicsDevice, temporalSize.Width, temporalSize.Height, 1, reflectionsFormat, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
                 }
 
