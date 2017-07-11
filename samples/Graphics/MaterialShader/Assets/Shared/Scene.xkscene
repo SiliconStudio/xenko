@@ -1,15 +1,15 @@
 !SceneAsset
 Id: 877bd450-9cd3-48ce-b612-97e7545a5e1f
-SerializedVersion: {Xenko: 1.10.0-beta03}
+SerializedVersion: {Xenko: 2.1.0.1}
 Tags: []
 ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
-    RootPartIds:
-        - 359ed8d5-5381-47fc-9448-6c3c724eb457
-        - 1066a3c5-dc72-4ca6-b58d-066dd7a658d0
-        - 3eeb85ab-5668-4772-b4b5-ff0a50dd70f5
-        - d62e02cb-f3fc-43ae-b6aa-07eccae98182
+    RootParts:
+        - ref!! 359ed8d5-5381-47fc-9448-6c3c724eb457
+        - ref!! 1066a3c5-dc72-4ca6-b58d-066dd7a658d0
+        - ref!! 3eeb85ab-5668-4772-b4b5-ff0a50dd70f5
+        - ref!! d62e02cb-f3fc-43ae-b6aa-07eccae98182
     Parts:
         -   Entity:
                 Id: 1066a3c5-dc72-4ca6-b58d-066dd7a658d0
@@ -40,7 +40,7 @@ Hierarchy:
                         Name: null
                         Projection: Perspective
                         FarClipPlane: 100.0
-                        Slot: {Index: 0}
+                        Slot: d7498257-2125-4118-afef-0aaf351c0471
         -   Entity:
                 Id: 3eeb85ab-5668-4772-b4b5-ff0a50dd70f5
                 Name: Directional light

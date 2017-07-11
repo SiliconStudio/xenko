@@ -85,12 +85,28 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                 // Note! It doesn't really matter in what order we build the bitmask, the result is not preserved anywhere except in this method
                 var currentBatchState = isPicking ? 0U : sprite.IsTransparent ? (spriteComp.PremultipliedAlpha ? 1U : 2U) : 3U;
                 currentBatchState = (currentBatchState << 1) + (renderSprite.SpriteComponent.IgnoreDepth ? 1U : 0U);
+                currentBatchState = (currentBatchState << 1) + (spriteComp.IsAlphaCutoff ? 1U : 0U);
                 currentBatchState = (currentBatchState << 2) + ((uint)renderSprite.SpriteComponent.Sampler);
 
                 if (previousBatchState != currentBatchState)
                 {
-                    var blendState = isPicking ? BlendStates.Default : sprite.IsTransparent ? (spriteComp.PremultipliedAlpha ? BlendStates.AlphaBlend : BlendStates.NonPremultiplied) : BlendStates.Opaque;
-                    var currentEffect = isPicking ? batchContext.GetOrCreatePickingSpriteEffect(RenderSystem.EffectSystem) : null; // TODO remove this code when material are available
+                    BlendStateDescription blendState;
+                    EffectInstance currentEffect = null;
+                    if (isPicking)
+                    {
+                        blendState = BlendStates.Default;
+                        currentEffect = batchContext.GetOrCreatePickingSpriteEffect(RenderSystem.EffectSystem);
+                    }
+                    else
+                    {
+                        if (sprite.IsTransparent)
+                            blendState = spriteComp.PremultipliedAlpha ? BlendStates.AlphaBlend : BlendStates.NonPremultiplied;
+                        else
+                            blendState = BlendStates.Opaque;
+
+                        if (spriteComp.IsAlphaCutoff)
+                            currentEffect = batchContext.GetOrCreateAlphaCutoffSpriteEffect(RenderSystem.EffectSystem);
+                    }
                     var depthStencilState = renderSprite.SpriteComponent.IgnoreDepth ? DepthStencilStates.None : DepthStencilStates.Default;
 
                     var samplerState = context.GraphicsDevice.SamplerStates.LinearClamp;
@@ -181,18 +197,32 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
 
         private class ThreadContext : IDisposable
         {
+            private bool isSrgb;
             private EffectInstance pickingEffect;
+            private EffectInstance alphaCutoffEffect;
 
             public Sprite3DBatch SpriteBatch { get; }
 
             public ThreadContext(GraphicsDevice device)
             {
+                isSrgb = device.ColorSpace == ColorSpace.Gamma;
                 SpriteBatch = new Sprite3DBatch(device);
             }
 
             public EffectInstance GetOrCreatePickingSpriteEffect(EffectSystem effectSystem)
             {
                 return pickingEffect ?? (pickingEffect = new EffectInstance(effectSystem.LoadEffect("SpritePicking").WaitForResult()));
+            }
+
+            public EffectInstance GetOrCreateAlphaCutoffSpriteEffect(EffectSystem effectSystem)
+            {
+                if (alphaCutoffEffect != null)
+                    return alphaCutoffEffect;
+
+                alphaCutoffEffect = new EffectInstance(effectSystem.LoadEffect("SpriteAlphaCutoffEffect").WaitForResult());
+                alphaCutoffEffect.Parameters.Set(SpriteBaseKeys.ColorIsSRgb, isSrgb);
+
+                return alphaCutoffEffect;
             }
 
             public void Dispose()
