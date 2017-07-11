@@ -8,12 +8,11 @@
 
 using System;
 using System.ComponentModel;
-using SiliconStudio.Assets;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Xenko.Rendering.Images
 {
@@ -30,8 +29,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
         private ImageEffectShader resolvePassShader;
         private ImageEffectShader temporalPassShader;
         private ImageEffectShader combinePassShader;
-        
+
         private Texture temporalBuffer;
+
         // ReSharper disable once InconsistentNaming
         private Matrix prevVP;
 
@@ -45,15 +45,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
             /// Use full resolution.
             /// </summary>
             /// <userodc>Full resolution.</userodc>
-            [Display("Full")]
-            Full = 1,
+            [Display("Full")] Full = 1,
 
             /// <summary>
             /// Use hald resolution.
             /// </summary>
             /// <userodc>Half resolution.</userodc>
-            [Display("Half")]
-            Half = 2
+            [Display("Half")] Half = 2
         }
 
         /// <summary>
@@ -68,8 +66,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         [Display("Ray trace pass resolution")]
         [DefaultValue(ResolutionMode.Half)]
-        public ResolutionMode RayTracePassResolution { get; set; } = ResolutionMode.Half;   
-        
+        public ResolutionMode RayTracePassResolution { get; set; } = ResolutionMode.Half;
+
         /// <summary>
         /// Gets or sets the resolve pass resolution mode.
         /// </summary>
@@ -84,6 +82,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         [Display("Max steps amount")]
         [DefaultValue(60)]
+        [DataMemberRange(1, 128, 1, 10, 0)]
         public int MaxStepsAmount { get; set; } = 60;
 
         /// <summary>
@@ -92,6 +91,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         [Display("Max roughness")]
         [DefaultValue(0.6f)]
+        [DataMemberRange(0.0, 1.0, 0.05, 0.2, 4)]
         public float MaxRoughness { get; set; } = 0.6f;
 
         /// <summary>
@@ -99,6 +99,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         [Display("Ray start bias")]
         [DefaultValue(0.01f)]
+        [DataMemberRange(0.0, 0.1, 0.005, 0.01, 6)]
         public float WorldAntiSelfOcclusionBias { get; set; } = 0.01f;
 
         /// <summary>
@@ -110,6 +111,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </value>
         [Display("Resolve Samples")]
         [DefaultValue(4)]
+        [DataMemberRange(1, 8, 1, 1, 0)]
         public int ResolveSamples { get; set; } = 4;
 
         /// <summary>
@@ -123,6 +125,17 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [Display("Reduce Fireflies")]
         [DefaultValue(true)]
         public bool ReduceFireflies { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets the edge fade factor. It's used to fade off effect on screen edges to provide smoother image.
+        /// </summary>
+        /// <value>
+        /// The edge fade factor.
+        /// </value>
+        [Display("Edge Fade Factor")]
+        [DefaultValue(0.2f)]
+        [DataMemberRange(0.0, 1.0, 0.05, 0.2, 4)]
+        public float EdgeFadeFactor { get; set; } = 0.2f;
 
         /// <summary>
         /// Gets or sets a value indicating whether use color buffer mipsmaps chain; otherwise will use raw input color buffer to sample reflections color.
@@ -145,6 +158,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </value>
         [Display("BRDF Bias")]
         [DefaultValue(0.8f)]
+        [DataMemberRange(0.0, 1.0, 0.05, 0.2, 4)]
         // ReSharper disable once InconsistentNaming
         public float BRDFBias { get; set; } = 0.8f;
 
@@ -166,6 +180,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </value>
         [Display("Temporal Scale")]
         [DefaultValue(1.5f)]
+        [DataMemberRange(0.0, 20.0, 0.5, 0.5, 2)]
         public float TemporalScale { get; set; } = 2.0f;
 
         /// <summary>
@@ -176,8 +191,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </value>
         [Display("Temporal Response")]
         [DefaultValue(0.9f)]
+        [DataMemberRange(0.5, 1.0, 0.01, 0.1, 2)]
         public float TemporalResponse { get; set; } = 0.9f;
-        
+
 #if SSLR_DEBUG
 
         public enum DebugModes
@@ -223,7 +239,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             return new Size3(fullResTarget.Width / (int)mode, fullResTarget.Height / (int)mode, 1);
         }
-        
+
         /// <summary>
         /// Provides a color buffer and a depth buffer to apply the depth-of-field to.
         /// </summary>
@@ -243,8 +259,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             Texture outputBuffer = GetSafeOutput(0);
 
-            // TODO: cleanup that stuff
-
             var currentCamera = context.RenderContext.GetCurrentCamera();
             if (currentCamera == null)
                 throw new InvalidOperationException("No valid camera");
@@ -252,53 +266,45 @@ namespace SiliconStudio.Xenko.Rendering.Images
             Matrix projectionMatrix = currentCamera.ProjectionMatrix;
             Matrix viewProjectionMatrix = currentCamera.ViewProjectionMatrix;
             Matrix inverseViewMatrix = Matrix.Invert(viewMatrix);
-            Matrix inverseProjectionMatrix = Matrix.Invert(projectionMatrix);
             Matrix inverseViewProjectionMatrix = Matrix.Invert(viewProjectionMatrix);
             Vector4 eye = inverseViewMatrix.Row4;
             float nearclip = currentCamera.NearClipPlane;
             float farclip = currentCamera.FarClipPlane;
-            float aspect = currentCamera.AspectRatio;
-            float fieldOfView = (float)(2.0f * Math.Atan2(projectionMatrix.M11, aspect));
-            Vector4 ViewInfo = new Vector4(1.0f / projectionMatrix.M11, 1.0f / projectionMatrix.M22, farclip / (farclip - nearclip), (-farclip * nearclip) / (farclip - nearclip) / farclip);
-            Vector3 CameraPosWS = new Vector3(eye.X, eye.Y, eye.Z);
-            
+            Vector4 viewInfo = new Vector4(1.0f / projectionMatrix.M11, 1.0f / projectionMatrix.M22, farclip / (farclip - nearclip), (-farclip * nearclip) / (farclip - nearclip) / farclip);
+            Vector3 cameraPos = new Vector3(eye.X, eye.Y, eye.Z);
+
             float time = (float)(context.RenderContext.Time.Total.TotalSeconds);
             float temporalTime = TemporalEnabled ? time : 0;
 
             var traceBufferSize = GetBufferResolution(outputBuffer, RayTracePassResolution);
-            Vector2 ScreenSize = new Vector2(traceBufferSize.Width, traceBufferSize.Height);
             var roughnessFade = MathUtil.Clamp(MaxRoughness, 0.0f, 1.0f);
             var maxTraceSamples = MathUtil.Clamp(MaxStepsAmount, 1, 128);
 
-            // ViewInfo    :  x-1/Projection[0,0]   y-1/Projection[1,1]   z-(Far / (Far - Near)   w-(-Far * Near) / (Far - Near) / Far)
+            // ViewInfo :  x-1/Projection[0,0]   y-1/Projection[1,1]   z-(Far / (Far - Near)   w-(-Far * Near) / (Far - Near) / Far)
 
-            // TODO: pack UseTemporal * Time and scale it
-
-            // TODO: use ref for matrix set
-
-            rayTracePassShader.Parameters.Set(SSLRCommonKeys.ViewInfo, ViewInfo);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.ViewFarPlane, farclip);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.RoughnessFade, roughnessFade);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.MaxTraceSamples, maxTraceSamples);
-            rayTracePassShader.Parameters.Set(SSLRCommonKeys.CameraPosWS, CameraPosWS);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.WorldAntiSelfOcclusionBias, WorldAntiSelfOcclusionBias);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.BRDFBias, BRDFBias);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.TemporalTime, temporalTime);
-            rayTracePassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
-            rayTracePassShader.Parameters.Set(SSLRRayTracePassKeys.VP, viewProjectionMatrix);
-            rayTracePassShader.Parameters.Set(SSLRCommonKeys.IVP, inverseViewProjectionMatrix);
-            
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.CameraPosWS, ref cameraPos);
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.ViewInfo, ref viewInfo);
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.V, ref viewMatrix);
+            rayTracePassShader.Parameters.Set(SSLRCommonKeys.IVP, ref inverseViewProjectionMatrix);
+            rayTracePassShader.Parameters.Set(SSLRRayTracePassKeys.VP, ref viewProjectionMatrix);
+            rayTracePassShader.Parameters.Set(SSLRRayTracePassKeys.EdgeFadeFactor, EdgeFadeFactor);
+
             resolvePassShader.Parameters.Set(SSLRCommonKeys.MaxColorMiplevel, Texture.CalculateMipMapCount(0, outputBuffer.Width, outputBuffer.Height) - 1);
             resolvePassShader.Parameters.Set(SSLRCommonKeys.TraceSizeMax, Math.Max(traceBufferSize.Width, traceBufferSize.Height) / 2.0f);
-            resolvePassShader.Parameters.Set(SSLRCommonKeys.ViewInfo, ViewInfo);
             resolvePassShader.Parameters.Set(SSLRCommonKeys.ViewFarPlane, farclip);
             resolvePassShader.Parameters.Set(SSLRCommonKeys.RoughnessFade, roughnessFade);
-            resolvePassShader.Parameters.Set(SSLRCommonKeys.MaxTraceSamples, maxTraceSamples);
-            resolvePassShader.Parameters.Set(SSLRCommonKeys.CameraPosWS, CameraPosWS);
             resolvePassShader.Parameters.Set(SSLRCommonKeys.TemporalTime, temporalTime);
             resolvePassShader.Parameters.Set(SSLRCommonKeys.BRDFBias, BRDFBias);
-            resolvePassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
-            resolvePassShader.Parameters.Set(SSLRCommonKeys.IVP, inverseViewProjectionMatrix);
+            resolvePassShader.Parameters.Set(SSLRCommonKeys.CameraPosWS, ref cameraPos);
+            resolvePassShader.Parameters.Set(SSLRCommonKeys.ViewInfo, ref viewInfo);
+            resolvePassShader.Parameters.Set(SSLRCommonKeys.V, ref viewMatrix);
+            resolvePassShader.Parameters.Set(SSLRCommonKeys.IVP, ref inverseViewProjectionMatrix);
             resolvePassShader.Parameters.Set(SSLRKeys.ResolveSamples, MathUtil.Clamp(ResolveSamples, 1, 8));
             resolvePassShader.Parameters.Set(SSLRKeys.ReduceFireflies, ReduceFireflies);
 
@@ -311,16 +317,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
             prevVP = viewProjectionMatrix;
 
-            combinePassShader.Parameters.Set(SSLRCommonKeys.MaxColorMiplevel, Texture.CalculateMipMapCount(0, outputBuffer.Width, outputBuffer.Height) - 1);
-            combinePassShader.Parameters.Set(SSLRCommonKeys.TraceSizeMax, Math.Max(traceBufferSize.Width, traceBufferSize.Height) / 2.0f);
-            combinePassShader.Parameters.Set(SSLRCommonKeys.ViewInfo, ViewInfo);
             combinePassShader.Parameters.Set(SSLRCommonKeys.ViewFarPlane, farclip);
-            combinePassShader.Parameters.Set(SSLRCommonKeys.RoughnessFade, roughnessFade);
-            combinePassShader.Parameters.Set(SSLRCommonKeys.MaxTraceSamples, maxTraceSamples);
-            combinePassShader.Parameters.Set(SSLRCommonKeys.CameraPosWS, CameraPosWS);
-            combinePassShader.Parameters.Set(SSLRCommonKeys.BRDFBias, BRDFBias);
-            combinePassShader.Parameters.Set(SSLRCommonKeys.V, viewMatrix);
-            combinePassShader.Parameters.Set(SSLRCommonKeys.IVP, inverseViewProjectionMatrix);
+            combinePassShader.Parameters.Set(SSLRCommonKeys.CameraPosWS, ref cameraPos);
+            combinePassShader.Parameters.Set(SSLRCommonKeys.ViewInfo, ref viewInfo);
+            combinePassShader.Parameters.Set(SSLRCommonKeys.V, ref viewMatrix);
+            combinePassShader.Parameters.Set(SSLRCommonKeys.IVP, ref inverseViewProjectionMatrix);
         }
 
         protected override void DrawCore(RenderDrawContext context)
@@ -367,7 +368,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 Texture colorBuffer0 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, reflectionsFormat, colorBuffersMips);
                 Texture colorBuffer1 = NewScopedRenderTarget2D(colorBuffersSize.Width / 2, colorBuffersSize.Height / 2, reflectionsFormat, colorBuffersMips - 1);
                 int colorBuffer1MipOffset = 1; // For colorBuffer1 we could use one mip less (optimized)
-                
+
                 // Cache per color buffer mip views
                 int colorBuffer0Mips = colorBuffer0.MipLevels;
                 if (cachedColorBuffer0Mips == null || cachedColorBuffer0Mips.Length != colorBuffer0Mips || cachedColorBuffer0Mips[0].ParentTexture != colorBuffer0)
@@ -419,7 +420,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             {
                 // Don't use color buffer with mip maps
                 blurPassBuffer = colorBuffer;
-                
+
                 cachedColorBuffer0Mips?.ForEach(view => view?.Dispose());
                 cachedColorBuffer1Mips?.ForEach(view => view?.Dispose());
             }
@@ -482,7 +483,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 {
                     case DebugModes.RayTrace:
                         Scaler.SetInput(0, rayTraceBuffer);
-                        break;
                         break;
                     case DebugModes.Resolve:
                         Scaler.SetInput(0, resolveBuffer);
