@@ -77,9 +77,7 @@ namespace SiliconStudio.Translation.Presentation.MarkupExtensions
             if (string.IsNullOrEmpty(Text))
                 return string.Empty;
 
-            var rootProvider = (IRootObjectProvider)serviceProvider.GetService(typeof(IRootObjectProvider));
-            var assembly = rootProvider.RootObject.GetType().Assembly;
-
+            var assembly = MarkupExtensionHelper.RetrieveLocalAssembly(serviceProvider);
             if (Count != null && !string.IsNullOrEmpty(Plural))
             {
                 Count.Converter = new PluralConverter(Text, Plural, Context, assembly, IsStringFormat);

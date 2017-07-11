@@ -6,7 +6,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Windows.Data;
 using System.Windows.Markup;
-using System.Xaml;
+using SiliconStudio.Translation.Presentation.MarkupExtensions;
 
 namespace SiliconStudio.Translation.Presentation.ValueConverters
 {
@@ -38,12 +38,11 @@ namespace SiliconStudio.Translation.Presentation.ValueConverters
         /// <inheritdoc/>
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
-            var rootProvider = (IRootObjectProvider)serviceProvider.GetService(typeof(IRootObjectProvider));
-            var asm = rootProvider.RootObject.GetType().Assembly;
-            if (!Cache.TryGetValue(asm, out var converter))
+            var assembly = MarkupExtensionHelper.RetrieveLocalAssembly(serviceProvider);
+            if (!Cache.TryGetValue(assembly, out var converter))
             {
-                converter = new TConverter { Assembly = asm };
-                Cache.Add(asm, converter);
+                converter = new TConverter { Assembly = assembly };
+                Cache.Add(assembly, converter);
             }
             return converter;
         }

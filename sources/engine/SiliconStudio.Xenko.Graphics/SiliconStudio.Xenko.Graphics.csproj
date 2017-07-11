@@ -258,6 +258,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SignedDistanceFieldFont.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Shaders\SpriteAlphaCutoff.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SpriteAlphaCutoff.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Shaders\SpriteSignedDistanceFieldFontShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -614,6 +620,10 @@
     <None Include="Shaders\SignedDistanceFieldFont.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>SignedDistanceFieldFont.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\SpriteAlphaCutoff.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SpriteAlphaCutoff.cs</LastGenOutput>
     </None>
     <None Include="Shaders\SpriteSignedDistanceFieldFontShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>

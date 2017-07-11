@@ -160,6 +160,7 @@
     <Compile Include="ValueConverters\ConverterHelper.cs" />
     <Compile Include="ValueConverters\DegreeAngleSingle.cs" />
     <Compile Include="ValueConverters\EmptyStringToBool.cs" />
+    <Compile Include="ValueConverters\Take.cs" />
     <Compile Include="ValueConverters\UDirectoryToString.cs" />
     <Compile Include="ValueConverters\ValueToUnset.cs" />
     <Compile Include="ValueConverters\ToLower.cs" />
@@ -371,7 +372,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="SiliconStudio.Presentation.pot" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\close_window.png" />
@@ -404,6 +404,10 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>Path=$(MSBuildBinPath)\Roslyn;$(Path)
+IF EXIST "$(SolutionDir)..\sources\localization\ja\$(TargetName).ja.po" $(SolutionDir)..\sources\common\deps\Gettext.Net\GNU.Gettext.Msgfmt.exe --lib-dir $(SolutionDir)..\sources\common\deps\Gettext.Net --resource $(TargetName) -d $(TargetDir) --locale ja "$(SolutionDir)..\sources\localization\ja\$(TargetName).ja.po" --verbose</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

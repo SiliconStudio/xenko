@@ -24,6 +24,7 @@
     </When>
   </Choose>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
@@ -34,6 +35,7 @@
     </Compile>
     <Compile Include="LanguageChangedEventManager.cs" />
     <Compile Include="MarkupExtensions\LocalizeExtension.cs" />
+    <Compile Include="MarkupExtensions\MarkupExtensionHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ValueConverters\LocalizableConverter.cs" />
     <Compile Include="ValueConverters\Translate.cs" />
