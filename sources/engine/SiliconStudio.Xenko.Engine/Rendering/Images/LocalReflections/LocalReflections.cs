@@ -33,6 +33,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         public Texture blueNoiseTexture;
         private Texture temporalBuffer;
+        private Matrix prevVP;
 
         private Texture[] cachedColorBuffer0Mips;
         private Texture[] cachedColorBuffer1Mips;
@@ -279,6 +280,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // TODO: pack UseTemporal * Time and scale it
 
+            // TODO: use ref for matrix set
+
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.ViewInfo, ViewInfo);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.ViewFarPlane, farclip);
             rayTracePassShader.Parameters.Set(SSLRCommonKeys.RoughnessFade, roughnessFade);
@@ -317,8 +320,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
             resolvePassShader.Parameters.Set(SSLRKeys.ResolveSamples, MathUtil.Clamp(ResolveSamples, 1, 8));
             resolvePassShader.Parameters.Set(SSLRKeys.ReduceFireflies, ReduceFireflies);
 
-            temporalPassShader.Parameters.Set(SSLRTemporalPassKeys.TemporalResponse, TemporalResponse);
-            temporalPassShader.Parameters.Set(SSLRTemporalPassKeys.TemporalScale, TemporalScale);
+            if (TemporalEnabled)
+            {
+                temporalPassShader.Parameters.Set(SSLRTemporalPassKeys.IVP, ref inverseViewProjectionMatrix);
+                temporalPassShader.Parameters.Set(SSLRTemporalPassKeys.prevVP, ref prevVP);
+                temporalPassShader.Parameters.Set(SSLRTemporalPassKeys.TemporalResponse, TemporalResponse);
+                temporalPassShader.Parameters.Set(SSLRTemporalPassKeys.TemporalScale, TemporalScale);
+            }
+            prevVP = viewProjectionMatrix;
 
             combinePassShader.Parameters.Set(SSLRCommonKeys.MaxColorMiplevel, Texture.CalculateMipMapCount(0, outputBuffer.Width, outputBuffer.Height) - 1);
             combinePassShader.Parameters.Set(SSLRCommonKeys.TraceSizeMax, Math.Max(traceBufferSize.Width, traceBufferSize.Height) / 2.0f);
@@ -480,6 +489,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
                 temporalPassShader.SetInput(0, resolveBuffer);
                 temporalPassShader.SetInput(1, temporalBuffer);
+                temporalPassShader.SetInput(2, depthBuffer);
                 temporalPassShader.SetOutput(temporalBuffer0);
                 temporalPassShader.Draw(context, "Temporal");
 
