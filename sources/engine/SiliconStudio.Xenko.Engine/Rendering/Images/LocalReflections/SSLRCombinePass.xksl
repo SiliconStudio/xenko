@@ -19,10 +19,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			
 			// TODO: maybe add some more blur?
 			
-			ssr += Texture4.SampleLevel(LinearSampler, uv + float2(0, SSRtexelSize.y), 0);
-			ssr += Texture4.SampleLevel(LinearSampler, uv - float2(0, SSRtexelSize.y), 0);
-			ssr += Texture4.SampleLevel(LinearSampler, uv + float2(SSRtexelSize.x, 0), 0);
-			ssr += Texture4.SampleLevel(LinearSampler, uv - float2(SSRtexelSize.x, 0), 0);
+			ssr += Texture4.SampleLevel(LinearSampler, uv + float2(0, Texture4TexelSize.y), 0);
+			ssr += Texture4.SampleLevel(LinearSampler, uv - float2(0, Texture4TexelSize.y), 0);
+			ssr += Texture4.SampleLevel(LinearSampler, uv + float2(Texture4TexelSize.x, 0), 0);
+			ssr += Texture4.SampleLevel(LinearSampler, uv - float2(Texture4TexelSize.x, 0), 0);
 			ssr *= (1.0f / 5.0f);
 			
 		#endif

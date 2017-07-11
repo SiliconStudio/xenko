@@ -8,9 +8,28 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// </summary>
     shader SSLRRayTracePass : ImageEffectShader, SSLRCommon, NormalPack, Math
     {
-        // Parameter WorldAntiSelfOcclusionBias is packed in CameraPosWS.w
-        #define WorldAntiSelfOcclusionBias CameraPosWS.w
+        cbuffer Data
+        {
+            stage float EdgeFadeFactor;
 
+			stage float4x4 VP;
+        };
+
+		// go into clip space (-1:1 from bottom/left to up/right)
+        float3 ProjectWorldToClip(float3 wsPos)
+        {
+            float4 uv = mul(float4(wsPos, 1), VP);
+            uv /= uv.w;
+            return uv.xyz;
+        }
+		
+        // go into UV space. (0:1 from top/left to bottom/right)
+        float3 ProjectWorldToUv(float3 wsPos)
+        {
+            float3 pos = ProjectWorldToClip(wsPos);
+            return float3(ClipToUv(pos.xy), pos.z);
+        }
+		
         float4 TangentToWorld(float3 N, float4 H)
         {
 	        float3 UpVector = abs(N.z) < 0.999 ? float3(0.0, 0.0, 1.0) : float3(1.0, 0.0, 0.0);
@@ -79,7 +98,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			// TODO: dont use reflectVS, only reflectWS ??
 
             // Randomize it a little
-            float2 jitter = RandN2(uv, Time * UseTemporal);
+            float2 jitter = RandN2(uv, TemporalTime);
 		    float2 Xi = jitter;
 		    Xi.y = lerp(Xi.y, 0.0, BRDFBias);
 
@@ -105,7 +124,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             float3 endUV = ProjectWorldToUv(startWS + reflectWS);
 			
             float3 rayUV = endUV - startUV;
-			float screenStep = 1.0f / ScreenSize.x;
+			float screenStep = Texture1TexelSize.x;
 			rayUV *= screenStep / max2(abs(rayUV.xy));
 			float3 startUv = startUV + rayUV * 2;
 			
@@ -159,8 +178,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
 			float2 hitUV = currOffset.xy;
 			
-            const float EdgeFactor = 0.1f; // TODO: promote to param for user
-
 			// Fade rays close to screen edge
 			const float fadeStart = 0.9f;
 			const float fadeEnd = 1.0f;
@@ -169,7 +186,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			float fadeOnBorder = 1.0f - saturate((boundary.x - fadeStart) * fadeDiffRcp);
 			fadeOnBorder *= 1.0f - saturate((boundary.y - fadeStart) * fadeDiffRcp);
 			fadeOnBorder = smoothstep(0.0f, 1.0f, fadeOnBorder);
-			fadeOnBorder *= RayAttenBorder(hitUV, EdgeFactor);
+			fadeOnBorder *= RayAttenBorder(hitUV, EdgeFadeFactor);
 
 			// Fade rays on high roughness
 			float roughnessFade = saturate((RoughnessFade - roughness) * 20);

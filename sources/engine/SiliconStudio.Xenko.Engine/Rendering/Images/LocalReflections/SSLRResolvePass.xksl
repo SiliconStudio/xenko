@@ -57,20 +57,18 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			// Calculate view space normal vector
 			float4 normalsBuffer = Texture2.SampleLevel(PointSampler, uv, 0);
 			float3 normalWS = DecodeNormal(normalsBuffer.rgb);
-			float3 normalVS = mul(normalWS, (float3x3)V);
+			float3 normalVS = mul(normalWS, (float3x3)V); // TODO: remove it?
 			
             float3 positionWS = ComputeWorldPosition(uv, depth);
 			float3 viewWS = normalize(positionWS - CameraPosWS.xyz);
-			float3 reflectWS = reflect(viewWS, normalWS);
-			
-			// TODO: dont use reflectVS, only reflectWS ??
 			
             // Randomize it a little
-            float2 random = RandN2(uv, Time * UseTemporal);
+            float2 random = RandN2(uv, TemporalTime);
             float2 blueNoise = random.xy * 2.0 - 1.0;
             float2x2 offsetRotationMatrix = float2x2(blueNoise.x, blueNoise.y, -blueNoise.y, blueNoise.x);
 
-            float NdotV = saturate(dot(normalWS, -viewWS));
+            float viewV = normalize(-viewWS);
+            float NdotV = saturate(dot(normalWS, viewV));
 		    float coneTangent = lerp(0.0, roughness * (1.0 - BRDFBias), pow(NdotV, 1.5) * sqrt(roughness));
 		    //float coneTangent = lerp(NdotV * 2.0, 1.0, sqrt(roughness)); // TODO: test this calc version
 
