@@ -71,18 +71,18 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
 			return uv * float2(2, -2) + float2(-1, 1);
         }
-		
-		float3 ComputeWorldPosition(float2 uv)
-        {
-			float rawDepth = SampleZ(uv);
-			return ComputeWorldPosition(uv, rawDepth);
-        }
-		
-		float3 ComputeWorldPosition(float2 uv, float rawDepth)
+        
+        float3 ComputeWorldPosition(float2 uv, float rawDepth)
         {
 			float4 clipPos = float4(UvToClip(uv), rawDepth, 1);
 			float4 pos = mul(clipPos, IVP);
 			return pos.xyz / pos.w;
+        }
+
+		float3 ComputeWorldPosition(float2 uv)
+        {
+			float rawDepth = SampleZ(uv);
+			return ComputeWorldPosition(uv, rawDepth);
         }
 		
 		float3 ComputeViewPosition(float2 uv, float rawDepth)
