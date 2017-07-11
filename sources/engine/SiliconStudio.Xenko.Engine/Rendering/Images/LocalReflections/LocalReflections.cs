@@ -354,8 +354,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             Texture outputBuffer = GetSafeOutput(0);
 
             // Get temporary buffers
-            // TODO: try optimize formats
-            var reflectionsFormat = PixelFormat.R16G16B16A16_Float;
+            var reflectionsFormat = PixelFormat.R11G11B10_Float;
             var rayTraceBuffersSize = GetBufferResolution(outputBuffer, RayTracePassResolution);
             var resolveBuffersSize = GetBufferResolution(outputBuffer, ResolvePassResolution);
             Texture rayTraceBuffer = NewScopedRenderTarget2D(rayTraceBuffersSize.Width, rayTraceBuffersSize.Height, PixelFormat.R11G11B10_Float, 1);
@@ -383,26 +382,28 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
                 // Get temp targets
                 var colorBuffersSize = new Size2(outputBuffer.Width / 2, outputBuffer.Height / 2);
-                Texture colorBuffer0 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, PixelFormat.R11G11B10_Float, MipMapCount.Auto);
-                Texture colorBuffer1 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, PixelFormat.R11G11B10_Float, MipMapCount.Auto);
-                // TODO: we don't use colorBuffer1 mip0, could be optimized
+                int colorBuffersMips = Texture.CalculateMipMapCount(MipMapCount.Auto, colorBuffersSize.Width, colorBuffersSize.Height);
+                Texture colorBuffer0 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, reflectionsFormat, colorBuffersMips);
+                Texture colorBuffer1 = NewScopedRenderTarget2D(colorBuffersSize.Width / 2, colorBuffersSize.Height / 2, reflectionsFormat, colorBuffersMips - 1);
+                int colorBuffer1MipOffset = 1; // For colorBuffer1 we could use one mip less (optimized)
                 
                 // Cache per color buffer mip views
-                int colorMipLevels = colorBuffer0.MipLevels;
-                if (cachedColorBuffer0Mips == null || cachedColorBuffer0Mips.Length != colorMipLevels || cachedColorBuffer0Mips[0].ParentTexture != colorBuffer0)
+                int colorBuffer0Mips = colorBuffer0.MipLevels;
+                if (cachedColorBuffer0Mips == null || cachedColorBuffer0Mips.Length != colorBuffer0Mips || cachedColorBuffer0Mips[0].ParentTexture != colorBuffer0)
                 {
                     cachedColorBuffer0Mips?.ForEach(view => view?.Dispose());
-                    cachedColorBuffer0Mips = new Texture[colorMipLevels];
-                    for (int mipIndex = 0; mipIndex < colorMipLevels; mipIndex++)
+                    cachedColorBuffer0Mips = new Texture[colorBuffer0Mips];
+                    for (int mipIndex = 0; mipIndex < colorBuffer0Mips; mipIndex++)
                     {
                         cachedColorBuffer0Mips[mipIndex] = colorBuffer0.ToTextureView(ViewType.Single, 0, mipIndex);
                     }
                 }
-                if (cachedColorBuffer1Mips == null || cachedColorBuffer1Mips.Length != colorMipLevels || cachedColorBuffer1Mips[0].ParentTexture != colorBuffer1)
+                int colorBuffer1Mips = colorBuffer1.MipLevels;
+                if (cachedColorBuffer1Mips == null || cachedColorBuffer1Mips.Length != colorBuffer1Mips || cachedColorBuffer1Mips[0].ParentTexture != colorBuffer1)
                 {
                     cachedColorBuffer1Mips?.ForEach(view => view?.Dispose());
-                    cachedColorBuffer1Mips = new Texture[colorMipLevels];
-                    for (int mipIndex = 0; mipIndex < colorMipLevels; mipIndex++)
+                    cachedColorBuffer1Mips = new Texture[colorBuffer1Mips];
+                    for (int mipIndex = 0; mipIndex < colorBuffer1Mips; mipIndex++)
                     {
                         cachedColorBuffer1Mips[mipIndex] = colorBuffer1.ToTextureView(ViewType.Single, 0, mipIndex);
                     }
@@ -414,11 +415,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 Scaler.Draw(context, "Copy frame");
 
                 // Downscale with gaussian blur
-                for (int mipLevel = 1; mipLevel < colorMipLevels; mipLevel++)
+                for (int mipLevel = 1; mipLevel < colorBuffersMips; mipLevel++)
                 {
                     // Blur H
                     var srcMip = cachedColorBuffer0Mips[mipLevel - 1];
-                    var dstMip = cachedColorBuffer1Mips[mipLevel];
+                    var dstMip = cachedColorBuffer1Mips[mipLevel - colorBuffer1MipOffset];
                     blurPassShaderH.SetInput(0, srcMip);
                     blurPassShaderH.SetOutput(dstMip);
                     blurPassShaderH.Draw(context, "Blur H");
