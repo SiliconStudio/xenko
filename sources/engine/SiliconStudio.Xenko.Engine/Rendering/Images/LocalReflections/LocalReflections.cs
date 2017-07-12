@@ -285,8 +285,18 @@ namespace SiliconStudio.Xenko.Rendering.Images
             Vector4 viewInfo = new Vector4(1.0f / projectionMatrix.M11, 1.0f / projectionMatrix.M22, farclip / (farclip - nearclip), (-farclip * nearclip) / (farclip - nearclip) / farclip);
             Vector3 cameraPos = new Vector3(eye.X, eye.Y, eye.Z);
 
-            float time = (float)(context.RenderContext.Time.Total.TotalSeconds);
-            float temporalTime = TemporalEnabled ? time : 0;
+            float temporalTime = 0;
+            if (TemporalEnabled)
+            {
+                double time = context.RenderContext.Time.Total.TotalSeconds;
+
+                // Keep time in smaller range to prevent temporal noise errors
+                const double scale = 100000;
+                double integral = Math.Round(time / scale) * scale;
+                time -= integral;
+
+                temporalTime = (float)time;
+            }
 
             var traceBufferSize = GetBufferResolution(outputBuffer, RayTracePassResolution);
             var roughnessFade = MathUtil.Clamp(MaxRoughness, 0.0f, 1.0f);
