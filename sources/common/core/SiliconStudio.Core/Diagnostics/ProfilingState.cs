@@ -161,7 +161,7 @@ namespace SiliconStudio.Core.Diagnostics
 
         internal void Begin(long timeStamp)
         {
-            eventType = ProfilingEventType.GpuProfilingEVent;
+            eventType = ProfilingEventType.GpuProfilingEvent;
             EmitEvent(ProfilingMessageType.Begin, null, timeStamp);
         }
 
