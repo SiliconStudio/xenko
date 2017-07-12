@@ -232,12 +232,6 @@
     <Compile Include="Rendering\Materials\MaterialGlossinessCarPaintFeature.cs" />
     <Compile Include="Rendering\Materials\MaterialMetalnessCarPaintFeature.cs" />
     <Compile Include="Rendering\Materials\MaterialNormalMapCarPaint.cs" />
-    <Compile Include="Rendering\Materials\Shaders\CarPaintCommon.cs">
-      <DependentUpon>CarPaintCommon.xksl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Rendering\QueryManager.cs" />
     <Compile Include="Rendering\Images\ImageEffectProfilingKeys.cs" />
     <Compile Include="Rendering\Images\ImageScaler\SamplingPattern.cs" />
@@ -838,10 +832,6 @@
     <None Include="Rendering\LightProbes\ComputeSphericalHarmonics.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeSphericalHarmonics.cs</LastGenOutput>
-    </None>
-    <None Include="Rendering\Materials\Shaders\CarPaintCommon.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>CarPaintCommon.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Materials\Shaders\IMaterialSpecularMicrofacetEnvironmentFunction.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
