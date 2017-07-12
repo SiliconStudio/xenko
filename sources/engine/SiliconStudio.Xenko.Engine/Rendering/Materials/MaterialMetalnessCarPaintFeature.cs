@@ -43,29 +43,20 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         public override void GenerateShader(MaterialGeneratorContext context)
         {
-            IComputeScalar temporaryScalar = null;
+            var passIndex = context.PassIndex;
 
-            int passIndex = context.PassIndex % 2;
-            
-            if (passIndex == 1)
-            {
-                temporaryScalar = MetalnessMap;
-                MetalnessMap = ClearCoatMetalnessMap;
-            }
+            MetalnessMap.ClampFloat(0, 1);
+            ClearCoatMetalnessMap.ClampFloat(0, 1);
 
-            base.GenerateShader(context);
+            var computeColorSource = (passIndex == 0)
+                ? MetalnessMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.MetalnessMap, MaterialKeys.MetalnessValue))
+                : ClearCoatMetalnessMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.MetalnessMap, MaterialKeys.MetalnessValue));
 
-            if (temporaryScalar != null)
-                MetalnessMap = temporaryScalar;
-
-            if (passIndex == 0)
-            {
-                context.MaterialPass.BlendState = BlendStates.Additive;
-            }
-            else if (passIndex == 1)
-            {
-                context.MaterialPass.BlendState = new BlendStateDescription(Blend.Zero, Blend.SourceColor) { RenderTarget0 = { AlphaSourceBlend = Blend.One, AlphaDestinationBlend = Blend.Zero } };
-            }
+            var mixin = new ShaderMixinSource();
+            mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceMetalness"));
+            mixin.AddComposition("metalnessMap", computeColorSource);
+            context.UseStream(MaterialShaderStage.Pixel, "matSpecular");
+            context.AddShaderSource(MaterialShaderStage.Pixel, mixin);
         }      
     }
 }
