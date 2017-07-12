@@ -6,7 +6,7 @@ shader ComputeColorFlakeBlendFactor : ComputeColor,
 {
     compose ComputeColor MetalFlakesDistanceVisibility;
 
-    override float Compute()
+    override float3 Compute()
     {
         const float metalFlakesLodDistance = MetalFlakesDistanceVisibility.Compute().r;
 
@@ -17,6 +17,6 @@ shader ComputeColorFlakeBlendFactor : ComputeColor,
         float lod = ( metalFlakesLodDistance - eyeToSurface ) / metalFlakesLodDistance;
         lod = saturate( lod );
 
-        return lod;
+        return float3( lod, lod, lod );
     }
 };
