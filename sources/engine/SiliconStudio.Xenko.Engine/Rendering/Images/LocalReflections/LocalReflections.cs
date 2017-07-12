@@ -22,6 +22,18 @@ namespace SiliconStudio.Xenko.Rendering.Images
     [DataContract("LocalReflections")]
     public sealed class LocalReflections : ImageEffect
     {
+        // Short description:
+        // The following implementation is using Stochastic Screen-Space Reflections algorithm based on:
+        // https://www.slideshare.net/DICEStudio/stochastic-screenspace-reflections
+        // It's well optimized and provides solid visual effect.
+        //
+        // Algorithm steps:
+        // 1) Downscale depth [optional]
+        // 2) Ray trace
+        // 3) Resolve rays
+        // 4) Temporal blur [optional]
+        // 5) Combine final image
+        
         private ImageEffectShader depthPassShader;
         private ImageEffectShader blurPassShaderH;
         private ImageEffectShader blurPassShaderV;
@@ -90,9 +102,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Pixels with higher values won't be affected by the effect.
         /// </summary>
         [Display("Max roughness")]
-        [DefaultValue(0.6f)]
+        [DefaultValue(0.45f)]
         [DataMemberRange(0.0, 1.0, 0.05, 0.2, 4)]
-        public float MaxRoughness { get; set; } = 0.6f;
+        public float MaxRoughness { get; set; } = 0.45f;
 
         /// <summary>
         /// Ray tracing starting position is offseted by a percent of the normal in world space to avoid self occlusions.
@@ -204,7 +216,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             Temporal,
         }
 
-        public DebugModes DebugMode = DebugModes.RayTrace;
+        public DebugModes DebugMode = DebugModes.None;
 
 #endif
 
@@ -346,6 +358,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             Texture smallerDepthBuffer = depthBuffer;
             if (DepthResolution != ResolutionMode.Full)
             {
+                // Smaller depth buffer improves ray tracing performance.
+                
                 var depthBuffersSize = GetBufferResolution(depthBuffer, DepthResolution);
                 smallerDepthBuffer = NewScopedRenderTarget2D(depthBuffersSize.Width, depthBuffersSize.Height, PixelFormat.R32_Float, 1);
 
@@ -427,7 +441,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // Ray Trace Pass
             rayTracePassShader.SetInput(0, colorBuffer);
-            rayTracePassShader.SetInput(1, RayTracePassResolution == ResolutionMode.Full ? depthBuffer : smallerDepthBuffer);
+            rayTracePassShader.SetInput(1, smallerDepthBuffer);
             rayTracePassShader.SetInput(2, normalsBuffer);
             rayTracePassShader.SetInput(3, specularRoughnessBuffer);
             rayTracePassShader.SetOutput(rayTraceBuffer);
