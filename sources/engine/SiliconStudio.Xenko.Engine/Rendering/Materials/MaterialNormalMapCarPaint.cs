@@ -1,8 +1,11 @@
 ﻿// Copyright (c) 2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
+using System.Collections.Generic;
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 using SiliconStudio.Xenko.Shaders;
@@ -20,45 +23,58 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <userdoc>
         /// The normal map.
         /// </userdoc>
-        [DataMember(50)]
+        [DataMember(110)]
         [Display("Orange Peel Normal Map")]
         [NotNull]
         public IComputeColor ClearCoatLayerNormalMap { get; set; }
 
-        public override void MultipassGeneration(MaterialGeneratorContext context)
-        {
-            int passCount = 2;
+        /// <summary>
+        /// Gets or sets a value indicating whether to scale by (2,2) and offset by (-1,-1) the normal map.
+        /// </summary>
+        /// <value><c>true</c> if scale and offset this normal map; otherwise, <c>false</c>.</value>
+        /// <userdoc>
+        /// Scale the XY by (2,2) and offset by (-1,-1). Required to unpack unsigned values of [0..1] to signed coordinates of [-1..+1].
+        /// </userdoc>
+        [DataMember(120)]
+        [DefaultValue(true)]
+        [Display("Scale & Offset")]
+        public bool ScaleAndBiasOrangePeel { get; set; }
 
-            context.SetMultiplePasses("CarPaint", passCount);
+        /// <summary>
+        /// Gets or sets a value indicating whether the normal is only stored in XY components and Z is assumed to be sqrt(1 - x*x - y*y).
+        /// </summary>
+        /// <value><c>true</c> if this instance is xy normal; otherwise, <c>false</c>.</value>
+        /// <userdoc>
+        /// The Z component of the normal vector will be calculated from X and Y assuming Z = sqrt(1 - x*x - y*y).
+        /// </userdoc>
+        [DataMember(130)]
+        [DefaultValue(false)]
+        [Display("Reconstruct Z")]
+        public bool IsXYNormalOrangePeel { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MaterialNormalMapCarPaint"/> class.
+        /// </summary>
+        public MaterialNormalMapCarPaint() : base(new ComputeTextureColor())
+        {
+            ClearCoatLayerNormalMap = new ComputeTextureColor();
         }
 
         public override void GenerateShader(MaterialGeneratorContext context)
         {
-            IComputeColor temporaryMap = null;
-
-            int passIndex = context.PassIndex % 2;
+            var passIndex = context.PassIndex;
             
-            if (passIndex == 1)
-            {
-                temporaryMap = NormalMap;
-                NormalMap = ClearCoatLayerNormalMap;
-            }
+            context.UseStreamWithCustomBlend(MaterialShaderStage.Pixel, NormalStream.Stream, new ShaderClassSource("MaterialStreamNormalBlend"));          
+            context.Parameters.Set(MaterialKeys.HasNormalMap, true);
+            var computeColorKeys = new MaterialComputeColorKeys(MaterialKeys.NormalMap, MaterialKeys.NormalValue, DefaultNormalColor, false);
+            var computeColorSource = ((passIndex == 0) ? NormalMap : ClearCoatLayerNormalMap).GenerateShaderSource(context, computeColorKeys);
 
-            base.GenerateShader(context);
-
-            if (temporaryMap != null)
-                NormalMap = temporaryMap;
-            
-            if (passIndex == 0)
-            {
-                context.MaterialPass.BlendState = BlendStates.Additive;
-            }
-            else if (passIndex == 1)
-            {
-                context.MaterialPass.BlendState = new BlendStateDescription(Blend.Zero, Blend.SourceColor) { RenderTarget0 = { AlphaSourceBlend = Blend.One, AlphaDestinationBlend = Blend.Zero } };             
-            }
+            var mixin = new ShaderMixinSource();
+            mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceNormalMap", (passIndex == 0) ? IsXYNormal : IsXYNormalOrangePeel, (passIndex == 0) ? ScaleAndBias : ScaleAndBiasOrangePeel, passIndex == 1));
+            mixin.AddComposition("normalMap", computeColorSource);
+            context.AddShaderSource(MaterialShaderStage.Pixel, mixin);
         }
-
-        public bool Equals(MaterialSpecularThinGlassModelFeature other) => base.Equals(other);
+        
+        public bool Equals(MaterialNormalMapCarPaint other) => base.Equals(other);
     }
 }
