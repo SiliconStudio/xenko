@@ -94,8 +94,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			float4 normalsBuffer = Texture2.SampleLevel(PointSampler, uv, 0);
 			float3 normalWS = DecodeNormal(normalsBuffer.rgb);
 			float3 normalVS = mul(normalWS, (float3x3)V);
-			
-			// TODO: dont use reflectVS, only reflectWS ??
 
             // Randomize it a little
             float2 jitter = RandN2(uv, TemporalTime);
@@ -112,13 +110,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
 			float3 positionWS = ComputeWorldPosition(uv, depth);
 			float3 viewWS = normalize(positionWS - CameraPosWS.xyz);
-			//float3 reflectWS = reflect(viewWS, normalWS);
 			float3 reflectWS = reflect(viewWS, H.xyz);
 
-			// TODO: cleanup unsused constants
-			
-			// TODO: optimzie some stuff, less view space <-> world space oeprations, less math etc.
-			
 			float3 startWS = positionWS + normalWS * WorldAntiSelfOcclusionBias;
             float3 startUV = ProjectWorldToUv(startWS);
             float3 endUV = ProjectWorldToUv(startWS + reflectWS);
