@@ -291,7 +291,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 double time = context.RenderContext.Time.Total.TotalSeconds;
 
                 // Keep time in smaller range to prevent temporal noise errors
-                const double scale = 100000;
+                const double scale = 10;
                 double integral = Math.Round(time / scale) * scale;
                 time -= integral;
 
