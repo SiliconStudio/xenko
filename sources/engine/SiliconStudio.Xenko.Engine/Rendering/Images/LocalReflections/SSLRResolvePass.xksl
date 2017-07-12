@@ -61,11 +61,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             float2x2 offsetRotationMatrix = float2x2(blueNoise.x, blueNoise.y, -blueNoise.y, blueNoise.x);
 
             float NdotV = saturate(dot(normalWS, viewVector));
-		    float coneTangent = lerp(0.0, roughness * (1.0 - BRDFBias), pow(NdotV, 1.5) * sqrt(roughness));
-		    //float coneTangent = lerp(NdotV * 2.0, 1.0, sqrt(roughness)); // TODO: test this calc version
-
-		    float maxMipLevel = (float)MaxColorMiplevel - 1;// - 1.0;
-            
+		    float coneTangent = lerp(0.0, roughness * 5 * (1.0 - BRDFBias), pow(NdotV, 1.5) * sqrt(roughness));
+		    
             // Resolve samples
 		    float4 result = 0.0;
             for(int i = 0; i < ResolveSamples; i++)
@@ -83,7 +80,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 float hitMask = hitPacked.z;
 
                 float intersectionCircleRadius = coneTangent * length(hitUv - uv);
-                float mip = clamp(log2(intersectionCircleRadius * TraceSizeMax), 0.0, maxMipLevel);
+                float mip = clamp(log2(intersectionCircleRadius * TraceSizeMax), 0.0, MaxColorMiplevel);
 
                 float4 sampleColor = float4(Texture0.SampleLevel(LinearSampler, hitUv, mip).rgb, 1);
                 if(ReduceFireflies)
