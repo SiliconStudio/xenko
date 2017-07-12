@@ -157,6 +157,8 @@ SharedRenderers:
         Id: 608bf04d-8640-469d-b710-1ecf6a46f794
         AmbientOcclusion:
             Enabled: false
+        LocalReflections:
+            Enabled: false
         DepthOfField:
             Enabled: false
             DOFAreas: {X: 0.5, Y: 6.0, Z: 50.0, W: 200.0}
