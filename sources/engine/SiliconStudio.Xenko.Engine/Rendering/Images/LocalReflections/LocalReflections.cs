@@ -68,96 +68,26 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// Gets or sets the input depth resolution mode.
         /// </summary>
-        [Display("Depth resolution")]
+        [Display("Depth resolution", "Ray trace")]
         [DefaultValue(ResolutionMode.Full)]
         public ResolutionMode DepthResolution { get; set; } = ResolutionMode.Half;
 
         /// <summary>
         /// Gets or sets the ray trace pass resolution mode.
         /// </summary>
-        [Display("Ray trace pass resolution")]
+        [Display("Ray trace pass resolution", "Ray trace")]
         [DefaultValue(ResolutionMode.Half)]
         public ResolutionMode RayTracePassResolution { get; set; } = ResolutionMode.Half;
-
-        /// <summary>
-        /// Gets or sets the resolve pass resolution mode.
-        /// </summary>
-        [Display("Resolve pass resolution")]
-        [DefaultValue(ResolutionMode.Half)]
-        public ResolutionMode ResolvePassResolution { get; set; } = ResolutionMode.Full;
 
         /// <summary>
         /// Maximum allowed amount of dynamic iterations in the ray trace pass.
         /// Higher value provides better ray tracing quality but decreases the performance.
         /// Default value is 60.
         /// </summary>
-        [Display("Max steps amount")]
+        [Display("Max steps", "Ray trace")]
         [DefaultValue(60)]
         [DataMemberRange(1, 128, 1, 10, 0)]
-        public int MaxStepsAmount { get; set; } = 60;
-
-        /// <summary>
-        /// Maximum allowed surface roughness value to use local reflections.
-        /// Pixels with higher values won't be affected by the effect.
-        /// </summary>
-        [Display("Max roughness")]
-        [DefaultValue(0.45f)]
-        [DataMemberRange(0.0, 1.0, 0.05, 0.2, 4)]
-        public float MaxRoughness { get; set; } = 0.45f;
-
-        /// <summary>
-        /// Ray tracing starting position is offseted by a percent of the normal in world space to avoid self occlusions.
-        /// </summary>
-        [Display("Ray start bias")]
-        [DefaultValue(0.01f)]
-        [DataMemberRange(0.0, 0.1, 0.005, 0.01, 6)]
-        public float WorldAntiSelfOcclusionBias { get; set; } = 0.01f;
-
-        /// <summary>
-        /// Gets or sets the resolve pass samples amount. Higher values provide better quality but reduce effect performance.
-        /// Default value is 4. Use 1 for the highest speed.
-        /// </summary>
-        /// <value>
-        /// The resolve samples amount.
-        /// </value>
-        [Display("Resolve Samples")]
-        [DefaultValue(4)]
-        [DataMemberRange(1, 8, 1, 1, 0)]
-        public int ResolveSamples { get; set; } = 4;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether reduce fireflies during resolve pass.
-        /// Performs filtering on sampled pixels to smooth luminance bursts.
-        /// It helps to provide softer image with reduced amount of highlights.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if reduce fireflies; otherwise, <c>false</c>.
-        /// </value>
-        [Display("Reduce Fireflies")]
-        [DefaultValue(true)]
-        public bool ReduceFireflies { get; set; } = true;
-
-        /// <summary>
-        /// Gets or sets the edge fade factor. It's used to fade off effect on screen edges to provide smoother image.
-        /// </summary>
-        /// <value>
-        /// The edge fade factor.
-        /// </value>
-        [Display("Edge Fade Factor")]
-        [DefaultValue(0.2f)]
-        [DataMemberRange(0.0, 1.0, 0.05, 0.2, 4)]
-        public float EdgeFadeFactor { get; set; } = 0.2f;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether use color buffer mipsmaps chain; otherwise will use raw input color buffer to sample reflections color.
-        /// Using mipmaps improves resolve pass performance and reduces GPU cache misses.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if use color buffer mips; otherwise, <c>false</c>.
-        /// </value>
-        [Display("Use Color Buffer Mips")]
-        [DefaultValue(true)]
-        public bool UseColorBufferMips { get; set; } = true;
+        public int MaxSteps { get; set; } = 60;
 
         /// <summary>
         /// Gets or sets the BRDF bias. This value controlls source roughness effect on reflections blur.
@@ -167,11 +97,81 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <value>
         /// The BRDF bias.
         /// </value>
-        [Display("BRDF Bias")]
-        [DefaultValue(0.8f)]
+        [Display("BRDF bias", "Ray trace")]
+        [DefaultValue(0.82f)]
         [DataMemberRange(0.0, 1.0, 0.05, 0.2, 4)]
         // ReSharper disable once InconsistentNaming
-        public float BRDFBias { get; set; } = 0.8f;
+        public float BRDFBias { get; set; } = 0.82f;
+
+        /// <summary>
+        /// Minimum allowed surface glossiness value to use local reflections.
+        /// Pixels with lower values won't be affected by the effect.
+        /// </summary>
+        [Display("Glossiness threshold", "Ray trace")]
+        [DefaultValue(0.55f)]
+        [DataMemberRange(0.0, 1.0, 0.05, 0.2, 4)]
+        public float GlossinessThreshold { get; set; } = 0.55f;
+
+        /// <summary>
+        /// Ray tracing starting position is offseted by a percent of the normal in world space to avoid self occlusions.
+        /// </summary>
+        [Display("Ray start bias", "Ray trace")]
+        [DefaultValue(0.01f)]
+        [DataMemberRange(0.0, 0.1, 0.005, 0.01, 6)]
+        public float WorldAntiSelfOcclusionBias { get; set; } = 0.01f;
+
+        /// <summary>
+        /// Gets or sets the resolve pass resolution mode.
+        /// </summary>
+        [Display("Resolve pass resolution", "Resolve")]
+        [DefaultValue(ResolutionMode.Half)]
+        public ResolutionMode ResolvePassResolution { get; set; } = ResolutionMode.Full;
+
+        /// <summary>
+        /// Gets or sets the resolve pass samples amount. Higher values provide better quality but reduce effect performance.
+        /// Default value is 4. Use 1 for the highest speed.
+        /// </summary>
+        /// <value>
+        /// The resolve samples amount.
+        /// </value>
+        [Display("Resolve samples", "Resolve")]
+        [DefaultValue(4)]
+        [DataMemberRange(1, 8, 1, 1, 0)]
+        public int ResolveSamples { get; set; } = 4;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether reduce reflection highlights during resolve pass.
+        /// Performs filtering on sampled pixels to smooth luminance bursts.
+        /// It helps to provide softer image with reduced amount of highlights.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if reduce fireflies; otherwise, <c>false</c>.
+        /// </value>
+        [Display("Reduce highlights", "Resolve")]
+        [DefaultValue(true)]
+        public bool ReduceHighlights { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets the edge fade factor. It's used to fade off effect on screen edges to provide smoother image.
+        /// </summary>
+        /// <value>
+        /// The edge fade factor.
+        /// </value>
+        [Display("Edge fade factor", "Resolve")]
+        [DefaultValue(0.1f)]
+        [DataMemberRange(0.0, 1.0, 0.05, 0.2, 4)]
+        public float EdgeFadeFactor { get; set; } = 0.1f;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether use color buffer mipsmaps chain; otherwise will use raw input color buffer to sample reflections color.
+        /// Using mipmaps improves resolve pass performance and reduces GPU cache misses.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if use color buffer mips; otherwise, <c>false</c>.
+        /// </value>
+        [Display("Use color buffer mips", "Resolve")]
+        [DefaultValue(true)]
+        public bool UseColorBufferMips { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether use temporal effect to smooth reflections.
@@ -179,9 +179,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <value>
         ///   <c>true</c> if use temporal effect to smooth reflections; otherwise, <c>false</c>.
         /// </value>
-        [Display("Temporal Enable")]
+        [Display("Temporal effect", "Temporal")]
         [DefaultValue(true)]
-        public bool TemporalEnabled { get; set; } = true;
+        public bool TemporalEffect { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the temporal effect scale. Default is 2.
@@ -189,10 +189,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <value>
         /// The temporal effect scale.
         /// </value>
-        [Display("Temporal Scale")]
-        [DefaultValue(1.5f)]
+        [Display("Temporal scale", "Temporal")]
+        [DefaultValue(4.0f)]
         [DataMemberRange(0.0, 20.0, 0.5, 0.5, 2)]
-        public float TemporalScale { get; set; } = 2.0f;
+        public float TemporalScale { get; set; } = 4.0f;
 
         /// <summary>
         /// Gets or sets the temporal response. Default is 0.9.
@@ -200,7 +200,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <value>
         /// The temporal response.
         /// </value>
-        [Display("Temporal Response")]
+        [Display("Temporal response", "Temporal")]
         [DefaultValue(0.9f)]
         [DataMemberRange(0.5, 1.0, 0.01, 0.1, 2)]
         public float TemporalResponse { get; set; } = 0.9f;
@@ -351,7 +351,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             Vector3 cameraPos = new Vector3(eye.X, eye.Y, eye.Z);
 
             float temporalTime = 0;
-            if (TemporalEnabled)
+            if (TemporalEffect)
             {
                 var gameTime = context.RenderContext.Time;
                 double time = gameTime.Total.TotalSeconds;
@@ -367,8 +367,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
 
             var traceBufferSize = GetBufferResolution(outputBuffer, RayTracePassResolution);
-            var roughnessFade = MathUtil.Clamp(MaxRoughness, 0.0f, 1.0f);
-            var maxTraceSamples = MathUtil.Clamp(MaxStepsAmount, 1, 128);
+            var roughnessFade = 1 - MathUtil.Clamp(GlossinessThreshold, 0.0f, 1.0f);
+            var maxTraceSamples = MathUtil.Clamp(MaxSteps, 1, 128);
 
             // ViewInfo :  x-1/Projection[0,0]   y-1/Projection[1,1]   z-(Far / (Far - Near)   w-(-Far * Near) / (Far - Near) / Far)
 
@@ -396,9 +396,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
             resolvePassShader.Parameters.Set(SSLRCommonKeys.V, ref viewMatrix);
             resolvePassShader.Parameters.Set(SSLRCommonKeys.IVP, ref inverseViewProjectionMatrix);
             resolvePassShader.Parameters.Set(SSLRKeys.ResolveSamples, MathUtil.Clamp(ResolveSamples, 1, 8));
-            resolvePassShader.Parameters.Set(SSLRKeys.ReduceFireflies, ReduceFireflies);
+            resolvePassShader.Parameters.Set(SSLRKeys.ReduceHighlights, ReduceHighlights);
 
-            if (TemporalEnabled)
+            if (TemporalEffect)
             {
                 temporalPassShader.Parameters.Set(SSLRTemporalPassKeys.IVP, ref inverseViewProjectionMatrix);
                 temporalPassShader.Parameters.Set(SSLRTemporalPassKeys.prevVP, ref cache.PrevVP);
@@ -542,7 +542,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // Temporal Pass
             Texture reflectionsBuffer = resolveBuffer;
-            if (TemporalEnabled)
+            if (TemporalEffect)
             {
                 var temporalSize = outputBuffer.Size;
                 temporalCache.Resize(GraphicsDevice, ref temporalSize);

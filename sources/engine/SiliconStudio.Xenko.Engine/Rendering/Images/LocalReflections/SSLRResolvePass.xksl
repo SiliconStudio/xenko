@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
 	/// Screen Space Local Reflections shader for Resolve Pass
     /// </summary>
-    shader SSLRResolvePass<int ResolveSamples, bool ReduceFireflies> : ImageEffectShader, SSLRCommon, NormalPack, Math, BRDFMicrofacet
+    shader SSLRResolvePass<int ResolveSamples, bool ReduceHighlights> : ImageEffectShader, SSLRCommon, NormalPack, Math, BRDFMicrofacet
     {
         static const float2 Offsets[8] =
         {
@@ -83,7 +83,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 float mip = clamp(log2(intersectionCircleRadius * TraceSizeMax), 0.0, MaxColorMiplevel);
 
                 float4 sampleColor = float4(Texture0.SampleLevel(LinearSampler, hitUv, mip).rgb, 1);
-                if(ReduceFireflies)
+                if(ReduceHighlights)
                     sampleColor.rgb /= 1 + Luminance(sampleColor.rgb);
 
                 result += sampleColor * hitMask;
@@ -91,7 +91,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // Calculate final result value
             result /= ResolveSamples;
-            if(ReduceFireflies)
+            if(ReduceHighlights)
 			    result.rgb /= 1 - Luminance(result.rgb);
             result.rgb *= result.a;
 
@@ -103,6 +103,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
     {
         using params SSLRKeys;
 
-        mixin SSLRResolvePass<SSLRKeys.ResolveSamples, SSLRKeys.ReduceFireflies>;
+        mixin SSLRResolvePass<SSLRKeys.ResolveSamples, SSLRKeys.ReduceHighlights>;
     }
 }
