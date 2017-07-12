@@ -42,33 +42,30 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [Display("Clear Coat Glossiness Map")]
         [NotNull]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
-        public IComputeScalar ClearCoatGlossinessMap { get; set; } = new ComputeFloat(1.0f);
+        public IComputeScalar ClearCoatGlossinessMap { get; set; }
+
+        public override void MultipassGeneration(MaterialGeneratorContext context)
+        {
+            const int passCount = 2;
+            context.SetMultiplePasses("CarPaint", passCount);
+        }
 
         public override void GenerateShader(MaterialGeneratorContext context)
         {
-            IComputeScalar temporaryScalar = null;
+            var passIndex = context.PassIndex;
+            GlossinessMap.ClampFloat(0, 1);
+            ClearCoatGlossinessMap.ClampFloat(0, 1);
 
-            int passIndex = context.PassIndex % 2;
-            
-            if (passIndex == 1)
-            {
-                temporaryScalar = GlossinessMap;
-                GlossinessMap = ClearCoatGlossinessMap;
-            }
+            context.UseStream(MaterialShaderStage.Pixel, GlossinessStream.Stream);
 
-            base.GenerateShader(context);
+            var computeColorSource = (passIndex == 0) 
+                ? GlossinessMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.GlossinessMap, MaterialKeys.GlossinessValue))
+                : ClearCoatGlossinessMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.GlossinessMap, MaterialKeys.GlossinessValue));
 
-            if (temporaryScalar != null)
-                GlossinessMap = temporaryScalar;
-
-            if (passIndex == 0)
-            {
-                context.MaterialPass.BlendState = BlendStates.Additive;
-            }
-            else if (passIndex == 1)
-            {
-                context.MaterialPass.BlendState = new BlendStateDescription(Blend.Zero, Blend.SourceColor) { RenderTarget0 = { AlphaSourceBlend = Blend.One, AlphaDestinationBlend = Blend.Zero } };
-            }
+            var mixin = new ShaderMixinSource();
+            mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceGlossinessMap", Invert));
+            mixin.AddComposition("glossinessMap", computeColorSource);
+            context.AddShaderSource(MaterialShaderStage.Pixel, mixin);
         }
     }
 }
