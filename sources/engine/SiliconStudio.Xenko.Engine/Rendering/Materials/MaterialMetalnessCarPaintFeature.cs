@@ -25,7 +25,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialGlossinessMapFeature"/> class.
         /// </summary>
-        /// <param name="glossinessMap">The glossiness map.</param>
+        /// <param name="metalFlakesMetalnessMap">The metal flakes layer glossiness map.</param>
+        /// <param name="clearCoatMetalnessMap">The clear coat layerglossiness map.</param>
         public MaterialMetalnessCarPaintFeature(IComputeScalar metalFlakesMetalnessMap, IComputeScalar clearCoatMetalnessMap)
             : base(metalFlakesMetalnessMap)
         {
@@ -39,7 +40,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [Display("Clear Coat Metalness Map")]
         [NotNull]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
-        public IComputeScalar ClearCoatMetalnessMap { get; set; } = new ComputeFloat(0.0f);
+        public IComputeScalar ClearCoatMetalnessMap { get; set; }
 
         public override void GenerateShader(MaterialGeneratorContext context)
         {
