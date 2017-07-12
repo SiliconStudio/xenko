@@ -7,12 +7,14 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Rendering.Images
 {
@@ -33,7 +35,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
         // 3) Resolve rays
         // 4) Temporal blur [optional]
         // 5) Combine final image
-        
+
+        private const PixelFormat ReflectionsFormat = PixelFormat.R11G11B10_Float;
+
         private ImageEffectShader depthPassShader;
         private ImageEffectShader blurPassShaderH;
         private ImageEffectShader blurPassShaderV;
@@ -41,11 +45,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
         private ImageEffectShader resolvePassShader;
         private ImageEffectShader temporalPassShader;
         private ImageEffectShader combinePassShader;
-
-        private Texture temporalBuffer;
-
-        // ReSharper disable once InconsistentNaming
-        private Matrix prevVP;
 
         private Texture[] cachedColorBuffer0Mips;
         private Texture[] cachedColorBuffer1Mips;
@@ -220,6 +219,75 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
 #endif
 
+        /// <summary>
+        /// Helper structure with data for temporal reprojection done per camera.
+        /// </summary>
+        private class TemporalFrameCache
+        {
+            public CameraComponent Camera;
+            public int LastUsageFrame;
+            public Texture TemporalBuffer;
+            // ReSharper disable once InconsistentNaming
+            public Matrix PrevVP;
+
+            public void Resize(GraphicsDevice device, ref Size3 size)
+            {
+                if (TemporalBuffer == null || TemporalBuffer.Size != size)
+                {
+                    TemporalBuffer?.Dispose();
+                    TemporalBuffer = Texture.New2D(device, size.Width, size.Height, 1, ReflectionsFormat, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
+                }
+            }
+
+            public void Dispose()
+            {
+                if (TemporalBuffer != null)
+                {
+                    TemporalBuffer.Dispose();
+                    TemporalBuffer = null;
+                }
+            }
+        }
+
+        private readonly List<TemporalFrameCache> _frameCache = new List<TemporalFrameCache>(4);
+
+        [NotNull]
+        private TemporalFrameCache GetFrameCache(int frameIndex, CameraComponent camera)
+        {
+            TemporalFrameCache cache;
+
+            // Find free temporal cache
+            for (int i = 0; i < _frameCache.Count; i++)
+            {
+                cache = _frameCache[i];
+                if (cache.Camera == camera && cache.LastUsageFrame != frameIndex)
+                {
+                    cache.LastUsageFrame = frameIndex;
+                    return cache;
+                }
+            }
+
+            // Create new one
+            cache = new TemporalFrameCache();
+            cache.Camera = camera;
+            cache.LastUsageFrame = frameIndex;
+            _frameCache.Add(cache);
+
+            return cache;
+        }
+
+        private void FlushCache(int frameIndex)
+        {
+            for (int i = 0; i < _frameCache.Count; i++)
+            {
+                if (frameIndex - _frameCache[i].LastUsageFrame > 100)
+                {
+                    _frameCache[i].Dispose();
+                    _frameCache.RemoveAt(i--);
+                }
+            }
+        }
+
         protected override void InitializeCore()
         {
             base.InitializeCore();
@@ -235,11 +303,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         protected override void Destroy()
         {
-            if (temporalBuffer != null)
-            {
-                temporalBuffer.Dispose();
-                temporalBuffer = null;
-            }
+            _frameCache.ForEach(x => x.Dispose());
+            _frameCache.Clear();
 
             cachedColorBuffer0Mips?.ForEach(view => view?.Dispose());
             cachedColorBuffer1Mips?.ForEach(view => view?.Dispose());
@@ -267,9 +332,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
             SetInput(3, specularRoughnessBuffer);
         }
 
-        protected override void PreDrawCore(RenderDrawContext context)
+        private TemporalFrameCache Prepare(RenderDrawContext context, Texture outputBuffer)
         {
-            Texture outputBuffer = GetSafeOutput(0);
+            TemporalFrameCache cache = null;
 
             var currentCamera = context.RenderContext.GetCurrentCamera();
             if (currentCamera == null)
@@ -288,7 +353,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             float temporalTime = 0;
             if (TemporalEnabled)
             {
-                double time = context.RenderContext.Time.Total.TotalSeconds;
+                var gameTime = context.RenderContext.Time;
+                double time = gameTime.Total.TotalSeconds;
 
                 // Keep time in smaller range to prevent temporal noise errors
                 const double scale = 10;
@@ -296,6 +362,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 time -= integral;
 
                 temporalTime = (float)time;
+
+                cache = GetFrameCache(gameTime.FrameCount, currentCamera);
             }
 
             var traceBufferSize = GetBufferResolution(outputBuffer, RayTracePassResolution);
@@ -333,17 +401,20 @@ namespace SiliconStudio.Xenko.Rendering.Images
             if (TemporalEnabled)
             {
                 temporalPassShader.Parameters.Set(SSLRTemporalPassKeys.IVP, ref inverseViewProjectionMatrix);
-                temporalPassShader.Parameters.Set(SSLRTemporalPassKeys.prevVP, ref prevVP);
+                temporalPassShader.Parameters.Set(SSLRTemporalPassKeys.prevVP, ref cache.PrevVP);
                 temporalPassShader.Parameters.Set(SSLRTemporalPassKeys.TemporalResponse, TemporalResponse);
                 temporalPassShader.Parameters.Set(SSLRTemporalPassKeys.TemporalScale, TemporalScale);
+
+                cache.PrevVP = viewProjectionMatrix;
             }
-            prevVP = viewProjectionMatrix;
 
             combinePassShader.Parameters.Set(SSLRCommonKeys.ViewFarPlane, farclip);
             combinePassShader.Parameters.Set(SSLRCommonKeys.CameraPosWS, ref cameraPos);
             combinePassShader.Parameters.Set(SSLRCommonKeys.ViewInfo, ref viewInfo);
             combinePassShader.Parameters.Set(SSLRCommonKeys.V, ref viewMatrix);
             combinePassShader.Parameters.Set(SSLRCommonKeys.IVP, ref inverseViewProjectionMatrix);
+
+            return cache;
         }
 
         protected override void DrawCore(RenderDrawContext context)
@@ -357,12 +428,15 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // Output:
             Texture outputBuffer = GetSafeOutput(0);
 
+            // Prepare
+            var temporalCache = Prepare(context, outputBuffer);
+            FlushCache(context.RenderContext.Time.FrameCount);
+
             // Get temporary buffers
-            var reflectionsFormat = PixelFormat.R11G11B10_Float;
             var rayTraceBuffersSize = GetBufferResolution(outputBuffer, RayTracePassResolution);
             var resolveBuffersSize = GetBufferResolution(outputBuffer, ResolvePassResolution);
             Texture rayTraceBuffer = NewScopedRenderTarget2D(rayTraceBuffersSize.Width, rayTraceBuffersSize.Height, PixelFormat.R11G11B10_Float, 1);
-            Texture resolveBuffer = NewScopedRenderTarget2D(resolveBuffersSize.Width, resolveBuffersSize.Height, reflectionsFormat, 1);
+            Texture resolveBuffer = NewScopedRenderTarget2D(resolveBuffersSize.Width, resolveBuffersSize.Height, ReflectionsFormat, 1);
 
             // Check if resize depth
             Texture smallerDepthBuffer = depthBuffer;
@@ -389,8 +463,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 // Get temp targets
                 var colorBuffersSize = new Size2(outputBuffer.Width / 2, outputBuffer.Height / 2);
                 int colorBuffersMips = Texture.CalculateMipMapCount(MipMapCount.Auto, colorBuffersSize.Width, colorBuffersSize.Height);
-                Texture colorBuffer0 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, reflectionsFormat, colorBuffersMips);
-                Texture colorBuffer1 = NewScopedRenderTarget2D(colorBuffersSize.Width / 2, colorBuffersSize.Height / 2, reflectionsFormat, colorBuffersMips - 1);
+                Texture colorBuffer0 = NewScopedRenderTarget2D(colorBuffersSize.Width, colorBuffersSize.Height, ReflectionsFormat, colorBuffersMips);
+                Texture colorBuffer1 = NewScopedRenderTarget2D(colorBuffersSize.Width / 2, colorBuffersSize.Height / 2, ReflectionsFormat, colorBuffersMips - 1);
                 int colorBuffer1MipOffset = 1; // For colorBuffer1 we could use one mip less (optimized)
 
                 // Cache per color buffer mip views
@@ -471,23 +545,18 @@ namespace SiliconStudio.Xenko.Rendering.Images
             if (TemporalEnabled)
             {
                 var temporalSize = outputBuffer.Size;
-                if (temporalBuffer == null || temporalBuffer.Size != temporalSize)
-                {
-                    temporalBuffer?.Dispose();
-                    temporalBuffer = Texture.New2D(GraphicsDevice, temporalSize.Width, temporalSize.Height, 1, reflectionsFormat, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
-                }
-
-                Texture temporalBuffer0 = NewScopedRenderTarget2D(temporalSize.Width, temporalSize.Height, reflectionsFormat, 1);
+                temporalCache.Resize(GraphicsDevice, ref temporalSize);
+                Texture temporalBuffer0 = NewScopedRenderTarget2D(temporalSize.Width, temporalSize.Height, ReflectionsFormat, 1);
 
                 temporalPassShader.SetInput(0, resolveBuffer);
-                temporalPassShader.SetInput(1, temporalBuffer);
+                temporalPassShader.SetInput(1, temporalCache.TemporalBuffer);
                 temporalPassShader.SetInput(2, depthBuffer);
                 temporalPassShader.SetOutput(temporalBuffer0);
                 temporalPassShader.Draw(context, "Temporal");
 
-                context.CommandList.Copy(temporalBuffer0, temporalBuffer); // TODO: use Texture.Swap from ContentStreaming branch to make it faster!
+                context.CommandList.Copy(temporalBuffer0, temporalCache.TemporalBuffer); // TODO: use Texture.Swap from ContentStreaming branch to make it faster!
 
-                reflectionsBuffer = temporalBuffer;
+                reflectionsBuffer = temporalCache.TemporalBuffer;
             }
 
             // Combine Pass
@@ -512,7 +581,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
                         Scaler.SetInput(0, resolveBuffer);
                         break;
                     case DebugModes.Temporal:
-                        Scaler.SetInput(0, temporalBuffer);
+                        if(temporalCache != null)
+                            Scaler.SetInput(0, temporalCache.TemporalBuffer);
                         break;
                 }
                 Scaler.SetOutput(outputBuffer);
