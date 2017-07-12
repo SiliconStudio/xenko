@@ -60,17 +60,23 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             ClearCoatLayerNormalMap = new ComputeTextureColor();
         }
 
+        public override void MultipassGeneration(MaterialGeneratorContext context)
+        {
+            const int passCount = 2;
+            context.SetMultiplePasses("CarPaint", passCount);
+        }
+
         public override void GenerateShader(MaterialGeneratorContext context)
         {
             var passIndex = context.PassIndex;
-            
+
             context.UseStreamWithCustomBlend(MaterialShaderStage.Pixel, NormalStream.Stream, new ShaderClassSource("MaterialStreamNormalBlend"));          
             context.Parameters.Set(MaterialKeys.HasNormalMap, true);
             var computeColorKeys = new MaterialComputeColorKeys(MaterialKeys.NormalMap, MaterialKeys.NormalValue, DefaultNormalColor, false);
             var computeColorSource = ((passIndex == 0) ? NormalMap : ClearCoatLayerNormalMap).GenerateShaderSource(context, computeColorKeys);
 
             var mixin = new ShaderMixinSource();
-            mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceNormalMap", (passIndex == 0) ? IsXYNormal : IsXYNormalOrangePeel, (passIndex == 0) ? ScaleAndBias : ScaleAndBiasOrangePeel, passIndex == 1));
+            mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceNormalMap", (passIndex == 0) ? IsXYNormal : IsXYNormalOrangePeel, (passIndex == 0) ? ScaleAndBias : ScaleAndBiasOrangePeel));
             mixin.AddComposition("normalMap", computeColorSource);
             context.AddShaderSource(MaterialShaderStage.Pixel, mixin);
         }

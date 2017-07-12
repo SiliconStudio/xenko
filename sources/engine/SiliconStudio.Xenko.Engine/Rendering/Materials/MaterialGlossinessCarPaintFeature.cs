@@ -44,12 +44,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
         public IComputeScalar ClearCoatGlossinessMap { get; set; }
 
-        public override void MultipassGeneration(MaterialGeneratorContext context)
-        {
-            const int passCount = 2;
-            context.SetMultiplePasses("CarPaint", passCount);
-        }
-
         public override void GenerateShader(MaterialGeneratorContext context)
         {
             var passIndex = context.PassIndex;
