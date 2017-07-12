@@ -242,6 +242,18 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>SSLRTemporalPass.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Materials\Shaders\GBufferOutputNormals.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>GBufferOutputNormals.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Materials\Shaders\GBufferOutputSpecularColorRoughness.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>GBufferOutputSpecularColorRoughness.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\QueryManager.cs" />
     <Compile Include="Rendering\Images\ImageEffectProfilingKeys.cs" />
     <Compile Include="Rendering\Images\ImageScaler\SamplingPattern.cs" />
@@ -895,6 +907,14 @@
     <None Include="Rendering\LightProbes\ComputeSphericalHarmonics.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeSphericalHarmonics.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\Shaders\GBufferOutputNormals.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>GBufferOutputNormals.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\Shaders\GBufferOutputSpecularColorRoughness.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>GBufferOutputSpecularColorRoughness.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Materials\Shaders\IMaterialSpecularMicrofacetEnvironmentFunction.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
