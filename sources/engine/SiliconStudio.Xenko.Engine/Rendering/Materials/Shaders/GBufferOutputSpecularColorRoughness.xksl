@@ -7,7 +7,7 @@
     {
         override float4 Compute()
         {
-            return float4(streams.matSpecularVisible, streams.alphaRoughness);
+            return float4(streams.matSpecularVisible, sqrt(streams.alphaRoughness)); // alphaRoughness = roughness^2
         }
     };
 }
