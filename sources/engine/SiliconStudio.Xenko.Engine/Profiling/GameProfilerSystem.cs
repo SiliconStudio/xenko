@@ -100,7 +100,7 @@ namespace SiliconStudio.Xenko.Profiling
 
         public override void Update(GameTime gameTime)
         {
-            if (dumpTiming.ElapsedMilliseconds < RefreshTime || FilteringMode == ProfilingEventType.GpuProfilingEVent)
+            if (dumpTiming.ElapsedMilliseconds < RefreshTime || FilteringMode == ProfilingEventType.GpuProfilingEvent)
                 return;
             
             dumpTiming.Restart();
@@ -126,7 +126,7 @@ namespace SiliconStudio.Xenko.Profiling
             if (events == null) return;
 
             var containsMarks = false;
-            var tickFrequency = FilteringMode == ProfilingEventType.GpuProfilingEVent ? GraphicsDevice.TimestampFrequency : Stopwatch.Frequency;
+            var tickFrequency = FilteringMode == ProfilingEventType.GpuProfilingEvent ? GraphicsDevice.TimestampFrequency : Stopwatch.Frequency;
 
             //update strings that need update
             foreach (var e in events)
@@ -323,7 +323,7 @@ namespace SiliconStudio.Xenko.Profiling
 
         public override void Draw(GameTime gameTime)
         {
-            if (dumpTiming.ElapsedMilliseconds > RefreshTime && FilteringMode == ProfilingEventType.GpuProfilingEVent)
+            if (dumpTiming.ElapsedMilliseconds > RefreshTime && FilteringMode == ProfilingEventType.GpuProfilingEvent)
             {
                 dumpTiming.Restart();
 
@@ -356,7 +356,7 @@ namespace SiliconStudio.Xenko.Profiling
                 fastTextRenderer.DrawString(Game.GraphicsContext, $"Display: {FilteringMode}, {fpsStatString}", textDrawStartOffset.X, currentHeight);
                 currentHeight += TopRowHeight;
 
-                if (FilteringMode != ProfilingEventType.GpuProfilingEVent)
+                if (FilteringMode != ProfilingEventType.GpuProfilingEvent)
                 {
                     fastTextRenderer.DrawString(Game.GraphicsContext, gcMemoryString, textDrawStartOffset.X, currentHeight);
                     currentHeight += TopRowHeight;

@@ -290,7 +290,7 @@ namespace SiliconStudio.Core.Diagnostics
                 {
                     cpuEvents.MoveToNextBuffer();
                 }
-                if (eventType == ProfilingEventType.GpuProfilingEVent || clearOtherEventTypes)
+                if (eventType == ProfilingEventType.GpuProfilingEvent || clearOtherEventTypes)
                 {
                     gpuEvents.MoveToNextBuffer();
                 }
