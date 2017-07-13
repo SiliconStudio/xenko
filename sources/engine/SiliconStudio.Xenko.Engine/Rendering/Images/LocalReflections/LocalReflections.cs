@@ -75,7 +75,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// Gets or sets the ray trace pass resolution mode.
         /// </summary>
-        [Display("Ray trace pass resolution", "Ray trace")]
+        [Display("Resolution", "Ray trace")]
         [DefaultValue(ResolutionMode.Half)]
         public ResolutionMode RayTracePassResolution { get; set; } = ResolutionMode.Half;
 
@@ -123,7 +123,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// Gets or sets the resolve pass resolution mode.
         /// </summary>
-        [Display("Resolve pass resolution", "Resolve")]
+        [Display("Resolution", "Resolve")]
+        [DataMember(0)]
         [DefaultValue(ResolutionMode.Half)]
         public ResolutionMode ResolvePassResolution { get; set; } = ResolutionMode.Full;
 
@@ -134,7 +135,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <value>
         /// The resolve samples amount.
         /// </value>
-        [Display("Resolve samples", "Resolve")]
+        [Display("Samples", "Resolve")]
+        [DataMember(10)]
         [DefaultValue(4)]
         [DataMemberRange(1, 8, 1, 1, 0)]
         public int ResolveSamples { get; set; } = 4;
@@ -148,6 +150,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         ///   <c>true</c> if reduce fireflies; otherwise, <c>false</c>.
         /// </value>
         [Display("Reduce highlights", "Resolve")]
+        [DataMember(20)]
         [DefaultValue(true)]
         public bool ReduceHighlights { get; set; } = true;
 
@@ -158,6 +161,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// The edge fade factor.
         /// </value>
         [Display("Edge fade factor", "Resolve")]
+        [DataMember(30)]
         [DefaultValue(0.1f)]
         [DataMemberRange(0.0, 1.0, 0.05, 0.2, 4)]
         public float EdgeFadeFactor { get; set; } = 0.1f;
@@ -170,6 +174,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         ///   <c>true</c> if use color buffer mips; otherwise, <c>false</c>.
         /// </value>
         [Display("Use color buffer mips", "Resolve")]
+        [DataMember(40)]
         [DefaultValue(true)]
         public bool UseColorBufferMips { get; set; } = true;
 
@@ -189,7 +194,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <value>
         /// The temporal effect scale.
         /// </value>
-        [Display("Temporal scale", "Temporal")]
+        [Display("Scale", "Temporal")]
         [DefaultValue(4.0f)]
         [DataMemberRange(0.0, 20.0, 0.5, 0.5, 2)]
         public float TemporalScale { get; set; } = 4.0f;
@@ -200,7 +205,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <value>
         /// The temporal response.
         /// </value>
-        [Display("Temporal response", "Temporal")]
+        [Display("Response", "Temporal")]
         [DefaultValue(0.9f)]
         [DataMemberRange(0.5, 1.0, 0.01, 0.1, 2)]
         public float TemporalResponse { get; set; } = 0.9f;
