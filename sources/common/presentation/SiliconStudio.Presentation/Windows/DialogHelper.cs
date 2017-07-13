@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Interop;
 using System.Windows.Threading;
@@ -66,6 +67,29 @@ namespace SiliconStudio.Presentation.Windows
         public static CheckedMessageBoxResult BlockingCheckedMessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, bool? isChecked, string checkboxMessage, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None)
         {
             return PushFrame(dispatcher, () => CheckedMessageBox(dispatcher, message, caption, isChecked, checkboxMessage, buttons, image));
+        }
+
+        /// <summary>
+        /// Create buttons corresponding to the provided button <paramref name="captions"/>
+        /// </summary>
+        /// <param name="captions">An enumeration of button captions.</param>
+        /// <param name="defaultIndex">The 1-based index of the button that is the default button, or <c>null</c> if there is no default button.</param>
+        /// <param name="cancelIndex">The 1-based index of the button that is the cancel button, or <c>null</c> if there is no cancel button.</param>
+        /// <returns>An enumeration of buttons corresponding to the provided button <paramref name="captions"/>, which associated value are successived indices starting at <c>1</c>.</returns>
+        /// <remarks>
+        /// Index <c>0</c> is reserved for when the dialog is closed without clicking on a button.
+        /// </remarks>
+        [ItemNotNull, NotNull]
+        public static IEnumerable<DialogButtonInfo> CreateButtons([NotNull] IEnumerable<string> captions, int? defaultIndex = null, int? cancelIndex = null)
+        {
+            var i = 1;
+            var buttons = captions.Select(s =>
+            {
+                var buttonInfo = new DialogButtonInfo(s, i, defaultIndex == i, cancelIndex == i);
+                i++;
+                return buttonInfo;
+            });
+            return buttons;
         }
 
         private static TResult PushFrame<TResult>([NotNull] IDispatcherService dispatcher, Func<Task<TResult>> task)

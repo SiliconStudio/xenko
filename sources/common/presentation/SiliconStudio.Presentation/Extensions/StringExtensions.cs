@@ -72,7 +72,7 @@ namespace SiliconStudio.Presentation.Extensions
         public static string ReplaceLast([NotNull] this string str, [NotNull] string oldValue, [NotNull] string newValue)
         {
             if (oldValue == null) throw new ArgumentNullException(nameof(oldValue));
-            if (oldValue.Length == 0) throw new ArgumentException($"{oldValue} cannot be an empty string", nameof(oldValue));
+            if (oldValue.Length == 0) throw new ArgumentException($"{oldValue} can't be an empty string", nameof(oldValue));
 
             var startIndex = str.LastIndexOf(oldValue, StringComparison.CurrentCulture);
             return startIndex != -1 ? str.Remove(startIndex, oldValue.Length).Insert(startIndex, newValue) : str;

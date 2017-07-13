@@ -8,7 +8,7 @@ using SiliconStudio.Presentation.Internal;
 namespace SiliconStudio.Presentation.Controls
 {
     /// <summary>
-    /// Represent an unit system that can be used with a ScaleBar
+    /// Represent a unit system that can be used with a ScaleBar
     /// </summary>
     public class UnitSystem : DependencyObject
     {
@@ -43,7 +43,7 @@ namespace SiliconStudio.Presentation.Controls
     }
 
     /// <summary>
-    /// Represent an unit conversion for an <see cref="UnitSystem" /> used for grouping large or small values (such as nano or mega units) 
+    /// Represent a unit conversion for an <see cref="UnitSystem" /> used for grouping large or small values (such as nano or mega units) 
     /// </summary>
     public class UnitConversion : DependencyObject
     {
