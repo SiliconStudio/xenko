@@ -19,6 +19,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         public MaterialMetalnessCarPaintFeature()
         {
             MetalnessMap = new ComputeFloat(0.80f);
+
+            // TODO Make this constant? (technically, clear coat layer is always 100% glosiness only)
             ClearCoatMetalnessMap = new ComputeFloat(0.00f);
         }
 
@@ -49,6 +51,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             MetalnessMap.ClampFloat(0, 1);
             ClearCoatMetalnessMap.ClampFloat(0, 1);
 
+            // Set the source depending of the index
             var computeColorSource = (passIndex == 0)
                 ? MetalnessMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.MetalnessMap, MaterialKeys.MetalnessValue))
                 : ClearCoatMetalnessMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.MetalnessMap, MaterialKeys.MetalnessValue));
