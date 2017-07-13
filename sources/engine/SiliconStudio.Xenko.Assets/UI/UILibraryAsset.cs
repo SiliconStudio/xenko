@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Assets.UI
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
 #endif
     [AssetUpgrader(XenkoConfig.PackageName, "2.0.0.0", "2.1.0.1", typeof(RootPartIdsToRootPartsUpgrader))]
-    [Display("UI Library")]
+    [Display("UI library")]
     public class UILibraryAsset : UIAssetBase
     {
         private const string CurrentVersion = "2.1.0.1";

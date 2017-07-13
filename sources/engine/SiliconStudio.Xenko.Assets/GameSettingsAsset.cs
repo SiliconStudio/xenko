@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Assets
     [AssetDescription(FileExtension, AlwaysMarkAsRoot = true, AllowArchetype = false)]
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
     [AssetContentType(typeof(GameSettings))]
-    [Display(10000, "Game Settings")]
+    [Display(10000, "Game settings")]
     [CategoryOrder(1550, "Splash screen")]
     [NonIdentifiableCollectionItems]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
