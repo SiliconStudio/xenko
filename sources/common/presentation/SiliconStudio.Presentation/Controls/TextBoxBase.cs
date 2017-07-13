@@ -204,10 +204,10 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public void Validate()
         {
-            if (IsReadOnly || !HasChangesToValidate)
+            if (IsReadOnly || !HasChangesToValidate || validating)
                 return;
 
-                var cancelRoutedEventArgs = new CancelRoutedEventArgs(ValidatingEvent);
+            var cancelRoutedEventArgs = new CancelRoutedEventArgs(ValidatingEvent);
             OnValidating(cancelRoutedEventArgs);
             if (cancelRoutedEventArgs.Cancel)
                 return;
