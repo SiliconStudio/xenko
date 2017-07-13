@@ -18,9 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
     [Display("Post-Processing Effects")]
     public sealed class PostProcessingEffects : ImageEffect, IImageEffectRenderer, IPostProcessingEffects
     {
-        private AmbientOcclusion ambientOcclusion;
-        private LocalReflections localReflections;
-        private DepthOfField depthOfField;
         private LuminanceEffect luminanceEffect;
         private ColorTransformGroup colorTransformsGroup;
 
