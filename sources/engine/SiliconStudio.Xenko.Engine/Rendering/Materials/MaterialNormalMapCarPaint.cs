@@ -3,9 +3,11 @@
 
 using System.Collections.Generic;
 using System.ComponentModel;
+using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 using SiliconStudio.Xenko.Shaders;
@@ -58,6 +60,22 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         public MaterialNormalMapCarPaint() : base(new ComputeTextureColor())
         {
             ClearCoatLayerNormalMap = new ComputeTextureColor();
+
+            ScaleAndBiasOrangePeel = IsXYNormalOrangePeel = ScaleAndBias = IsXYNormal = true;
+
+            // Load default resources
+            NormalMap = new ComputeTextureColor
+            {
+                Texture = AttachedReferenceManager.CreateProxyObject<Texture>(new AssetId("7e2761d1-ef86-420a-b7a7-a0ed1c16f9bb"), "XenkoCarPaintMetalFlakesNM"),
+                Scale = new Vector2(64, 64),
+                //UseRandomTextureCoordinates = true
+            };
+
+            ClearCoatLayerNormalMap = new ComputeTextureColor
+            {
+                Texture = AttachedReferenceManager.CreateProxyObject<Texture>(new AssetId("2f76bcba-ae9f-4954-b98d-f94c2102ff86"), "XenkoCarPaintOrangePeelNM"),
+                Scale = new Vector2(8, 8)
+            };
         }
 
         public override void MultipassGeneration(MaterialGeneratorContext context)
