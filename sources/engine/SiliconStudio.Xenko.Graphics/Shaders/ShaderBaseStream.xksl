@@ -9,7 +9,7 @@ shader ShaderBaseStream
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D && SILICONSTUDIO_XENKO_GRAPHICS_PROFILE < GRAPHICS_PROFILE_LEVEL_10_0
     // Positive if this face is a front face, negative otherwise
-    stage stream float IsFrontFace : VPOS;
+    stage stream float IsFrontFace : VFACE;
 #else
     // True if this face is a front face
     stage stream bool IsFrontFace : SV_IsFrontFace;
