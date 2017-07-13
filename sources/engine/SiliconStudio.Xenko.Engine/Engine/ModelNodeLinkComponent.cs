@@ -9,7 +9,7 @@ using SiliconStudio.Xenko.Engine.Processors;
 namespace SiliconStudio.Xenko.Engine
 {
     [DataContract("ModelNodeLinkComponent")]
-    [Display("Model Node Link", Expand = ExpandRule.Once)]
+    [Display("Model node link", Expand = ExpandRule.Once)]
     [DefaultEntityComponentProcessor(typeof(ModelNodeLinkProcessor))]
     [ComponentOrder(1500)]
     public sealed class ModelNodeLinkComponent : EntityComponent

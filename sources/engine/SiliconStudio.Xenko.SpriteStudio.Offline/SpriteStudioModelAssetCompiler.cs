@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
 
             var cells = new List<SpriteStudioCell>();
             var images = new List<UFile>();
-            if (!SpriteStudioXmlImport.ParseCellMaps(asset.Source, images, cells)) throw new Exception("Failed to parse Sprite Studio cell textures.");
+            if (!SpriteStudioXmlImport.ParseCellMaps(asset.Source, images, cells)) throw new Exception("Failed to parse SpriteStudio cell textures.");
 
             var texIndex = 0;
             asset.BuildTextures.Clear();
