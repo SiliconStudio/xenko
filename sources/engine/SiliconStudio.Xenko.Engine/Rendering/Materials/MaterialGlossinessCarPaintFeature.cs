@@ -52,6 +52,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             context.UseStream(MaterialShaderStage.Pixel, GlossinessStream.Stream);
 
+            // Set the source depending of the index
             var computeColorSource = (passIndex == 0) 
                 ? GlossinessMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.GlossinessMap, MaterialKeys.GlossinessValue))
                 : ClearCoatGlossinessMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.GlossinessMap, MaterialKeys.GlossinessValue));
