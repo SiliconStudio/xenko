@@ -238,6 +238,12 @@
     <Compile Include="Rendering\Materials\MaterialGlossinessCarPaintFeature.cs" />
     <Compile Include="Rendering\Materials\MaterialMetalnessCarPaintFeature.cs" />
     <Compile Include="Rendering\Materials\MaterialNormalMapCarPaint.cs" />
+    <Compile Include="Rendering\Materials\Shaders\MaterialSurfaceGlossinessMapMetalFlakes.cs">
+      <DependentUpon>MaterialSurfaceGlossinessMapMetalFlakes.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Rendering\QueryManager.cs" />
     <Compile Include="Rendering\Images\ImageEffectProfilingKeys.cs" />
     <Compile Include="Rendering\Images\ImageScaler\SamplingPattern.cs" />
@@ -862,6 +868,10 @@
     <None Include="Rendering\Materials\Shaders\MaterialSpecularMicrofacetEnvironmentGGXPolynomial.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSpecularMicrofacetEnvironmentGGXPolynomial.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\Shaders\MaterialSurfaceGlossinessMapMetalFlakes.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSurfaceGlossinessMapMetalFlakes.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Materials\Shaders\MaterialTransmittanceReflectanceStream.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
