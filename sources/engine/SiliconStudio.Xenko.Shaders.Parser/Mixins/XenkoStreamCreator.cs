@@ -463,7 +463,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                     if (!prevStreamUsage.OutStreamList.Contains(variable))
                     {
                         var sem = ((Variable)variable).Qualifiers.OfType<Semantic>().FirstOrDefault();
-                        if (sem != null && sem.Name.Text == "SV_IsFrontFace") // PS input only
+                        if (sem != null && (sem.Name.Text == "SV_IsFrontFace" || sem.Name.Text == "VFACE")) // PS input only
                         {
                             stageExclusiveInputStreams.Add(variable);
                             continue;
