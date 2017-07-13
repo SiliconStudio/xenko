@@ -28,10 +28,10 @@ namespace SiliconStudio.Assets.Quantum
             foreach (var entry in metadata)
             {
                 // Skip paths that doesn't start with the given base path.
-                if (basePath != null && entry.Key.Elements.Take(basePath.Elements.Count).Where((x, i) => !x.Equals(basePath.Elements[i])).Any())
+                if (basePath != null && !entry.Key.StartsWith(basePath))
                     continue;
 
-                var newPath = new YamlAssetPath(entry.Key.Elements.Select((x, i) => FixupIdentifier(x, idRemapping)));
+                var newPath = new YamlAssetPath(entry.Key.Elements.Select(x => FixupIdentifier(x, idRemapping)));
                 replacements.Add(Tuple.Create(entry.Key, newPath, entry.Value));
             }
 

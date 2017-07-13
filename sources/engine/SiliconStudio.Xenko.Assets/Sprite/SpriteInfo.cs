@@ -46,10 +46,10 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         public Rectangle TextureRegion;
 
         /// <summary>
-        /// The number of pixels representing an unit of 1 in the scene.
+        /// The number of pixels representing a unit of 1 in the scene.
         /// </summary>
         /// <userdoc>
-        /// The number of pixels representing an unit of 1 in the scene.
+        /// The number of pixels representing a unit of 1 in the scene.
         /// </userdoc>
         [DataMember(25)]
         [DefaultValue(100)]
@@ -90,7 +90,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         /// </summary>
         /// <userdoc>
         /// The size in pixels of the non-stretchable parts of the sprite.
-        /// The part sizes are organized as follow: X->Left, Y->Top, Z->Right, W->Bottom.
+        /// The part sizes are organized as follows: X->Left, Y->Top, Z->Right, W->Bottom.
         /// </userdoc>
         [DataMember(60)]
         public Vector4 Borders { get; set; }

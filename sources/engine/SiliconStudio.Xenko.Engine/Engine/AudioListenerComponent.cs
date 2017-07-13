@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Engine
     /// <para>Use the AudioSytem's <see cref="AudioSystem.AddListener"/> and <see cref="AudioSystem.RemoveListener"/> functions 
     /// to activate/deactivate the listeners that are actually listening at a given time.</para>
     /// <para>The entity needs to be added to the Entity System so that the associated AudioListenerComponent can be processed.</para></remarks>
-    [Display("Audio Listener", Expand = ExpandRule.Once)]
+    [Display("Audio listener", Expand = ExpandRule.Once)]
     [DataContract("AudioListenerComponent")]
     [DefaultEntityComponentProcessor(typeof(AudioListenerProcessor), ExecutionMode = ExecutionMode.Runtime)]
     [ComponentOrder(6000)]
