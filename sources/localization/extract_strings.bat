@@ -1,5 +1,5 @@
 @set SOURCES_DIR=C:\Projects\xenko2\sources
-@set OUTPUT_DIR=C:\Projects\xenko2\sources\localization\
+@set OUTPUT_DIR=%SOURCES_DIR%\localization\
 
 @cd "%OUTPUT_DIR%"
 
