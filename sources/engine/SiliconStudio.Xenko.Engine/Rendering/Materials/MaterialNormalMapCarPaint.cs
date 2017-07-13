@@ -61,14 +61,14 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         {
             ClearCoatLayerNormalMap = new ComputeTextureColor();
 
-            ScaleAndBiasOrangePeel = IsXYNormalOrangePeel = ScaleAndBias = IsXYNormal = true;
+            ScaleAndBiasOrangePeel = ScaleAndBias = true;
 
             // Load default resources
             NormalMap = new ComputeTextureColor
             {
                 Texture = AttachedReferenceManager.CreateProxyObject<Texture>(new AssetId("7e2761d1-ef86-420a-b7a7-a0ed1c16f9bb"), "XenkoCarPaintMetalFlakesNM"),
-                Scale = new Vector2(64, 64),
-                //UseRandomTextureCoordinates = true
+                Scale = new Vector2(128, 128),
+                UseRandomTexCoordinates = true
             };
 
             ClearCoatLayerNormalMap = new ComputeTextureColor

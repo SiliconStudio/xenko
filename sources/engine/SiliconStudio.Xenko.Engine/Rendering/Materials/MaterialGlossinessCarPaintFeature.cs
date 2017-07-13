@@ -46,19 +46,21 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         public override void GenerateShader(MaterialGeneratorContext context)
         {
-            var passIndex = context.PassIndex;
+            var isMetalFlakesPass = (context.PassIndex == 0);
+
             GlossinessMap.ClampFloat(0, 1);
             ClearCoatGlossinessMap.ClampFloat(0, 1);
 
             context.UseStream(MaterialShaderStage.Pixel, GlossinessStream.Stream);
 
             // Set the source depending of the index
-            var computeColorSource = (passIndex == 0) 
+            var computeColorSource = (isMetalFlakesPass) 
                 ? GlossinessMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.GlossinessMap, MaterialKeys.GlossinessValue))
                 : ClearCoatGlossinessMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.GlossinessMap, MaterialKeys.GlossinessValue));
-
+            
             var mixin = new ShaderMixinSource();
-            mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceGlossinessMap", Invert));
+            
+            mixin.Mixins.Add(new ShaderClassSource((isMetalFlakesPass) ? "MaterialSurfaceGlossinessMapMetalFlakes" : "MaterialSurfaceGlossinessMap", Invert));
             mixin.AddComposition("glossinessMap", computeColorSource);
             context.AddShaderSource(MaterialShaderStage.Pixel, mixin);
         }
