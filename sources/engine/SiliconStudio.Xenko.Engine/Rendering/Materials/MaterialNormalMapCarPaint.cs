@@ -63,12 +63,19 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         public override void MultipassGeneration(MaterialGeneratorContext context)
         {
             const int passCount = 2;
+
             context.SetMultiplePasses("CarPaint", passCount);
         }
 
         public override void GenerateShader(MaterialGeneratorContext context)
         {
             var passIndex = context.PassIndex;
+            
+            // TODO Move pass parameters somewhere else? (shared parameters for each layer rendering feature)
+            context.MaterialPass.BlendState = BlendStates.Additive;
+            // Enable transparency for clear coat pass only
+            if (passIndex == 1)
+                context.MaterialPass.HasTransparency = true;
 
             context.UseStreamWithCustomBlend(MaterialShaderStage.Pixel, NormalStream.Stream, new ShaderClassSource("MaterialStreamNormalBlend"));          
             context.Parameters.Set(MaterialKeys.HasNormalMap, true);
