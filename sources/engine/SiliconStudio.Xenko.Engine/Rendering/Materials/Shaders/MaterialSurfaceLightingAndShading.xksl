@@ -17,7 +17,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             
             // Flip the normal so it is facing the right direction for back faces
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D && SILICONSTUDIO_XENKO_GRAPHICS_PROFILE < GRAPHICS_PROFILE_LEVEL_10_0
-            streams.normalWS = streams.normalWS * sign(streams.IsFrontFace);
+            if(streams.IsFrontFace < 0)
+                streams.normalWS = -streams.normalWS;
 #else
             if(!streams.IsFrontFace)
                 streams.normalWS = -streams.normalWS;
