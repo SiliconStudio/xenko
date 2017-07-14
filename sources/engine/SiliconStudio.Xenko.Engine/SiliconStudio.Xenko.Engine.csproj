@@ -233,6 +233,7 @@
     <Compile Include="Rendering\Materials\MaterialGlossinessCarPaintFeature.cs" />
     <Compile Include="Rendering\Materials\MaterialMetalnessCarPaintFeature.cs" />
     <Compile Include="Rendering\Materials\MaterialNormalMapCarPaint.cs" />
+    <Compile Include="Rendering\Materials\MaterialSpecularMicroFacetModelCarPaintFeature.cs" />
     <Compile Include="Rendering\Materials\Shaders\MaterialSurfaceDiffuseCarPaint.cs">
       <DependentUpon>MaterialSurfaceDiffuseCarPaint.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -241,6 +242,12 @@
     </Compile>
     <Compile Include="Rendering\Materials\Shaders\MaterialSurfaceGlossinessMapMetalFlakes.cs">
       <DependentUpon>MaterialSurfaceGlossinessMapMetalFlakes.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Materials\Shaders\MaterialSurfaceShadingSpecularMicrofacetCarPaint.cs">
+      <DependentUpon>MaterialSurfaceShadingSpecularMicrofacetCarPaint.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -873,6 +880,10 @@
     <None Include="Rendering\Materials\Shaders\MaterialSurfaceGlossinessMapMetalFlakes.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceGlossinessMapMetalFlakes.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\Shaders\MaterialSurfaceShadingSpecularMicrofacetCarPaint.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSurfaceShadingSpecularMicrofacetCarPaint.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Materials\Shaders\MaterialTransmittanceReflectanceStream.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
