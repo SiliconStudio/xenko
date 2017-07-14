@@ -52,29 +52,17 @@ using System.Reflection;
 
 namespace SiliconStudio.Core.TypeConverters
 {
-    public class FieldPropertyDescriptor : PropertyDescriptor
+    public sealed class FieldPropertyDescriptor : PropertyDescriptor, IEquatable<FieldPropertyDescriptor>
     {
-        readonly FieldInfo fieldInfo;
+        private readonly FieldInfo fieldInfo;
 
-        public FieldInfo FieldInfo
-        {
-            get { return fieldInfo; }
-        }
+        public FieldInfo FieldInfo => fieldInfo;
 
-        public override Type ComponentType
-        {
-            get { return fieldInfo.DeclaringType; }
-        }
+        public override Type ComponentType => fieldInfo.DeclaringType;
 
-        public override bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public override bool IsReadOnly => false;
 
-        public override Type PropertyType
-        {
-            get { return fieldInfo.FieldType; }
-        }
+        public override Type PropertyType => fieldInfo.FieldType;
 
         public FieldPropertyDescriptor(FieldInfo fieldInfo)
             : base(fieldInfo.Name, new Attribute[0])
@@ -85,7 +73,7 @@ namespace SiliconStudio.Core.TypeConverters
             var attributes = new Attribute[attributesObject.Length];
             for (int i = 0; i < attributes.Length; i++)
                 attributes[i] = (Attribute)attributesObject[i];
-            this.AttributeArray = attributes;
+            AttributeArray = attributes;
         }
 
         public override bool CanResetValue(object component)
@@ -113,17 +101,37 @@ namespace SiliconStudio.Core.TypeConverters
             return true;
         }
 
+        /// <inheritdoc />
+        public bool Equals(FieldPropertyDescriptor other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(fieldInfo, other.fieldInfo);
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (GetType() != obj.GetType()) return false;
+            return Equals(obj as FieldPropertyDescriptor);
+        }
+
+        /// <inheritdoc />
         public override int GetHashCode()
         {
             return fieldInfo.GetHashCode();
         }
 
-        public override bool Equals(object obj)
+        public static bool operator ==(FieldPropertyDescriptor left, FieldPropertyDescriptor right)
         {
-            if (obj == null)
-                return false;
+            return Equals(left, right);
+        }
 
-            return GetType() == obj.GetType() && ((FieldPropertyDescriptor)obj).fieldInfo.Equals(fieldInfo);
+        public static bool operator !=(FieldPropertyDescriptor left, FieldPropertyDescriptor right)
+        {
+            return !Equals(left, right);
         }
     }
 }
