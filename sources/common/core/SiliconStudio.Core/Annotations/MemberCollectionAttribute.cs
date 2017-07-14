@@ -13,7 +13,7 @@ namespace SiliconStudio.Core.Annotations
     {
         /// <summary>
         /// Gets or sets whether this collection is read-only. If <c>true</c>, applications using this collection
-        /// should not allow to add or remove items.
+        /// should not allow adding or removing items.
         /// </summary>
         public bool ReadOnly { get; set; }
 

@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Engine
     /// To get the AudioEmitterSoundController associated to a Sound use the readonly <see cref="AudioEmitterComponent.Item(string)"/> indexer.
     /// </para>
     /// </remarks>
-    [Display("Audio Emitter", Expand = ExpandRule.Once)]
+    [Display("Audio emitter", Expand = ExpandRule.Once)]
     [DataContract("AudioEmitterComponent")]
     [DefaultEntityComponentProcessor(typeof(AudioEmitterProcessor), ExecutionMode = ExecutionMode.Runtime)]
     [ComponentOrder(7000)]

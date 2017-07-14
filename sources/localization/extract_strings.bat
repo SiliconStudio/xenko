@@ -1,7 +1,10 @@
 @set SOURCES_DIR=C:\Projects\xenko2\sources
-@set OUTPUT_DIR=C:\Projects\xenko2\sources\localization\
+@set OUTPUT_DIR=%SOURCES_DIR%\localization\
 
 @cd "%OUTPUT_DIR%"
+
+rem SiliconStudio.Presentation.pot
+..\..\Bin\Windows\SiliconStudio.Translation.Extractor.exe --directory=%SOURCES_DIR%\common\presentation\SiliconStudio.Presentation --domain-name=SiliconStudio.Presentation --recursive --preserve-comments --exclude=*.Designer.cs --verbose *.xaml *.cs
 
 rem SiliconStudio.Xenko.Assets.Presentation.pot
 ..\..\Bin\Windows\SiliconStudio.Translation.Extractor.exe --directory=%SOURCES_DIR%\editor\SiliconStudio.Xenko.Assets.Presentation --domain-name=SiliconStudio.Xenko.Assets.Presentation --recursive --preserve-comments --exclude=*.Designer.cs --verbose *.xaml *.cs

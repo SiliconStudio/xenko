@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     [DataContract("PrefabModelAsset")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Model))]
-    [Display(1855, "Prefab Model")]
+    [Display(1855, "Prefab model")]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "0.0.0")]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "2.0.0.0", typeof(EmptyAssetUpgrader))]

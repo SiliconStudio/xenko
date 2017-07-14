@@ -216,7 +216,7 @@ namespace SiliconStudio.Core.Reflection
                                 where PrepareMember(member)
                                 select member);
 
-            // Allow to add dynamic members per type
+            // Allows adding dynamic members per type
             (AttributeRegistry as AttributeRegistry)?.PrepareMembersCallback?.Invoke(this, memberList);
 
             return memberList;
