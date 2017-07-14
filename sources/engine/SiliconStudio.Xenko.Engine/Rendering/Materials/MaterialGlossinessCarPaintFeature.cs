@@ -30,7 +30,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 UseRandomTexCoordinates = true
             };
 
-            GlossinessMap = new ComputeBinaryScalar(new ComputeFloat(0.40f), metalFlakesNormalMap, BinaryOperator.Multiply);
+            BasePaintGlossinessMap = new ComputeBinaryScalar(new ComputeFloat(0.00f), metalFlakesNormalMap, BinaryOperator.Multiply);
+            GlossinessMap = new ComputeBinaryScalar(new ComputeFloat(0.50f), metalFlakesNormalMap, BinaryOperator.Multiply);
             ClearCoatGlossinessMap = new ComputeFloat(1.00f);
         }
 
@@ -38,10 +39,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Initializes a new instance of the <see cref="MaterialGlossinessMapFeature"/> class.
         /// </summary>
         /// <param name="glossinessMap">The glossiness map.</param>
-        public MaterialGlossinessCarPaintFeature(IComputeScalar metalFlakesGlossinessMap, IComputeScalar clearCoatGlossinessMap)
+        public MaterialGlossinessCarPaintFeature(IComputeScalar metalFlakesGlossinessMap, IComputeScalar clearCoatGlossinessMap, IComputeScalar baseGlossinessMap)
             : base(metalFlakesGlossinessMap)
         {
             ClearCoatGlossinessMap = clearCoatGlossinessMap;
+            BasePaintGlossinessMap = baseGlossinessMap;
         }
 
         /// <summary>
@@ -52,6 +54,15 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [NotNull]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
         public IComputeScalar ClearCoatGlossinessMap { get; set; }
+
+        /// <summary>
+        /// Gets or sets the base paint smoothness map.
+        /// </summary>
+        /// <value>The smoothness map.</value>
+        [Display("Base Paint Glossiness Map")]
+        [NotNull]
+        [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
+        public IComputeScalar BasePaintGlossinessMap { get; set; }
 
         public override void GenerateShader(MaterialGeneratorContext context)
         {
@@ -71,6 +82,14 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             
             mixin.Mixins.Add(new ShaderClassSource((isMetalFlakesPass) ? "MaterialSurfaceGlossinessMapMetalFlakes" : "MaterialSurfaceGlossinessMap", Invert));
             mixin.AddComposition("glossinessMap", computeColorSource);
+
+            if (isMetalFlakesPass)
+            {
+                var baseShininessComputeColorSource = BasePaintGlossinessMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.GlossinessMap, MaterialKeys.GlossinessValue));
+                mixin.AddComposition("baseGlossinessMap", baseShininessComputeColorSource);
+            }
+            
+
             context.AddShaderSource(MaterialShaderStage.Pixel, mixin);
         }
     }
