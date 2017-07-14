@@ -19,6 +19,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             var colorBase = diffuseMap.Compute();    
             var flakeColorBase = metalFlakesDiffuseMap.Compute();
 
+            // Interpolate the factors using the surface to camera distance
             float LOD = saturate(distance(Eye.xyz, streams.PositionWS.xyz) * 2.0f);
             colorBase = lerp(flakeColorBase, colorBase, LOD);
 

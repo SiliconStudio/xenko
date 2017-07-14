@@ -23,9 +23,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 baseGlossiness = 1.0 - baseGlossiness;
             }
             
+            // Correct both glossiness factor (to avoid aliasing and unrealistic values)
             float normalLength = length(streams.matNormal);
             glossiness = normalLength * glossiness / (normalLength + glossiness * (1.0f - normalLength));
+            baseGlossiness = normalLength * baseGlossiness / (normalLength + baseGlossiness * (1.0f - normalLength));
             
+            // Interpolate the factors using the surface to camera distance
             float LOD = saturate(distance(Eye.xyz, streams.PositionWS.xyz) * 2.0f);
             streams.matGlossiness = lerp(glossiness, baseGlossiness, LOD);
         }
