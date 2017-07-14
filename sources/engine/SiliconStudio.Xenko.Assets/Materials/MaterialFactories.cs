@@ -147,14 +147,18 @@ namespace SiliconStudio.Xenko.Assets.Materials
     {
         public static MaterialAsset Create()
         {
+            // Mazda Soul Red Paint (Approximation)
+            Color4 defaultCarPaintColor = new Color4(0.274509817f, 0.003921569f, 0.0470588244f, 1.0f);
+            Color4 defaultMetalFlakesColor = new Color4(defaultCarPaintColor.R * 2.0f, defaultCarPaintColor.G * 2.0f, defaultCarPaintColor.B * 2.0f, 1.0f);
+
             var material = new MaterialAsset
             {
                 Attributes =
                 {
-                    Diffuse = new MaterialDiffuseMapFeature
+                    Diffuse = new MaterialDiffuseMapCarPaintFeature()
                     {
-                        // Mazda Soul Red Paint (Approximation)
-                        DiffuseMap = new ComputeColor(new Color4(0.274509817f, 0.003921569f, 0.0470588244f, 1.0f))
+                        DiffuseMap = new ComputeColor(defaultCarPaintColor),
+                        MetalFlakesDiffuseMap =  new ComputeColor(defaultMetalFlakesColor)
                     },
                     DiffuseModel = new MaterialDiffuseLambertModelFeature(),
                     SpecularModel = new MaterialSpecularMicrofacetModelFeature(),
