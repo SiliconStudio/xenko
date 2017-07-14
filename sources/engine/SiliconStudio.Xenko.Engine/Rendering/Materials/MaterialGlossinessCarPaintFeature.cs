@@ -3,9 +3,11 @@
 
 using System.Collections.Generic;
 using System.ComponentModel;
-
+using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 using SiliconStudio.Xenko.Shaders;
@@ -21,7 +23,14 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     {
         public MaterialGlossinessCarPaintFeature()
         {
-            GlossinessMap = new ComputeFloat(0.40f);
+            var metalFlakesNormalMap = new ComputeTextureScalar
+            {
+                Texture = AttachedReferenceManager.CreateProxyObject<Texture>(new AssetId("7e2761d1-ef86-420a-b7a7-a0ed1c16f9bb"), "XenkoCarPaintMetalFlakesNM"),
+                Scale = new Vector2(128, 128),
+                UseRandomTexCoordinates = true
+            };
+
+            GlossinessMap = new ComputeBinaryScalar(new ComputeFloat(0.40f), metalFlakesNormalMap, BinaryOperator.Multiply);
             ClearCoatGlossinessMap = new ComputeFloat(1.00f);
         }
 
