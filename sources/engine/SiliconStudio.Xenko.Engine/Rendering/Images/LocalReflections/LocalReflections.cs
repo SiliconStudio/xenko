@@ -21,7 +21,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
     /// Compute screen space reflections as a post effect.
     /// </summary>
-    /// <userdoc>Enable local reflections (glossy materials reflect the scene)</userdoc>
     [DataContract("LocalReflections")]
     public sealed class LocalReflections : ImageEffect
     {
@@ -184,7 +183,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <value>
         ///   <c>true</c> if use color buffer mips; otherwise, <c>false</c>.
         /// </value>
-        /// <userdocs>Downscales the input color buffer and uses blurred mipmaps when resolving the reflection color. Produces more realistic results by blurring distant parts of reflections in rough (low-gloss) materials. It also improves performance on most platforms but uses more memory.</userdocs>
+        /// <userdoc>Downscales the input color buffer and uses blurred mipmaps when resolving the reflection color. Produces more realistic results by blurring distant parts of reflections in rough (low-gloss) materials. It also improves performance on most platforms but uses more memory.</userdoc>
         [Display("Use color buffer mips", "Resolve")]
         [DataMember(40)]
         [DefaultValue(true)]

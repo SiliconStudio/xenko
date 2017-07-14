@@ -81,6 +81,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Gets the local reflections effect.
         /// </summary>
         /// <value>The local reflection technique.</value>
+        /// <userdoc>Enable local reflections (glossy materials reflect the scene)</userdoc>
         [DataMember(9)]
         [Category]
         public LocalReflections LocalReflections { get; private set; }
