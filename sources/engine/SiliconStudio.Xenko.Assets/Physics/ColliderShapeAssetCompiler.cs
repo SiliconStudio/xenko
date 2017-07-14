@@ -303,7 +303,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
                     }
                 }
 
-                var runtimeShape = new PhysicsColliderShape { Descriptions = descriptions };
+                var runtimeShape = new PhysicsColliderShape(descriptions);
                 assetManager.Save(Url, runtimeShape);
 
                 return Task.FromResult(ResultStatus.Successful);

@@ -31,13 +31,5 @@ namespace SiliconStudio.Xenko.Physics
             if (other == null) return false;
             return other.Normal == Normal && Math.Abs(other.Offset - Offset) < float.Epsilon;
         }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (Normal.GetHashCode()*397) ^ Offset.GetHashCode();
-            }
-        }
     }
 }
