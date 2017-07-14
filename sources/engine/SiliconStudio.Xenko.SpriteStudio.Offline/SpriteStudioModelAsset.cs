@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
     [DataContract("SpriteStudioSheetAsset")] // Name of the Asset serialized in YAML
     [AssetContentType(typeof(SpriteStudioSheet))]
     [AssetDescription(FileExtension)] // A description used to display in the asset editor
-    [Display("Sprite Studio Sheet")]
+    [Display("SpriteStudio sheet")]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "0.0.0")]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "2.0.0.0", typeof(EmptyAssetUpgrader))]
