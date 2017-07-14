@@ -148,8 +148,12 @@ namespace SiliconStudio.Xenko.Assets.Materials
         public static MaterialAsset Create()
         {
             // Mazda Soul Red Paint (Approximation)
-            Color4 defaultCarPaintColor = new Color4(0.274509817f, 0.003921569f, 0.0470588244f, 1.0f);
-            Color4 defaultMetalFlakesColor = new Color4(defaultCarPaintColor.R * 2.0f, defaultCarPaintColor.G * 2.0f, defaultCarPaintColor.B * 2.0f, 1.0f);
+            // Color4 defaultCarPaintColor = new Color4(0.274509817f, 0.003921569f, 0.0470588244f, 1.0f);
+            // Color4 defaultMetalFlakesColor = new Color4(defaultCarPaintColor.R * 2.0f, defaultCarPaintColor.G * 2.0f, defaultCarPaintColor.B * 2.0f, 1.0f);
+            
+            // Blue Car Paint
+            Color4 defaultCarPaintColor = new Color4(0, 0.09411765f, 0.329411775f, 1.0f);
+            Color4 defaultMetalFlakesColor = new Color4(0, 0.180392161f, 0.6313726f, 1.0f);
 
             var material = new MaterialAsset
             {
