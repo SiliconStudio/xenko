@@ -11,23 +11,23 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                                                                     PositionStream4
     {
         compose ComputeColor glossinessMap;
+        compose ComputeColor baseGlossinessMap;
 
         override void Compute()
         {
             var glossiness = glossinessMap.Compute().r;
+            var baseGlossiness = baseGlossinessMap.Compute().r;
             if (TInvert)
             {
                 glossiness = 1.0 - glossiness;
+                baseGlossiness = 1.0 - baseGlossiness;
             }
             
             float normalLength = length(streams.matNormal);
             glossiness = normalLength * glossiness / (normalLength + glossiness * (1.0f - normalLength));
             
-            const float3 eyeWS = Eye.xyz;
-            const float3 posWD = streams.PositionWS.xyz;       
-            float LOD = distance(posWD, eyeWS) / 4.00f;
-
-            streams.matGlossiness = lerp(glossiness, 1.0f, LOD);
+            float LOD = saturate(distance(Eye.xyz, streams.PositionWS.xyz) * 2.0f);
+            streams.matGlossiness = lerp(glossiness, baseGlossiness, LOD);
         }
     };
 }
