@@ -30,7 +30,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             };
 
             BasePaintGlossinessMap = new ComputeBinaryScalar(new ComputeFloat(0.00f), metalFlakesNormalMap, BinaryOperator.Multiply);
-            GlossinessMap = new ComputeBinaryScalar(new ComputeFloat(0.50f), metalFlakesNormalMap, BinaryOperator.Multiply);
+            
+            // 'Boost' glossiness
+            GlossinessMap = new ComputeBinaryScalar(new ComputeFloat(2.00f), metalFlakesNormalMap, BinaryOperator.Multiply);
+
             ClearCoatGlossinessMap = new ComputeFloat(1.00f);
         }
 
