@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     {
         public MaterialMetalnessCarPaintFeature()
         {
-            MetalnessMap = new ComputeFloat(0.80f);
+            MetalnessMap = new ComputeFloat(1.00f);
             
             // Technically not correct, but looks prettier
             ClearCoatMetalnessMap = new ComputeFloat(0.50f);
@@ -36,9 +36,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         }
 
         /// <summary>
-        /// Gets or sets the clear coat smoothness map.
+        /// Gets or sets the clear coat metalness map.
         /// </summary>
-        /// <value>The smoothness map.</value>
+        /// <value>The metalness map.</value>
         [Display("Clear Coat Metalness Map")]
         [NotNull]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
@@ -46,15 +46,19 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         public override void GenerateShader(MaterialGeneratorContext context)
         {
-            var passIndex = context.PassIndex;
+            // If the current pass is the metal flakes one, use the default shader
+            var isMetalFlakesPass = (context.PassIndex == 0);
+            if (isMetalFlakesPass)
+            {
+                base.GenerateShader(context);
+                return;
+            }
 
             MetalnessMap.ClampFloat(0, 1);
             ClearCoatMetalnessMap.ClampFloat(0, 1);
 
-            // Set the source depending of the index
-            var computeColorSource = (passIndex == 0)
-                ? MetalnessMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.MetalnessMap, MaterialKeys.MetalnessValue))
-                : ClearCoatMetalnessMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.MetalnessMap, MaterialKeys.MetalnessValue));
+            // Set the clearcoat map for the passindex 1
+            var computeColorSource = ClearCoatMetalnessMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.MetalnessMap, MaterialKeys.MetalnessValue));
 
             var mixin = new ShaderMixinSource();
             mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceMetalness"));

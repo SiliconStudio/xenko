@@ -1,8 +1,6 @@
 // Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
-using System.Collections.Generic;
-using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -15,7 +13,7 @@ using SiliconStudio.Xenko.Shaders;
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
     /// <summary>
-    /// A smoothness map for the micro-surface material feature.
+    /// A smoothness map for the car paint micro-surface material feature.
     /// </summary>
     [DataContract("MaterialGlossinessCarPaintFeature")]
     [Display("Car Paint Glossiness")]
@@ -23,6 +21,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     {
         public MaterialGlossinessCarPaintFeature()
         {
+            // Use default metal flakes normal map as a mask
             var metalFlakesNormalMap = new ComputeTextureScalar
             {
                 Texture = AttachedReferenceManager.CreateProxyObject<Texture>(new AssetId("7e2761d1-ef86-420a-b7a7-a0ed1c16f9bb"), "XenkoCarPaintMetalFlakesNM"),
@@ -36,9 +35,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MaterialGlossinessMapFeature"/> class.
+        /// Initializes a new instance of the <see cref="MaterialGlossinessCarPaintFeature"/> class.
         /// </summary>
-        /// <param name="glossinessMap">The glossiness map.</param>
+        /// <param name="metalFlakesGlossinessMap">The metal flakes glossiness map.</param>
+        /// <param name="clearCoatGlossinessMap">The clear coat glossiness map.</param>
+        /// <param name="baseGlossinessMap">The base layer glossiness map (the layer below the metal flakes one).</param>
         public MaterialGlossinessCarPaintFeature(IComputeScalar metalFlakesGlossinessMap, IComputeScalar clearCoatGlossinessMap, IComputeScalar baseGlossinessMap)
             : base(metalFlakesGlossinessMap)
         {
