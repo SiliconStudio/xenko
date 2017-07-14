@@ -129,24 +129,5 @@ namespace SiliconStudio.Xenko.Physics
                    Math.Abs(other.Alpha - Alpha) < float.Epsilon &&
                    Math.Abs(other.Threshold - Threshold) < float.Epsilon;
         }
-        
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = LocalOffset.GetHashCode();
-                hashCode = (hashCode * 397) ^ LocalRotation.GetHashCode();
-                hashCode = (hashCode * 397) ^ SimpleWrap.GetHashCode();
-                hashCode = (hashCode * 397) ^ Scaling.GetHashCode();
-                hashCode = (hashCode * 397) ^ Depth;
-                hashCode = (hashCode * 397) ^ PosSampling;
-                hashCode = (hashCode * 397) ^ AngleSampling;
-                hashCode = (hashCode * 397) ^ PosRefine;
-                hashCode = (hashCode * 397) ^ AngleRefine;
-                hashCode = (hashCode * 397) ^ Alpha.GetHashCode();
-                hashCode = (hashCode * 397) ^ Threshold.GetHashCode();
-                return hashCode;
-            }
-        }
     }
 }
