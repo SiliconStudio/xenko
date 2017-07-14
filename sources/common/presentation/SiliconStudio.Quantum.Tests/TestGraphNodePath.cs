@@ -35,64 +35,66 @@ namespace SiliconStudio.Quantum.Tests
         [Test]
         public void TestEquals()
         {
+            // Note: comparing GraphNodePath.GetHashCode() returns true when the root node is equivalent. This is because the root node is the only invariant.
+
             var obj = new Class { StructMember = { StringMember = "aa" }, ClassMember = new Class(), ListMember = { new Class(), new Class(), new Class() } };
             var nodeContainer = new NodeContainer();
             var path1 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj));
             path1.PushMember(nameof(Class.IntMember));
             var path2 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj));
             path2.PushMember(nameof(Class.IntMember));
-            AssertAreEqual(path1, path2);
             AssertAreEqual(path1.GetHashCode(), path2.GetHashCode());
+            AssertAreEqual(path1, path2);
 
             path1 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj));
             path1.PushMember(nameof(Class.ClassMember));
+            AssertAreEqual(path1.GetHashCode(), path2.GetHashCode());
             AssertAreNotEqual(path1, path2);
-            AssertAreNotEqual(path1.GetHashCode(), path2.GetHashCode());
             path2 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj));
             path2.PushMember(nameof(Class.ClassMember));
-            AssertAreEqual(path1, path2);
             AssertAreEqual(path1.GetHashCode(), path2.GetHashCode());
+            AssertAreEqual(path1, path2);
 
             path1 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj));
             path1.PushMember(nameof(Class.ClassMember));
             path1.PushTarget();
+            AssertAreEqual(path1.GetHashCode(), path2.GetHashCode());
             AssertAreNotEqual(path1, path2);
-            AssertAreNotEqual(path1.GetHashCode(), path2.GetHashCode());
             path2 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj));
             path2.PushMember(nameof(Class.ClassMember));
             path2.PushTarget();
-            AssertAreEqual(path1, path2);
             AssertAreEqual(path1.GetHashCode(), path2.GetHashCode());
+            AssertAreEqual(path1, path2);
 
             path1 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj));
             path1.PushMember(nameof(Class.ClassMember));
             path1.PushTarget();
             path1.PushMember(nameof(Class.IntMember));
+            AssertAreEqual(path1.GetHashCode(), path2.GetHashCode());
             AssertAreNotEqual(path1, path2);
-            AssertAreNotEqual(path1.GetHashCode(), path2.GetHashCode());
             path2 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj));
             path2.PushMember(nameof(Class.ClassMember));
             path2.PushTarget();
             path2.PushMember(nameof(Class.IntMember));
-            AssertAreEqual(path1, path2);
             AssertAreEqual(path1.GetHashCode(), path2.GetHashCode());
+            AssertAreEqual(path1, path2);
 
             path1 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj));
             path1.PushMember(nameof(Class.ListMember));
             path1.PushIndex(new Index(0));
+            AssertAreEqual(path1.GetHashCode(), path2.GetHashCode());
             AssertAreNotEqual(path1, path2);
-            AssertAreNotEqual(path1.GetHashCode(), path2.GetHashCode());
             path2 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj));
             path2.PushMember(nameof(Class.ListMember));
             path2.PushIndex(new Index(0));
-            AssertAreEqual(path1, path2);
             AssertAreEqual(path1.GetHashCode(), path2.GetHashCode());
+            AssertAreEqual(path1, path2);
 
             path2 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj));
             path2.PushMember(nameof(Class.ListMember));
             path2.PushIndex(new Index(1));
+            AssertAreEqual(path1.GetHashCode(), path2.GetHashCode());
             AssertAreNotEqual(path1, path2);
-            AssertAreNotEqual(path1.GetHashCode(), path2.GetHashCode());
         }
 
         [Test]
