@@ -6,7 +6,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// Material glossiness map
     /// </summary>
     shader MaterialSurfaceGlossinessMapMetalFlakes<bool TInvert> : IMaterialSurfacePixel,
-                                                                    MaterialPixelShadingStream
+                                                                    MaterialPixelShadingStream,
+                                                                    Transformation,
+                                                                    PositionStream4
     {
         compose ComputeColor glossinessMap;
 
@@ -20,8 +22,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             
             float normalLength = length(streams.matNormal);
             glossiness = normalLength * glossiness / (normalLength + glossiness * (1.0f - normalLength));
+            
+            const float3 eyeWS = Eye.xyz;
+            const float3 posWD = streams.PositionWS.xyz;       
+            float LOD = distance(posWD, eyeWS) / 4.00f;
 
-            streams.matGlossiness = glossiness;
+            streams.matGlossiness = lerp(glossiness, 1.0f, LOD);
         }
     };
 }
