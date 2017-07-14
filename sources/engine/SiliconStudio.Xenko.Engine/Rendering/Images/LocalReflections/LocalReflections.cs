@@ -21,6 +21,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
     /// Compute screen space reflections as a post effect.
     /// </summary>
+    /// <userdoc>Enable local reflections (glossy materials reflect the scene)</userdoc>
     [DataContract("LocalReflections")]
     public sealed class LocalReflections : ImageEffect
     {
@@ -59,7 +60,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             [Display("Full")] Full = 1,
 
             /// <summary>
-            /// Use hald resolution.
+            /// Use half resolution.
             /// </summary>
             /// <userodc>Half resolution.</userodc>
             [Display("Half")] Half = 2
@@ -68,14 +69,16 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// Gets or sets the input depth resolution mode.
         /// </summary>
-        [Display("Depth resolution", "Ray trace")]
+        /// <userdoc>Downscales the depth buffer to optimize raycast performance. Full gives better quality, but half improves performance. The default value is half.</userdoc>
+        [Display("Depth resolution", "Raycast")]
         [DefaultValue(ResolutionMode.Full)]
         public ResolutionMode DepthResolution { get; set; } = ResolutionMode.Half;
 
         /// <summary>
         /// Gets or sets the ray trace pass resolution mode.
         /// </summary>
-        [Display("Resolution", "Ray trace")]
+        /// <userdoc>The raycast resolution. Full gives better quality, but half improves performance. The default value is half.</userdoc>
+        [Display("Resolution", "Raycast")]
         [DefaultValue(ResolutionMode.Half)]
         public ResolutionMode RayTracePassResolution { get; set; } = ResolutionMode.Half;
 
@@ -84,7 +87,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Higher value provides better ray tracing quality but decreases the performance.
         /// Default value is 60.
         /// </summary>
-        [Display("Max steps", "Ray trace")]
+        /// <userdoc>The maximum number of raycast steps allowed per pixel. Higher values produce better results, but worse performance. The default value is 60.</userdoc>
+        [Display("Max steps", "Raycast")]
         [DefaultValue(60)]
         [DataMemberRange(1, 128, 1, 10, 0)]
         public int MaxSteps { get; set; } = 60;
@@ -97,7 +101,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <value>
         /// The BRDF bias.
         /// </value>
-        [Display("BRDF bias", "Ray trace")]
+        /// <userdoc>The reflection spread. Higher values provide finer, more mirror-like reflections. This setting has no effect on performance. The default value is 0.82.</userdoc>
+        [Display("BRDF bias", "Raycast")]
         [DefaultValue(0.82f)]
         [DataMemberRange(0.0, 1.0, 0.05, 0.2, 4)]
         // ReSharper disable once InconsistentNaming
@@ -107,7 +112,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Minimum allowed surface glossiness value to use local reflections.
         /// Pixels with lower values won't be affected by the effect.
         /// </summary>
-        [Display("Glossiness threshold", "Ray trace")]
+        /// <userdoc>The amount of glossiness a material must have to reflect the scene. For example, if this value is set to 0.4, only materials with a glossiness map value of 0.4 or above reflect the scene. The default value is 0.55.</userdoc>
+        [Display("Glossiness threshold", "Raycast")]
         [DefaultValue(0.55f)]
         [DataMemberRange(0.0, 1.0, 0.05, 0.2, 4)]
         public float GlossinessThreshold { get; set; } = 0.55f;
@@ -115,7 +121,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// Ray tracing starting position is offseted by a percent of the normal in world space to avoid self occlusions.
         /// </summary>
-        [Display("Ray start bias", "Ray trace")]
+        /// <userdoc>The offset of the raycast origin. Lower values produce more correct reflection placement, but produce more artefacts. We recommend values of 0.03 or lower. The default value is 0.01.</userdoc>
+        [Display("Ray start bias", "Raycast")]
         [DefaultValue(0.01f)]
         [DataMemberRange(0.0, 0.1, 0.005, 0.01, 6)]
         public float WorldAntiSelfOcclusionBias { get; set; } = 0.01f;
@@ -123,6 +130,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// Gets or sets the resolve pass resolution mode.
         /// </summary>
+        /// <userdoc>The raycast resolution. Full gives better quality, but half improves performance. The default value is half.</userdoc>
         [Display("Resolution", "Resolve")]
         [DataMember(0)]
         [DefaultValue(ResolutionMode.Half)]
@@ -135,6 +143,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <value>
         /// The resolve samples amount.
         /// </value>
+        /// <userdoc>The number of rays used to resolve the reflection color. Higher values produce less noise, but worse performance. The default value is 4.</userdoc>
         [Display("Samples", "Resolve")]
         [DataMember(10)]
         [DefaultValue(4)]
@@ -149,6 +158,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <value>
         ///   <c>true</c> if reduce fireflies; otherwise, <c>false</c>.
         /// </value>
+        /// <userdoc>Reduces the brightness of particularly bright areas of reflections. Has no effect on performance.</userdoc>
         [Display("Reduce highlights", "Resolve")]
         [DataMember(20)]
         [DefaultValue(true)]
@@ -160,6 +170,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <value>
         /// The edge fade factor.
         /// </value>
+        /// <userdoc>The point at which the far edges of the reflection begin to fade. Has no effect on performance. The default value is 0.1.</userdoc>
         [Display("Edge fade factor", "Resolve")]
         [DataMember(30)]
         [DefaultValue(0.1f)]
@@ -173,6 +184,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <value>
         ///   <c>true</c> if use color buffer mips; otherwise, <c>false</c>.
         /// </value>
+        /// <userdocs>Downscales the input color buffer and uses blurred mipmaps when resolving the reflection color. Produces more realistic results by blurring distant parts of reflections in rough (low-gloss) materials. It also improves performance on most platforms but uses more memory.</userdocs>
         [Display("Use color buffer mips", "Resolve")]
         [DataMember(40)]
         [DefaultValue(true)]
@@ -184,6 +196,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <value>
         ///   <c>true</c> if use temporal effect to smooth reflections; otherwise, <c>false</c>.
         /// </value>
+        /// <userdoc>Enables the temporal pass. Reduces noise, but produces an animated "jittering" effect that's sometimes noticeable. If disabled, the properties below have no effect.</userdoc>
         [Display("Temporal effect", "Temporal")]
         [DefaultValue(true)]
         public bool TemporalEffect { get; set; } = true;
@@ -194,6 +207,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <value>
         /// The temporal effect scale.
         /// </value>
+        /// <userdoc>The intensity of the temporal effect. Lower values produce reflections faster, but more noise. The default value is 4.</userdoc>
         [Display("Scale", "Temporal")]
         [DefaultValue(4.0f)]
         [DataMemberRange(0.0, 20.0, 0.5, 0.5, 2)]
@@ -205,6 +219,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <value>
         /// The temporal response.
         /// </value>
+        /// <userdoc><userdoc>How quickly reflections blend between the reflection in the current frame and the history buffer. Lower values produce reflections faster, but with more jittering. If the camera in your game doesn't move much, we recommend values closer to 1. The default value is 0.9.</userdoc></userdoc>
         [Display("Response", "Temporal")]
         [DefaultValue(0.9f)]
         [DataMemberRange(0.5, 1.0, 0.01, 0.1, 2)]
