@@ -14,7 +14,7 @@ namespace SiliconStudio.Quantum
     /// A class describing the path of a node, relative to a root node. The path can cross references, array, etc.
     /// </summary>
     /// <remarks>This class is immutable.</remarks>
-    public class GraphNodePath : IEnumerable<IGraphNode>, IEquatable<GraphNodePath>
+    public sealed class GraphNodePath : IEnumerable<IGraphNode>, IEquatable<GraphNodePath>
     {
         /// <summary>
         /// An enum that describes the type of an item of a model node path.
@@ -110,8 +110,7 @@ namespace SiliconStudio.Quantum
 
             public override bool Equals(object obj)
             {
-                if (ReferenceEquals(null, obj))
-                    return false;
+                if (ReferenceEquals(null, obj)) return false;
                 return obj is NodePathElement && Equals((NodePathElement)obj);
             }
 
@@ -126,7 +125,6 @@ namespace SiliconStudio.Quantum
                     return hashCode;
                 }
             }
-
 
             public static bool operator ==(NodePathElement left, NodePathElement right)
             {
@@ -266,14 +264,12 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+        /// <inheritdoc/>
         public bool Equals(GraphNodePath other)
         {
-            if (ReferenceEquals(null, other))
-                return false;
-            if (ReferenceEquals(this, other))
-                return true;
-            if (!Equals(RootNode, other.RootNode) || IsEmpty != other.IsEmpty || path.Count != other.path.Count)
-                return false;
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            if (!Equals(RootNode, other.RootNode) || path.Count != other.path.Count) return false;
 
             for (var i = 0; i < path.Count; ++i)
             {
@@ -283,29 +279,19 @@ namespace SiliconStudio.Quantum
             return true;
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-                return false;
-            if (ReferenceEquals(this, obj))
-                return true;
-            if (obj.GetType() != GetType())
-                return false;
-            return Equals((GraphNodePath)obj);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            return Equals(obj as GraphNodePath);
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
-            unchecked
-            {
-                var hashCode = RootNode?.GetHashCode() ?? 0;
-                hashCode = (hashCode*397) ^ IsEmpty.GetHashCode();
-                foreach (var item in path)
-                {
-                    hashCode = (hashCode * 397) ^ item.GetHashCodeInPath();
-                }
-                return hashCode;
-            }
+            // Note: the only invariant is the root node.
+            return RootNode?.GetHashCode() ?? 0;
         }
 
         public static bool operator ==(GraphNodePath left, GraphNodePath right)
@@ -391,8 +377,10 @@ namespace SiliconStudio.Quantum
 
         // TODO: Switch to tuple return as soon as we have C# 7.0
         [NotNull]
-        public static GraphNodePath From(IGraphNode root, MemberPath memberPath, out Index index)
+        public static GraphNodePath From(IGraphNode root, [NotNull] MemberPath memberPath, out Index index)
         {
+            if (memberPath == null) throw new ArgumentNullException(nameof(memberPath));
+
             var result = new GraphNodePath(root);
             index = Index.Empty;
             var memberPathItems = memberPath.Decompose();

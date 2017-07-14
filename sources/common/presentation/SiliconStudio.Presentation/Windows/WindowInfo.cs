@@ -11,7 +11,7 @@ namespace SiliconStudio.Presentation.Windows
     /// <summary>
     /// A container object for windows and their related information.
     /// </summary>
-    public class WindowInfo : IEquatable<WindowInfo>, IEquatable<Window>, IEquatable<IntPtr>
+    public class WindowInfo : IEquatable<WindowInfo>
     {
         private IntPtr hwnd;
         private bool isShown;
@@ -22,8 +22,7 @@ namespace SiliconStudio.Presentation.Windows
         /// <param name="window">The window represented by this object.</param>
         public WindowInfo([NotNull] Window window)
         {
-            if (window == null) throw new ArgumentNullException(nameof(window));
-            Window = window;
+            Window = window ?? throw new ArgumentNullException(nameof(window));
         }
 
         /// <summary>
@@ -42,7 +41,7 @@ namespace SiliconStudio.Presentation.Windows
         /// <summary>
         /// Gets the <see cref="Window"/> represented by this object, if available.
         /// </summary>
-        public Window Window { get; internal set; }
+        public Window Window { get; }
 
         /// <summary>
         /// Gets the hwnd of the window represented by this object, if available.
@@ -52,17 +51,14 @@ namespace SiliconStudio.Presentation.Windows
         /// <summary>
         /// Gets whether the corresponding window is currently disabled.
         /// </summary>
-        public bool IsDisabled { get { return HwndHelper.IsDisabled(Hwnd); } internal set { HwndHelper.SetDisabled(Hwnd, value); } }
+        public bool IsDisabled { get => HwndHelper.IsDisabled(Hwnd); internal set => HwndHelper.SetDisabled(Hwnd, value); }
 
         /// <summary>
         /// Gets whether the corresponding window is currently shown.
         /// </summary>
         public bool IsShown
         {
-            get
-            {
-                return isShown;
-            }
+            get => isShown;
             internal set
             {
                 isShown = value;
@@ -152,20 +148,15 @@ namespace SiliconStudio.Presentation.Windows
         /// <inheritdoc/>
         public override bool Equals(object obj)
         {
-            var windowInfo = obj as WindowInfo;
-            return windowInfo != null && Equals(windowInfo);
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            return Equals(obj as WindowInfo);
         }
 
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            unchecked
-            {
-                var hashCode = hwnd.GetHashCode();
-                hashCode = (hashCode*397) ^ isShown.GetHashCode();
-                hashCode = (hashCode*397) ^ (Window?.GetHashCode() ?? 0);
-                return hashCode;
-            }
+            return Window?.GetHashCode() ?? 0;
         }
 
         internal void ForceUpdateHwnd()
@@ -189,26 +180,17 @@ namespace SiliconStudio.Presentation.Windows
         /// <inheritdoc/>
         public bool Equals(WindowInfo other)
         {
-            return other != null && Equals(other.Window) && Equals(other.Hwnd);
-        }
-
-        /// <inheritdoc/>
-        public bool Equals(Window other)
-        {
-            return Equals(Window, other);
-        }
-
-        /// <inheritdoc/>
-        public bool Equals(IntPtr other)
-        {
-            return Equals(Hwnd, other);
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(Window, other.Window) &&
+                   Equals(Hwnd, other.Hwnd);
         }
 
         internal static IntPtr ToHwnd(Window window)
         {
             return window != null ? new WindowInteropHelper(window).Handle : IntPtr.Zero;
         }
-        
+
         internal static Window FromHwnd(IntPtr hwnd)
         {
             return hwnd != IntPtr.Zero ? HwndSource.FromHwnd(hwnd)?.RootVisual as Window : null;

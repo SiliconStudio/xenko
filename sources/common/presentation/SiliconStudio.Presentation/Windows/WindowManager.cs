@@ -371,12 +371,12 @@ namespace SiliconStudio.Presentation.Windows
             if (hwnd == IntPtr.Zero)
                 return null;
 
-            var result = AllWindowsList.FirstOrDefault(x => x.Equals(hwnd));
+            var result = AllWindowsList.FirstOrDefault(x => Equals(x.Hwnd, hwnd));
             if (result != null)
                 return result;
 
             var window = WindowInfo.FromHwnd(hwnd);
-            return window != null ? AllWindowsList.FirstOrDefault(x => x.Equals(window)) : null;
+            return window != null ? AllWindowsList.FirstOrDefault(x => Equals(x.Window, window)) : null;
         }
     }
 }
