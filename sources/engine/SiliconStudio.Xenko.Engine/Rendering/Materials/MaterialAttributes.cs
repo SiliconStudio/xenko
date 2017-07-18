@@ -168,6 +168,15 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [DefaultValue(CullMode.Back)]
         public CullMode CullMode{ get; set; }
 
+        /// <summary>
+        /// Gets or sets the clear coat shading features for the material.
+        /// </summary>
+        /// <userdoc>Specifies if the material should use Clear coat shading.</userdoc>
+        [Display("Clear Coat", "Misc")]
+        [DefaultValue(null)]
+        [DataMember(140)]
+        public IMaterialClearCoatFeature ClearCoat { get; set; }
+        
         public void Visit(MaterialGeneratorContext context)
         {
             if (!Enabled)
@@ -211,6 +220,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             context.Visit(Occlusion);
             context.Visit(Emissive);
             context.Visit(Transparency);
+            context.Visit(ClearCoat);
 
             // Pop overrides
             context.PopOverrides();

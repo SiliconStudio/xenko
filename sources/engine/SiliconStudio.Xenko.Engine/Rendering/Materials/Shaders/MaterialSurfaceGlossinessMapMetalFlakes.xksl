@@ -10,27 +10,24 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                                                                     Transformation,
                                                                     PositionStream4
     {
-        compose ComputeColor glossinessMap;
         compose ComputeColor baseGlossinessMap;
 
         override void Compute()
         {
-            var glossiness = glossinessMap.Compute().r;
             var baseGlossiness = baseGlossinessMap.Compute().r;
             if (TInvert)
             {
-                glossiness = 1.0 - glossiness;
                 baseGlossiness = 1.0 - baseGlossiness;
             }
             
             // Correct both glossiness factor (to avoid aliasing and unrealistic values)
             float normalLength = length(streams.matNormal);
-            glossiness = normalLength * glossiness / (normalLength + glossiness * (1.0f - normalLength));
             baseGlossiness = normalLength * baseGlossiness / (normalLength + baseGlossiness * (1.0f - normalLength));
-            
+            streams.matGlossiness =  normalLength * streams.matGlossiness / (normalLength + streams.matGlossiness * (1.0f - normalLength));
+
             // Interpolate the factors using the surface to camera distance
             float LOD = saturate(distance(Eye.xyz, streams.PositionWS.xyz) * 2.0f);
-            streams.matGlossiness = lerp(glossiness, baseGlossiness, LOD);
+            streams.matGlossiness = lerp(streams.matGlossiness, baseGlossiness, LOD);
         }
     };
 }

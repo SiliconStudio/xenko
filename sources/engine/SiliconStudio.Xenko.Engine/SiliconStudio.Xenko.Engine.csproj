@@ -223,6 +223,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Materials\IMaterialClearCoatFeature.cs" />
+    <Compile Include="Rendering\Materials\MaterialClearCoatFeature.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureScaledOffsetDynamicSamplerRandomUv.cs">
       <DependentUpon>ComputeColorTextureScaledOffsetDynamicSamplerRandomUv.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
