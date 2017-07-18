@@ -231,8 +231,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Materials\Shaders\MaterialSurfaceDiffuseCarPaint.cs">
-      <DependentUpon>MaterialSurfaceDiffuseCarPaint.xksl</DependentUpon>
+    <Compile Include="Rendering\Materials\Shaders\MaterialSurfaceDiffuseMetalFlakes.cs">
+      <DependentUpon>MaterialSurfaceDiffuseMetalFlakes.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -870,9 +870,9 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSpecularMicrofacetEnvironmentGGXPolynomial.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\Materials\Shaders\MaterialSurfaceDiffuseCarPaint.xksl">
+    <None Include="Rendering\Materials\Shaders\MaterialSurfaceDiffuseMetalFlakes.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialSurfaceDiffuseCarPaint.cs</LastGenOutput>
+      <LastGenOutput>MaterialSurfaceDiffuseMetalFlakes.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Materials\Shaders\MaterialSurfaceGlossinessMapMetalFlakes.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
