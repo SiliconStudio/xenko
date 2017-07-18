@@ -2,6 +2,8 @@
 // See LICENSE.md for full license information.
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 
@@ -151,6 +153,26 @@ namespace SiliconStudio.Xenko.Assets.Materials
             // Color4 defaultCarPaintColor = new Color4(0.274509817f, 0.003921569f, 0.0470588244f, 1.0f);
             // Color4 defaultMetalFlakesColor = new Color4(defaultCarPaintColor.R * 2.0f, defaultCarPaintColor.G * 2.0f, defaultCarPaintColor.B * 2.0f, 1.0f);
             
+            var ClearCoatLayerNormalMap = new ComputeTextureColor
+            {
+                Texture = AttachedReferenceManager.CreateProxyObject<Texture>(new AssetId("2f76bcba-ae9f-4954-b98d-f94c2102ff86"), "XenkoCarPaintOrangePeelNM"),
+                Scale = new Vector2(8, 8)
+            };
+            
+            var MetalFlakesNormalMap = new ComputeTextureColor
+            {
+                Texture = AttachedReferenceManager.CreateProxyObject<Texture>(new AssetId("7e2761d1-ef86-420a-b7a7-a0ed1c16f9bb"), "XenkoCarPaintMetalFlakesNM"),
+                Scale = new Vector2(128, 128),
+                UseRandomTexCoordinates = true
+            };
+
+            var MetalFlakesMask = new ComputeTextureScalar
+            {
+                Texture = AttachedReferenceManager.CreateProxyObject<Texture>(new AssetId("7e2761d1-ef86-420a-b7a7-a0ed1c16f9bb"), "XenkoCarPaintMetalFlakesNM"),
+                Scale = new Vector2(128, 128),
+                UseRandomTexCoordinates = true
+            };
+
             // Blue Car Paint
             Color4 defaultCarPaintColor = new Color4(0, 0.09411765f, 0.329411775f, 1.0f);
             Color4 defaultMetalFlakesColor = new Color4(0, 0.180392161f, 0.6313726f, 1.0f);
@@ -159,16 +181,27 @@ namespace SiliconStudio.Xenko.Assets.Materials
             {
                 Attributes =
                 {
-                    Diffuse = new MaterialDiffuseMapCarPaintFeature()
-                    {
-                        DiffuseMap = new ComputeColor(defaultCarPaintColor),
-                        MetalFlakesDiffuseMap =  new ComputeColor(defaultMetalFlakesColor)
-                    },
+                    Diffuse = new MaterialDiffuseMapFeature(new ComputeColor(defaultCarPaintColor)),
                     DiffuseModel = new MaterialDiffuseLambertModelFeature(),
+
                     SpecularModel = new MaterialSpecularMicrofacetModelFeature(),
-                    Specular = new MaterialMetalnessCarPaintFeature(),
-                    MicroSurface = new MaterialGlossinessCarPaintFeature(),
-                    Surface = new MaterialNormalMapCarPaint()
+                    Specular = new MaterialMetalnessMapFeature(new ComputeFloat(1.00f)),
+
+                    MicroSurface = new MaterialGlossinessMapFeature(new ComputeBinaryScalar(new ComputeFloat(2.00f), MetalFlakesMask, BinaryOperator.Multiply)),
+
+                    Surface = new MaterialNormalMapFeature(MetalFlakesNormalMap),
+
+                    ClearCoat = new MaterialClearCoatFeature
+                    {
+                        BasePaintGlossinessMap = new ComputeBinaryScalar(new ComputeFloat(0.00f), MetalFlakesMask, BinaryOperator.Multiply),
+
+                        ClearCoatGlossinessMap = new ComputeFloat(1.00f),
+                        ClearCoatLayerNormalMap = ClearCoatLayerNormalMap,
+                        ScaleAndBiasOrangePeel = true,
+                        ClearCoatMetalnessMap = new ComputeFloat(0.50f),
+
+                        MetalFlakesDiffuseMap = new ComputeColor(defaultMetalFlakesColor),
+                    }
                 }
             };
 
