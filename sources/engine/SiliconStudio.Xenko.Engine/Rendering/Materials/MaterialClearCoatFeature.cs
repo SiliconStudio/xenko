@@ -121,6 +121,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 return;
             
             ClampInputs();
+
             context.MaterialPass.BlendState = BlendStates.Additive;
 
             var isMetalFlakesPass = context.PassIndex == 0;
@@ -131,7 +132,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 var metalFlakesComputeColorSource = MetalFlakesDiffuseMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.DiffuseMap, MaterialKeys.DiffuseValue, Color.White));
 
                 var mixinDiffuse = new ShaderMixinSource();
-                mixinDiffuse.Mixins.Add(new ShaderClassSource("MaterialSurfaceDiffuseCarPaint"));
+                mixinDiffuse.Mixins.Add(new ShaderClassSource("MaterialSurfaceDiffuseMetalFlakes"));
                 mixinDiffuse.AddComposition("metalFlakesDiffuseMap", metalFlakesComputeColorSource);
 
                 context.UseStream(MaterialShaderStage.Pixel, MaterialDiffuseMapFeature.DiffuseStream.Stream);

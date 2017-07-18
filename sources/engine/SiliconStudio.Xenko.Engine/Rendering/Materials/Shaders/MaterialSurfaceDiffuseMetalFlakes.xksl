@@ -3,9 +3,9 @@
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
     /// <summary>
-    /// Converts diffuse color
+    /// Converts diffuse color (for metal flakes layer)
     /// </summary>
-    shader MaterialSurfaceDiffuseCarPaint : IMaterialSurfacePixel,    
+    shader MaterialSurfaceDiffuseMetalFlakes : IMaterialSurfacePixel,    
                                             MaterialPixelShadingStream,
                                             Transformation,
                                             PositionStream4,
