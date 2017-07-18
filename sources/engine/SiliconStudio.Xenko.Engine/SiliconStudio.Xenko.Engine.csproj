@@ -231,11 +231,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Materials\MaterialDiffuseMapCarPaintFeature.cs" />
-    <Compile Include="Rendering\Materials\MaterialGlossinessCarPaintFeature.cs" />
-    <Compile Include="Rendering\Materials\MaterialMetalnessCarPaintFeature.cs" />
-    <Compile Include="Rendering\Materials\MaterialNormalMapCarPaint.cs" />
-    <Compile Include="Rendering\Materials\MaterialSpecularMicroFacetModelCarPaintFeature.cs" />
     <Compile Include="Rendering\Materials\Shaders\MaterialSurfaceDiffuseCarPaint.cs">
       <DependentUpon>MaterialSurfaceDiffuseCarPaint.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
