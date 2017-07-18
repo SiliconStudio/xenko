@@ -154,6 +154,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
                 // Orange Peel Normal Map
                 var mixinNormalMap = new ShaderMixinSource();
+                // Inform the context that we are using matNormal (from the MaterialSurfaceNormalMap shader)
+                context.UseStreamWithCustomBlend(MaterialShaderStage.Pixel, "matNormal", new ShaderClassSource("MaterialStreamNormalBlend"));
+                context.Parameters.Set(MaterialKeys.HasNormalMap, true);
+
                 mixinNormalMap.Mixins.Add(new ShaderClassSource("MaterialSurfaceNormalMap", IsXYNormalOrangePeel, ScaleAndBiasOrangePeel));
 
                 var computeColorKeys = new MaterialComputeColorKeys(MaterialKeys.NormalMap, MaterialKeys.NormalValue, MaterialNormalMapFeature.DefaultNormalColor, false);
