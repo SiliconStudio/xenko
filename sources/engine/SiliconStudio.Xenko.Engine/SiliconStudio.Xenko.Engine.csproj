@@ -243,12 +243,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Materials\Shaders\MaterialSurfaceShadingSpecularMicrofacetCarPaint.cs">
-      <DependentUpon>MaterialSurfaceShadingSpecularMicrofacetCarPaint.xksl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Rendering\QueryManager.cs" />
     <Compile Include="Rendering\Images\ImageEffectProfilingKeys.cs" />
     <Compile Include="Rendering\Images\ImageScaler\SamplingPattern.cs" />
@@ -877,10 +871,6 @@
     <None Include="Rendering\Materials\Shaders\MaterialSurfaceGlossinessMapMetalFlakes.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSurfaceGlossinessMapMetalFlakes.cs</LastGenOutput>
-    </None>
-    <None Include="Rendering\Materials\Shaders\MaterialSurfaceShadingSpecularMicrofacetCarPaint.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>MaterialSurfaceShadingSpecularMicrofacetCarPaint.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Materials\Shaders\MaterialTransmittanceReflectanceStream.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>

@@ -25,6 +25,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets the metal flakes diffuse map.
         /// </summary>
         /// <value>The diffuse map.</value>
+        /// <userdoc>
+        /// The diffuse map used by the metal flakes layer.
+        /// </userdoc>
         [Display("Metal Flakes Diffuse Map", "Diffuse")]
         [NotNull]
         [DataMemberCustomSerializer]
@@ -35,7 +38,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// </summary>
         /// <value>The normal map.</value>
         /// <userdoc>
-        /// The normal map.
+        /// The normal map used by the clear coat layer.
         /// </userdoc>
         [DataMember(110)]
         [Display("Orange Peel Normal Map", "Surface")]
@@ -70,6 +73,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets the clear coat smoothness map.
         /// </summary>
         /// <value>The smoothness map.</value>
+        /// <userdoc>
+        /// The glossiness map used by the clear coat layer.
+        /// </userdoc>
         [Display("Clear Coat Glossiness Map", "Micro Surface")]
         [NotNull]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
@@ -79,6 +85,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets the base paint smoothness map.
         /// </summary>
         /// <value>The smoothness map.</value>
+        /// <userdoc>
+        /// The glossiness map used by the base paint layer.
+        /// </userdoc>
         [Display("Base Paint Glossiness Map", "Micro Surface")]
         [NotNull]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
@@ -97,7 +106,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <summary>
         /// Gets or sets the clear coat metalness map.
         /// </summary>
-        /// <value>The metalness map.</value>
+        /// <userdoc>
+        /// The metalness map used by the clear coat layer.
+        /// </userdoc>
         [Display("Clear Coat Metalness Map", "Specular")]
         [NotNull]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
@@ -105,13 +116,17 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         public MaterialClearCoatFeature()
         {
-            MetalFlakesDiffuseMap = new ComputeColor(new Color4(Color.Black));
+            MetalFlakesDiffuseMap = new ComputeColor();
+            ClearCoatLayerNormalMap = new ComputeColor();
+
+            ClearCoatGlossinessMap = new ComputeFloat();
+            BasePaintGlossinessMap = new ComputeFloat();
+            ClearCoatMetalnessMap = new ComputeFloat();
         }
 
         public override void MultipassGeneration(MaterialGeneratorContext context)
         {
             const int passCount = 2;
-
             context.SetMultiplePasses("ClearCoat", passCount);
         }
 
@@ -120,31 +135,40 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             if (!Enabled)
                 return;
             
+            // Make sure the inputs aren't out of range
             ClampInputs();
 
+            // Set the blend state for both pass
             context.MaterialPass.BlendState = BlendStates.Additive;
 
             var isMetalFlakesPass = context.PassIndex == 0;
-
             if (isMetalFlakesPass)
             {
-                // Diffuse Feature
+                // Diffuse Feature (interpolated by the 'regular' diffuse map)
                 var metalFlakesComputeColorSource = MetalFlakesDiffuseMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.DiffuseMap, MaterialKeys.DiffuseValue, Color.White));
 
                 var mixinDiffuse = new ShaderMixinSource();
+
+                // Diffuse uses a custom shader (to perform the interpolation)
                 mixinDiffuse.Mixins.Add(new ShaderClassSource("MaterialSurfaceDiffuseMetalFlakes"));
+
                 mixinDiffuse.AddComposition("metalFlakesDiffuseMap", metalFlakesComputeColorSource);
 
                 context.UseStream(MaterialShaderStage.Pixel, MaterialDiffuseMapFeature.DiffuseStream.Stream);
                 context.UseStream(MaterialShaderStage.Pixel, MaterialDiffuseMapFeature.ColorBaseStream.Stream);
-                context.AddShaderSource(MaterialShaderStage.Pixel, mixinDiffuse);
 
                 // Glossiness Feature
                 context.UseStream(MaterialShaderStage.Pixel, "matGlossiness");
+
                 var baseGlossinessComputeColorMap = BasePaintGlossinessMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.GlossinessMap, MaterialKeys.GlossinessValue));
+
                 var mixinGlossiness = new ShaderMixinSource();
+
+                // Computes glossiness factor for the metal flakes layer (based on the eye to surface distance and the base glossiness value)
                 mixinGlossiness.Mixins.Add(new ShaderClassSource("MaterialSurfaceGlossinessMapMetalFlakes", Invert));
-                mixinGlossiness.AddComposition("baseGlossinessMap", baseGlossinessComputeColorMap);            
+
+                mixinGlossiness.AddComposition("baseGlossinessMap", baseGlossinessComputeColorMap);         
+                
                 context.AddShaderSource(MaterialShaderStage.Pixel, mixinGlossiness);
             }
             else
@@ -154,6 +178,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
                 // Orange Peel Normal Map
                 var mixinNormalMap = new ShaderMixinSource();
+
                 // Inform the context that we are using matNormal (from the MaterialSurfaceNormalMap shader)
                 context.UseStreamWithCustomBlend(MaterialShaderStage.Pixel, "matNormal", new ShaderClassSource("MaterialStreamNormalBlend"));
                 context.Parameters.Set(MaterialKeys.HasNormalMap, true);
