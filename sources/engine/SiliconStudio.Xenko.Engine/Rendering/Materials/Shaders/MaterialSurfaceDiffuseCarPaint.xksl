@@ -11,23 +11,21 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                                             PositionStream4,
                                             BRDFMicrofacet
     {
-        compose ComputeColor diffuseMap;
         compose ComputeColor metalFlakesDiffuseMap;
 
         override void Compute()
         {
-            var colorBase = diffuseMap.Compute();    
             var flakeColorBase = metalFlakesDiffuseMap.Compute();
 
             // Interpolate the factors using the surface to camera distance
             float LOD = saturate(distance(Eye.xyz, streams.PositionWS.xyz) * 2.0f);
-            colorBase = lerp(flakeColorBase, colorBase, LOD);
+            var paintColor = lerp(flakeColorBase, streams.matDiffuse, LOD);
 
-            streams.matDiffuse = colorBase;
+            streams.matDiffuse = paintColor;
 
             // Because matDiffuse can be modified when using a metalness, we are storing the colorBase into matColorBase
             // so that we are able to query the original diffuse color without any modifications.
-            streams.matColorBase = colorBase;
+            streams.matColorBase = paintColor;
         }
     };
 }

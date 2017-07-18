@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         protected static readonly MaterialStreamDescriptor NormalStream = new MaterialStreamDescriptor("Normal (Tangent)", "matNormal", MaterialKeys.NormalValue.PropertyType, true);
         protected static readonly MaterialStreamDescriptor NormalStreamWorld = new MaterialStreamDescriptor("Normal (World)", "NormalStream.normalWS", new ShaderClassSource("MaterialSurfaceNormalStreamShading"));
 
-        protected static readonly Color DefaultNormalColor = new Color(0x80, 0x80, 0xFF, 0xFF);
+        public static readonly Color DefaultNormalColor = new Color(0x80, 0x80, 0xFF, 0xFF);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialNormalMapFeature"/> class.
