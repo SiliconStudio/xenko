@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     [Display("Glossiness Map")]
     public class MaterialGlossinessMapFeature : MaterialFeature, IMaterialMicroSurfaceFeature, IMaterialStreamProvider
     {
-        protected static readonly MaterialStreamDescriptor GlossinessStream = new MaterialStreamDescriptor("Glossiness", "matGlossiness", MaterialKeys.GlossinessValue.PropertyType);
+        private static readonly MaterialStreamDescriptor GlossinessStream = new MaterialStreamDescriptor("Glossiness", "matGlossiness", MaterialKeys.GlossinessValue.PropertyType);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialGlossinessMapFeature"/> class.

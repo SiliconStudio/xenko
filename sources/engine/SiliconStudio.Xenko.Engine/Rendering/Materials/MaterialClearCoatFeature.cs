@@ -106,18 +106,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         public MaterialClearCoatFeature()
         {
             MetalFlakesDiffuseMap = new ComputeColor(new Color4(Color.Black));
-
-            ClearCoatLayerNormalMap = new ComputeTextureColor
-            {
-                Texture = AttachedReferenceManager.CreateProxyObject<Texture>(new AssetId("2f76bcba-ae9f-4954-b98d-f94c2102ff86"), "XenkoCarPaintOrangePeelNM"),
-                Scale = new Vector2(8, 8)
-            };
-
-            ScaleAndBiasOrangePeel = true;
-            IsXYNormalOrangePeel = false;
-
-            BasePaintGlossinessMap = new ComputeFloat(0.00f);
-            ClearCoatGlossinessMap = new ComputeFloat(1.00f);
         }
 
         public override void MultipassGeneration(MaterialGeneratorContext context)
