@@ -3,7 +3,7 @@
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
     /// <summary>
-    /// Material glossiness map
+    /// Material glossiness map (for a metal flakes layer)
     /// </summary>
     shader MaterialSurfaceGlossinessMapMetalFlakes<bool TInvert> : IMaterialSurfacePixel,
                                                                     MaterialPixelShadingStream,
