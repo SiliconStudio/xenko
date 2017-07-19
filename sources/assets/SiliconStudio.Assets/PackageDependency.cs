@@ -81,7 +81,7 @@ namespace SiliconStudio.Assets
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return string.Equals(Name, other.Name);
+            return string.Equals(Name, other.Name) && Equals(Version, other.Version);
         }
 
         public override bool Equals(object obj)
