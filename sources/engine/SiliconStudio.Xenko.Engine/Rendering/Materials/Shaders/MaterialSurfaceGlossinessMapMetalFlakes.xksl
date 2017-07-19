@@ -11,6 +11,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                                                                     PositionStream4
     {
         compose ComputeColor baseGlossinessMap;
+        compose ComputeColor surfaceToEyeDistanceFactor;
 
         override void Compute()
         {
@@ -20,13 +21,15 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 baseGlossiness = 1.0 - baseGlossiness;
             }
             
+            var distanceFactor = surfaceToEyeDistanceFactor.Compute().r;
+
             // Correct both glossiness factor (to avoid aliasing and unrealistic values)
             float normalLength = length(streams.matNormal);
             baseGlossiness = normalLength * baseGlossiness / (normalLength + baseGlossiness * (1.0f - normalLength));
             streams.matGlossiness =  normalLength * streams.matGlossiness / (normalLength + streams.matGlossiness * (1.0f - normalLength));
 
             // Interpolate the factors using the surface to camera distance
-            float LOD = saturate(distance(Eye.xyz, streams.PositionWS.xyz) * 2.0f);
+            float LOD = saturate(distance(Eye.xyz, streams.PositionWS.xyz) * distanceFactor);
             streams.matGlossiness = lerp(streams.matGlossiness, baseGlossiness, LOD);
         }
     };

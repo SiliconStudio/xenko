@@ -12,13 +12,15 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                                             BRDFMicrofacet
     {
         compose ComputeColor metalFlakesDiffuseMap;
+        compose ComputeColor surfaceToEyeDistanceFactor;
 
         override void Compute()
         {
             var flakeColorBase = metalFlakesDiffuseMap.Compute();
+            var distanceFactor = surfaceToEyeDistanceFactor.Compute().r;
 
             // Interpolate the factors using the surface to camera distance
-            float LOD = saturate(distance(Eye.xyz, streams.PositionWS.xyz) * 2.0f);
+            float LOD = saturate(distance(Eye.xyz, streams.PositionWS.xyz) * distanceFactor);
             var paintColor = lerp(flakeColorBase, streams.matDiffuse, LOD);
 
             streams.matDiffuse = paintColor;
