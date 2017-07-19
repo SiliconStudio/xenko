@@ -109,8 +109,8 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
 
         private class SkyboxCompileCommand : AssetCommand<SkyboxAsset>
         {
-            public SkyboxCompileCommand(string url, SkyboxAsset parameters, Package package)
-                : base(url, parameters, package)
+            public SkyboxCompileCommand(string url, SkyboxAsset parameters, IAssetFinder assetFinder)
+                : base(url, parameters, assetFinder)
             {
             }
 
