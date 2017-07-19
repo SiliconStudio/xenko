@@ -28,8 +28,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         public bool AllowUnsignedBlendIndices { get; set; }
         public List<ModelMaterial> Materials { get; set; }
         public string EffectName { get; set; }
-        public bool TessellationAEN { get; set; }
-
+        
         /// <summary>
         /// Checks if the vertex buffer input slots for the model are supported by the target graphics profile level
         /// </summary>
@@ -76,17 +75,6 @@ namespace SiliconStudio.Xenko.Assets.Models
 
             model.BoundingBox = BoundingBox.Empty;
 
-            foreach (var mesh in model.Meshes)
-            {
-                if (TessellationAEN)
-                {
-                    // TODO: Generate AEN model view
-                    commandContext.Logger.Error($"TessellationAEN is not supported in {ContextAsString}");
-                }
-            }
-
-            SkeletonMapping skeletonMapping;
-
             Skeleton skeleton;
             if (SkeletonUrl != null)
             {
@@ -102,7 +90,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 
             }
 
-            skeletonMapping = new SkeletonMapping(skeleton, modelSkeleton);
+            var skeletonMapping = new SkeletonMapping(skeleton, modelSkeleton);
 
             // Refresh skeleton updater with model skeleton
             var hierarchyUpdater = new SkeletonUpdater(modelSkeleton);
