@@ -122,11 +122,11 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                         switch (sourceExecutionState)
                         {
                             case ExecutionBlockLinkState.Never:
-                                Log.Error(nameof(VisualScriptCompiler), $"{slot} in block {slot.Owner} uses a value from execution block {sourceBlock}, however it is never executed. Slot will take default value instead.");
+                                Log.Error($"{slot} in block {slot.Owner} uses a value from execution block {sourceBlock}, however it is never executed. Slot will take default value instead.", CallerInfo.Get());
                                 sourceBlock = null;
                                 break;
                             case ExecutionBlockLinkState.Sometimes:
-                                Log.Error(nameof(VisualScriptCompiler), $"{slot} in block {slot.Owner} uses a value from execution block {sourceBlock}, however it is executed but not in all cases. Are you using result from a conditional branch? Slot will take default value instead.");
+                                Log.Error($"{slot} in block {slot.Owner} uses a value from execution block {sourceBlock}, however it is executed but not in all cases. Are you using result from a conditional branch? Slot will take default value instead.", CallerInfo.Get());
                                 // Note: we still let it generate code, so that the user can also see the error in the generated source code
                                 //sourceBlock = null;
                                 break;
@@ -173,7 +173,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             }
 
             // TODO: Issue an error
-            Log.Error(nameof(VisualScriptCompiler), $"{slot} in block {slot.Owner} could not be resolved.");
+            Log.Error($"{slot} in block {slot?.Owner} could not be resolved.", CallerInfo.Get());
             return IdentifierName("unknown").WithAdditionalAnnotations(GenerateAnnotation(CurrentBlock));
         }
 

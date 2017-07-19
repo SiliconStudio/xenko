@@ -167,7 +167,6 @@ namespace SiliconStudio.Assets.Yaml
         public YamlAssetPath Append([CanBeNull] YamlAssetPath other)
         {
             var result = new YamlAssetPath(elements);
-            result.elements.AddRange(elements);
             if (other != null)
             {
                 result.elements.AddRange(other.elements);
@@ -282,7 +281,7 @@ namespace SiliconStudio.Assets.Yaml
         /// <param name="root">The root object of the given <see cref="MemberPath"/>.</param>
         /// <returns>An instance of <see cref="YamlAssetPath"/> corresponding to the same target than the given <see cref="MemberPath"/>.</returns>
         [NotNull]
-        public static YamlAssetPath FromMemberPath(MemberPath path, object root)
+        public static YamlAssetPath FromMemberPath([NotNull] MemberPath path, object root)
         {
             if (path == null) throw new ArgumentNullException(nameof(path));
             var result = new YamlAssetPath();
@@ -334,8 +333,9 @@ namespace SiliconStudio.Assets.Yaml
             return result;
         }
 
-        public bool StartsWith(YamlAssetPath path)
+        public bool StartsWith([NotNull] YamlAssetPath path)
         {
+            if (path == null) throw new ArgumentNullException(nameof(path));
             if (path.elements.Count > elements.Count)
                 return false;
 
@@ -423,7 +423,7 @@ namespace SiliconStudio.Assets.Yaml
             return sb.ToString();
         }
 
-        internal static bool IsCollectionWithIdType(Type type, object key, out ItemId id, out object actualKey)
+        internal static bool IsCollectionWithIdType([NotNull] Type type, object key, out ItemId id, out object actualKey)
         {
             if (type.IsGenericType)
             {
@@ -447,10 +447,9 @@ namespace SiliconStudio.Assets.Yaml
             return false;
         }
 
-        internal static bool IsCollectionWithIdType(Type type, object key, out ItemId id)
+        internal static bool IsCollectionWithIdType([NotNull] Type type, object key, out ItemId id)
         {
-            object actualKey;
-            return IsCollectionWithIdType(type, key, out id, out actualKey);
+            return IsCollectionWithIdType(type, key, out id, out object _);
         }
     }
 }

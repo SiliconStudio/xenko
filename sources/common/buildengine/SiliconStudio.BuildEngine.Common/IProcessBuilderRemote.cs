@@ -19,10 +19,6 @@ namespace SiliconStudio.BuildEngine
 
         [OperationContract]
         [UseXenkoDataContractSerializer]
-        BuildParameterCollection GetBuildParameters();
-
-        [OperationContract]
-        [UseXenkoDataContractSerializer]
         void ForwardLog(SerializableLogMessage message);
 
         [OperationContract]

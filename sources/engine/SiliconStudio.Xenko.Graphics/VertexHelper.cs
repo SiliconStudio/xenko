@@ -210,7 +210,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             if (vertexDeclaration == null) throw new ArgumentNullException("vertexDeclaration");
             if (vertexBufferData == null) throw new ArgumentNullException("vertexBufferData");
-            if (typeof(T) == typeof(byte)) throw new ArgumentOutOfRangeException("T", "Type vertex cannot be a byte");
+            if (typeof(T) == typeof(byte)) throw new ArgumentOutOfRangeException("T", "Type vertex can't be a byte");
 
             var vertexStride = Utilities.SizeOf<T>();
             var vertexBufferPtr = Interop.Fixed(vertexBufferData);

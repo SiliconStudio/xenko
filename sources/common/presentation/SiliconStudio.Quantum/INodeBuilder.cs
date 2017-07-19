@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Quantum.Commands;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
@@ -28,12 +27,6 @@ namespace SiliconStudio.Quantum
         /// Gets or sets the factory that will create instances of <see cref="IGraphNode"/> for nodes.
         /// </summary>
         INodeFactory NodeFactory { get; set; }
-
-        /// <summary>
-        /// Gets the collection of available commands to attach to nodes.
-        /// </summary>
-        ICollection<INodeCommand> AvailableCommands { get; }
-
         /// <summary>
         /// Registers a type as a primitive type.
         /// </summary>

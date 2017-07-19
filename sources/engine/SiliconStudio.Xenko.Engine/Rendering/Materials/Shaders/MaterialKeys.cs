@@ -72,7 +72,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         public static readonly ObjectParameterKey<Texture> EmissiveIntensityMap = ParameterKeys.NewObject<Texture>();
         public static readonly ValueParameterKey<float> EmissiveIntensity = ParameterKeys.NewValue<float>();
-
+        
         /// <summary>
         /// Generic texture key used by a material
         /// </summary>
@@ -122,6 +122,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         public static readonly PermutationParameterKey<bool> HasSkinningTangent = ParameterKeys.NewPermutation<bool>();
 
         public static readonly PermutationParameterKey<int> SkinningMaxBones = ParameterKeys.NewPermutation<int>(56);
+        
+        public static readonly PermutationParameterKey<bool> UsePixelShaderWithDepthPass = ParameterKeys.NewPermutation<bool>();
 
         static MaterialKeys()
         {

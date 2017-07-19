@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     /// <summary>
     /// Renders your game. It should use current <see cref="RenderContext.RenderView"/> and <see cref="CameraComponentRendererExtensions.GetCurrentCamera"/>.
     /// </summary>
-    [Display("Forward Renderer")]
+    [Display("Forward renderer")]
     public partial class ForwardRenderer : SceneRendererBase, ISharedRenderer
     {
         // TODO: should we use GraphicsDeviceManager.PreferredBackBufferFormat?

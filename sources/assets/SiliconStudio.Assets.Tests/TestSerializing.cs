@@ -17,7 +17,7 @@ namespace SiliconStudio.Assets.Tests
     [TestFixture]
     public partial class TestSerializing : TestBase
     {
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Initialize()
         {
             AssemblyRegistry.Register(typeof(TestSerializing).Assembly, AssemblyCommonCategories.Assets);

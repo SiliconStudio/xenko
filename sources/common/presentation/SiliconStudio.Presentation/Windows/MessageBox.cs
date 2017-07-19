@@ -10,14 +10,14 @@ using System.Windows.Input;
 using System.Windows.Media;
 using SiliconStudio.Presentation.Interop;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Presentation.Resources;
+using SiliconStudio.Translation;
 
 namespace SiliconStudio.Presentation.Windows
 {
     using MessageBoxButton = Services.MessageBoxButton;
     using MessageBoxImage = Services.MessageBoxImage;
     using MessageBoxResult = Services.MessageBoxResult;
-    
+
     public class MessageBox : MessageDialogBase
     {
         /// <summary>
@@ -67,7 +67,7 @@ namespace SiliconStudio.Presentation.Windows
         {
             Result = (int)MessageBoxResult.No,
             Content = "No",
-            Key = KeyGestures.ButtonNo,
+            Key = Tr._p("KeyGesture", "N"),
         };
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace SiliconStudio.Presentation.Windows
             IsDefault = true,
             Result = (int)MessageBoxResult.Yes,
             Content = "Yes",
-            Key = KeyGestures.ButtonYes,
+            Key = Tr._p("KeyGesture", "Y"),
         };
 
         [NotNull]

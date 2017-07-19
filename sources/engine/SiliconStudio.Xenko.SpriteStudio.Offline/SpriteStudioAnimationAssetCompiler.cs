@@ -27,10 +27,8 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
             var asset = (SpriteStudioAnimationAsset)assetItem.Asset;
             var colorSpace = context.GetColorSpace();
 
-            result.BuildSteps = new AssetBuildStep(assetItem)
-            {
-                new SpriteStudioAnimationAssetCommand(targetUrlInStorage, asset, colorSpace, assetItem.Package)
-            };
+            result.BuildSteps = new AssetBuildStep(assetItem);
+            result.BuildSteps.Add(new SpriteStudioAnimationAssetCommand(targetUrlInStorage, asset, colorSpace, assetItem.Package));
         }
 
         /// <summary>

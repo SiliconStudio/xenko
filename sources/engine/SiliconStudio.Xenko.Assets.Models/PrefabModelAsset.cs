@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.Models
@@ -13,7 +14,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     [DataContract("PrefabModelAsset")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Model))]
-    [Display(1855, "Prefab Model")]
+    [Display(1855, "Prefab model")]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "0.0.0")]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "2.0.0.0", typeof(EmptyAssetUpgrader))]
@@ -33,6 +34,6 @@ namespace SiliconStudio.Xenko.Assets.Models
         public List<ModelMaterial> Materials { get; } = new List<ModelMaterial>();
 
         [DataMember]
-        public AssetReference Prefab { get; set; }
+        public Prefab Prefab { get; set; }
     }
 }

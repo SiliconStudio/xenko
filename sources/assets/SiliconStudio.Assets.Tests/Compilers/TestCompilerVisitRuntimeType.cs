@@ -60,7 +60,7 @@ namespace SiliconStudio.Assets.Tests.Compilers
             package.RootAssets.Add(new AssetReference(assetItem.Id, assetItem.Location));
 
             // Create context
-            var context = new AssetCompilerContext();
+            var context = new AssetCompilerContext { CompilationContext = typeof(AssetCompilationContext) };
 
             // Builds the project
             var assetBuilder = new PackageCompiler(new RootPackageAssetEnumerator(package));

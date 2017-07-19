@@ -19,18 +19,15 @@ namespace SiliconStudio.BuildEngine
 
         public string SlaveBuilderPath { get; private set; }
 
-        public BuildParameterCollection Parameters { get; private set; }
-
         public int MaxParallelProcesses { get; }
 
         private int spawnedProcessCount;
 
-        public BuilderContext(string buildPath, string buildProfile, FileVersionTracker inputHashes, BuildParameterCollection parameters, int maxParallelProcess, string slaveBuilderPath)
+        public BuilderContext(string buildPath, string buildProfile, FileVersionTracker inputHashes, int maxParallelProcess, string slaveBuilderPath)
         {
             BuildPath = buildPath;
             BuildProfile = buildProfile;
             InputHashes = inputHashes;
-            Parameters = parameters;
             SlaveBuilderPath = slaveBuilderPath;
             MaxParallelProcesses = maxParallelProcess;
         }

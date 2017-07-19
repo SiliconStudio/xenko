@@ -18,15 +18,16 @@ namespace SiliconStudio.Xenko.Assets.Models
     [AssetCompiler(typeof(ProceduralModelAsset), typeof(AssetCompilationContext))]
     internal class ProceduralModelAssetCompiler : AssetCompilerBase
     {
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
+        public override IEnumerable<BuildDependencyInfo> GetInputTypes(AssetItem assetItem)
         {
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileAsset);
+            yield return new BuildDependencyInfo(typeof(MaterialAsset), typeof(AssetCompilationContext), BuildDependencyType.Runtime | BuildDependencyType.CompileAsset);
         }
 
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (ProceduralModelAsset)assetItem.Asset;
-            result.BuildSteps = new AssetBuildStep(assetItem) { new GeometricPrimitiveCompileCommand(targetUrlInStorage, asset, assetItem.Package) };
+            result.BuildSteps = new AssetBuildStep(assetItem);
+            result.BuildSteps.Add(new GeometricPrimitiveCompileCommand(targetUrlInStorage, asset, assetItem.Package));
         }
 
         private class GeometricPrimitiveCompileCommand : AssetCommand<ProceduralModelAsset>
