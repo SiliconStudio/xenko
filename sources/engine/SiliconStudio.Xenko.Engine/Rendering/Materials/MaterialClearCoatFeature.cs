@@ -15,12 +15,17 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 {
     [DataContract("MaterialClearCoatFeature")]
     [Display("Clear Coat")]
-    [CategoryOrder(5, "Diffuse")]
-    [CategoryOrder(10, "Surface")]
-    [CategoryOrder(15, "Micro Surface")]
-    [CategoryOrder(20, "Specular")]
     public class MaterialClearCoatFeature : MaterialFeature, IMaterialClearCoatFeature
     {
+        /// <summary>
+        /// Gets or sets the distance factor to perform the transition between the metal flakes and base paint colors.
+        /// </summary>
+        [DataMember(110)]
+        [Display("Paint Transition Distance")]
+        [NotNull]
+        [DataMemberRange(0.001, 2.000, 0.0100, 0.100, 3)]
+        public IComputeScalar LODDistance { get; set; }
+
         /// <summary>
         /// Gets or sets the metal flakes diffuse map.
         /// </summary>
@@ -28,7 +33,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <userdoc>
         /// The diffuse map used by the metal flakes layer.
         /// </userdoc>
-        [Display("Metal Flakes Diffuse Map", "Diffuse")]
+        [DataMember(120)]
+        [Display("Metal Flakes Diffuse Map")]
         [NotNull]
         [DataMemberCustomSerializer]
         public IComputeColor MetalFlakesDiffuseMap { get; set; }
@@ -40,8 +46,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <userdoc>
         /// The normal map used by the clear coat layer.
         /// </userdoc>
-        [DataMember(110)]
-        [Display("Orange Peel Normal Map", "Surface")]
+        [DataMember(130)]
+        [Display("Orange Peel Normal Map")]
         [NotNull]
         public IComputeColor ClearCoatLayerNormalMap { get; set; }
 
@@ -52,10 +58,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <userdoc>
         /// Scale the XY by (2,2) and offset by (-1,-1). Required to unpack unsigned values of [0..1] to signed coordinates of [-1..+1].
         /// </userdoc>
-        [DataMember(120)]
+        [DataMember(140)]
         [DefaultValue(true)]
-        [Display("Scale & Offset", "Surface")]
-        public bool ScaleAndBiasOrangePeel { get; set; }
+        [Display("Scale & Offset")]
+        public bool ScaleAndBiasOrangePeel { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether the normal is only stored in XY components and Z is assumed to be sqrt(1 - x*x - y*y).
@@ -64,9 +70,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <userdoc>
         /// The Z component of the normal vector will be calculated from X and Y assuming Z = sqrt(1 - x*x - y*y).
         /// </userdoc>
-        [DataMember(130)]
+        [DataMember(150)]
         [DefaultValue(false)]
-        [Display("Reconstruct Z", "Surface")]
+        [Display("Reconstruct Z")]
         public bool IsXYNormalOrangePeel { get; set; }
 
         /// <summary>
@@ -76,7 +82,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <userdoc>
         /// The glossiness map used by the clear coat layer.
         /// </userdoc>
-        [Display("Clear Coat Glossiness Map", "Micro Surface")]
+        [DataMember(160)]
+        [Display("Clear Coat Glossiness Map")]
         [NotNull]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
         public IComputeScalar ClearCoatGlossinessMap { get; set; }
@@ -88,7 +95,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <userdoc>
         /// The glossiness map used by the base paint layer.
         /// </userdoc>
-        [Display("Base Paint Glossiness Map", "Micro Surface")]
+        [DataMember(170)]
+        [Display("Base Paint Glossiness Map")]
         [NotNull]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
         public IComputeScalar BasePaintGlossinessMap { get; set; }
@@ -99,7 +107,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <value><c>true</c> if invert; otherwise, <c>false</c>.</value>
         /// <userdoc>When checked, considers the map as a roughness map instead of a glossiness map. 
         /// A roughness value of 1.0 corresponds to a glossiness value of 0.0 and vice-versa.</userdoc>
-        [Display("Invert", "Micro Surface")]
+        [DataMember(180)]
+        [Display("Invert Glossiness")]
         [DefaultValue(false)]
         public bool Invert { get; set; }
 
@@ -109,18 +118,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <userdoc>
         /// The metalness map used by the clear coat layer.
         /// </userdoc>
-        [Display("Clear Coat Metalness Map", "Specular")]
+        [DataMember(190)]
+        [Display("Clear Coat Metalness Map")]
         [NotNull]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
         public IComputeScalar ClearCoatMetalnessMap { get; set; }
-
-        /// <summary>
-        /// Gets or sets the distance factor to perform the transition between the metal flakes and base paint colors.
-        /// </summary>
-        [Display("Paint Transition Distance")]
-        [NotNull]
-        [DataMemberRange(0.001, 2.000, 0.0100, 0.100, 3)]
-        public IComputeScalar LODDistance { get; set; }
 
         public MaterialClearCoatFeature()
         {
@@ -185,6 +187,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             }
             else
             {
+                // TODO Add reflections desaturation for environment reflections?
+                // Ideally, this should be done on top of the regular specular model.
+                // Unfortunately, after some tests, it seems that overriding the ComputeEnvironmentLightContribution is the only way to do so
+
                 // Enable transparency for clear coat pass only
                 context.MaterialPass.HasTransparency = true;
 
