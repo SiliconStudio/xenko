@@ -337,7 +337,8 @@ namespace SiliconStudio.BuildEngine
                     //    }
                     //}
 
-                    await process.WaitForExitAsync();
+                    // Note: we don't want the thread to schedule another job since the CPU core will be in use by the process, so we do a blocking WaitForExit.
+                    process.WaitForExit();
 
                     host.Close();
 

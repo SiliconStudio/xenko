@@ -117,8 +117,8 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         /// </summary>
         public class SpriteSheetCommand : AssetCommand<SpriteSheetParameters>
         {
-            public SpriteSheetCommand(string url, SpriteSheetParameters parameters, Package package)
-                : base(url, parameters, package)
+            public SpriteSheetCommand(string url, SpriteSheetParameters parameters, IAssetFinder assetFinder)
+                : base(url, parameters, assetFinder)
             {
             }
 

@@ -47,8 +47,8 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </summary>
         public class TextureConvertCommand : AssetCommand<TextureConvertParameters>
         {
-            public TextureConvertCommand(string url, TextureConvertParameters description, Package package)
-                : base(url, description, package)
+            public TextureConvertCommand(string url, TextureConvertParameters description, IAssetFinder assetFinder)
+                : base(url, description, assetFinder)
             {
                 InputFilesGetter = GetInputFilesImpl;
             }
