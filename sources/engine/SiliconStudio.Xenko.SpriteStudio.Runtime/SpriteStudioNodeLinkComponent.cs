@@ -8,7 +8,7 @@ using SiliconStudio.Xenko.Engine.Design;
 namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 {
     [DataContract("SpriteStudioNodeLinkComponent")]
-    [Display("Sprite Studio Node Link", Expand = ExpandRule.Once)]
+    [Display("SpriteStudio node link", Expand = ExpandRule.Once)]
     [DefaultEntityComponentProcessor(typeof(SpriteStudioNodeLinkProcessor))]
     [ComponentOrder(1400)]
     public sealed class SpriteStudioNodeLinkComponent : EntityComponent

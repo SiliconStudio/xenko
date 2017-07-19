@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
     [DataContract("NavigationMeshAsset")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(NavigationMesh))]
-    [Display("Navigation Mesh")]
+    [Display("Navigation mesh")]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "0.0.0")]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "2.0.0.0", typeof(EmptyAssetUpgrader))]

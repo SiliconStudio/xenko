@@ -30,10 +30,12 @@ namespace SiliconStudio.Assets.Tests.Compilers
 
         public override AssetCompilerResult Prepare(AssetCompilerContext context, AssetItem assetItem)
         {
-            return new AssetCompilerResult(GetType().Name)
+            var result = new AssetCompilerResult(GetType().Name)
             {
-                BuildSteps = new AssetBuildStep(assetItem) { new AssertCommand(assetItem, (T)assetItem.Asset, assetItem.Package, DoCommandAssert) }
+                BuildSteps = new AssetBuildStep(assetItem)
             };
+            result.BuildSteps.Add(new AssertCommand(assetItem, (T)assetItem.Asset, assetItem.Package, DoCommandAssert));
+            return result;
         }
 
         protected virtual void DoCommandAssert(string url, T parameters, IAssetFinder package)

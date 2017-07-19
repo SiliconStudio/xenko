@@ -1,27 +1,27 @@
 !SceneAsset
 Id: 0a97d04d-6d2c-4cfb-81b6-13b641b363ff
-SerializedVersion: {Xenko: 2.0.0.0}
+SerializedVersion: {Xenko: 2.1.0.1}
 Tags: []
 ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
-    RootPartIds:
-        - 86cb0337-070f-44c2-be1d-8f1551fd9953
-        - fc5f8629-6d2d-4cf2-ab9c-4f644a1567e8
-        - 65d8dc06-e08c-4f1c-9cb3-21c770954502
-        - 92e7a34f-e780-4a68-9dff-eb9431afb184
-        - f5477fc5-ee92-4e62-94fb-bae10af79436
-        - e07f5bb9-20d2-4f50-9f33-fadb629c1307
-        - 8b03f317-5605-499a-8fce-dad1714fc7e3
-        - a50a9ef0-45ad-4ed5-9bf3-69ac7b18a749
-        - e5128c63-5bf1-4352-aaeb-30c07ec39bd7
-        - 22c324e9-bcc9-4faf-b866-27b2b60f7049
-        - 9fd25915-53cf-44a5-b631-ff27546d3437
-        - 8690a1dd-6a49-4252-a0ec-2d3d6b6e390f
-        - 7e49bb5a-d2df-4d88-8d02-e6d5cbe607f1
-        - 626f9590-3e1a-44ec-95bf-cac0396a34f3
-        - ac38af2e-727c-4f00-bb7c-389ef0891681
-        - 6b8e7a54-2a0c-474c-9e74-ad206c6040ec
+    RootParts:
+        - ref!! 86cb0337-070f-44c2-be1d-8f1551fd9953
+        - ref!! fc5f8629-6d2d-4cf2-ab9c-4f644a1567e8
+        - ref!! 65d8dc06-e08c-4f1c-9cb3-21c770954502
+        - ref!! 92e7a34f-e780-4a68-9dff-eb9431afb184
+        - ref!! f5477fc5-ee92-4e62-94fb-bae10af79436
+        - ref!! e07f5bb9-20d2-4f50-9f33-fadb629c1307
+        - ref!! 8b03f317-5605-499a-8fce-dad1714fc7e3
+        - ref!! a50a9ef0-45ad-4ed5-9bf3-69ac7b18a749
+        - ref!! e5128c63-5bf1-4352-aaeb-30c07ec39bd7
+        - ref!! 22c324e9-bcc9-4faf-b866-27b2b60f7049
+        - ref!! 9fd25915-53cf-44a5-b631-ff27546d3437
+        - ref!! 8690a1dd-6a49-4252-a0ec-2d3d6b6e390f
+        - ref!! 7e49bb5a-d2df-4d88-8d02-e6d5cbe607f1
+        - ref!! 626f9590-3e1a-44ec-95bf-cac0396a34f3
+        - ref!! ac38af2e-727c-4f00-bb7c-389ef0891681
+        - ref!! 6b8e7a54-2a0c-474c-9e74-ad206c6040ec
     Parts:
         -   Entity:
                 Id: 22c324e9-bcc9-4faf-b866-27b2b60f7049

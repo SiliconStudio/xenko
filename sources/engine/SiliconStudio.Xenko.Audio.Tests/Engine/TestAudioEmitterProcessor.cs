@@ -56,22 +56,22 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
         private void AddSoundEffectToEmitterComponents(Game game)
         {
             sounds = new List<Sound>
-                {
-                    game.Content.Load<Sound>("EffectBip"),
-                    game.Content.Load<Sound>("EffectToneA"),
-                    game.Content.Load<Sound>("EffectToneA"),
-                };
+            {
+                game.Content.Load<Sound>("EffectBip"),
+                game.Content.Load<Sound>("EffectToneA"),
+                game.Content.Load<Sound>("EffectToneA"),
+            };
 
-            emitComps[0].AttachSound(sounds[0]);
-            emitComps[0].AttachSound(sounds[1]);
-            emitComps[1].AttachSound(sounds[2]);
+            emitComps[0].Sounds["EffectBip"] = sounds[0];
+            emitComps[0].Sounds["EffectToneA"] = sounds[1];
+            emitComps[1].Sounds["EffectToneA"] = sounds[2];
 
             soundControllers = new List<AudioEmitterSoundController>
-                {
-                    emitComps[0].GetSoundController(sounds[0]),
-                    emitComps[0].GetSoundController(sounds[1]),
-                    emitComps[1].GetSoundController(sounds[2]),
-                };
+            {
+                emitComps[0]["EffectBip"],
+                emitComps[0]["EffectToneA"],
+                emitComps[1]["EffectToneA"],
+            };
         }
 
         /// <summary>
@@ -115,40 +115,40 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
                 compEntities[i].Add(emitComps[i]);
         }
 
-//        /// <summary>
-//        /// Check that each <see cref="AudioEmitterSoundController"/> of the scene have one <see cref="SoundEffectInstance"/> 
-//        /// associated to each <see cref="AudioListenerComponent"/> added to the <see cref="AudioSystem"/>.
-//        /// </summary>
-//        /// <param name="matchingEntities">matching entities from the <see cref="AudioEmitterProcessor"/></param>
-//        private void CheckSoundEffectExistance(Dictionary<Entity, AudioEmitterProcessor.AssociatedData> matchingEntities)
-//        {
-//            CheckSoundEffectExistance(new HashSet<AudioListenerComponent>(listComps), matchingEntities);
-//        }
-//
-//        /// <summary>
-//        /// Check that each <see cref="AudioEmitterSoundController"/> of the scene have one <see cref="SoundEffectInstance"/> 
-//        /// associated to each <see cref="AudioListenerComponent"/> of the <paramref name="shouldExistListeners"/> list.
-//        /// </summary>
-//        /// <param name="shouldExistListeners">the listener component that should exist</param>
-//        /// <param name="matchingEntities">matching entities from the <see cref="AudioEmitterProcessor"/></param>
-//        private void CheckSoundEffectExistance(HashSet<AudioListenerComponent> shouldExistListeners, Dictionary<Entity, AudioEmitterProcessor.AssociatedData> matchingEntities)
-//        {
-//            for (var i = 0; i < compEntities.Count; i++)
-//            {
-//                var data = matchingEntities[compEntities[i]];
-//                foreach (var listComp in listComps)
-//                {
-//                    foreach (var controller in emitComps[i].SoundToController.Values)
-//                    {
-//                        var currentKey = Tuple.Create(listComp, controller);
-//                        if (shouldExistListeners.Contains(listComp))
-//                            Assert.IsTrue(data.ListenerControllerToSoundInstance.ContainsKey(currentKey), "Sound Effect instance should exist for registered listener");
-//                        else
-//                            Assert.IsFalse(data.ListenerControllerToSoundInstance.ContainsKey(currentKey), "Sound Effect instance should not exist for not registered listener");
-//                    }
-//                }
-//            }
-//        }
+        //        /// <summary>
+        //        /// Check that each <see cref="AudioEmitterSoundController"/> of the scene have one <see cref="SoundEffectInstance"/> 
+        //        /// associated to each <see cref="AudioListenerComponent"/> added to the <see cref="AudioSystem"/>.
+        //        /// </summary>
+        //        /// <param name="matchingEntities">matching entities from the <see cref="AudioEmitterProcessor"/></param>
+        //        private void CheckSoundEffectExistance(Dictionary<Entity, AudioEmitterProcessor.AssociatedData> matchingEntities)
+        //        {
+        //            CheckSoundEffectExistance(new HashSet<AudioListenerComponent>(listComps), matchingEntities);
+        //        }
+        //
+        //        /// <summary>
+        //        /// Check that each <see cref="AudioEmitterSoundController"/> of the scene have one <see cref="SoundEffectInstance"/> 
+        //        /// associated to each <see cref="AudioListenerComponent"/> of the <paramref name="shouldExistListeners"/> list.
+        //        /// </summary>
+        //        /// <param name="shouldExistListeners">the listener component that should exist</param>
+        //        /// <param name="matchingEntities">matching entities from the <see cref="AudioEmitterProcessor"/></param>
+        //        private void CheckSoundEffectExistance(HashSet<AudioListenerComponent> shouldExistListeners, Dictionary<Entity, AudioEmitterProcessor.AssociatedData> matchingEntities)
+        //        {
+        //            for (var i = 0; i < compEntities.Count; i++)
+        //            {
+        //                var data = matchingEntities[compEntities[i]];
+        //                foreach (var listComp in listComps)
+        //                {
+        //                    foreach (var controller in emitComps[i].SoundToController.Values)
+        //                    {
+        //                        var currentKey = Tuple.Create(listComp, controller);
+        //                        if (shouldExistListeners.Contains(listComp))
+        //                            Assert.IsTrue(data.ListenerControllerToSoundInstance.ContainsKey(currentKey), "Sound Effect instance should exist for registered listener");
+        //                        else
+        //                            Assert.IsFalse(data.ListenerControllerToSoundInstance.ContainsKey(currentKey), "Sound Effect instance should not exist for not registered listener");
+        //                    }
+        //                }
+        //            }
+        //        }
 
         /// <summary>
         /// Add and remove <see cref="AudioListenerComponent"/> to the <see cref="AudioSystem"/> and check that 
@@ -168,7 +168,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             AddSoundEffectToEmitterComponents(game);
             AddRootEntityToEntitySystem(game);
 
-            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer");
             //var matchingEntities = game.Entities.Processors.OfType<AudioEmitterProcessor>().First().MatchingEntitiesForDebug;
 
             //// check that there are initially not SoundEffectInstance created.
@@ -220,7 +220,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             AddRootEntityToEntitySystem(game);
 
             emitComps.Add(new AudioEmitterComponent());
-            emitComps[2].AttachSound(game.Content.Load<Sound>("EffectToneA"));
+            emitComps[2].Sounds["EffectToneA"] = game.Content.Load<Sound>("EffectToneA");
             var extraEntity = new Entity();
             extraEntity.Add(emitComps[2]);
 
@@ -260,7 +260,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             AddRootEntityToEntitySystem(game);
             AddListenersToAudioSystem(game);
 
-            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer");
             //var matchingEntities = game.Entities.Processors.OfType<AudioEmitterProcessor>().First().MatchingEntitiesForDebug;
 
             //CheckSoundEffectExistance(matchingEntities);
@@ -278,7 +278,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
 
             //emitComps[0].AttachSoundEffect(sound3);
             //CheckSoundEffectExistance(matchingEntities);
-            
+
             //// detach SoundEffect and check that the controllers have been deleted.
             //emitComps[0].DetachSoundEffect(sound1);
             //CheckSoundEffectExistance(matchingEntities);
@@ -323,74 +323,74 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
         private void EntityPositionAndEmitterbfrUpdate(Game game, int loopCount, int loopCountSum)
         {
             rootSubEntity1.Transform.Position += new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
-            rootSubEntity2.Transform.Position += 2*new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+            rootSubEntity2.Transform.Position += 2 * new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
 
-            compEntities[0].Transform.Position += new Vector3(loopCount+1, 2 * loopCount+1, 3 * loopCount+1);
+            compEntities[0].Transform.Position += new Vector3(loopCount + 1, 2 * loopCount + 1, 3 * loopCount + 1);
             compEntities[1].Transform.Position -= new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
 
-//            emitComps[0].DistanceScale = loopCount;
-//            emitComps[0].DopplerScale = 2 * loopCount;
-//            emitComps[1].DistanceScale = 3 * loopCount;
-//            emitComps[1].DopplerScale = 4 * loopCount;
+            //            emitComps[0].DistanceScale = loopCount;
+            //            emitComps[0].DopplerScale = 2 * loopCount;
+            //            emitComps[1].DistanceScale = 3 * loopCount;
+            //            emitComps[1].DopplerScale = 4 * loopCount;
         }
 
-//        /// <summary>
-//        /// Check that the values of the <see cref="AudioEmitter"/> associated to the <see cref="AudioEmitterComponent"/> are or are not updated as they should be.
-//        /// </summary>
-//        /// <param name="emitter1ShouldBeValid">boolean indicating if emitter component 1 is supposed to be updated.</param>
-//        /// <param name="emitter2ShouldBeValid">boolean indicating if emitter component 2 is supposed to be updated.</param>
-//        /// <param name="matchingEntities">the matching entities of the <see cref="AudioEmitterProcessor"/></param>
-//        /// <param name="loopCount">the current loopCount of the game</param>
-//        private void CheckEmittersValues(bool emitter1ShouldBeValid, bool emitter2ShouldBeValid, Dictionary<Entity, AudioEmitterProcessor.AssociatedData> matchingEntities, int loopCount)
-//        {
-//            var dataComp1 = matchingEntities[compEntities[0]];
-//            var dataComp2 = matchingEntities[compEntities[1]];
-//
-//            // check that the boolean value of the AudioEmitterComponent indicating the processor if the AudioEmitter should be updated is valid.
-//            Assert.IsTrue(dataComp1.AudioEmitterComponent.ShouldBeProcessed == emitter1ShouldBeValid, "value of ShouldBeProcessed for emitter 1 is not correct at loop turn" + loopCount);
-//            Assert.IsTrue(dataComp2.AudioEmitterComponent.ShouldBeProcessed == emitter2ShouldBeValid, "value of ShouldBeProcessed for emitter 2 is not correct at loop turn" + loopCount);
-//
-//            var emitter1Velocity = 2 * new Vector3(loopCount, 2 * loopCount, 3 * loopCount) + Vector3.One;
-//            if (emitter1ShouldBeValid)
-//            {
-//                // check the AudioEmitter 1 values are updated.
-//                Assert.AreEqual(emitter1Velocity, dataComp1.AudioEmitter.Velocity, "The velocity of emitter 1 is not valid at loop turn" + loopCount);
-//                Assert.AreEqual(loopCount, dataComp1.AudioEmitter.DistanceScale, "The distance scale of emitter 1 is not valid at loop turn" + loopCount);
-//                Assert.AreEqual(2 * loopCount, dataComp1.AudioEmitter.DopplerScale, "The Doppler scale of emitter 1 is not valid at loop turn" + loopCount);
-//            }
-//            else
-//            {
-//                // check the AudioEmitter 1 values are not updated anymore
-//                Assert.AreNotEqual(emitter1Velocity, dataComp1.AudioEmitter.Velocity, "The velocity of emitter 1 is calculated for nothing at loop turn" + loopCount);
-//                Assert.AreNotEqual(loopCount, dataComp1.AudioEmitter.DistanceScale, "The distance scale of emitter 1 is calculated for nothing at loop turn" + loopCount);
-//                Assert.AreNotEqual(2 * loopCount, dataComp1.AudioEmitter.DopplerScale, "The Doppler scale of emitter 1 is calculated for nothing loop turn" + loopCount);
-//            }
-//
-//            var emitter2Velocity = new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
-//            if (emitter2ShouldBeValid)
-//            {
-//                // check the AudioEmitter 2 values are updated.
-//                Assert.AreEqual(emitter2Velocity, dataComp2.AudioEmitter.Velocity, "The velocity of emitter 2 is not valid at loop turn" + loopCount);
-//                Assert.AreEqual(3 * loopCount, dataComp2.AudioEmitter.DistanceScale, "The distance scale of emitter 2 is not valid at loop turn" + loopCount);
-//                Assert.AreEqual(4 * loopCount, dataComp2.AudioEmitter.DopplerScale, "The Doppler scale of emitter 2 is not valid at loop turn" + loopCount);
-//            }
-//            else
-//            {
-//                // check the AudioEmitter 2 values are not updated anymore
-//                Assert.AreNotEqual(emitter2Velocity, dataComp2.AudioEmitter.Velocity, "The velocity of emitter 2 is calculated for nothing at loop turn" + loopCount);
-//                Assert.AreNotEqual(3 * loopCount, dataComp2.AudioEmitter.DistanceScale, "The distance scale of emitter 2 is calculated for nothing at loop turn" + loopCount);
-//                Assert.AreNotEqual(4 * loopCount, dataComp2.AudioEmitter.DopplerScale, "The Doppler scale of emitter 2 is calculated for nothing loop turn" + loopCount);
-//            }
-//        }
+        //        /// <summary>
+        //        /// Check that the values of the <see cref="AudioEmitter"/> associated to the <see cref="AudioEmitterComponent"/> are or are not updated as they should be.
+        //        /// </summary>
+        //        /// <param name="emitter1ShouldBeValid">boolean indicating if emitter component 1 is supposed to be updated.</param>
+        //        /// <param name="emitter2ShouldBeValid">boolean indicating if emitter component 2 is supposed to be updated.</param>
+        //        /// <param name="matchingEntities">the matching entities of the <see cref="AudioEmitterProcessor"/></param>
+        //        /// <param name="loopCount">the current loopCount of the game</param>
+        //        private void CheckEmittersValues(bool emitter1ShouldBeValid, bool emitter2ShouldBeValid, Dictionary<Entity, AudioEmitterProcessor.AssociatedData> matchingEntities, int loopCount)
+        //        {
+        //            var dataComp1 = matchingEntities[compEntities[0]];
+        //            var dataComp2 = matchingEntities[compEntities[1]];
+        //
+        //            // check that the boolean value of the AudioEmitterComponent indicating the processor if the AudioEmitter should be updated is valid.
+        //            Assert.IsTrue(dataComp1.AudioEmitterComponent.ShouldBeProcessed == emitter1ShouldBeValid, "value of ShouldBeProcessed for emitter 1 is not correct at loop turn" + loopCount);
+        //            Assert.IsTrue(dataComp2.AudioEmitterComponent.ShouldBeProcessed == emitter2ShouldBeValid, "value of ShouldBeProcessed for emitter 2 is not correct at loop turn" + loopCount);
+        //
+        //            var emitter1Velocity = 2 * new Vector3(loopCount, 2 * loopCount, 3 * loopCount) + Vector3.One;
+        //            if (emitter1ShouldBeValid)
+        //            {
+        //                // check the AudioEmitter 1 values are updated.
+        //                Assert.AreEqual(emitter1Velocity, dataComp1.AudioEmitter.Velocity, "The velocity of emitter 1 is not valid at loop turn" + loopCount);
+        //                Assert.AreEqual(loopCount, dataComp1.AudioEmitter.DistanceScale, "The distance scale of emitter 1 is not valid at loop turn" + loopCount);
+        //                Assert.AreEqual(2 * loopCount, dataComp1.AudioEmitter.DopplerScale, "The Doppler scale of emitter 1 is not valid at loop turn" + loopCount);
+        //            }
+        //            else
+        //            {
+        //                // check the AudioEmitter 1 values are not updated anymore
+        //                Assert.AreNotEqual(emitter1Velocity, dataComp1.AudioEmitter.Velocity, "The velocity of emitter 1 is calculated for nothing at loop turn" + loopCount);
+        //                Assert.AreNotEqual(loopCount, dataComp1.AudioEmitter.DistanceScale, "The distance scale of emitter 1 is calculated for nothing at loop turn" + loopCount);
+        //                Assert.AreNotEqual(2 * loopCount, dataComp1.AudioEmitter.DopplerScale, "The Doppler scale of emitter 1 is calculated for nothing loop turn" + loopCount);
+        //            }
+        //
+        //            var emitter2Velocity = new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+        //            if (emitter2ShouldBeValid)
+        //            {
+        //                // check the AudioEmitter 2 values are updated.
+        //                Assert.AreEqual(emitter2Velocity, dataComp2.AudioEmitter.Velocity, "The velocity of emitter 2 is not valid at loop turn" + loopCount);
+        //                Assert.AreEqual(3 * loopCount, dataComp2.AudioEmitter.DistanceScale, "The distance scale of emitter 2 is not valid at loop turn" + loopCount);
+        //                Assert.AreEqual(4 * loopCount, dataComp2.AudioEmitter.DopplerScale, "The Doppler scale of emitter 2 is not valid at loop turn" + loopCount);
+        //            }
+        //            else
+        //            {
+        //                // check the AudioEmitter 2 values are not updated anymore
+        //                Assert.AreNotEqual(emitter2Velocity, dataComp2.AudioEmitter.Velocity, "The velocity of emitter 2 is calculated for nothing at loop turn" + loopCount);
+        //                Assert.AreNotEqual(3 * loopCount, dataComp2.AudioEmitter.DistanceScale, "The distance scale of emitter 2 is calculated for nothing at loop turn" + loopCount);
+        //                Assert.AreNotEqual(4 * loopCount, dataComp2.AudioEmitter.DopplerScale, "The Doppler scale of emitter 2 is calculated for nothing loop turn" + loopCount);
+        //            }
+        //        }
 
-//        private bool soundController0WentToStopState;
-//        private bool soundController2WentToStopState;
+        //        private bool soundController0WentToStopState;
+        //        private bool soundController2WentToStopState;
 
         private void TestEmitterUpdateValuesAtfUpdate(Game game, int loopCount, int loopCountSum)
         {
             //throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
             //var matchingEntities = game.Entities.Processors.OfType<AudioEmitterProcessor>().First().MatchingEntitiesForDebug;
-            
+
             //var dataComp1 = matchingEntities[compEntities[0]];
             //var dataComp2 = matchingEntities[compEntities[1]];
 
@@ -461,7 +461,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
 
         private void TestMulteListenerUpdate(Game game, int loopCount, int loopCountSum)
         {
-            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer"); 
+            throw new NotImplementedException("TODO: UPDATE TO USE Scene and Graphics Composer");
             //var matchingEntities = game.Entities.Processors.OfType<AudioEmitterProcessor>().First().MatchingEntitiesForDebug;
 
             //var dataComp1 = matchingEntities[compEntities[0]];
@@ -475,7 +475,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             //    // check that the two instances are correctly create and playing
             //    var tupple1 = Tuple.Create(listComps[0], soundControllers[0]);
             //    var tupple2 = Tuple.Create(listComps[1], soundControllers[0]);
-                
+
             //    Assert.IsTrue(dataComp1.ListenerControllerToSoundInstance.ContainsKey(tupple1));
             //    Assert.IsTrue(dataComp1.ListenerControllerToSoundInstance.ContainsKey(tupple2));
 

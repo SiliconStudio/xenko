@@ -22,10 +22,8 @@ namespace SiliconStudio.Xenko.Assets.Audio
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (SoundAsset)assetItem.Asset;
-            result.BuildSteps = new AssetBuildStep(assetItem)
-            {
-                new DecodeSoundFileCommand(targetUrlInStorage, asset, assetItem.Package)
-            };
+            result.BuildSteps = new AssetBuildStep(assetItem);
+            result.BuildSteps.Add(new DecodeSoundFileCommand(targetUrlInStorage, asset, assetItem.Package));
         }
 
         private class DecodeSoundFileCommand : AssetCommand<SoundAsset>

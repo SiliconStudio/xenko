@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
 #else
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
 #endif
-    [Display("Collider Shape")]
+    [Display("Collider shape")]
     public class ColliderShapeAsset : Asset
     {
         private const string CurrentVersion = "2.0.0.0";

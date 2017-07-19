@@ -29,10 +29,8 @@ namespace SiliconStudio.Xenko.Assets
         {
             var asset = (GameSettingsAsset)assetItem.Asset;
             // TODO: We should ignore game settings stored in dependencies
-            result.BuildSteps = new AssetBuildStep(assetItem)
-            {
-                new GameSettingsCompileCommand(targetUrlInStorage, assetItem.Package, context.Platform, context.GetCompilationMode(), asset),
-            };
+            result.BuildSteps = new AssetBuildStep(assetItem);
+            result.BuildSteps.Add(new GameSettingsCompileCommand(targetUrlInStorage, assetItem.Package, context.Platform, context.GetCompilationMode(), asset));
         }
 
         public override IEnumerable<Type> GetRuntimeTypes(AssetItem assetItem)

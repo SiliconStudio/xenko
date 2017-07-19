@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
 
             var cells = new List<SpriteStudioCell>();
             var images = new List<UFile>();
-            if (!SpriteStudioXmlImport.ParseCellMaps(asset.Source, images, cells)) throw new Exception("Failed to parse Sprite Studio cell textures.");
+            if (!SpriteStudioXmlImport.ParseCellMaps(asset.Source, images, cells)) throw new Exception("Failed to parse SpriteStudio cell textures.");
 
             var texIndex = 0;
             asset.BuildTextures.Clear();
@@ -59,10 +59,9 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                 texIndex++;
             }
 
-            result.BuildSteps.Add(new AssetBuildStep(assetItem)
-            {
-                new SpriteStudioModelAssetCommand(targetUrlInStorage, asset, colorSpace, assetItem.Package)
-            });
+            var step = new AssetBuildStep(assetItem);
+            step.Add(new SpriteStudioModelAssetCommand(targetUrlInStorage, asset, colorSpace, assetItem.Package));
+            result.BuildSteps.Add(step);
         }
 
         /// <summary>

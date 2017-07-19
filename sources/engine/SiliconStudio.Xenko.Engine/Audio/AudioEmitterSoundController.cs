@@ -6,21 +6,20 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Audio
 {
     /// <summary>
-    /// This class is used to control a <see cref="SiliconStudio.Xenko.Audio.Sound"/> associated to a <see cref="AudioEmitterComponent"/>.
+    /// This class is used to control a <see cref="Sound"/> associated to a <see cref="AudioEmitterComponent"/>.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Instances of this class can not be directly created by the user, but need to queried from an <see cref="AudioEmitterComponent"/> 
-    /// instance using the <see cref="AudioEmitterComponent.GetSoundController"/> function.
+    /// Instances of this class can not be directly created by the user, but need to queried from an <see cref="AudioEmitterComponent"/>
+    /// instance using the readonly <see cref="AudioEmitterComponent.Item(string)"/> indexer.
     /// </para>
     /// <para>
-    /// An instance <see cref="AudioEmitterSoundController"/> is not valid anymore if any of those situations arrives: 
+    /// An instance <see cref="AudioEmitterSoundController"/> is not valid anymore if any of those situations arrives:
     /// <list type="bullet">
     ///  <item><description>The underlying <see cref="sound"/> is disposed.</description></item>
     ///  <item><description>The <see cref="AudioEmitterComponent"/> is detached from its entity.</description></item>
@@ -48,10 +47,7 @@ namespace SiliconStudio.Xenko.Audio
         /// <remarks>A <see cref="sound"/> can be associated to several controllers.</remarks>
         internal AudioEmitterSoundController(AudioEmitterComponent parent, Sound sound)
         {
-            if(sound == null)
-                throw new ArgumentNullException(nameof(sound));
-
-            this.sound = sound;
+            this.sound = sound ?? throw new ArgumentNullException(nameof(sound));
             emitter = parent;
 
             Volume = 1;
@@ -125,9 +121,9 @@ namespace SiliconStudio.Xenko.Audio
 
         private SoundPlayState playState;
 
-        public SoundPlayState PlayState 
-        { 
-            get 
+        public SoundPlayState PlayState
+        {
+            get
             {
                 // force the play status to 'stopped' if there is no listeners.
                 if (!InstanceToListener.Any())
@@ -137,9 +133,9 @@ namespace SiliconStudio.Xenko.Audio
                 if (playState != SoundPlayState.Playing || ShouldBePlayed)
                     return playState;
 
-                // returns the playStatus of the underlying instances if controller is playing 
+                // returns the playStatus of the underlying instances if controller is playing
 
-                // A desynchronization between instances' playState can appear due to asynchronous callbacks 
+                // A desynchronization between instances' playState can appear due to asynchronous callbacks
                 // setting the state of the sound to Stopped when reaching the end of the track.
                 // For coherency, we consider a controller as stopped only when all its instances are stopped.
                 // (if not the case, a play call to a stopped controller would restart only some of the underlying instances)
@@ -157,10 +153,7 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         public bool IsLooping
         {
-            get
-            {
-                return isLooping;
-            }
+            get => isLooping;
             set
             {
                 foreach (var instance in InstanceToListener)
@@ -171,24 +164,11 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        /// <summary>
-        /// Gets or sets whether the sound is automatically looping from beginning when it reaches the end.
-        /// </summary>
-        [Obsolete("Renamed, please use IsLooping.")]
-        public bool IsLooped
-        {
-            get{ return IsLooping; }
-            set { IsLooping = value; }
-        }
-
         private float pitch = 1.0f;
 
         public float Pitch
         {
-            get
-            {
-                return pitch;
-            }
+            get => pitch;
             set
             {
                 foreach (var instance in InstanceToListener)
@@ -258,12 +238,9 @@ namespace SiliconStudio.Xenko.Audio
 
         private float volume;
 
-        public float Volume 
+        public float Volume
         {
-            get
-            {
-                return volume;
-            }
+            get => volume;
             set
             {
                 volume = value;

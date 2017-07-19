@@ -23,8 +23,8 @@ namespace SiliconStudio.Xenko.Audio.Tests
 
             music = Content.Load<Sound>("MusicFishLampMp3").CreateInstance(Audio.AudioEngine.DefaultListener);
             effect = Content.Load<Sound>("EffectBip").CreateInstance(Audio.AudioEngine.DefaultListener);
-            music.IsLooped = true;
-            effect.IsLooped = true;
+            music.IsLooping = true;
+            effect.IsLooping = true;
             music.Play();
             effect.Play();
         }

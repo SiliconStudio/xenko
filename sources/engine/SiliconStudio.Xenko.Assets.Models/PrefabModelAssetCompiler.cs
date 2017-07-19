@@ -13,8 +13,6 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Assets.Entities;
-using SiliconStudio.Xenko.Assets.Materials;
-using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Extensions;
 using SiliconStudio.Xenko.Graphics;
@@ -29,26 +27,50 @@ namespace SiliconStudio.Xenko.Assets.Models
     [AssetCompiler(typeof(PrefabModelAsset), typeof(AssetCompilationContext))]
     internal class PrefabModelAssetCompiler : AssetCompilerBase
     {
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
+        public override IEnumerable<BuildDependencyInfo> GetInputTypes(AssetItem assetItem)
         {
-            //The following types will never make it to the game!
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(PrefabAsset), BuildDependencyType.CompileContent);
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SceneAsset), BuildDependencyType.CompileContent);
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(ModelAsset), BuildDependencyType.CompileContent);
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(PrefabModelAsset), BuildDependencyType.CompileContent);
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(ProceduralModelAsset), BuildDependencyType.CompileContent);
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SkeletonAsset), BuildDependencyType.CompileAsset);
+            // We need to read the prefab asset to collect models
+            yield return new BuildDependencyInfo(typeof(PrefabAsset), typeof(AssetCompilationContext), BuildDependencyType.CompileAsset);
+        }
 
-            //Material are needed both in game and in compiler
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(MaterialAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileContent);
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(TextureAsset), BuildDependencyType.Runtime);
+        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
+        {
+            var asset = (PrefabModelAsset)assetItem.Asset;
+            var prefab = assetItem.Package.Session.FindAssetFromProxyObject(asset.Prefab)?.Asset as PrefabAsset;
+            if (prefab != null)
+            {
+                foreach (var entity in prefab.Hierarchy.Parts.Values.Select(x => x.Entity))
+                {
+                    var modelComponent = entity.Get<ModelComponent>();
+                    if (modelComponent == null)
+                        continue;
+
+                    var model = assetItem.Package.Session.FindAssetFromProxyObject(modelComponent.Model);
+                    if (model == null)
+                        continue;
+
+                    // We need any model to be compiled before generating the prefab model
+                    yield return new ObjectUrl(UrlType.Content, model.Location);
+
+                    // We need all materials to be compiled before generating the prefab model
+                    foreach (var material in modelComponent.Materials.Values.Select(x => assetItem.Package.Session.FindAssetFromProxyObject(x)).NotNull())
+                    {
+                        yield return new ObjectUrl(UrlType.Content, material.Location);
+                    }
+                    foreach (var material in ((IModelAsset)model.Asset).Materials.Select(x => assetItem.Package.Session.FindAssetFromProxyObject(x.MaterialInstance.Material)).NotNull())
+                    {
+                        yield return new ObjectUrl(UrlType.Content, material.Location);
+                    }
+                }
+            }
         }
 
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (PrefabModelAsset)assetItem.Asset;
             var renderingSettings = context.GetGameSettingsAsset().GetOrCreate<RenderingSettings>();
-            result.BuildSteps = new AssetBuildStep(assetItem) { new PrefabModelAssetCompileCommand(targetUrlInStorage, asset, assetItem, renderingSettings) };
+            result.BuildSteps = new AssetBuildStep(assetItem);
+            result.BuildSteps.Add(new PrefabModelAssetCompileCommand(targetUrlInStorage, asset, assetItem, renderingSettings));
         }
 
         private class PrefabModelAssetCompileCommand : AssetCommand<PrefabModelAsset>
@@ -65,7 +87,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             {
                 base.ComputeParameterHash(writer);
 
-                var prefabAsset = AssetFinder.FindAsset(Parameters.Prefab.Location);
+                var prefabAsset = AssetFinder.FindAssetFromProxyObject(Parameters.Prefab);
                 if (prefabAsset != null)
                 {
                     writer.Write(prefabAsset.Version);
@@ -270,18 +292,6 @@ namespace SiliconStudio.Xenko.Assets.Models
                 return instance;
             }
 
-            private static IEnumerable<T> IterateTree<T>(T root, Func<T, IEnumerable<T>> childrenF)
-            {
-                var q = new List<T> { root };
-                while (q.Any())
-                {
-                    var c = q[0];
-                    q.RemoveAt(0);
-                    q.AddRange(childrenF(c) ?? Enumerable.Empty<T>());
-                    yield return c;
-                }
-            }
-
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 var contentManager = new ContentManager();
@@ -299,36 +309,16 @@ namespace SiliconStudio.Xenko.Assets.Models
 
                 var loadSettings = new ContentManagerLoaderSettings
                 {
-                    ContentFilter = ContentManagerLoaderSettings.NewContentFilterByType(typeof(Mesh), typeof(Material), typeof(Prefab), typeof(Scene))
+                    ContentFilter = ContentManagerLoaderSettings.NewContentFilterByType(typeof(Mesh), typeof(Material))
                 };
 
                 IList<Entity> allEntities = new List<Entity>();
+                
                 if (Parameters.Prefab != null)
                 {
-                    try
-                    {
-                        var prefab = contentManager.Load<Prefab>(Parameters.Prefab.Location, loadSettings);
-                        if(prefab != null)
-                            allEntities = prefab.Entities;
-                    }
-                    catch (Exception)
-                    {
-                        //ignored
-                    }
-
-                    if (allEntities.Count == 0)
-                    {
-                        try
-                        {
-                            var scene = contentManager.Load<Scene>(Parameters.Prefab.Location, loadSettings);
-                            if(scene != null)
-                                allEntities = scene.Entities;
-                        }
-                        catch (Exception)
-                        {
-                            //ignored
-                        }
-                    }
+                    var prefab = AssetFinder.FindAssetFromProxyObject(Parameters.Prefab)?.Asset as PrefabAsset;
+                    if (prefab != null)
+                        allEntities = prefab.Hierarchy.Parts.Values.Select(x => x.Entity).ToList();
                 }
 
                 var prefabModel = new Model();
@@ -338,50 +328,39 @@ namespace SiliconStudio.Xenko.Assets.Models
                 //2. Create a mesh per material (might need still more meshes if 16bit indexes or more then 32bit)
 
                 var materials = new Dictionary<MaterialInstance, List<EntityChunk>>();
+                var loadedModel = new List<Model>();
 
-                var validEntities = new List<Entity>();
-
-                foreach (var rootEntity in allEntities)
-                {
-                    //collect sub entities as well
-                    var collected = IterateTree(rootEntity, subEntity => subEntity.GetChildren() ).ToArray();
-
-                    //first pass, check if compatible with prefabmodel
-                    foreach (var subEntity in collected)
-                    {
-                        //todo for now we collect everything with a model component
-                        var modelComponent = subEntity.Get<ModelComponent>();
-                        
-                        if (modelComponent?.Model == null || (modelComponent.Skeleton != null && modelComponent.Skeleton.Nodes.Length != 1) || !modelComponent.Enabled)
-                            continue;
-                        
-                        var modelAsset = contentManager.Load<Model>(AttachedReferenceManager.GetUrl(modelComponent.Model), loadSettings);
-                        if (modelAsset == null ||
-                            modelAsset.Meshes.Any(x => x.Draw.PrimitiveType != PrimitiveType.TriangleList || x.Draw.VertexBuffers == null || x.Draw.VertexBuffers.Length != 1) ||
-                            modelAsset.Materials.Any(x => x.Material != null && x.Material.Passes.Any(pass => pass.HasTransparency)) ||
-                            modelComponent.Materials.Values.Any(x => x.Passes.Any(pass => pass.HasTransparency))) //For now we limit only to TriangleList types and interleaved vertex buffers, also we skip transparent
-                        {
-                            commandContext.Logger.Info($"Skipped entity {subEntity.Name} since it's not compatible with PrefabModel.");
-                            continue;
-                        }
-
-                        validEntities.Add(subEntity);
-                    }                    
-                }
-
-                foreach (var subEntity in validEntities)
+                foreach (var subEntity in allEntities)
                 {
                     var modelComponent = subEntity.Get<ModelComponent>();
-                    var modelAsset = contentManager.Load<Model>(AttachedReferenceManager.GetUrl(modelComponent.Model), loadSettings);
-                    for (var index = 0; index < modelAsset.Materials.Count; index++)
+
+                    if (modelComponent?.Model == null || (modelComponent.Skeleton != null && modelComponent.Skeleton.Nodes.Length != 1) || !modelComponent.Enabled)
+                        continue;
+
+                    var modelAsset = AssetFinder.FindAssetFromProxyObject(modelComponent.Model);
+                    if (modelAsset == null)
+                        continue;
+
+                    var model = contentManager.Load<Model>(modelAsset.Location, loadSettings);
+                    loadedModel.Add(model);
+
+                    if (model == null ||
+                        model.Meshes.Any(x => x.Draw.PrimitiveType != PrimitiveType.TriangleList || x.Draw.VertexBuffers == null || x.Draw.VertexBuffers.Length != 1) ||
+                        model.Materials.Any(x => x.Material != null && x.Material.Passes.Any(pass => pass.HasTransparency)) ||
+                        modelComponent.Materials.Values.Any(x => x.Passes.Any(pass => pass.HasTransparency))) //For now we limit only to TriangleList types and interleaved vertex buffers, also we skip transparent
                     {
-                        var material = modelAsset.Materials[index];
+                        commandContext.Logger.Info($"Skipped entity {subEntity.Name} since it's not compatible with PrefabModel.");
+                        continue;
+                    }
+
+                    for (var index = 0; index < model.Materials.Count; index++)
+                    {
+                        var material = model.Materials[index];
                         var mat = ExtractMaterialInstance(material, index, modelComponent, fallbackMaterial);
 
-                        var chunk = new EntityChunk { Entity = subEntity, Model = modelAsset, MaterialIndex = index };
+                        var chunk = new EntityChunk { Entity = subEntity, Model = model, MaterialIndex = index };
 
-                        List<EntityChunk> entities;
-                        if (materials.TryGetValue(mat, out entities))
+                        if (materials.TryGetValue(mat, out var entities))
                         {
                             entities.Add(chunk);
                         }
@@ -427,6 +406,10 @@ namespace SiliconStudio.Xenko.Assets.Models
                 //save
                 contentManager.Save(Url, prefabModel);
 
+                foreach (var model in loadedModel.NotNull())
+                {
+                    contentManager.Unload(model);
+                }
                 device.Dispose();
 
                 return Task.FromResult(ResultStatus.Successful);

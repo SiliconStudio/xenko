@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
     /// </summary>
     [DataContract("EffectLibrary")]
     [AssetDescription(FileExtension, AlwaysMarkAsRoot = true, AllowArchetype = false)]
-    [Display(900, "Effect Library")]
+    [Display(900, "Effect library")]
     public sealed class EffectLogAsset : SourceCodeAsset
     {
         /// <summary>

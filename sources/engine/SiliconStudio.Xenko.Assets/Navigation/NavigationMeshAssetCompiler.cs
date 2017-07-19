@@ -27,10 +27,10 @@ namespace SiliconStudio.Xenko.Assets.Navigation
     [AssetCompiler(typeof(NavigationMeshAsset), typeof(AssetCompilationContext))]
     class NavigationMeshAssetCompiler : AssetCompilerBase
     { 
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
+        public override IEnumerable<BuildDependencyInfo> GetInputTypes(AssetItem assetItem)
         {
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(SceneAsset), BuildDependencyType.CompileAsset);
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(ColliderShapeAsset), BuildDependencyType.CompileContent);
+            yield return new BuildDependencyInfo(typeof(SceneAsset), typeof(AssetCompilationContext), BuildDependencyType.CompileAsset);
+            yield return new BuildDependencyInfo(typeof(ColliderShapeAsset), typeof(AssetCompilationContext), BuildDependencyType.CompileContent);
         }
 
         public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             {
                 string sceneUrl = AttachedReferenceManager.GetUrl(asset.Scene);
                 var sceneAsset = (SceneAsset)assetItem.Package.Session.FindAsset(sceneUrl)?.Asset;
-                if(sceneAsset == null)
+                if (sceneAsset == null)
                     yield break;
 
                 var sceneEntities = sceneAsset.Hierarchy.Parts.Select(x => x.Value.Entity).ToList();
@@ -74,13 +74,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             var asset = (NavigationMeshAsset)assetItem.Asset;
 
             // Compile the navigation mesh itself
-            result.BuildSteps = new AssetBuildStep(assetItem)
-            {
-                new NavmeshBuildCommand(targetUrlInStorage, assetItem, asset, context)
-                {
-                    InputFilesGetter = () => GetInputFiles(assetItem)
-                }
-            };
+            result.BuildSteps = new AssetBuildStep(assetItem);
+            result.BuildSteps.Add(new NavmeshBuildCommand(targetUrlInStorage, assetItem, asset, context) { InputFilesGetter = () => GetInputFiles(assetItem) });
         }
 
         private class NavmeshBuildCommand : AssetCommand<NavigationMeshAsset>
