@@ -114,6 +114,17 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
         public IComputeScalar ClearCoatMetalnessMap { get; set; }
 
+        /// <summary>
+        /// Gets or sets the clear coat metalness map.
+        /// </summary>
+        /// <userdoc>
+        /// The metalness map used by the clear coat layer.
+        /// </userdoc>
+        [Display("Eye To Surface LOD Distance")]
+        [NotNull]
+        [DataMemberRange(0.0, 32.0, 0.01, 0.1, 3)]
+        public IComputeScalar LODDistance { get; set; }
+
         public MaterialClearCoatFeature()
         {
             MetalFlakesDiffuseMap = new ComputeColor();
@@ -122,6 +133,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             ClearCoatGlossinessMap = new ComputeFloat();
             BasePaintGlossinessMap = new ComputeFloat();
             ClearCoatMetalnessMap = new ComputeFloat();
+
+            LODDistance = new ComputeFloat();
         }
 
         public override void MultipassGeneration(MaterialGeneratorContext context)
@@ -132,10 +145,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         public override void GenerateShader(MaterialGeneratorContext context)
         {
-            if (!Enabled)
-                return;
-            
-            // Make sure the inputs aren't out of range
+            // Make sure the inputs are not out of range
             ClampInputs();
 
             // Set the blend state for both pass
@@ -144,6 +154,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             var isMetalFlakesPass = context.PassIndex == 0;
             if (isMetalFlakesPass)
             {
+                var surfaceToEyeLODFactor = LODDistance.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.GenericTexture, MaterialKeys.GenericTexture, Color.White));
+                
                 // Diffuse Feature (interpolated by the 'regular' diffuse map)
                 var metalFlakesComputeColorSource = MetalFlakesDiffuseMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.DiffuseMap, MaterialKeys.DiffuseValue, Color.White));
 
@@ -151,11 +163,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
                 // Diffuse uses a custom shader (to perform the interpolation)
                 mixinDiffuse.Mixins.Add(new ShaderClassSource("MaterialSurfaceDiffuseMetalFlakes"));
-
                 mixinDiffuse.AddComposition("metalFlakesDiffuseMap", metalFlakesComputeColorSource);
 
                 context.UseStream(MaterialShaderStage.Pixel, MaterialDiffuseMapFeature.DiffuseStream.Stream);
                 context.UseStream(MaterialShaderStage.Pixel, MaterialDiffuseMapFeature.ColorBaseStream.Stream);
+
+                context.AddShaderSource(MaterialShaderStage.Pixel, mixinDiffuse);
 
                 // Glossiness Feature
                 context.UseStream(MaterialShaderStage.Pixel, "matGlossiness");
@@ -176,6 +189,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 // Enable transparency for clear coat pass only
                 context.MaterialPass.HasTransparency = true;
 
+                var computeColorKeys = new MaterialComputeColorKeys(MaterialKeys.NormalMap, MaterialKeys.NormalValue, MaterialNormalMapFeature.DefaultNormalColor, false);
+                var computeColorSource = ClearCoatLayerNormalMap.GenerateShaderSource(context, computeColorKeys);
+
                 // Orange Peel Normal Map
                 var mixinNormalMap = new ShaderMixinSource();
 
@@ -184,9 +200,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 context.Parameters.Set(MaterialKeys.HasNormalMap, true);
 
                 mixinNormalMap.Mixins.Add(new ShaderClassSource("MaterialSurfaceNormalMap", IsXYNormalOrangePeel, ScaleAndBiasOrangePeel));
-
-                var computeColorKeys = new MaterialComputeColorKeys(MaterialKeys.NormalMap, MaterialKeys.NormalValue, MaterialNormalMapFeature.DefaultNormalColor, false);
-                var computeColorSource = ClearCoatLayerNormalMap.GenerateShaderSource(context, computeColorKeys);
 
                 mixinNormalMap.AddComposition("normalMap", computeColorSource);
                 context.AddShaderSource(MaterialShaderStage.Pixel, mixinNormalMap);
