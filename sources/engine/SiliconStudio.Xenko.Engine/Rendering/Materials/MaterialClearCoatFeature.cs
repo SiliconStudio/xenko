@@ -115,14 +115,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         public IComputeScalar ClearCoatMetalnessMap { get; set; }
 
         /// <summary>
-        /// Gets or sets the clear coat metalness map.
+        /// Gets or sets the distance factor to perform the transition between the metal flakes and base paint colors.
         /// </summary>
-        /// <userdoc>
-        /// The metalness map used by the clear coat layer.
-        /// </userdoc>
-        [Display("Eye To Surface LOD Distance")]
+        [Display("Paint Transition Distance")]
         [NotNull]
-        [DataMemberRange(0.0, 32.0, 0.01, 0.1, 3)]
+        [DataMemberRange(0.001, 2.000, 0.0100, 0.100, 3)]
         public IComputeScalar LODDistance { get; set; }
 
         public MaterialClearCoatFeature()
@@ -134,7 +131,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             BasePaintGlossinessMap = new ComputeFloat();
             ClearCoatMetalnessMap = new ComputeFloat();
 
-            LODDistance = new ComputeFloat();
+            LODDistance = new ComputeFloat(2.000f);
         }
 
         public override void MultipassGeneration(MaterialGeneratorContext context)
@@ -154,8 +151,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             var isMetalFlakesPass = context.PassIndex == 0;
             if (isMetalFlakesPass)
             {
-                var surfaceToEyeLODFactor = LODDistance.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.GenericTexture, MaterialKeys.GenericTexture, Color.White));
-                
+                var surfaceToEyeDistance = LODDistance.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.GlossinessMap, MaterialKeys.GlossinessValue, Color.White));
+               
                 // Diffuse Feature (interpolated by the 'regular' diffuse map)
                 var metalFlakesComputeColorSource = MetalFlakesDiffuseMap.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.DiffuseMap, MaterialKeys.DiffuseValue, Color.White));
 
@@ -164,6 +161,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 // Diffuse uses a custom shader (to perform the interpolation)
                 mixinDiffuse.Mixins.Add(new ShaderClassSource("MaterialSurfaceDiffuseMetalFlakes"));
                 mixinDiffuse.AddComposition("metalFlakesDiffuseMap", metalFlakesComputeColorSource);
+                mixinDiffuse.AddComposition("surfaceToEyeDistanceFactor", surfaceToEyeDistance);
 
                 context.UseStream(MaterialShaderStage.Pixel, MaterialDiffuseMapFeature.DiffuseStream.Stream);
                 context.UseStream(MaterialShaderStage.Pixel, MaterialDiffuseMapFeature.ColorBaseStream.Stream);
@@ -180,8 +178,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 // Computes glossiness factor for the metal flakes layer (based on the eye to surface distance and the base glossiness value)
                 mixinGlossiness.Mixins.Add(new ShaderClassSource("MaterialSurfaceGlossinessMapMetalFlakes", Invert));
 
-                mixinGlossiness.AddComposition("baseGlossinessMap", baseGlossinessComputeColorMap);         
-                
+                mixinGlossiness.AddComposition("baseGlossinessMap", baseGlossinessComputeColorMap);
+                mixinDiffuse.AddComposition("surfaceToEyeDistanceFactor", surfaceToEyeDistance);
+
                 context.AddShaderSource(MaterialShaderStage.Pixel, mixinGlossiness);
             }
             else
