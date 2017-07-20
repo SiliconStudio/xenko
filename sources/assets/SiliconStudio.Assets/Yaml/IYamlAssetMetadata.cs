@@ -35,7 +35,7 @@ namespace SiliconStudio.Assets.Yaml
         /// Tries to retrieve the metadata for the given path.
         /// </summary>
         /// <param name="path">The path at which to retrieve metadata.</param>
-        /// <returns>The metadata attached to the given path, or the default value of <typeparamref name="T"/> if no metadata is attached at the given path.</returns>
+        /// <returns>The metadata attached to the given path, or the default value of the underlying type if no metadata is attached at the given path.</returns>
         object TryGet([NotNull] YamlAssetPath path);
     }
 }

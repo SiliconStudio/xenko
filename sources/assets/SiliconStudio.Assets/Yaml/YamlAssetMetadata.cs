@@ -9,31 +9,45 @@ using SiliconStudio.Core.Annotations;
 namespace SiliconStudio.Assets.Yaml
 {
     /// <summary>
+    /// Equality comparer for <see cref="YamlAssetPath"/> hwne used as a key in a hashing collection (e.g. <see cref="Dictionary{TKey,TValue}"/>.
+    /// </summary>
+    /// <remarks>
+    /// To stay valid the compared <see cref="YamlAssetPath"/> must not change while used as keys in the hashing collection.
+    /// </remarks>
+    public class YamlAssetPathComparer : EqualityComparer<YamlAssetPath>
+    {
+        public new static YamlAssetPathComparer Default { get; } = new YamlAssetPathComparer();
+
+        /// <inheritdoc />
+        public override bool Equals(YamlAssetPath x, YamlAssetPath y)
+        {
+            if (ReferenceEquals(x, y)) return true;
+            if (x.Elements.Count != y.Elements.Count) return false;
+
+            return x.Elements.SequenceEqual(y.Elements);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode(YamlAssetPath obj)
+        {
+            return obj?.Elements.Aggregate(0, (hashCode, element) => (hashCode * 397) ^ element.GetHashCode()) ?? 0;
+        }
+    }
+
+    /// <summary>
     /// A container class to transfer metadata between the asset and the YAML serializer.
     /// </summary>
     /// <typeparam name="T">The type of metadata.</typeparam>
     public class YamlAssetMetadata<T> : IYamlAssetMetadata, IEnumerable<KeyValuePair<YamlAssetPath, T>>
     {
-        private class YamlAssetPathComparer : EqualityComparer<YamlAssetPath>
-        {
-            /// <inheritdoc />
-            public override bool Equals(YamlAssetPath x, YamlAssetPath y)
-            {
-                if (ReferenceEquals(x, y)) return true;
-                if (x.Elements.Count != y.Elements.Count) return false;
 
-                return x.Elements.SequenceEqual(y.Elements);
-            }
-
-            /// <inheritdoc />
-            public override int GetHashCode(YamlAssetPath obj)
-            {
-                return obj?.Elements.Aggregate(0, (hashCode, element) => (hashCode * 397) ^ element.GetHashCode()) ?? 0;
-            }
-        }
-
-        private readonly Dictionary<YamlAssetPath, T> metadata = new Dictionary<YamlAssetPath, T>(new YamlAssetPathComparer());
+        private readonly Dictionary<YamlAssetPath, T> metadata = new Dictionary<YamlAssetPath, T>(YamlAssetPathComparer.Default);
         private bool isAttached;
+
+        /// <summary>
+        /// Gets the number of key/value pairs contained in the <see cref="YamlAssetMetadata{T}"/>
+        /// </summary>
+        public int Count => metadata.Count;
 
         /// <summary>
         /// Attaches the given metadata value to the given YAML path.
