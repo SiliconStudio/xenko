@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Assets.Yaml
@@ -13,7 +14,25 @@ namespace SiliconStudio.Assets.Yaml
     /// <typeparam name="T">The type of metadata.</typeparam>
     public class YamlAssetMetadata<T> : IYamlAssetMetadata, IEnumerable<KeyValuePair<YamlAssetPath, T>>
     {
-        private readonly Dictionary<YamlAssetPath, T> metadata = new Dictionary<YamlAssetPath, T>();
+        private class YamlAssetPathComparer : EqualityComparer<YamlAssetPath>
+        {
+            /// <inheritdoc />
+            public override bool Equals(YamlAssetPath x, YamlAssetPath y)
+            {
+                if (ReferenceEquals(x, y)) return true;
+                if (x.Elements.Count != y.Elements.Count) return false;
+
+                return x.Elements.SequenceEqual(y.Elements);
+            }
+
+            /// <inheritdoc />
+            public override int GetHashCode(YamlAssetPath obj)
+            {
+                return obj?.Elements.Aggregate(0, (hashCode, element) => (hashCode * 397) ^ element.GetHashCode()) ?? 0;
+            }
+        }
+
+        private readonly Dictionary<YamlAssetPath, T> metadata = new Dictionary<YamlAssetPath, T>(new YamlAssetPathComparer());
         private bool isAttached;
 
         /// <summary>
@@ -36,7 +55,6 @@ namespace SiliconStudio.Assets.Yaml
             if (isAttached) throw new InvalidOperationException("Cannot modify a YamlAssetMetadata after it has been attached.");
             metadata.Remove(path);
         }
-
 
         /// <summary>
         /// Tries to retrieve the metadata for the given path.
