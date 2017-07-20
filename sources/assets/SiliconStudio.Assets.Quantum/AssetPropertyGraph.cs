@@ -78,6 +78,7 @@ namespace SiliconStudio.Assets.Quantum
             var overrides = assetItem.YamlMetadata?.RetrieveMetadata(AssetObjectSerializerBackend.OverrideDictionaryKey);
             ApplyOverrides(RootNode, overrides);
             nodeListener = new AssetGraphNodeChangeListener(RootNode, Definition);
+            nodeListener.Initialize();
             nodeListener.ValueChanging += AssetContentChanging;
             nodeListener.ValueChanged += AssetContentChanged;
             nodeListener.ItemChanging += AssetItemChanging;
@@ -971,7 +972,7 @@ namespace SiliconStudio.Assets.Quantum
                 return false;
 
             // Object references
-            if (baseValue is IIdentifiable && Definition.IsMemberTargetObjectReference((IMemberNode)memberNode.BaseNode, memberNode.BaseNode.Retrieve()))
+            if (baseValue is IIdentifiable && Definition.IsMemberTargetObjectReference((IMemberNode)memberNode.BaseNode, baseValue))
             {
                 if (!reconcileObjectReference)
                     return false;

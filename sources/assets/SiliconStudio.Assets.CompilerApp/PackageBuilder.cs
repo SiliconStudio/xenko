@@ -118,6 +118,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 {
                     Profile = builderOptions.BuildProfile,
                     Platform = builderOptions.Platform,
+                    CompilationContext = typeof(AssetCompilationContext),
                     BuildConfiguration = builderOptions.ProjectConfiguration
                 };
 
@@ -308,11 +309,10 @@ namespace SiliconStudio.Assets.CompilerApp
                 {
                     // Deserialize command and parameters
                     Command command = processBuilderRemote.GetCommandToExecute();
-                    BuildParameterCollection parameters = processBuilderRemote.GetBuildParameters();
 
                     // Run command
                     var inputHashes = FileVersionTracker.GetDefault();
-                    var builderContext = new BuilderContext(buildPath, buildProfile, inputHashes, parameters, 0, null);
+                    var builderContext = new BuilderContext(buildPath, buildProfile, inputHashes, 0, null);
 
                     var commandContext = new RemoteCommandContext(processBuilderRemote, command, builderContext, logger);
                     MicrothreadLocalDatabases.MountDatabase(commandContext.GetOutputObjectsGroups());

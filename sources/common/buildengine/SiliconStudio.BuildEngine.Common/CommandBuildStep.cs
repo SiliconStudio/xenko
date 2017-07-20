@@ -44,11 +44,6 @@ namespace SiliconStudio.BuildEngine
             return Command.ToString();
         }
 
-        public override BuildStep Clone()
-        {
-            return new CommandBuildStep(Command.Clone());
-        }
-
         public override void Clean(IExecuteContext executeContext, BuilderContext builderContext, bool deleteOutput)
         {
             // try to retrieve result from one of the object store
@@ -316,7 +311,7 @@ namespace SiliconStudio.BuildEngine
                         };
 
                     // Start WCF pipe for communication with process
-                    var processBuilderRemote = new ProcessBuilderRemote(commandContext, Command, builderContext.Parameters);
+                    var processBuilderRemote = new ProcessBuilderRemote(commandContext, Command);
                     var host = new ServiceHost(processBuilderRemote);
                     host.AddServiceEndpoint(typeof(IProcessBuilderRemote), new NetNamedPipeBinding(NetNamedPipeSecurityMode.None) { MaxReceivedMessageSize = int.MaxValue }, address);
                     host.Open();
@@ -342,7 +337,8 @@ namespace SiliconStudio.BuildEngine
                     //    }
                     //}
 
-                    await process.WaitForExitAsync();
+                    // Note: we don't want the thread to schedule another job since the CPU core will be in use by the process, so we do a blocking WaitForExit.
+                    process.WaitForExit();
 
                     host.Close();
 

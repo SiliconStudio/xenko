@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
                 EventHandler<GameUnhandledExceptionEventArgs> exceptionhandler = (sender, e) =>
                 {
-                    Logger.Info("Game finished with exception ={0}.", e);
+                    Logger.Info($"Game finished with exception ={e}.");
                     tcs.TrySetException((Exception)e.ExceptionObject);
                 };
 

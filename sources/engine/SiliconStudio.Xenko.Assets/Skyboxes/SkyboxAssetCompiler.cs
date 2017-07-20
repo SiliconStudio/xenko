@@ -20,23 +20,13 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
     [AssetCompiler(typeof(SkyboxAsset), typeof(AssetCompilationContext))]
     internal class SkyboxAssetCompiler : AssetCompilerBase
     {
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
+        public override IEnumerable<BuildDependencyInfo> GetInputTypes(AssetItem assetItem)
         {
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(TextureAsset), BuildDependencyType.CompileContent);
+            yield return new BuildDependencyInfo(typeof(TextureAsset), typeof(AssetCompilationContext), BuildDependencyType.CompileContent);
         }
 
         public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
         {
-            var skyboxAsset = (SkyboxAsset)assetItem.Asset;
-            foreach (var dependency in skyboxAsset.GetDependencies())
-            {
-                var dependencyItem = assetItem.Package.Assets.Find(dependency.Id);
-                if (dependencyItem?.Asset is TextureAsset)
-                {
-                    yield return new ObjectUrl(UrlType.Content, dependency.Location);
-                }
-            }
-
             //skybox needs many shaders to generate... todo should find which ones at some point maybe!
             foreach (var sessionPackage in assetItem.Package.Session.Packages)
             {
@@ -84,7 +74,8 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
 
                     // Create and add the texture command.
                     var textureParameters = new TextureConvertParameters(assetSource, textureAsset, PlatformType.Windows, GraphicsPlatform.Direct3D11, graphicsProfile, gameSettingsAsset.GetOrCreate<TextureSettings>().TextureQuality, colorSpace);
-                    var prereqStep = new AssetBuildStep(textureAssetItem) { new TextureAssetCompiler.TextureConvertCommand(textureUrl, textureParameters, assetItem.Package) };
+                    var prereqStep = new AssetBuildStep(textureAssetItem);
+                    prereqStep.Add(new TextureAssetCompiler.TextureConvertCommand(textureUrl, textureParameters, assetItem.Package));
                     result.BuildSteps.Add(prereqStep);
                     prereqs.Enqueue(prereqStep);
                 }
@@ -118,8 +109,8 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
 
         private class SkyboxCompileCommand : AssetCommand<SkyboxAsset>
         {
-            public SkyboxCompileCommand(string url, SkyboxAsset parameters, Package package)
-                : base(url, parameters, package)
+            public SkyboxCompileCommand(string url, SkyboxAsset parameters, IAssetFinder assetFinder)
+                : base(url, parameters, assetFinder)
             {
             }
 

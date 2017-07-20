@@ -12,10 +12,10 @@ namespace SiliconStudio.Xenko.Particles
     public class ParticleSystemSettings
     {
         /// <summary>
-        /// Warm-up time is the amount of time the system should spend in background pre-simulation the first time it is started
+        /// Warm-up time is the amount of time the system should spend in the background pre-simulation the first time it is started
         /// </summary>
         /// <userdoc>
-        /// Warm-up time is the amount of time the system should spend in background pre-simulation the first time it is started (warming up). So when it is started it will appeas as if it has been running for some time laready
+        /// Warm-up time is the amount of time the system should spend in the background pre-simulation the first time it is started (warming up). So when it is started it will appear as if it has been running for some time already
         /// </userdoc>
         [DataMember(10)]
         [Display("Warm-up time")]

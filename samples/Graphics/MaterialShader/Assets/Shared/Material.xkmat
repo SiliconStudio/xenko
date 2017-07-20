@@ -1,6 +1,6 @@
 !MaterialAsset
 Id: 46859e92-96ad-4466-a0ed-a16f85780b32
-SerializedVersion: {Xenko: 1.4.0-beta}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Attributes:
     Displacement: !MaterialDisplacementMapFeature
@@ -54,6 +54,7 @@ Attributes:
         Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
         Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX {}
         NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX {}
+        Environment: !MaterialSpecularMicrofacetEnvironmentGGXLUT {}
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
 Layers: {}

@@ -28,6 +28,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             result.Material = context.Material;
 
+            context.PushMaterial(materialDescriptor, rootMaterialFriendlyName);
+            
             context.Step = MaterialGeneratorStep.PassesEvaluation;
             materialDescriptor.Visit(context);
 
@@ -36,11 +38,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             {
                 var materialPass = context.PushPass();
 
-                context.PushMaterial(materialDescriptor, rootMaterialFriendlyName);
                 context.PushLayer(null);
                 materialDescriptor.Visit(context);
                 context.PopLayer();
-                context.PopMaterial();
 
                 materialPass.Parameters.Set(MaterialKeys.VertexStageSurfaceShaders, context.ComputeShaderSource(MaterialShaderStage.Vertex));
                 materialPass.Parameters.Set(MaterialKeys.DomainStageSurfaceShaders, context.ComputeShaderSource(MaterialShaderStage.Domain));
@@ -52,6 +52,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
                 context.PopPass();
             }
+            context.PopMaterial();
 
             return result;
         }

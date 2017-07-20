@@ -27,10 +27,8 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
             var asset = (SpriteStudioAnimationAsset)assetItem.Asset;
             var colorSpace = context.GetColorSpace();
 
-            result.BuildSteps = new AssetBuildStep(assetItem)
-            {
-                new SpriteStudioAnimationAssetCommand(targetUrlInStorage, asset, colorSpace, assetItem.Package)
-            };
+            result.BuildSteps = new AssetBuildStep(assetItem);
+            result.BuildSteps.Add(new SpriteStudioAnimationAssetCommand(targetUrlInStorage, asset, colorSpace, assetItem.Package));
         }
 
         /// <summary>
@@ -40,8 +38,8 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
         {
             private ColorSpace colorSpace;
 
-            public SpriteStudioAnimationAssetCommand(string url, SpriteStudioAnimationAsset asset, ColorSpace colorSpace, Package package)
-                : base(url, asset, package)
+            public SpriteStudioAnimationAssetCommand(string url, SpriteStudioAnimationAsset asset, ColorSpace colorSpace, IAssetFinder assetFinder)
+                : base(url, asset, assetFinder)
             {
                 this.colorSpace = colorSpace;
             }

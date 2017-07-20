@@ -20,17 +20,18 @@ namespace SiliconStudio.Assets.Quantum
         /// <param name="basePath">If not null, this method will apply the remapping only for paths that are contained in the given base path.</param>
         public static void RemapIdentifiablePaths<T>(YamlAssetMetadata<T> metadata, Dictionary<Guid, Guid> idRemapping, YamlAssetPath basePath = null)
         {
-            if (metadata == null)
+            // Early exit if nothing to remap
+            if (metadata == null || idRemapping == null)
                 return;
 
             var replacements = new List<Tuple<YamlAssetPath, YamlAssetPath, T>>();
             foreach (var entry in metadata)
             {
                 // Skip paths that doesn't start with the given base path.
-                if (basePath != null && entry.Key.Elements.Take(basePath.Elements.Count).Where((x, i) => !x.Equals(basePath.Elements[i])).Any())
+                if (basePath != null && !entry.Key.StartsWith(basePath))
                     continue;
 
-                var newPath = new YamlAssetPath(entry.Key.Elements.Select((x, i) => FixupIdentifier(x, idRemapping)));
+                var newPath = new YamlAssetPath(entry.Key.Elements.Select(x => FixupIdentifier(x, idRemapping)));
                 replacements.Add(Tuple.Create(entry.Key, newPath, entry.Value));
             }
 

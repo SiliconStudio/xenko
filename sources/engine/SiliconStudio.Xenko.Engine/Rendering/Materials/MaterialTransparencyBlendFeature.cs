@@ -68,7 +68,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             context.SetStream(AlphaBlendStream.Stream, alpha, MaterialKeys.DiffuseSpecularAlphaBlendMap, MaterialKeys.DiffuseSpecularAlphaBlendValue, Color.White);
             context.SetStream(AlphaBlendColorStream.Stream, tint, MaterialKeys.AlphaBlendColorMap, MaterialKeys.AlphaBlendColorValue, Color.White);
-    
+
+            context.MaterialPass.Parameters.Set(MaterialKeys.UsePixelShaderWithDepthPass, true);
+
             if (!context.Tags.Get(HasFinalCallback))
             {
                 context.Tags.Set(HasFinalCallback, true);

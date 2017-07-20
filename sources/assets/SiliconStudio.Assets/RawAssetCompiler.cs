@@ -19,7 +19,8 @@ namespace SiliconStudio.Assets
             var assetSource = GetAbsolutePath(assetItem, asset.Source);
             var importCommand = new ImportStreamCommand(targetUrlInStorage, assetSource) { DisableCompression = !asset.Compress };
 
-            result.BuildSteps = new AssetBuildStep(assetItem) { importCommand };
+            result.BuildSteps = new AssetBuildStep(assetItem);
+            result.BuildSteps.Add(importCommand);
         }
     }
 }

@@ -4,49 +4,73 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Quantum
 {
     /// <summary>
-    /// An object that tracks the changes in the content of <see cref="IGraphNode"/> referenced by a given root node.
-    /// A <see cref="GraphNodeChangeListener"/> will raise events on changes on any node that is either a child, or the
-    /// target of a reference from the root node, recursively.
+    /// An object that tracks the changes in an extended graph of <see cref="IGraphNode"/>, given a root node. The graph extends to all target nodes
+    /// referenced by members and collections of the root node, recursively. Nodes can be excluded from the extended graph by providing a custom
+    /// visitor in <see cref="CreateVisitor"/>.
     /// </summary>
     public class GraphNodeChangeListener : INotifyNodeValueChange, INotifyNodeItemChange, IDisposable
     {
         private readonly IGraphNode rootNode;
-        private readonly Func<IMemberNode, bool> shouldRegisterMemberTarget;
-        private readonly Func<IObjectNode, Index, bool> shouldRegisterItemTarget;
         protected readonly HashSet<IGraphNode> RegisteredNodes = new HashSet<IGraphNode>();
 
-        public GraphNodeChangeListener(IGraphNode rootNode, Func<IMemberNode, bool> shouldRegisterMemberTarget = null, Func<IObjectNode, Index, bool> shouldRegisterItemTarget = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GraphNodeChangeListener"/> class.
+        /// </summary>
+        /// <param name="rootNode">The root node of the extended graph to listen to.</param>
+        public GraphNodeChangeListener(IGraphNode rootNode)
         {
             this.rootNode = rootNode;
-            this.shouldRegisterMemberTarget = shouldRegisterMemberTarget;
-            this.shouldRegisterItemTarget = shouldRegisterItemTarget;
-            RegisterAllNodes();
         }
 
         /// <summary>
-        /// Raised before one of the node referenced by the related root node changes.
+        /// Raised before the value of a member node referenced by the related root node changes.
         /// </summary>
         public event EventHandler<MemberNodeChangeEventArgs> ValueChanging;
 
         /// <summary>
-        /// Raised after one of the node referenced by the related root node has changed.
+        /// Raised after the value of a member node referenced by the related root node has changed.
         /// </summary>
         public event EventHandler<MemberNodeChangeEventArgs> ValueChanged;
 
+        /// <summary>
+        /// Raised before an item of a collection node referenced by the related root node changes.
+        /// </summary>
         public event EventHandler<ItemChangeEventArgs> ItemChanging;
 
+        /// <summary>
+        /// Raised after an item of a collection node referenced by the related root node has changed.
+        /// </summary>
         public event EventHandler<ItemChangeEventArgs> ItemChanged;
+
+        /// <summary>
+        /// Initializes the node listener.
+        /// </summary>
+        public void Initialize()
+        {
+            RegisterAllNodes();
+        }
 
         /// <inheritdoc/>
         public void Dispose()
         {
-            var visitor = new GraphVisitorBase();
+            var visitor = CreateVisitor();
             visitor.Visiting += (node, path) => UnregisterNode(node);
             visitor.Visit(rootNode);
+        }
+
+        /// <summary>
+        /// Creates a proper <see cref="GraphVisitorBase"/> to visit the graph.
+        /// </summary>
+        /// <returns>A new instance of <see cref="GraphVisitorBase"/>.</returns>
+        [NotNull]
+        protected virtual GraphVisitorBase CreateVisitor()
+        {
+            return new GraphVisitorBase();
         }
 
         protected virtual bool RegisterNode(IGraphNode node)
@@ -99,20 +123,16 @@ namespace SiliconStudio.Quantum
 
         private void RegisterAllNodes()
         {
-            var visitor = new GraphVisitorBase();
+            var visitor = CreateVisitor();
             visitor.Visiting += (node, path) => RegisterNode(node);
-            visitor.ShouldVisitMemberTargetNode =  shouldRegisterMemberTarget;
-            visitor.ShouldVisitTargetItemNode = shouldRegisterItemTarget;
             visitor.Visit(rootNode);
         }
 
         private void ContentPrepareChange(object sender, INodeChangeEventArgs e)
         {
             var node = e.Node;
-            var visitor = new GraphVisitorBase();
+            var visitor = CreateVisitor();
             visitor.Visiting += (node1, path) => UnregisterNode(node1);
-            visitor.ShouldVisitMemberTargetNode = shouldRegisterMemberTarget;
-            visitor.ShouldVisitTargetItemNode = shouldRegisterItemTarget;
             switch (e.ChangeType)
             {
                 case ContentChangeType.ValueChange:
@@ -138,10 +158,8 @@ namespace SiliconStudio.Quantum
 
         private void ContentFinalizeChange(object sender, INodeChangeEventArgs e)
         {
-            var visitor = new GraphVisitorBase();
+            var visitor = CreateVisitor();
             visitor.Visiting += (node, path) => RegisterNode(node);
-            visitor.ShouldVisitMemberTargetNode = shouldRegisterMemberTarget;
-            visitor.ShouldVisitTargetItemNode = shouldRegisterItemTarget;
             switch (e.ChangeType)
             {
                 case ContentChangeType.ValueChange:
@@ -171,7 +189,7 @@ namespace SiliconStudio.Quantum
                             addedNode = reference.TargetNode;
                         }
 
-                        if (addedNode != null && (shouldRegisterItemTarget?.Invoke(objectNode, index) ?? true))
+                        if (addedNode != null)
                         {
                             var path = new GraphNodePath(e.Node);
                             path.PushIndex(index);

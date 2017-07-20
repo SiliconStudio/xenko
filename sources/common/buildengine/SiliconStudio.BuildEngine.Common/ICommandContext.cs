@@ -12,7 +12,6 @@ namespace SiliconStudio.BuildEngine
     {
         Command CurrentCommand { get; }
         LoggerResult Logger { get; }
-        BuildParameterCollection BuildParameters { get; }
 
         IEnumerable<IDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups();
 

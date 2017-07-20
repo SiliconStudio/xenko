@@ -18,10 +18,10 @@ namespace SiliconStudio.Xenko.Assets.Rendering
     [AssetCompiler(typeof(GraphicsCompositorAsset), typeof(AssetCompilationContext))]
     public class GraphicsCompositorAssetCompiler : AssetCompilerBase
     {
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
+        public override IEnumerable<BuildDependencyInfo> GetInputTypes(AssetItem assetItem)
         {
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(RenderTextureAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileAsset);
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(TextureAsset), BuildDependencyType.Runtime | BuildDependencyType.CompileAsset);
+            yield return new BuildDependencyInfo(typeof(RenderTextureAsset), typeof(AssetCompilationContext), BuildDependencyType.Runtime | BuildDependencyType.CompileAsset);
+            yield return new BuildDependencyInfo(typeof(TextureAsset), typeof(AssetCompilationContext), BuildDependencyType.Runtime | BuildDependencyType.CompileAsset);
         }
 
         public override bool AlwaysCheckRuntimeTypes { get; } = true; //compositor is special, we always want to visit what the renderers
@@ -34,15 +34,13 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (GraphicsCompositorAsset)assetItem.Asset;
-            result.BuildSteps = new AssetBuildStep(assetItem)
-            {
-                new GraphicsCompositorCompileCommand(targetUrlInStorage, asset, assetItem.Package),
-            };
+            result.BuildSteps = new AssetBuildStep(assetItem);
+            result.BuildSteps.Add(new GraphicsCompositorCompileCommand(targetUrlInStorage, asset, assetItem.Package));
         }
 
         internal class GraphicsCompositorCompileCommand : AssetCommand<GraphicsCompositorAsset>
         {
-            public GraphicsCompositorCompileCommand(string url, GraphicsCompositorAsset asset, Package assetItemPackage) : base(url, asset, assetItemPackage)
+            public GraphicsCompositorCompileCommand(string url, GraphicsCompositorAsset asset, IAssetFinder assetFinder) : base(url, asset, assetFinder)
             {
             }
 

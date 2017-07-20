@@ -167,7 +167,7 @@ namespace SiliconStudio.Shaders.Utility
             }
             else
             {
-                text.AppendLine("Ok");
+                text.AppendLine("OK");
             }
             return text.ToString();
         }
