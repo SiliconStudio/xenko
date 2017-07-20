@@ -197,8 +197,8 @@ namespace SiliconStudio.Xenko.Assets.Materials
                         BasePaintGlossinessMap = new ComputeBinaryScalar(new ComputeFloat(0.00f), metalFlakesMask, BinaryOperator.Multiply),
 
                         ClearCoatGlossinessMap = new ComputeFloat(1.00f),
-                        ClearCoatLayerNormalMap = clearCoatLayerNormalMap,
-                        ScaleAndBiasOrangePeel = true,
+                        OrangePeelNormalMap = clearCoatLayerNormalMap,
+                        OrangePeelScaleAndBias = true,
                         ClearCoatMetalnessMap = new ComputeFloat(0.50f),
 
                         MetalFlakesDiffuseMap = new ComputeColor(defaultMetalFlakesColor),
