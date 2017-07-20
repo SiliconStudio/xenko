@@ -31,6 +31,10 @@ namespace SiliconStudio.Xenko.Assets.Models
         {
             // We need to read the prefab asset to collect models
             yield return new BuildDependencyInfo(typeof(PrefabAsset), typeof(AssetCompilationContext), BuildDependencyType.CompileAsset);
+            foreach (var type in AssetRegistry.GetAssetTypes(typeof(Model)))
+            {
+                yield return new BuildDependencyInfo(type, typeof(AssetCompilationContext), BuildDependencyType.CompileContent);
+            }
         }
 
         public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
