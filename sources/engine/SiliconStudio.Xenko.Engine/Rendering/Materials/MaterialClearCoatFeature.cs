@@ -182,7 +182,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 mixinGlossiness.Mixins.Add(new ShaderClassSource("MaterialSurfaceGlossinessMapMetalFlakes", Invert));
 
                 mixinGlossiness.AddComposition("glossinessMap", baseGlossinessComputeColorMap);
-                mixinDiffuse.AddComposition("surfaceToEyeDistanceFactor", surfaceToEyeDistance);
+                mixinGlossiness.AddComposition("surfaceToEyeDistanceFactor", surfaceToEyeDistance);
 
                 context.AddShaderSource(MaterialShaderStage.Pixel, mixinGlossiness);
             }
