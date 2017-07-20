@@ -244,7 +244,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
                 else
                 {
                     if (UseRandomTexCoordinates)
-                        shaderSource = new ShaderClassSource("ComputeColorTextureScaledOffsetDynamicSamplerRandomUv", textureKey, usedTexcoord, samplerKey, channelStr, textureScale, textureOffset);
+                        shaderSource = new ShaderClassSource("ComputeColorTextureScaledOffsetDynamicSamplerRandomUV", textureKey, usedTexcoord, samplerKey, channelStr, textureScale, textureOffset);
                     else
                         shaderSource = new ShaderClassSource("ComputeColorTextureScaledOffsetDynamicSampler", textureKey, usedTexcoord, samplerKey, channelStr, textureScale, textureOffset);
                 }

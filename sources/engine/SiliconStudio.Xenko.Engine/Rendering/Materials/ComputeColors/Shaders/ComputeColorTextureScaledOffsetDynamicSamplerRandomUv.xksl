@@ -10,7 +10,7 @@
 /// TOffset: generic LinkType - the float2 key for texture coordinates offset.
 /// TSampler: generic SamplerState - the custom sampler.
 /// </remarks>
-shader ComputeColorTextureScaledOffsetDynamicSamplerRandomUv<LinkType TTextureName, 
+shader ComputeColorTextureScaledOffsetDynamicSamplerRandomUV<LinkType TTextureName, 
                                              Semantic TStream, 
                                              LinkType TSampler, 
                                              MemberName TRgba, 
@@ -32,7 +32,7 @@ shader ComputeColorTextureScaledOffsetDynamicSamplerRandomUv<LinkType TTextureNa
     //------------------------------------------------------------------------------
     // Gererate pseudorandom number
     //------------------------------------------------------------------------------
-    float random(in float2 uv)
+    float Random(in float2 uv)
     {
         float2 noise = (frac(sin(dot(uv,float2(12.9898,78.233)*2.0)) * 43758.5453));
         return abs(noise.x + noise.y) * 0.5;
@@ -41,11 +41,11 @@ shader ComputeColorTextureScaledOffsetDynamicSamplerRandomUv<LinkType TTextureNa
     //------------------------------------------------------------------------------
     // Gererate texture coordinates for random placement
     //------------------------------------------------------------------------------
-    float2 randomUV(in float2 uv)
+    float2 RandomUV(in float2 uv)
     {
         const uint NUM_PATTERNS = 2 * 2 * 4 * 4 * 4;
 
-        uint pattern = (uint)(random(floor(uv)) * (float)NUM_PATTERNS) % NUM_PATTERNS;
+        uint pattern = (uint)(Random(floor(uv)) * (float)NUM_PATTERNS) % NUM_PATTERNS;
         float2 result = frac(uv);
 
         // flip
@@ -84,6 +84,6 @@ shader ComputeColorTextureScaledOffsetDynamicSamplerRandomUv<LinkType TTextureNa
     }
 
     override float4 Compute() {
-        return Texture.Sample(Sampler, randomUV(streams.TexCoord * scale + offset)).TRgba;
+        return Texture.Sample(Sampler, RandomUV(streams.TexCoord * scale + offset)).TRgba;
     }
 };
