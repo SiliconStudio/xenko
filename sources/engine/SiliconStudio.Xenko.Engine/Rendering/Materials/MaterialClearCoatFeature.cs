@@ -162,7 +162,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
                 // Diffuse uses a custom shader (to perform the interpolation)
                 mixinDiffuse.Mixins.Add(new ShaderClassSource("MaterialSurfaceDiffuseMetalFlakes"));
-                mixinDiffuse.AddComposition("metalFlakesDiffuseMap", metalFlakesComputeColorSource);
+                mixinDiffuse.AddComposition("diffuseMap", metalFlakesComputeColorSource);
                 mixinDiffuse.AddComposition("surfaceToEyeDistanceFactor", surfaceToEyeDistance);
 
                 context.UseStream(MaterialShaderStage.Pixel, MaterialDiffuseMapFeature.DiffuseStream.Stream);

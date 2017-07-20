@@ -5,29 +5,27 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// Converts diffuse color (for metal flakes layer)
     /// </summary>
-    shader MaterialSurfaceDiffuseMetalFlakes : IMaterialSurfacePixel,    
-                                            MaterialPixelShadingStream,
-                                            Transformation,
-                                            PositionStream4,
-                                            BRDFMicrofacet
+    shader MaterialSurfaceDiffuseMetalFlakes : MaterialSurfaceDiffuse,
+                                               Transformation,
+                                               PositionStream4
     {
-        compose ComputeColor metalFlakesDiffuseMap;
         compose ComputeColor surfaceToEyeDistanceFactor;
 
         override void Compute()
         {
-            var flakeColorBase = metalFlakesDiffuseMap.Compute();
+            var basePaintColor = streams.matDiffuse;
+
+            base.Compute();
+
             var distanceFactor = surfaceToEyeDistanceFactor.Compute().r;
 
             // Interpolate the factors using the surface to camera distance
             float LOD = saturate(distance(Eye.xyz, streams.PositionWS.xyz) * distanceFactor);
-            var paintColor = lerp(flakeColorBase, streams.matDiffuse, LOD);
-
-            streams.matDiffuse = paintColor;
+            streams.matDiffuse = lerp(streams.matDiffuse, basePaintColor, LOD);
 
             // Because matDiffuse can be modified when using a metalness, we are storing the colorBase into matColorBase
             // so that we are able to query the original diffuse color without any modifications.
-            streams.matColorBase = paintColor;
+            streams.matColorBase = lerp(streams.matDiffuse, basePaintColor, LOD);
         }
     };
 }
