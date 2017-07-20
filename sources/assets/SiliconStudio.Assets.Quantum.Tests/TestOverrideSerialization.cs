@@ -786,14 +786,14 @@ Value*: OverriddenString
             expectedPath.PushMember(nameof(Types.SomeObject.Value));
 
             var overrides = AssetPropertyGraph.GenerateOverridesForSerialization(derivedPropertyNode);
-            var overridesAsDictionary = overrides.ToDictionary(x => x.Key, x => x.Value);
+            var overridesAsDictionary = overrides.ToDictionary(x => x.Key, x => x.Value, YamlAssetPathComparer.Default);
             Assert.AreEqual(1, overridesAsDictionary.Count);
             Assert.True(overridesAsDictionary.ContainsKey(expectedPath));
             Assert.AreEqual(OverrideType.New, overridesAsDictionary[expectedPath]);
 
             // We expect the same resulting path both from the member node and the target object node
             overrides = AssetPropertyGraph.GenerateOverridesForSerialization(derivedPropertyNode.Target);
-            overridesAsDictionary = overrides.ToDictionary(x => x.Key, x => x.Value);
+            overridesAsDictionary = overrides.ToDictionary(x => x.Key, x => x.Value, YamlAssetPathComparer.Default);
             Assert.AreEqual(1, overridesAsDictionary.Count);
             Assert.True(overridesAsDictionary.ContainsKey(expectedPath));
             Assert.AreEqual(OverrideType.New, overridesAsDictionary[expectedPath]);
@@ -805,7 +805,7 @@ Value*: OverriddenString
             var instance = (Types.SomeObject)AssetFileSerializer.Default.Load(AssetTestContainer.ToStream(expectedYaml), null, null, true, out aliasOccurred, out metadata);
             overrides = metadata.RetrieveMetadata(AssetObjectSerializerBackend.OverrideDictionaryKey);
             Assert.NotNull(overrides);
-            overridesAsDictionary = overrides.ToDictionary(x => x.Key, x => x.Value);
+            overridesAsDictionary = overrides.ToDictionary(x => x.Key, x => x.Value, YamlAssetPathComparer.Default);
             Assert.AreEqual("OverriddenString", instance.Value);
             Assert.AreEqual(1, overridesAsDictionary.Count);
             Assert.True(overridesAsDictionary.ContainsKey(expectedPath));
@@ -826,7 +826,7 @@ Value*: OverriddenString
             expectedPath.PushMember(nameof(Types.SomeObject.Value));
 
             var overrides = AssetPropertyGraph.GenerateOverridesForSerialization(derivedPropertyNode);
-            var overridesAsDictionary = overrides.ToDictionary(x => x.Key, x => x.Value);
+            var overridesAsDictionary = overrides.ToDictionary(x => x.Key, x => x.Value, YamlAssetPathComparer.Default);
             Assert.AreEqual(1, overridesAsDictionary.Count);
             Assert.True(overridesAsDictionary.ContainsKey(expectedPath));
             Assert.AreEqual(OverrideType.New, overridesAsDictionary[expectedPath]);
@@ -838,7 +838,7 @@ Value*: OverriddenString
             var instance = (Types.SomeObject)AssetFileSerializer.Default.Load(AssetTestContainer.ToStream(expectedYaml), null, null, true, out aliasOccurred, out metadata);
             overrides = metadata.RetrieveMetadata(AssetObjectSerializerBackend.OverrideDictionaryKey);
             Assert.NotNull(overrides);
-            overridesAsDictionary = overrides.ToDictionary(x => x.Key, x => x.Value);
+            overridesAsDictionary = overrides.ToDictionary(x => x.Key, x => x.Value, YamlAssetPathComparer.Default);
             Assert.AreEqual("OverriddenString", instance.Value);
             Assert.AreEqual(1, overridesAsDictionary.Count);
             Assert.True(overridesAsDictionary.ContainsKey(expectedPath));
