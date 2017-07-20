@@ -11,7 +11,7 @@ using SiliconStudio.Xenko.Rendering.LightProbes;
 namespace SiliconStudio.Xenko.Engine
 {
     [DataContract("LightProbeComponent")]
-    [Display("Light Probe", Expand = ExpandRule.Once)]
+    [Display("Light probe", Expand = ExpandRule.Once)]
     [DefaultEntityComponentProcessor(typeof(LightProbeProcessor))]
     [ComponentOrder(15000)]
     public class LightProbeComponent : EntityComponent

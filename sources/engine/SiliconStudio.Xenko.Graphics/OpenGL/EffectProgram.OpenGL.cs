@@ -295,13 +295,13 @@ void main()
                 var constantBufferDescriptionIndex = effectReflection.ConstantBuffers.FindIndex(x => x.Name == constantBufferName);
                 if (constantBufferDescriptionIndex == -1)
                 {
-                    reflectionResult.Error("Unable to find the constant buffer description [{0}]", constantBufferName);
+                    reflectionResult.Error($"Unable to find the constant buffer description [{constantBufferName}]");
                     return;
                 }
                 var constantBufferIndex = effectReflection.ResourceBindings.FindIndex(x => x.RawName == constantBufferName);
                 if (constantBufferIndex == -1)
                 {
-                    reflectionResult.Error("Unable to find the constant buffer [{0}]", constantBufferName);
+                    reflectionResult.Error($"Unable to find the constant buffer [{constantBufferName}]");
                     return;
                 }
 
@@ -388,7 +388,7 @@ void main()
 
                     if (variableIndex == -1)
                     {
-                        reflectionResult.Error("Unable to find uniform [{0}] in constant buffer [{1}]", variableIndexGroup.Name, constantBufferName);
+                        reflectionResult.Error($"Unable to find uniform [{variableIndexGroup.Name}] in constant buffer [{constantBufferName}]");
                         continue;
                     }
                     var variable = constantBufferDescription.Members[variableIndex];
@@ -544,7 +544,7 @@ void main()
 
                             if (startIndex == -1 || textureReflectionIndex == -1 || samplerReflectionIndex == -1)
                             {
-                                reflectionResult.Error("Unable to find sampler and texture corresponding to [{0}]", uniformName);
+                                reflectionResult.Error($"Unable to find sampler and texture corresponding to [{uniformName}]");
                                 continue; // Error
                             }
 
@@ -658,7 +658,7 @@ void main()
             var indexOfResource = effectReflection.ResourceBindings.FindIndex(x => x.RawName == constantBufferDescription.Name);
             if (indexOfResource == -1)
             {
-                reflectionResult.Error("Unable to find uniform [{0}] in any constant buffer", uniformName);
+                reflectionResult.Error($"Unable to find uniform [{uniformName}] in any constant buffer");
                 return;
             }
 

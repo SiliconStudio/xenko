@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Particles.Components
     /// Add a <see cref="ParticleSystem"/> to an <see cref="Entity"/>
     /// </summary>
     [DataContract("ParticleSystemComponent")]
-    [Display("Particle System", Expand = ExpandRule.Once)]
+    [Display("Particle system", Expand = ExpandRule.Once)]
     [DefaultEntityComponentProcessor(typeof(ParticleSystemSimulationProcessor))]
     [DefaultEntityComponentRenderer(typeof(ParticleSystemRenderProcessor))]
     [ComponentOrder(10200)]
@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Particles.Components
         /// The shade acts as a color scale multiplication, making the color darker. White shade is neutral.
         /// </summary>
         /// <userdoc>
-        /// Color shade (RGBA) will be multiplied to all particles' color in this Particle System
+        /// Color shade (RGBA) will be multiplied to all particles' color in this particle system
         /// </userdoc>
         [DataMember(4)]
         [Display("Color Shade")]
@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Particles.Components
         /// while setting it to 0 effectively pauses the simulation.
         /// </summary>
         /// <userdoc>
-        /// The speed scale at which this Particle System runs the simulation. Set it to 0 to pause it
+        /// The speed scale at which this particle system runs the simulation. Set it to 0 to pause it
         /// </userdoc>
         [DataMember(5)]
         [DataMemberRange(0, 10, 0.01, 1, 3)]

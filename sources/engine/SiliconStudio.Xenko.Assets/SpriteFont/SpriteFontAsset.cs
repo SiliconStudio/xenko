@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [DataContract("SpriteFont")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Graphics.SpriteFont))]
-    [Display(1400, "Sprite Font")]
+    [Display(1400, "Sprite font")]
     [CategoryOrder(10, "Font")]
     [CategoryOrder(30, "Rendering")]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
