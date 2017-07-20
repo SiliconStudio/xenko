@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [DataMember(130)]
         [Display("Orange Peel Normal Map")]
         [NotNull]
-        public IComputeColor ClearCoatLayerNormalMap { get; set; }
+        public IComputeColor OrangePeelNormalMap { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to scale by (2,2) and offset by (-1,-1) the normal map.
@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [DataMember(140)]
         [DefaultValue(true)]
         [Display("Scale & Offset")]
-        public bool ScaleAndBiasOrangePeel { get; set; } = true;
+        public bool OrangePeelScaleAndBias { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a value indicating whether the normal is only stored in XY components and Z is assumed to be sqrt(1 - x*x - y*y).
@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [DataMember(150)]
         [DefaultValue(false)]
         [Display("Reconstruct Z")]
-        public bool IsXYNormalOrangePeel { get; set; }
+        public bool OrangePeelIsXYNormal { get; set; }
 
         /// <summary>
         /// Gets or sets the clear coat smoothness map.
@@ -127,7 +127,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         public MaterialClearCoatFeature()
         {
             MetalFlakesDiffuseMap = new ComputeColor();
-            ClearCoatLayerNormalMap = new ComputeColor();
+            OrangePeelNormalMap = new ComputeColor();
 
             ClearCoatGlossinessMap = new ComputeFloat();
             BasePaintGlossinessMap = new ComputeFloat();
@@ -162,6 +162,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
                 // Diffuse uses a custom shader (to perform the interpolation)
                 mixinDiffuse.Mixins.Add(new ShaderClassSource("MaterialSurfaceDiffuseMetalFlakes"));
+
                 mixinDiffuse.AddComposition("diffuseMap", metalFlakesComputeColorSource);
                 mixinDiffuse.AddComposition("surfaceToEyeDistanceFactor", surfaceToEyeDistance);
 
@@ -180,7 +181,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 // Computes glossiness factor for the metal flakes layer (based on the eye to surface distance and the base glossiness value)
                 mixinGlossiness.Mixins.Add(new ShaderClassSource("MaterialSurfaceGlossinessMapMetalFlakes", Invert));
 
-                mixinGlossiness.AddComposition("baseGlossinessMap", baseGlossinessComputeColorMap);
+                mixinGlossiness.AddComposition("glossinessMap", baseGlossinessComputeColorMap);
                 mixinDiffuse.AddComposition("surfaceToEyeDistanceFactor", surfaceToEyeDistance);
 
                 context.AddShaderSource(MaterialShaderStage.Pixel, mixinGlossiness);
@@ -195,7 +196,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 context.MaterialPass.HasTransparency = true;
 
                 var computeColorKeys = new MaterialComputeColorKeys(MaterialKeys.NormalMap, MaterialKeys.NormalValue, MaterialNormalMapFeature.DefaultNormalColor, false);
-                var computeColorSource = ClearCoatLayerNormalMap.GenerateShaderSource(context, computeColorKeys);
+                var computeColorSource = OrangePeelNormalMap.GenerateShaderSource(context, computeColorKeys);
 
                 // Orange Peel Normal Map
                 var mixinNormalMap = new ShaderMixinSource();
@@ -204,7 +205,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 context.UseStreamWithCustomBlend(MaterialShaderStage.Pixel, "matNormal", new ShaderClassSource("MaterialStreamNormalBlend"));
                 context.Parameters.Set(MaterialKeys.HasNormalMap, true);
 
-                mixinNormalMap.Mixins.Add(new ShaderClassSource("MaterialSurfaceNormalMap", IsXYNormalOrangePeel, ScaleAndBiasOrangePeel));
+                mixinNormalMap.Mixins.Add(new ShaderClassSource("MaterialSurfaceNormalMap", OrangePeelIsXYNormal, OrangePeelScaleAndBias));
 
                 mixinNormalMap.AddComposition("normalMap", computeColorSource);
                 context.AddShaderSource(MaterialShaderStage.Pixel, mixinNormalMap);
