@@ -225,8 +225,8 @@
     </Compile>
     <Compile Include="Rendering\Materials\IMaterialClearCoatFeature.cs" />
     <Compile Include="Rendering\Materials\MaterialClearCoatFeature.cs" />
-    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureScaledOffsetDynamicSamplerRandomUv.cs">
-      <DependentUpon>ComputeColorTextureScaledOffsetDynamicSamplerRandomUv.xksl</DependentUpon>
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureScaledOffsetDynamicSamplerRandomUV.cs">
+      <DependentUpon>ComputeColorTextureScaledOffsetDynamicSamplerRandomUV.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -828,9 +828,9 @@
       <LastGenOutput>LightPoint1.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Materials\CelShading\MaterialSurfaceShadingSpecularCelShading.xksl" />
-    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureScaledOffsetDynamicSamplerRandomUv.xksl">
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureScaledOffsetDynamicSamplerRandomUV.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeColorTextureScaledOffsetDynamicSamplerRandomUv.cs</LastGenOutput>
+      <LastGenOutput>ComputeColorTextureScaledOffsetDynamicSamplerRandomUV.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorThreshold.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
