@@ -28,6 +28,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         public ISceneRenderer Child { get; set; }
 
+        public RenderGroupMask RenderMask { get; set; } = RenderGroupMask.All;
+
         protected override void CollectCore(RenderContext context)
         {
             base.CollectCore(context);
@@ -75,6 +77,8 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
         protected virtual void CollectInner(RenderContext renderContext)
         {
+            RenderView.CullingMask = RenderMask;
+
             Child?.Collect(renderContext);
         }
 
