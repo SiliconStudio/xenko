@@ -412,24 +412,24 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Determines whether the value is inside the given range
+        /// Determines whether the value is inside the given range (inclusively).
         /// </summary>
         /// <param name="value">The value.</param>
         /// <param name="min">The minimum value of the range.</param>
         /// <param name="max">The maximum value of the range.</param>
-        /// <returns><c>true</c> if valie is inside the specified range; otherwise, <c>false</c>.</returns>
+        /// <returns><c>true</c> if value is inside the specified range; otherwise, <c>false</c>.</returns>
         public static bool IsInRange(float value, float min, float max)
         {
             return min <= value && value <= max;
         }
 
         /// <summary>
-        /// Determines whether the value is inside the given range
+        /// Determines whether the value is inside the given range (inclusively).
         /// </summary>
         /// <param name="value">The value.</param>
         /// <param name="min">The minimum value of the range.</param>
         /// <param name="max">The maximum value of the range.</param>
-        /// <returns><c>true</c> if valie is inside the specified range; otherwise, <c>false</c>.</returns>
+        /// <returns><c>true</c> if value is inside the specified range; otherwise, <c>false</c>.</returns>
         public static bool IsInRange(int value, int min, int max)
         {
             return min <= value && value <= max;
