@@ -130,6 +130,20 @@ namespace SiliconStudio.Assets.Yaml
         public IReadOnlyList<Element> Elements => elements;
 
         /// <summary>
+        /// Indicates whether the current path represents the same path of another object.
+        /// </summary>
+        /// <param name="other">An object to compare with this path.</param>
+        /// <returns><c>true</c> if the current path matches the <paramref name="other"/> parameter; otherwise, <c>false</c>.</returns>
+        public bool Match(YamlAssetPath other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            if (Elements.Count != other.Elements.Count) return false;
+
+            return Elements.SequenceEqual(other.Elements);
+        }
+
+        /// <summary>
         /// Adds an additional element to the path representing an access to a member of an object.
         /// </summary>
         /// <param name="memberName">The name of the member.</param>
