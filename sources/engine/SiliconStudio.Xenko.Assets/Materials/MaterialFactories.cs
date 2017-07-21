@@ -182,26 +182,29 @@ namespace SiliconStudio.Xenko.Assets.Materials
             {
                 Attributes =
                 {
-                    Diffuse = new MaterialDiffuseMapFeature(new ComputeColor(defaultPaintColor)),
                     DiffuseModel = new MaterialDiffuseLambertModelFeature(),
-
                     SpecularModel = new MaterialSpecularMicrofacetModelFeature(),
-                    Specular = new MaterialMetalnessMapFeature(new ComputeFloat(1.00f)),
-
-                    MicroSurface = new MaterialGlossinessMapFeature(new ComputeBinaryScalar(new ComputeFloat(2.00f), metalFlakesMask, BinaryOperator.Multiply)),
-
-                    Surface = new MaterialNormalMapFeature(metalFlakesNormalMap),
 
                     ClearCoat = new MaterialClearCoatFeature
                     {
+                        // Base Layer
+                        BasePaintDiffuseMap = new ComputeColor(defaultPaintColor),
                         BasePaintGlossinessMap = new ComputeBinaryScalar(new ComputeFloat(0.00f), metalFlakesMask, BinaryOperator.Multiply),
 
+                        // Metal Flakes Layer
+                        MetalFlakesDiffuseMap = new ComputeColor(defaultMetalFlakesColor),
+                        MetalFlakesGlossinessMap = new ComputeBinaryScalar(new ComputeFloat(2.00f), metalFlakesMask, BinaryOperator.Multiply),
+                        MetalFlakesMetalnessMap = new ComputeFloat(1.00f),
+
+                        MetalFlakesNormalMap = metalFlakesNormalMap,
+                        MetalFlakesScaleAndBias = true,
+
+                        // Clear coat layer
                         ClearCoatGlossinessMap = new ComputeFloat(1.00f),
-                        OrangePeelNormalMap = clearCoatLayerNormalMap,
-                        OrangePeelScaleAndBias = true,
                         ClearCoatMetalnessMap = new ComputeFloat(0.50f),
 
-                        MetalFlakesDiffuseMap = new ComputeColor(defaultMetalFlakesColor),
+                        OrangePeelNormalMap = clearCoatLayerNormalMap,
+                        OrangePeelScaleAndBias = true
                     }
                 }
             };
