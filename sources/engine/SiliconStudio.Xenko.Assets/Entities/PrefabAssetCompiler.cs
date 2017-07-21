@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         private class PrefabCommand : AssetCommand<PrefabAsset>
         {
-            public PrefabCommand(string url, PrefabAsset parameters, Package package) : base(url, parameters, package)
+            public PrefabCommand(string url, PrefabAsset parameters, IAssetFinder assetFinder) : base(url, parameters, assetFinder)
             {
             }
 

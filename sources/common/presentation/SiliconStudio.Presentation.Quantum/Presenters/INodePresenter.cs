@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Presentation.Quantum.ViewModels;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum.Presenters
@@ -77,5 +76,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         void ChangeParent([NotNull] INodePresenter newParent);
 
         void Rename(string newName, bool overwriteCombineKey = true);
+
+        [CanBeNull]
+        INodePresenter TryGetChild(string childName);
     }
 }
