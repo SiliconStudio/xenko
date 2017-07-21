@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 			const float3 C = float3(cosRefractedTheta, cosRefractedTheta, cosRefractedTheta);
 
 			// Coefficient to account for absorption
-			const float3 K = pow(max(streams.matColorBase, 0.001), 1 / C);
+			const float3 K = pow(max(streams.matColorBase.rgb, 0.001), 1 / C);
 
 			const float3 RK = R*K;     // intermediate value
 
