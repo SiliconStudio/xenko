@@ -22,9 +22,7 @@ namespace SiliconStudio.Assets.Yaml
         public override bool Equals(YamlAssetPath x, YamlAssetPath y)
         {
             if (ReferenceEquals(x, y)) return true;
-            if (x.Elements.Count != y.Elements.Count) return false;
-
-            return x.Elements.SequenceEqual(y.Elements);
+            return x.Match(y);
         }
 
         /// <inheritdoc />
