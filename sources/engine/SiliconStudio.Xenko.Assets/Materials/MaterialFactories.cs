@@ -182,6 +182,9 @@ namespace SiliconStudio.Xenko.Assets.Materials
             {
                 Attributes =
                 {
+                    Diffuse = new MaterialDiffuseMapFeature(new ComputeColor(Color4.Black)),
+                    Specular = new MaterialMetalnessMapFeature(new ComputeFloat(0.0f)),
+
                     DiffuseModel = new MaterialDiffuseLambertModelFeature(),
                     SpecularModel = new MaterialSpecularMicrofacetModelFeature(),
 
@@ -189,11 +192,11 @@ namespace SiliconStudio.Xenko.Assets.Materials
                     {
                         // Base Layer
                         BasePaintDiffuseMap = new ComputeColor(defaultPaintColor),
-                        BasePaintGlossinessMap = new ComputeBinaryScalar(new ComputeFloat(0.00f), metalFlakesMask, BinaryOperator.Multiply),
+                        BasePaintGlossinessMap = new ComputeBinaryScalar(new ComputeFloat(0.50f), metalFlakesMask, BinaryOperator.Multiply),
 
                         // Metal Flakes Layer
                         MetalFlakesDiffuseMap = new ComputeColor(defaultMetalFlakesColor),
-                        MetalFlakesGlossinessMap = new ComputeBinaryScalar(new ComputeFloat(2.00f), metalFlakesMask, BinaryOperator.Multiply),
+                        MetalFlakesGlossinessMap = new ComputeBinaryScalar(new ComputeFloat(1.00f), metalFlakesMask, BinaryOperator.Multiply),
                         MetalFlakesMetalnessMap = new ComputeFloat(1.00f),
 
                         MetalFlakesNormalMap = metalFlakesNormalMap,
@@ -204,7 +207,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
                         ClearCoatMetalnessMap = new ComputeFloat(0.50f),
 
                         OrangePeelNormalMap = clearCoatLayerNormalMap,
-                        OrangePeelScaleAndBias = true
+                        OrangePeelScaleAndBias = true,
                     }
                 }
             };
