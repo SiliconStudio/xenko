@@ -33,8 +33,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
         internal class PrecompiledSpriteFontCommand : AssetCommand<PrecompiledSpriteFontAsset>
         {
-            public PrecompiledSpriteFontCommand(string url, PrecompiledSpriteFontAsset description, Package package)
-                : base(url, description, package)
+            public PrecompiledSpriteFontCommand(string url, PrecompiledSpriteFontAsset description, IAssetFinder assetFinder)
+                : base(url, description, assetFinder)
             {
             }
 

@@ -37,6 +37,16 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Texture coordinate data.
         /// </summary>
-        public static readonly string TextureCoordinate = "TEXCOORD";         
+        public static readonly string TextureCoordinate = "TEXCOORD";
+
+        /// <summary>
+        /// Bone blend indices data.
+        /// </summary>
+        public static readonly string BlendIndices = "BLENDINDICES";
+
+        /// <summary>
+        /// Bone blend weight data.
+        /// </summary>
+        public static readonly string BlendWeight = "BLENDWEIGHT";
     }
 }

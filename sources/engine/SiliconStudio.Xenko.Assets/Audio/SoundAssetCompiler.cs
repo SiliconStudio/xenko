@@ -30,8 +30,8 @@ namespace SiliconStudio.Xenko.Assets.Audio
         {
             private readonly TagSymbol disableCompressionSymbol;
 
-            public DecodeSoundFileCommand(string url, SoundAsset asset, Package package) 
-                : base(url, asset, package)
+            public DecodeSoundFileCommand(string url, SoundAsset asset, IAssetFinder assetFinder) 
+                : base(url, asset, assetFinder)
             {
                 disableCompressionSymbol = RegisterTag(Builder.DoNotCompressTag, () => Builder.DoNotCompressTag);
             }

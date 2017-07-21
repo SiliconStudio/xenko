@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         private class SceneCommand : AssetCommand<SceneAsset>
         {
-            public SceneCommand(string url, SceneAsset parameters, Package package) : base(url, parameters, package)
+            public SceneCommand(string url, SceneAsset parameters, IAssetFinder assetFinder) : base(url, parameters, assetFinder)
             {
             }
 
