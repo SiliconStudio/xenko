@@ -15,6 +15,9 @@
     <SiliconStudioXenkoOutputPath Condition="'$(SiliconStudioXenkoGraphicsApiDependent)' == 'true'">$(SiliconStudioXenkoOutputPath)$(SiliconStudioXenkoGraphicsApi)\</SiliconStudioXenkoOutputPath>
     <OutputPath>$(SiliconStudioXenkoOutputPath)</OutputPath>
     <OutDir>$(OutputPath)</OutDir>
+
+    <!-- Don't copy dependencies (from .ssdeps) if we output in the main folder -->
+	<SiliconStudioDependenciesCopy Condition="'$(SiliconStudioXenkoOutputFolder)' == ''">false</SiliconStudioDependenciesCopy>
     
     <XenkoDependenciesDir Condition="'$(XenkoDependenciesDir)' == ''">$(SiliconStudioPackageXenko)\deps\</XenkoDependenciesDir>
     <XenkoDependenciesDir Condition="'$(XenkoDependenciesDir)' != '' and !HasTrailingSlash('$(XenkoDependenciesDir)')">$(XenkoDependenciesDir)\</XenkoDependenciesDir>
