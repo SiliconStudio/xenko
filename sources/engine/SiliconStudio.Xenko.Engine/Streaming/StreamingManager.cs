@@ -217,7 +217,7 @@ namespace SiliconStudio.Xenko.Streaming
         }
         
         /// <inheritdoc />
-        public void FullyLoadTexture(Texture obj, ref ImageDescription imageDescription, ref ContentStorageHeader storageHeader)
+        void ITexturesStreamingProvider.FullyLoadTexture(Texture obj, ref ImageDescription imageDescription, ref ContentStorageHeader storageHeader)
         {
             lock (resources)
             {
@@ -233,7 +233,7 @@ namespace SiliconStudio.Xenko.Streaming
         }
 
         /// <inheritdoc />
-        public void RegisterTexture(Texture obj, ref ImageDescription imageDescription, ref ContentStorageHeader storageHeader)
+        void ITexturesStreamingProvider.RegisterTexture(Texture obj, ref ImageDescription imageDescription, ref ContentStorageHeader storageHeader)
         {
             lock (resources)
             {
@@ -242,7 +242,7 @@ namespace SiliconStudio.Xenko.Streaming
         }
 
         /// <inheritdoc />
-        public void UnregisterTexture(Texture obj)
+        void ITexturesStreamingProvider.UnregisterTexture(Texture obj)
         {
             Debug.Assert(obj != null);
 
@@ -254,7 +254,7 @@ namespace SiliconStudio.Xenko.Streaming
         }
 
         /// <inheritdoc />
-        public void FullyLoadResource(object obj)
+        void IStreamingManager.FullyLoadResource(object obj)
         {
             StreamableResource resource;
             lock (resources)
@@ -266,7 +266,7 @@ namespace SiliconStudio.Xenko.Streaming
                 FullyLoadResource(resource);
         }
 
-        public void FullyLoadResource(StreamableResource resource)
+        private void FullyLoadResource(StreamableResource resource)
         {
             // Disable dynamic streaming for the esource
             resource.ForceFullyLoaded = true;
@@ -429,8 +429,6 @@ namespace SiliconStudio.Xenko.Streaming
             {
                 StreamResources(renderMesh.MaterialPass.Parameters);
             }
-
-            StreamResources(renderMesh.RenderModel.Model);
         }
 
         /// <summary>
@@ -471,16 +469,7 @@ namespace SiliconStudio.Xenko.Streaming
                 resource.LastTimeUsed = frameIndex;
             }
         }
-
-        /// <summary>
-        /// Called when model is submited to be used during rendering. Registers referenced resources to stream them.
-        /// </summary>
-        /// <param name="model">The model.</param>
-        public void StreamResources(Model model)
-        {
-            // TODO: register model streaming
-        }
-
+        
         /// <summary>
         /// Called when render mesh is submited to rendering. Registers referenced resources to stream them up to the maximum quality level.
         /// </summary>
@@ -491,8 +480,6 @@ namespace SiliconStudio.Xenko.Streaming
             {
                 StreamResourcesFully(renderMesh.MaterialPass.Parameters);
             }
-
-            StreamResourcesFully(renderMesh.RenderModel.Model);
         }
 
         /// <summary>
@@ -534,15 +521,6 @@ namespace SiliconStudio.Xenko.Streaming
                 resource.ForceFullyLoaded = true;
                 resource.LastTimeUsed = frameIndex;
             }
-        }
-
-        /// <summary>
-        /// Called when model is submited to be used during rendering. Registers referenced resources to stream them up to the maximum quality level.
-        /// </summary>
-        /// <param name="model">The model.</param>
-        public void StreamResourcesFully(Model model)
-        {
-            // TODO: register model streaming
         }
     }
 }
