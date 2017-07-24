@@ -45,9 +45,11 @@ namespace SiliconStudio.BuildEngine
             }
         }
 
-        public void AddTag(ObjectUrl url, TagSymbol tagSymbol)
+        public void AddTag(ObjectUrl url, string tag)
         {
-            ResultEntry.TagSymbols.Add(new KeyValuePair<ObjectUrl, string>(url, tagSymbol.Name));
+            ResultEntry.TagSymbols.Add(new KeyValuePair<ObjectUrl, string>(url, tag));
         }
+
+
     }
 }

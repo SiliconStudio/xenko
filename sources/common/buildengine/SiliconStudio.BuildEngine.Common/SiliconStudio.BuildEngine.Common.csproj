@@ -67,7 +67,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResultStatus.cs" />
     <Compile Include="BuildStepEventArgs.cs" />
-    <Compile Include="TagSymbol.cs" />
     <Compile Include="UseXenkoDataContractSerializerAttribute.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -193,18 +193,14 @@ namespace SiliconStudio.BuildEngine
             {
                 // Resolve tags from TagSymbol
                 // TODO: Handle removed tags
-                foreach (var tagGroup in buildStep.Result
-                    .TagSymbols
-                    .Where(x => buildStep.Command.TagSymbols.ContainsKey(x.Value))
-                    .GroupBy(x => x.Key, x => buildStep.Command.TagSymbols[x.Value].RealName))
+                foreach (var tag in buildStep.Result.TagSymbols)
                 {
-                    var url = tagGroup.Key;
+                    var url = tag.Key;
 
                     // TODO: Improve search complexity?
-                    OutputObject outputObject;
-                    if (outputObjects.TryGetValue(url, out outputObject))
+                    if (outputObjects.TryGetValue(url, out var outputObject))
                     {
-                        outputObject.Tags.UnionWith(tagGroup);
+                        outputObject.Tags.Add(tag.Value);
                     }
                 }
             }

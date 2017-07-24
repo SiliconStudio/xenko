@@ -361,16 +361,7 @@ namespace SiliconStudio.BuildEngine
                         // Register tags
                         foreach (var tag in processBuilderRemote.Result.TagSymbols)
                         {
-                            TagSymbol tagSymbol;
-
-                            // Resolve tag locally
-                            if (!Command.TagSymbols.TryGetValue(tag.Value, out tagSymbol))
-                            {
-                                // Should we ignore silently? (with warning)
-                                throw new InvalidOperationException("Could not find tag symbol.");
-                            }
-
-                            commandContext.AddTag(tag.Key, tagSymbol);
+                            commandContext.AddTag(tag.Key, tag.Value);
                         }
                     }
 
