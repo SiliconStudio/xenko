@@ -17,7 +17,7 @@ namespace SiliconStudio.BuildEngine
 
         protected internal readonly CommandResultEntry ResultEntry;
 
-        public abstract IEnumerable<IDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups();
+        public abstract IEnumerable<IReadOnlyDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups();
 
         protected internal abstract ObjectId ComputeInputHash(UrlType type, string filePath);
 

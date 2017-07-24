@@ -13,7 +13,7 @@ namespace SiliconStudio.BuildEngine
         Command CurrentCommand { get; }
         LoggerResult Logger { get; }
 
-        IEnumerable<IDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups();
+        IEnumerable<IReadOnlyDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups();
 
         void RegisterInputDependency(ObjectUrl url);
         void RegisterOutput(ObjectUrl url, ObjectId hash);

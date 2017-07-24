@@ -25,7 +25,7 @@ namespace SiliconStudio.BuildEngine
             Step = step;
         }
 
-        public override IEnumerable<IDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups()
+        public override IEnumerable<IReadOnlyDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups()
         {
             return Step.GetOutputObjectsGroups();
         }

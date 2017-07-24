@@ -23,7 +23,7 @@ namespace SiliconStudio.BuildEngine
 
         void ScheduleBuildStep(BuildStep step);
 
-        IEnumerable<IDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups();
+        IEnumerable<IReadOnlyDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups();
 
         CommandBuildStep IsCommandCurrentlyRunning(ObjectId commandHash);
         void NotifyCommandBuildStepStarted(CommandBuildStep commandBuildStep, ObjectId commandHash);
