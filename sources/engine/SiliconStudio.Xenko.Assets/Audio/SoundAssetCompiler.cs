@@ -105,7 +105,7 @@ namespace SiliconStudio.Xenko.Assets.Audio
                 };
 
                 //make sure we don't compress celt data
-                commandContext.AddTag(new ObjectUrl(UrlType.ContentLink, dataUrl), disableCompressionSymbol);
+                commandContext.AddTag(new ObjectUrl(UrlType.Content, dataUrl), disableCompressionSymbol);
 
                 var frameSize = CompressedSoundSource.SamplesPerFrame* channels;
                 using (var reader = new BinaryReader(new FileStream(tempPcmFile, FileMode.Open, FileAccess.Read)))
