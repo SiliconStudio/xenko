@@ -333,6 +333,12 @@ namespace SiliconStudio.BuildEngine
                 throw new InvalidOperationException("Unable to add a build step to an already processed ListBuildStep.");
 
             buildStep.Parent = this;
+            // Propagate priority if we have one
+            if (Priority.HasValue)
+            {
+                // Overwrite only if the new priority is smaller or if we didn't have a priority before
+                buildStep.Priority = buildStep.Priority.HasValue ? Math.Min(buildStep.Priority.Value, Priority.Value) : Priority.Value;
+            }
             steps.Add(buildStep);
         }
     }
