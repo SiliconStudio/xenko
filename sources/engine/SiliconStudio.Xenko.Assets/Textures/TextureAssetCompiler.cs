@@ -123,7 +123,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
                         // Serialize texture to file
                         var outputTexture = new TextureSerializationData(outputImage, Parameters.IsStreamable, storageHeader);
-                        assetManager.Save(convertParameters.OutputUrl, outputTexture.ToSerializableVersion());
+                        assetManager.Save(convertParameters.OutputUrl, outputTexture.ToSerializableVersion(), typeof(Texture));
 
                         commandContext.Logger.Verbose($"Compression successful [{dataUrl}] to ({outputImage.Description.Width}x{outputImage.Description.Height},{outputImage.Description.Format})");
                     }

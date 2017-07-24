@@ -515,7 +515,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
                 if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
                     return ResultStatus.Cancelled;
 
-                assetManager.Save(parameters.OutputUrl, outputImage.ToSerializableVersion());
+                assetManager.Save(parameters.OutputUrl, outputImage.ToSerializableVersion(), typeof(Texture));
 
                 logger.Verbose($"Compression successful [{parameters.OutputUrl}] to ({outputImage.Description.Width}x{outputImage.Description.Height},{outputImage.Description.Format})");
             }
