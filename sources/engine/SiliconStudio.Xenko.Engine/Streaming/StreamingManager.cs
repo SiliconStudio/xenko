@@ -48,14 +48,14 @@ namespace SiliconStudio.Xenko.Streaming
         public TimeSpan ResourceUpdatesInterval = TimeSpan.FromMilliseconds(200);
 
         /// <summary>
-        /// The <see cref="StreamableResource"/> live timeout. If rouse is not used for a while it's quality gets down.
+        /// The <see cref="StreamableResource"/> live timeout. If any resource is not used for a while it's quality gets down.
         /// </summary>
         public TimeSpan ResourceLiveTimeout = TimeSpan.FromSeconds(5);
         
         /// <summary>
-        /// The maximum amount of resources updated per streaming managed tick. Used to balance performance/streaming speed.
+        /// The maximum amount of resources updated per streaming manager tick. Used to balance performance/streaming speed.
         /// </summary>
-        public const int MaxResourcesPerUpdate = 10;
+        public int MaxResourcesPerUpdate = 10;
 
         /// <summary>
         /// The maximum amount of resources being streamed at the same time. Used to balance performance/streaming speed.

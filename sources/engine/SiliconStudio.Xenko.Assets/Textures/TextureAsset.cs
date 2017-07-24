@@ -113,7 +113,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </userdoc>
         [DataMember(80)]
         [DefaultValue(true)]
-        [Display("Enable Streaming")]
+        [Display("Streaming")]
         public bool IsStreamable { get; set; } = true;
 
         /// <summary>
