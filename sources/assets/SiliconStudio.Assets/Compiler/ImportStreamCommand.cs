@@ -25,7 +25,6 @@ namespace SiliconStudio.Assets.Compiler
 
         public ImportStreamCommand() : this(null, null)
         {
-            InputFilesGetter = GetInputFilesImpl;
         }
 
         public ImportStreamCommand(UFile location, UFile sourcePath)
@@ -42,7 +41,7 @@ namespace SiliconStudio.Assets.Compiler
             {
                 inputStream.CopyTo(outputStream);
 
-                var objectURL = new ObjectUrl(UrlType.ContentLink, Location);
+                var objectURL = new ObjectUrl(UrlType.Content, Location);
 
                 if (DisableCompression)
                     commandContext.AddTag(objectURL, disableCompressionSymbol);
@@ -63,11 +62,6 @@ namespace SiliconStudio.Assets.Compiler
             }
 
             return Task.FromResult(ResultStatus.Successful);
-        }
-
-        private IEnumerable<ObjectUrl> GetInputFilesImpl()
-        {
-            yield return new ObjectUrl(UrlType.File, SourcePath);
         }
 
         public override string ToString()
