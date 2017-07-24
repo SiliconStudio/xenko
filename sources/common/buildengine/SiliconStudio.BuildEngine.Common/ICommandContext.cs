@@ -19,6 +19,6 @@ namespace SiliconStudio.BuildEngine
         void RegisterOutput(ObjectUrl url, ObjectId hash);
         void RegisterCommandLog(IEnumerable<ILogMessage> logMessages);
 
-        void AddTag(ObjectUrl url, TagSymbol tagSymbol);
+        void AddTag(ObjectUrl url, string tag);
     }
 }
