@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Serialization.Contents;
@@ -19,8 +18,6 @@ namespace SiliconStudio.BuildEngine
     [DataContract(Inherited = true)]
     public abstract class Command
     {
-        private List<ObjectUrl> cachedInputFiles;
-
         /// <summary>
         /// The command cache version, should be bumped when binary serialization format changes (so that cache gets invalidated)
         /// </summary>
