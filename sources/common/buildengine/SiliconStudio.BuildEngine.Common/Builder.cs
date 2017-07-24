@@ -312,17 +312,10 @@ namespace SiliconStudio.BuildEngine
                 {
                     MicroThread microThread = scheduler.Create();
 
-                    // Find priority from this build step, or one of its parent.
-                    var buildStepPriority = buildStep;
-                    while (buildStepPriority != null)
+                    // Set priority from this build step, if we have one.
+                    if (buildStep.Priority.HasValue)
                     {
-                        if (buildStepPriority.Priority.HasValue)
-                        {
-                            microThread.Priority = buildStepPriority.Priority.Value;
-                            break;
-                        }
-
-                        buildStepPriority = buildStepPriority.Parent;
+                        microThread.Priority = buildStep.Priority.Value;
                     }
 
                     buildStep.ExecutionId = microThread.Id;
