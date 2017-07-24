@@ -79,7 +79,6 @@ namespace SiliconStudio.BuildEngine
                                     executeContext.Logger.Error("Unable to delete file: " + outputObject.Key.Path);
                                 }
                                 break;
-                            case UrlType.ContentLink:
                             case UrlType.Content:
                                 executeContext.ResultMap.Delete(outputObject.Value);
                                 break;

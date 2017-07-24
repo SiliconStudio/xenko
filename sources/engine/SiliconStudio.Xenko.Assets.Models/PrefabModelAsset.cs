@@ -30,7 +30,8 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// </summary>
         public const string FileExtension = ".xkprefabmodel";
 
-        [DataMember]
+        /// <inheritdoc/>
+        [DataMemberIgnore] // materials are not exposed in prefab models
         public List<ModelMaterial> Materials { get; } = new List<ModelMaterial>();
 
         [DataMember]

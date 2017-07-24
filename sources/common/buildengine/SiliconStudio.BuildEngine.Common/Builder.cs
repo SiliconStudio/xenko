@@ -247,7 +247,6 @@ namespace SiliconStudio.BuildEngine
                     case UrlType.File:
                         hash = builderContext.InputHashes.ComputeFileHash(filePath);
                         break;
-                    case UrlType.ContentLink:              
                     case UrlType.Content:
                         if (!buildTransaction.TryGetValue(filePath, out hash))
                             Logger.Warning("Location " + filePath + " does not exist currently and is required to compute the current command hash. The build cache will not work for this command!");
@@ -500,16 +499,13 @@ namespace SiliconStudio.BuildEngine
             {
                 // Filter database Location
                 indexFile.AddValues(
-                    Root.OutputObjects.Where(x => x.Key.Type == UrlType.ContentLink)
+                    Root.OutputObjects.Where(x => x.Key.Type == UrlType.Content)
                         .Select(x => new KeyValuePair<string, ObjectId>(x.Key.Path, x.Value.ObjectId)));
 
-                foreach (var x in Root.OutputObjects)
+                foreach (var outputObject in Root.OutputObjects.Where(x => x.Key.Type == UrlType.Content).Select(x => x.Value))
                 {
-                    if(x.Key.Type != UrlType.ContentLink)
-                        continue;
-
-                    if (x.Value.Tags.Contains(DoNotCompressTag))
-                        DisableCompressionIds.Add(x.Value.ObjectId);
+                    if (outputObject.Tags.Contains(DoNotCompressTag))
+                        DisableCompressionIds.Add(outputObject.ObjectId);
                 }
             }
         }
