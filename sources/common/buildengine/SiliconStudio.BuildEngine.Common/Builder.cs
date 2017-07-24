@@ -14,8 +14,6 @@ using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.IO;
-
-using System.Reflection;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Serialization.Contents;
 
@@ -165,14 +163,12 @@ namespace SiliconStudio.BuildEngine
 
         public Builder(ILogger logger, string buildPath, string buildProfile, string indexName)
         {
-            if (buildPath == null) throw new ArgumentNullException(nameof(buildPath));
-
             MonitorPipeNames = new List<string>();
             startTime = DateTime.Now;
             this.buildProfile = buildProfile;
             this.indexName = indexName;
             Logger = logger;
-            this.buildPath = buildPath;
+            this.buildPath = buildPath ?? throw new ArgumentNullException(nameof(buildPath));
             Root = new ListBuildStep();
             ioMonitor = new CommandIOMonitor(Logger);
             ThreadCount = Environment.ProcessorCount;
@@ -233,7 +229,7 @@ namespace SiliconStudio.BuildEngine
                 builder.ScheduleBuildStep(builderContext, buildStep, step, Variables);
             }
 
-            public IEnumerable<IDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups()
+            public IEnumerable<IReadOnlyDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups()
             {
                 return buildStep.GetOutputObjectsGroups();
             }
@@ -356,7 +352,7 @@ namespace SiliconStudio.BuildEngine
                         {
                             try
                             {
-                                IEnumerable<IDictionary<ObjectUrl, OutputObject>> outputObjectsGroups = executeContext.GetOutputObjectsGroups();
+                                var outputObjectsGroups = executeContext.GetOutputObjectsGroups();
                                 MicrothreadLocalDatabases.MountDatabase(outputObjectsGroups);
 
                                 // Execute

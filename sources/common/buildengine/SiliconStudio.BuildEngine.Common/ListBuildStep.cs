@@ -2,21 +2,14 @@
 // See LICENSE.md for full license information.
 using SiliconStudio.Core.Serialization.Contents;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.BuildEngine
 {
-    public interface IBuildStepCollection
-    {
-
-    }
-
-    public class ListBuildStep : BuildStep, IBuildStepCollection
+    public class ListBuildStep : BuildStep
     {
         private readonly List<BuildStep> steps = new List<BuildStep>();
         private readonly List<BuildStep> executedSteps = new List<BuildStep>();
@@ -27,7 +20,7 @@ namespace SiliconStudio.BuildEngine
         /// <inheritdoc />
         public override string Title => ToString();
 
-        public IDictionary<ObjectUrl, OutputObject> OutputObjects => outputObjects;
+        public IReadOnlyDictionary<ObjectUrl, OutputObject> OutputObjects => outputObjects;
 
         /// <inheritdoc/>
         public override IEnumerable<KeyValuePair<ObjectUrl, ObjectId>> OutputObjectIds => outputObjects.Select(x => new KeyValuePair<ObjectUrl, ObjectId>(x.Key, x.Value.ObjectId));
