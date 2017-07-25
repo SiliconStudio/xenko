@@ -158,6 +158,10 @@ namespace SiliconStudio.Core.Serialization.Contents
                     DeserializeObject(reference.Url, url, obj.GetType(), obj, settings);
                 }
 
+                if (url != reference.Url)
+                {
+                    LoadedAssetUrls.Remove(reference.Url);
+                }
                 return true;
             }
         }
