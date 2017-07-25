@@ -25,15 +25,15 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 #endif
 
 		// 1:-1 to 0:TextureSize
-        uint2 ClipPosToUvPos(float2 clipPos)
+        int2 ClipPosToUvPos(float2 clipPos)
         {
-            return (uint2)mad(clipPos, SvPosUnpack.xy, SvPosUnpack.zw);
+            return (int2)(clipPos * SvPosUnpack.xy + SvPosUnpack.zw);
         }
 
         override stage float4 Shading()
         {
             float4 output = 0;
-			uint2 pixelPos = ClipPosToUvPos(streams.Position.xy);
+			int2 pixelPos = ClipPosToUvPos(streams.Position.xy);
 
             float resolvedDepth = InputTexture.Load(pixelPos, 0).r;
 

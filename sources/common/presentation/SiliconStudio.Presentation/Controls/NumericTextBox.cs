@@ -118,7 +118,7 @@ namespace SiliconStudio.Presentation.Controls
         /// Identifies the <see cref="MouseValidationTrigger"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty MouseValidationTriggerProperty = DependencyProperty.Register(nameof(MouseValidationTrigger), typeof(MouseValidationTrigger), typeof(NumericTextBox), new PropertyMetadata(MouseValidationTrigger.OnMouseUp));
-        
+
         /// <summary>
         /// Raised when the <see cref="Value"/> property has changed.
         /// </summary>
@@ -241,7 +241,7 @@ namespace SiliconStudio.Presentation.Controls
         /// Gets or sets when the <see cref="NumericTextBox"/> should be validated when the user uses the mouse to change its value.
         /// </summary>
         public MouseValidationTrigger MouseValidationTrigger { get { return (MouseValidationTrigger)GetValue(MouseValidationTriggerProperty); } set { SetValue(MouseValidationTriggerProperty, value); } }
-        
+
         /// <summary>
         /// Raised when the <see cref="Value"/> property has changed.
         /// </summary>
@@ -256,7 +256,7 @@ namespace SiliconStudio.Presentation.Controls
         /// Raised when one of the repeat button is released.
         /// </summary>
         public event EventHandler<RepeatButtonPressedRoutedEventArgs> RepeatButtonReleased { add { AddHandler(RepeatButtonReleasedEvent, value); } remove { RemoveHandler(RepeatButtonReleasedEvent, value); } }
-        
+
         /// <inheritdoc/>
         public override void OnApplyTemplate()
         {
@@ -297,7 +297,7 @@ namespace SiliconStudio.Presentation.Controls
             var textValue = FormatValue(Value);
             SetCurrentValue(TextProperty, textValue);
         }
-        
+
         /// <inheritdoc/>
         protected sealed override void OnCancelled()
         {
@@ -412,7 +412,7 @@ namespace SiliconStudio.Presentation.Controls
         {
             ((NumericTextBox)sender).OnValuePropertyChanged((double?)e.OldValue, (double?)e.NewValue);
         }
-        
+
         private static void OnDecimalPlacesPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             var numericInput = (NumericTextBox)sender;
@@ -464,7 +464,7 @@ namespace SiliconStudio.Presentation.Controls
             numericInput.updatingValue = true;
             numericInput.SetCurrentValue(ValueRatioProperty, numericInput.Value.HasValue ? MathUtil.InverseLerp(numericInput.Minimum, numericInput.Maximum, numericInput.Value.Value) : 0.0);
             numericInput.updatingValue = false;
-      
+
             if (needValidation)
             {
                 numericInput.Validate();

@@ -5,7 +5,7 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Rendering.Compositing
 {
-    [Display("Debug Renderer")]
+    [Display("Debug renderer")]
     public class DebugRenderer : SceneRendererBase, ISharedRenderer
     {
         public List<RenderStage> DebugRenderStages { get; } = new List<RenderStage>();

@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Compiler
 {
@@ -25,18 +24,18 @@ namespace SiliconStudio.Assets.Compiler
 
     public abstract class AssetCommand<T> : AssetCommand
     {
-        protected readonly Package Package;
+        protected readonly IAssetFinder AssetFinder;
 
         /// <summary>
         /// This is useful if the asset binary format has changed and we want to bump the version to force re-evaluation/compilation of the command
         /// </summary>
         protected int Version;
 
-        protected AssetCommand(string url, T parameters, Package package)
+        protected AssetCommand(string url, T parameters, IAssetFinder assetFinder)
             : base (url)
         {
             Parameters = parameters;
-            Package = package;
+            AssetFinder = assetFinder;
         }
 
         public T Parameters { get; set; }

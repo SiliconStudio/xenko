@@ -29,10 +29,8 @@ namespace SiliconStudio.Xenko.Assets
         {
             var asset = (GameSettingsAsset)assetItem.Asset;
             // TODO: We should ignore game settings stored in dependencies
-            result.BuildSteps = new AssetBuildStep(assetItem)
-            {
-                new GameSettingsCompileCommand(targetUrlInStorage, assetItem.Package, context.Platform, context.GetCompilationMode(), asset),
-            };
+            result.BuildSteps = new AssetBuildStep(assetItem);
+            result.BuildSteps.Add(new GameSettingsCompileCommand(targetUrlInStorage, assetItem.Package, context.Platform, context.GetCompilationMode(), asset));
         }
 
         public override IEnumerable<Type> GetRuntimeTypes(AssetItem assetItem)
@@ -45,10 +43,11 @@ namespace SiliconStudio.Xenko.Assets
         {
             private readonly PlatformType platform;
             private readonly CompilationMode compilationMode;
-
+            private readonly Package package;
             public GameSettingsCompileCommand(string url, Package package, PlatformType platform, CompilationMode compilationMode, GameSettingsAsset asset)
                 : base(url, asset, package)
             {
+                this.package = package;
                 this.platform = platform;
                 this.compilationMode = compilationMode;
             }
@@ -58,9 +57,9 @@ namespace SiliconStudio.Xenko.Assets
                 base.ComputeParameterHash(writer);
 
                 // Hash used parameters from package
-                writer.Write(Package.Id);
-                writer.Write(Package.UserSettings.GetValue(GameUserSettings.Effect.EffectCompilation));
-                writer.Write(Package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects));
+                writer.Write(package.Id);
+                writer.Write(package.UserSettings.GetValue(GameUserSettings.Effect.EffectCompilation));
+                writer.Write(package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects));
                 writer.Write(compilationMode);
 
                 // Hash platform
@@ -71,14 +70,14 @@ namespace SiliconStudio.Xenko.Assets
             {
                 var result = new GameSettings
                 {
-                    PackageId = Package.Id,
-                    PackageName = Package.Meta.Name,
+                    PackageId = package.Id,
+                    PackageName = package.Meta.Name,
                     DefaultSceneUrl = Parameters.DefaultScene != null ? AttachedReferenceManager.GetUrl(Parameters.DefaultScene) : null,
                     DefaultGraphicsCompositorUrl = Parameters.GraphicsCompositor != null ? AttachedReferenceManager.GetUrl(Parameters.GraphicsCompositor) : null,
                     SplashScreenUrl = Parameters.SplashScreenTexture != null && (compilationMode == CompilationMode.Release || compilationMode == CompilationMode.AppStore) ? AttachedReferenceManager.GetUrl(Parameters.SplashScreenTexture) : null,
                     SplashScreenColor = Parameters.SplashScreenColor,
-                    EffectCompilation = Package.UserSettings.GetValue(GameUserSettings.Effect.EffectCompilation),
-                    RecordUsedEffects = Package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects),
+                    EffectCompilation = package.UserSettings.GetValue(GameUserSettings.Effect.EffectCompilation),
+                    RecordUsedEffects = package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects),
                     Configurations = new PlatformConfigurations(),
                     CompilationMode = compilationMode
                 };
@@ -103,7 +102,7 @@ namespace SiliconStudio.Xenko.Assets
                 result.Configurations.PlatformFilters = Parameters.PlatformFilters;
 
                 //make sure we modify platform specific files to set the wanted orientation
-                SetPlatformOrientation(Package, platform, Parameters.GetOrCreate<RenderingSettings>().DisplayOrientation);
+                SetPlatformOrientation(package, platform, Parameters.GetOrCreate<RenderingSettings>().DisplayOrientation);
 
                 var assetManager = new ContentManager();
                 assetManager.Save(Url, result);

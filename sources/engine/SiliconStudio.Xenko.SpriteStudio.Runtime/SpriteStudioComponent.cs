@@ -11,7 +11,7 @@ using SiliconStudio.Xenko.Updater;
 namespace SiliconStudio.Xenko.Engine
 {
     [DataContract("SpriteStudioComponent")]
-    [Display("Sprite Studio", Expand = ExpandRule.Once)]
+    [Display("SpriteStudio", Expand = ExpandRule.Once)]
     [DefaultEntityComponentProcessor(typeof(SpriteStudioProcessor))]
     [DefaultEntityComponentRenderer(typeof(SpriteStudioRendererProcessor))]
     [DataSerializerGlobal(null, typeof(List<SpriteStudioNodeState>))]

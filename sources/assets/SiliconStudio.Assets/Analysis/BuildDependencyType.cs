@@ -1,6 +1,7 @@
 // Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
+using SiliconStudio.Assets.Compiler;
 
 namespace SiliconStudio.Assets.Analysis
 {
@@ -8,15 +9,15 @@ namespace SiliconStudio.Assets.Analysis
     public enum BuildDependencyType
     {
         /// <summary>
-        /// The content compiled from target asset will be needed when loading the compiled content of the referencing asset at runtime.
+        /// The content generated during compilation needs the content compiled from the target asset to be loaded at runtime.
         /// </summary>
         Runtime = 0x1,
         /// <summary>
-        /// The target asset is needed uncompiled when compiling the referencing asset.
+        /// The uncompiled target asset is accessed during compilation.
         /// </summary>
         CompileAsset = 0x2,
         /// <summary>
-        /// The content compiled from target asset is needed when compiling the referencing asset.
+        /// The content compiled from the target asset is needed during compilation.
         /// </summary>
         CompileContent = 0x4
     }

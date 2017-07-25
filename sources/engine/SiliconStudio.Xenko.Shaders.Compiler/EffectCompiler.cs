@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
@@ -283,6 +284,9 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             bytecode.Stages = shaderStageBytecodes.ToArray();
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+            int shaderSourceLineOffset = 0;
+            int shaderSourceCharacterOffset = 0;
+            string outputShaderLog;
             lock (WriterLock) // protect write in case the same shader is created twice
             {
                 var builder = new StringBuilder();
@@ -340,10 +344,40 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 }
                 builder.AppendLine("*************************/");
 
+                shaderSourceCharacterOffset = builder.Length;
+
                 // Re-append the shader with all informations
                 builder.Append(shaderSourceText);
 
-                File.WriteAllText(shaderSourceFilename, builder.ToString());
+                outputShaderLog = builder.ToString();
+                File.WriteAllText(shaderSourceFilename, outputShaderLog);
+            }
+
+            // Count lines till source start
+            for (int i = 0; i < shaderSourceCharacterOffset-1;)
+            {
+                if (outputShaderLog[i] == '\r' && outputShaderLog[i + 1] == '\n')
+                {
+                    shaderSourceLineOffset++;
+                    i += 2;
+                }
+                else
+                    i++;
+            }
+
+            // Rewrite shader log
+            Regex shaderLogReplace = new Regex(@"\.hlsl\((\d+),[0-9\-]+\):");
+            foreach (var msg in log.Messages)
+            {
+                var match = shaderLogReplace.Match(msg.Text);
+                if (match.Success)
+                {
+                    int line = int.Parse(match.Groups[1].Value);
+                    line += shaderSourceLineOffset;
+
+                    msg.Text = msg.Text.Remove(match.Groups[1].Index, match.Groups[1].Length)
+                        .Insert(match.Groups[1].Index, line.ToString());
+                }
             }
 #endif
 

@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 using System;
 using System.Globalization;
+using System.IO;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Presentation.ValueConverters
@@ -15,7 +16,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <inheritdoc/>
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value?.ToString().Replace("/", "\\");
+            return value?.ToString().Replace('/', Path.DirectorySeparatorChar);
         }
 
         /// <inheritdoc/>

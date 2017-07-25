@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
@@ -25,7 +25,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Dictionary<Guid, Guid> remapping;
             var clone = AssetCompositeHierarchyPropertyGraph<Types.MyPartDesign, Types.MyPart>.CloneSubHierarchies(graph.Container.NodeContainer, graph.Asset, originalRoot.Part.Id.Yield(), SubHierarchyCloneFlags.None, out remapping);
             var cloneRoot = clone.Parts[clone.RootParts.Single().Id];
-            Assert.IsNull(remapping);
+            Assert.IsEmpty(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
             Assert.AreEqual(1, clone.RootParts.Count);
             foreach (var rootPart in clone.RootParts)
@@ -60,7 +60,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Dictionary<Guid, Guid> remapping;
             var clone = AssetCompositeHierarchyPropertyGraph<Types.MyPartDesign, Types.MyPart>.CloneSubHierarchies(graph.Container.NodeContainer, graph.Asset, originalRoot.Part.Id.Yield(), SubHierarchyCloneFlags.None, out remapping);
             var cloneRoot = clone.Parts[clone.RootParts.Single().Id];
-            Assert.IsNull(remapping);
+            Assert.IsEmpty(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
             Assert.AreEqual(1, clone.RootParts.Count);
             foreach (var rootPart in clone.RootParts)
@@ -96,7 +96,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Dictionary<Guid, Guid> remapping;
             var clone = AssetCompositeHierarchyPropertyGraph<Types.MyPartDesign, Types.MyPart>.CloneSubHierarchies(graph.Container.NodeContainer, graph.Asset, originalRoot.Part.Id.Yield(), SubHierarchyCloneFlags.None, out remapping);
             var cloneRoot = clone.Parts[clone.RootParts.Single().Id];
-            Assert.IsNull(remapping);
+            Assert.IsEmpty(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
             Assert.AreEqual(1, clone.RootParts.Count);
             foreach (var rootPart in clone.RootParts)
@@ -132,7 +132,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Dictionary<Guid, Guid> remapping;
             var clone = AssetCompositeHierarchyPropertyGraph<Types.MyPartDesign, Types.MyPart>.CloneSubHierarchies(graph.Container.NodeContainer, graph.Asset, originalRoot.Part.Id.Yield(), SubHierarchyCloneFlags.CleanExternalReferences, out remapping);
             var cloneRoot = clone.Parts[clone.RootParts.Single().Id];
-            Assert.IsNull(remapping);
+            Assert.IsEmpty(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
             Assert.AreEqual(1, clone.RootParts.Count);
             foreach (var rootPart in clone.RootParts)
@@ -167,7 +167,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Dictionary<Guid, Guid> remapping;
             var clone = AssetCompositeHierarchyPropertyGraph<Types.MyPartDesign, Types.MyPart>.CloneSubHierarchies(graph.Container.NodeContainer, graph.Asset, originalRoot.Part.Id.Yield(), SubHierarchyCloneFlags.CleanExternalReferences, out remapping);
             var cloneRoot = clone.Parts[clone.RootParts.Single().Id];
-            Assert.IsNull(remapping);
+            Assert.IsEmpty(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
             Assert.AreEqual(1, clone.RootParts.Count);
             foreach (var rootPart in clone.RootParts)
@@ -203,7 +203,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             Dictionary<Guid, Guid> remapping;
             var clone = AssetCompositeHierarchyPropertyGraph<Types.MyPartDesign, Types.MyPart>.CloneSubHierarchies(graph.Container.NodeContainer, graph.Asset, originalRoot.Part.Id.Yield(), SubHierarchyCloneFlags.CleanExternalReferences, out remapping);
             var cloneRoot = clone.Parts[clone.RootParts.Single().Id];
-            Assert.IsNull(remapping);
+            Assert.IsEmpty(remapping);
             Assert.AreEqual(3, clone.Parts.Count);
             Assert.AreEqual(1, clone.RootParts.Count);
             foreach (var rootPart in clone.RootParts)
@@ -295,7 +295,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var cloneRoot = clone.Parts[clone.RootParts.Single().Id];
             cloneAsset.Graph.AddPartToAsset(clone.Parts, cloneRoot, null, 0);
             cloneAsset.Graph.RefreshBase();
-            Assert.IsNull(remapping);
+            Assert.IsEmpty(remapping);
             Assert.AreEqual(4, clone.Parts.Count);
             Assert.AreEqual(1, clone.RootParts.Count);
             foreach (var rootPart in clone.RootParts)
@@ -346,7 +346,7 @@ namespace SiliconStudio.Assets.Quantum.Tests
             var cloneRoot = clone.Parts[clone.RootParts.Single().Id];
             cloneAsset.Graph.AddPartToAsset(clone.Parts, cloneRoot, null, 0);
             cloneAsset.Graph.RefreshBase();
-            Assert.IsNull(remapping);
+            Assert.IsEmpty(remapping);
             Assert.AreEqual(4, clone.Parts.Count);
             Assert.AreEqual(1, clone.RootParts.Count);
             foreach (var rootPart in clone.RootParts)
