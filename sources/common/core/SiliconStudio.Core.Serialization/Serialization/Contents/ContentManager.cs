@@ -27,7 +27,7 @@ namespace SiliconStudio.Core.Serialization.Contents
 
         public static Func<DatabaseFileProvider> GetFileProvider { get; set; }
 
-        public ContentSerializer Serializer { get; private set; }
+        public ContentSerializer Serializer { get; }
 
         /// <summary>
         /// A dictionary mapping, for each loaded object, its url to the corresponding instance of <see cref="Reference"/>.
@@ -64,8 +64,8 @@ namespace SiliconStudio.Core.Serialization.Contents
         /// </exception>
         public void Save(string url, object asset)
         {
-            if (url == null) throw new ArgumentNullException("url");
-            if (asset == null) throw new ArgumentNullException("asset");
+            if (url == null) throw new ArgumentNullException(nameof(url));
+            if (asset == null) throw new ArgumentNullException(nameof(asset));
 
             lock (LoadedAssetUrls)
             {
@@ -121,25 +121,26 @@ namespace SiliconStudio.Core.Serialization.Contents
             if (settings == null)
                 settings = ContentManagerLoaderSettings.Default;
 
-            if (url == null) throw new ArgumentNullException("url");
+            if (url == null) throw new ArgumentNullException(nameof(url));
 
             lock (LoadedAssetUrls)
             {
                 using (var profile = Profiler.Begin(ContentProfilingKeys.ContentLoad, url))
                 {
-                    return DeserializeObject(url, type, null, settings);
+                    return DeserializeObject(url, url, type, null, settings);
                 }
             }
         }
 
         /// <summary>
-        /// Reloads an asset. If possible, same recursively referenced objects are reused.
+        /// Reloads a content. If possible, same recursively referenced objects are reused.
         /// </summary>
-        /// <param name="obj">The object.</param>
-        /// <param name="settings">The settings.</param>
+        /// <param name="obj">The object to reload.</param>
+        /// <param name="newUrl">The url of the new object to load. This allows to replace an asset by another one, or to handle renamed content.</param>
+        /// <param name="settings">The loader settings.</param>
         /// <returns>True if it could be reloaded, false otherwise.</returns>
         /// <exception cref="System.InvalidOperationException">Content not loaded through this ContentManager.</exception>
-        public bool Reload(object obj, ContentManagerLoaderSettings settings = null)
+        public bool Reload(object obj, string newUrl = null, ContentManagerLoaderSettings settings = null)
         {
             if (settings == null)
                 settings = ContentManagerLoaderSettings.Default;
@@ -148,13 +149,13 @@ namespace SiliconStudio.Core.Serialization.Contents
             {
                 Reference reference;
                 if (!LoadedAssetReferences.TryGetValue(obj, out reference))
-                    return false;
+                    return false; // The object is not loaded
 
-                var url = reference.Url;
+                var url = newUrl ?? reference.Url;
 
                 using (var profile = Profiler.Begin(ContentProfilingKeys.ContentReload, url))
                 {
-                    DeserializeObject(url, obj.GetType(), obj, settings);
+                    DeserializeObject(reference.Url, url, obj.GetType(), obj, settings);
                 }
 
                 return true;
@@ -162,15 +163,16 @@ namespace SiliconStudio.Core.Serialization.Contents
         }
 
         /// <summary>
-        /// Reloads an asset asynchronously. If possible, same recursively referenced objects are reused.
+        /// Reloads a content asynchronously. If possible, same recursively referenced objects are reused.
         /// </summary>
-        /// <param name="obj">The object.</param>
-        /// <param name="settings">The settings.</param>
-        /// <returns>True if it could be reloaded, false otherwise.</returns>
+        /// <param name="obj">The object to reload.</param>
+        /// <param name="newUrl">The url of the new object to load. This allows to replace an asset by another one, or to handle renamed content.</param>
+        /// <param name="settings">The loader settings.</param>
+        /// <returns>A task that completes when the content has been reloaded. The result of the task is True if it could be reloaded, false otherwise.</returns>
         /// <exception cref="System.InvalidOperationException">Content not loaded through this ContentManager.</exception>
-        public Task<bool> ReloadAsync(object obj, ContentManagerLoaderSettings settings = null)
+        public Task<bool> ReloadAsync(object obj, string newUrl = null, ContentManagerLoaderSettings settings = null)
         {
-            return ScheduleAsync(() => Reload(obj, settings));
+            return ScheduleAsync(() => Reload(obj, newUrl, settings));
         }
 
         /// <summary>
@@ -234,8 +236,7 @@ namespace SiliconStudio.Core.Serialization.Contents
         /// <remarks>This function does not increase the reference count on the asset.</remarks>
         public object Get(Type type, string url)
         {
-            var reference = FindDeserializedObject(url, type);
-            return reference != null ? reference.Object : null;
+            return FindDeserializedObject(url, type)?.Object;
         }
 
         /// <summary>
@@ -252,7 +253,7 @@ namespace SiliconStudio.Core.Serialization.Contents
 
         public bool TryGetAssetUrl(object obj, out string url)
         {
-            if (obj == null) throw new ArgumentNullException("obj");
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
             lock (LoadedAssetUrls)
             {
                 Reference reference;
@@ -340,15 +341,15 @@ namespace SiliconStudio.Core.Serialization.Contents
             }
         }
 
-        private object DeserializeObject(string url, Type type, object obj, ContentManagerLoaderSettings settings)
+        private object DeserializeObject(string initialUrl, string newUrl, Type type, object obj, ContentManagerLoaderSettings settings)
         {
             var serializeOperations = new Queue<DeserializeOperation>();
-            serializeOperations.Enqueue(new DeserializeOperation(null, url, type, obj));
+            serializeOperations.Enqueue(new DeserializeOperation(null, newUrl, type, obj));
 
             Reference reference = null;
             if (obj != null)
             {
-                reference = FindDeserializedObject(url, type);
+                reference = FindDeserializedObject(initialUrl, type);
                 if (reference.Object != obj)
                 {
                     throw new InvalidOperationException("Object doesn't match, can't reload");
@@ -489,7 +490,7 @@ namespace SiliconStudio.Core.Serialization.Contents
                     // Find serializer
                     var serializer = Serializer.GetSerializer(headerObjType, objType);
                     if (serializer == null)
-                        throw new InvalidOperationException(string.Format("Content serializer for {0}/{1} could not be found.", headerObjType, objType));
+                        throw new InvalidOperationException($"Content serializer for {headerObjType}/{objType} could not be found.");
                     contentSerializerContext = new ContentSerializerContext(url, ArchiveMode.Deserialize, this) { LoadContentReferences = settings.LoadContentReferences };
 
                     // Read chunk references
@@ -520,15 +521,12 @@ namespace SiliconStudio.Core.Serialization.Contents
                     contentSerializerContext.SerializeContent(streamReader, serializer, result);
 
                     // Add reference
-                    if (parentReference != null)
-                    {
-                        parentReference.References.Add(reference);
-                    }
+                    parentReference?.References.Add(reference);
                 }
             }
             catch (Exception exception)
             {
-                throw new ContentManagerException(string.Format("Unexpected exception while loading asset [{0}]. Reason: {1}. Check inner-exception for details.", url, exception.Message), exception);
+                throw new ContentManagerException($"Unexpected exception while loading asset [{url}]. Reason: {exception.Message}. Check inner-exception for details.", exception);
             }
 
             if (settings.LoadContentReferences)
@@ -592,7 +590,7 @@ namespace SiliconStudio.Core.Serialization.Contents
 
             var serializer = Serializer.GetSerializer(null, obj.GetType());
             if (serializer == null)
-                throw new InvalidOperationException(string.Format("Content serializer for {0} could not be found.", obj.GetType()));
+                throw new InvalidOperationException($"Content serializer for {obj.GetType()} could not be found.");
 
             var contentSerializerContext = new ContentSerializerContext(url, ArchiveMode.Serialize, this);
 
@@ -608,8 +606,7 @@ namespace SiliconStudio.Core.Serialization.Contents
                 var serializationType = serializer.SerializationType;
                 if (serializationType != null)
                 {
-                    header = new ChunkHeader();
-                    header.Type = serializer.SerializationType.AssemblyQualifiedName;
+                    header = new ChunkHeader { Type = serializer.SerializationType.AssemblyQualifiedName };
                     header.Write(streamWriter);
                     header.OffsetToObject = (int)streamWriter.NativeStream.Position;
                 }
@@ -653,7 +650,7 @@ namespace SiliconStudio.Core.Serialization.Contents
         /// </summary>
         internal void SetAssetObject(Reference reference, object obj)
         {
-            if (obj == null) throw new ArgumentNullException("obj");
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
 
             if (reference.Object != null)
             {
@@ -709,7 +706,7 @@ namespace SiliconStudio.Core.Serialization.Contents
                 {
                     throw new ContentManagerException(errorMessage);
                 }
-                catch (Exception)
+                catch (ContentManagerException)
                 {
                 }
             }
