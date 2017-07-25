@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// Texture will be stored in sRGB format (standard for color textures) and converted to linear space when sampled. Only relevant when working in Linear color space.
         /// </summary>
         /// <userdoc>
-        /// Should be checked for all color textures, unless they are explicitly in linear space. Texture will be stored in sRGB format (standard for color textures) and converted to linear space when sampled. Only relevant when working in Linear color space.
+        /// Store the texture in sRGB format and convert to linear space when sampled. We recommend you enable this for all color textures, unless they're explicitly in linear space.
         /// </userdoc>
         [DataMember(20)]
         [DefaultValue(true)]
@@ -32,11 +32,11 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </summary>
         /// <value><c>true</c> to enable color key; otherwise, <c>false</c>.</value>
         /// <userdoc>
-        /// If checked, all pixels of the color set in the ColorKeyColor property will be replaced by transparent black.
+        /// Replace all pixels of the color set in the **Color key color** property with transparent black
         /// </userdoc>
         [DataMember(43)]
         [DefaultValue(false)]
-        [Display(null, "Transparency")]
+        [Display("Color key", "Transparency")]
         public bool ColorKeyEnabled { get; set; }
 
         /// <summary>
@@ -44,10 +44,10 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </summary>
         /// <value>The color key.</value>
         /// <userdoc>
-        /// If ColorKeyEnabled is true, All pixels of the color set to this property are replaced with transparent black.
+        /// If **Color key** is enabled, replace all pixels of this color with transparent black
         /// </userdoc>
         [DataMember(45)]
-        [Display(null, "Transparency")]
+        [Display("Color key color", "Transparency")]
         public Color ColorKeyColor { get; set; } = new Color(255, 0, 255);
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </summary>
         /// <value>The alpha format.</value>
         /// <userdoc>
-        /// The format to use for alpha in the texture.
+        /// The format to use for alpha in the texture
         /// </userdoc>
         [DataMember(55)]
         [DefaultValue(AlphaFormat.Auto)]
@@ -67,11 +67,11 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </summary>
         /// <value><c>true</c> to convert the texture in premultiply alpha.; otherwise, <c>false</c>.</value>
         /// <userdoc>
-        /// If checked, The color values will be pre-multiplied by the alpha value.
+        /// Premultiply the color values by the **Alpha** value
         /// </userdoc>
         [DataMember(80)]
         [DefaultValue(true)]
-        [Display(null, "Transparency")]
+        [Display("Premultiply alpha", "Transparency")]
         public bool PremultiplyAlpha { get; set; } = true;
 
         TextureHint ITextureType.Hint => TextureHint.Color;
