@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// A default bundle of <see cref="ImageEffect"/>.
     /// </summary>
     [DataContract("PostProcessingEffects")]
-    [Display("Post-Processing Effects")]
+    [Display("Post-processing effects")]
     public sealed class PostProcessingEffects : ImageEffect, IImageEffectRenderer, IPostProcessingEffects
     {
         private LuminanceEffect luminanceEffect;

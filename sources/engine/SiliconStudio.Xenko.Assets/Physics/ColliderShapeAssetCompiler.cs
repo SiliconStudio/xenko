@@ -30,15 +30,15 @@ namespace SiliconStudio.Xenko.Assets.Physics
             NativeLibrary.PreloadLibrary("VHACD.dll");
         }
 
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
+        public override IEnumerable<BuildDependencyInfo> GetInputTypes(AssetItem assetItem)
         {
             foreach (var type in AssetRegistry.GetAssetTypes(typeof(Model)))
             {
-                yield return new KeyValuePair<Type, BuildDependencyType>(type, BuildDependencyType.CompileContent);
+                yield return new BuildDependencyInfo(type, typeof(AssetCompilationContext), BuildDependencyType.CompileContent);
             }
             foreach (var type in AssetRegistry.GetAssetTypes(typeof(Skeleton)))
             {
-                yield return new KeyValuePair<Type, BuildDependencyType>(type, BuildDependencyType.CompileContent);
+                yield return new BuildDependencyInfo(type, typeof(AssetCompilationContext), BuildDependencyType.CompileContent);
             }
         }
 
@@ -54,16 +54,14 @@ namespace SiliconStudio.Xenko.Assets.Physics
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (ColliderShapeAsset)assetItem.Asset;
-            result.BuildSteps = new AssetBuildStep(assetItem)
-            {
-                new ColliderShapeCombineCommand(targetUrlInStorage, asset, assetItem.Package)
-            };
+            result.BuildSteps = new AssetBuildStep(assetItem);
+            result.BuildSteps.Add(new ColliderShapeCombineCommand(targetUrlInStorage, asset, assetItem.Package));
         }
 
         public class ColliderShapeCombineCommand : AssetCommand<ColliderShapeAsset>
         {
-            public ColliderShapeCombineCommand(string url, ColliderShapeAsset parameters, Package package)
-                : base(url, parameters, package)
+            public ColliderShapeCombineCommand(string url, ColliderShapeAsset parameters, IAssetFinder assetFinder)
+                : base(url, parameters, assetFinder)
             {
             }
 

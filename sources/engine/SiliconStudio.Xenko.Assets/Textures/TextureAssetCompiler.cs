@@ -23,9 +23,9 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [AssetCompiler(typeof(TextureAsset), typeof(AssetCompilationContext))]
     public class TextureAssetCompiler : AssetCompilerBase
     {
-        public override IEnumerable<KeyValuePair<Type, BuildDependencyType>> GetInputTypes(AssetItem assetItem)
+        public override IEnumerable<BuildDependencyInfo> GetInputTypes(AssetItem assetItem)
         {
-            yield return new KeyValuePair<Type, BuildDependencyType>(typeof(GameSettingsAsset), BuildDependencyType.CompileAsset);
+            yield return new BuildDependencyInfo(typeof(GameSettingsAsset), typeof(AssetCompilationContext), BuildDependencyType.CompileAsset);
         }
 
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
@@ -38,7 +38,8 @@ namespace SiliconStudio.Xenko.Assets.Textures
             var colorSpace = context.GetColorSpace();
 
             var parameter = new TextureConvertParameters(assetSource, asset, context.Platform, context.GetGraphicsPlatform(assetItem.Package), gameSettingsAsset.GetOrCreate<RenderingSettings>(context.Platform).DefaultGraphicsProfile, gameSettingsAsset.GetOrCreate<TextureSettings>().TextureQuality, colorSpace);
-            result.BuildSteps = new AssetBuildStep(assetItem) { new TextureConvertCommand(targetUrlInStorage, parameter, assetItem.Package) };
+            result.BuildSteps = new AssetBuildStep(assetItem);
+            result.BuildSteps.Add(new TextureConvertCommand(targetUrlInStorage, parameter, assetItem.Package));
         }
 
         /// <summary>
@@ -46,13 +47,12 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </summary>
         public class TextureConvertCommand : AssetCommand<TextureConvertParameters>
         {
-            public TextureConvertCommand(string url, TextureConvertParameters description, Package package)
-                : base(url, description, package)
+            public TextureConvertCommand(string url, TextureConvertParameters description, IAssetFinder assetFinder)
+                : base(url, description, assetFinder)
             {
-                InputFilesGetter = GetInputFilesImpl;
             }
 
-            private IEnumerable<ObjectUrl> GetInputFilesImpl()
+            public override IEnumerable<ObjectUrl> GetInputFiles()
             {
                 yield return new ObjectUrl(UrlType.File, Parameters.SourcePathFromDisk);
             }

@@ -17,10 +17,9 @@ namespace SiliconStudio.BuildEngine.Tests.Commands
         {
             InputUrl = inputUrl;
             Echo = echo;
-            InputFilesGetter = GetInputFilesImpl;
         }
 
-        private IEnumerable<ObjectUrl> GetInputFilesImpl()
+        public override IEnumerable<ObjectUrl> GetInputFiles()
         {
             yield return new ObjectUrl(UrlType.File, InputUrl);
         }

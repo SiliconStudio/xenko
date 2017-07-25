@@ -49,10 +49,12 @@
     <Compile Include="Annotations\MustUseReturnValueAttribute.cs" />
     <Compile Include="Annotations\NoEnumerationAttribute.cs" />
     <Compile Include="Collections\HybridDictionary.cs" />
+    <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\AnonymousEqualityComparer.cs" />
     <Compile Include="Extensions\DesignExtensions.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
+    <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\ProcessExtensions.cs" />
     <Compile Include="Extensions\TaskExtensions.cs" />
