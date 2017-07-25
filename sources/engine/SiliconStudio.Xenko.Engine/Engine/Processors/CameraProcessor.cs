@@ -134,7 +134,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
 
         private void AttachCameraToSlot(CameraComponent camera)
         {
-            if (!camera.Enabled) throw new InvalidOperationException($"The camera [{camera.Entity.Name}] cannot be attached because it is disabled");
+            if (!camera.Enabled) throw new InvalidOperationException($"The camera [{camera.Entity.Name}] is disabled and can't be attached");
             if (camera.Slot.AttachedCompositor != null) throw new InvalidOperationException($"The camera [{camera.Entity.Name}] is already attached");
 
             var graphicsCompositor = Services.GetServiceAs<SceneSystem>()?.GraphicsCompositor;
@@ -146,7 +146,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
                     if (slot.Id == camera.Slot.Id)
                     {
                         if (slot.Camera != null)
-                            throw new InvalidOperationException($"Unable to attach camera [{camera.Entity.Name}] to the graphics compositor because another camera [{slot.Camera.Entity.Name}] is enabled and already attached to this slot.");
+                            throw new InvalidOperationException($"Unable to attach camera [{camera.Entity.Name}] to the graphics compositor. Another camera, [{slot.Camera.Entity.Name}], is enabled and already attached to this slot.");
 
                         slot.Camera = camera;
                         camera.Slot.AttachedCompositor = graphicsCompositor;
@@ -159,7 +159,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
         private static void DetachCameraFromSlot(CameraComponent camera)
         {
             if (camera.Slot.AttachedCompositor == null)
-                throw new InvalidOperationException($"The camera [{camera.Entity.Name}] is not attached");
+                throw new InvalidOperationException($"The camera [{camera.Entity.Name}] isn't attached");
 
             for (var i = 0; i < camera.Slot.AttachedCompositor.Cameras.Count; ++i)
             {
@@ -167,7 +167,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 if (slot.Id == camera.Slot.Id)
                 {
                     if (slot.Camera != camera)
-                        throw new InvalidOperationException($"Unable to detach camera [{camera.Entity.Name}] from the graphics compositor, another camera {slot.Camera.Entity.Name} is attached to this slot.");
+                        throw new InvalidOperationException($"Can'to detach camera [{camera.Entity.Name}] from the graphics compositor. Another camera, {slot.Camera.Entity.Name}, is attached to this slot.");
 
                     slot.Camera = null;
                     break;

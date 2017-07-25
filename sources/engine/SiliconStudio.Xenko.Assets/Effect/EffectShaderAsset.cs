@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
     /// </summary>
     [DataContract("EffectShader")]
     [AssetDescription(FileExtension, AlwaysMarkAsRoot = true, AllowArchetype = false)]
-    [Display(920, "Effect Shader")]
+    [Display(920, "Effect shader")]
     public sealed class EffectShaderAsset : ProjectSourceCodeWithFileGeneratorAsset
     {
         /// <summary>

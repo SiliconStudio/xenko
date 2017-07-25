@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Xenko.Graphics;
@@ -34,19 +35,30 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             // Glass rendering is done in 2 passes:
             // - Transmittance evaluation to darken background (with alpha blend)
             // - Reflectance evaluation (with additive blending)
-            context.SetMultiplePasses("Glass", 2);
+            int passCount = 2;
+            if (context.CurrentMaterialDescriptor.Attributes.CullMode == CullMode.None)
+                passCount *= 2; // This needs both front and back (in the following order: back[pass0,pass1], front[pass0,pass1])
+            context.SetMultiplePasses("Glass", passCount);
         }
 
         public override void GenerateShader(MaterialGeneratorContext context)
         {
             base.GenerateShader(context);
 
+            var attributes = context.CurrentMaterialDescriptor.Attributes;
+
+            int glassPassIndex = context.PassIndex % 2;
+            if (attributes.CullMode == CullMode.None)
+                context.MaterialPass.CullMode = context.PassIndex < 2 ? CullMode.Back : CullMode.Front;
+            else
+                context.MaterialPass.CullMode = attributes.CullMode;
+            
             // Compute transmittance
             context.GetShading(this).LightDependentExtraModels.Add(new ShaderClassSource("MaterialTransmittanceReflectanceStream"));
 
             context.Parameters.Set(MaterialTransmittanceReflectanceStreamKeys.RefractiveIndex, RefractiveIndex);
             context.MaterialPass.HasTransparency = true;
-            if (context.PassIndex == 0)
+            if (glassPassIndex == 0)
             {
                 // Transmittance pass
                 context.MaterialPass.BlendState = new BlendStateDescription(Blend.Zero, Blend.SourceColor) { RenderTarget0 = { AlphaSourceBlend = Blend.One, AlphaDestinationBlend = Blend.Zero } };
@@ -55,7 +67,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 // Note: we make sure to run after MaterialTransparencyBlendFeature so that shadingColorAlpha is fully updated
                 context.AddFinalCallback(MaterialShaderStage.Pixel, AddMaterialSurfaceTransmittanceShading, MaterialTransparencyBlendFeature.ShadingColorAlphaFinalCallbackOrder + 1);
             }
-            else if (context.PassIndex == 1)
+            else if (glassPassIndex == 1)
             {
                 // Reflectance pass
                 context.MaterialPass.BlendState = BlendStates.Additive;

@@ -98,9 +98,9 @@ namespace SiliconStudio.Xenko.Engine
         /// The materials overriding <see cref="SiliconStudio.Xenko.Rendering.Model.Materials"/> ones.
         /// </value>
         /// <userdoc>The list of materials to use with the model. This list overrides the default materials of the model.</userdoc>
-        [DataMember(20)]
+        [DataMember(40)]
         [Category]
-        [MemberCollection(ReadOnly =  true)]
+        [MemberCollection(ReadOnly = true)]
         public IndexingDictionary<Material> Materials { get; } = new IndexingDictionary<Material>();
 
         [DataMemberIgnore, DataMemberUpdatable]
@@ -142,7 +142,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// The render group for this component.
         /// </summary>
-        [DataMember(50)]
+        [DataMember(20)]
         [DefaultValue(RenderGroup.Group0)]
         public RenderGroup RenderGroup { get; set; }
 

@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
     [CategoryOrder(150, "Sprites")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(SpriteSheet))]
-    [Display(1600, "Sprite Sheet")]
+    [Display(1600, "Sprite sheet")]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.5.0-alpha01")]
     [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha01", "1.10.0-alpha01", typeof(SpriteSheetSRGBUpgrader))]

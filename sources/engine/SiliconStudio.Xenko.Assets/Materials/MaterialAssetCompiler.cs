@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
             public MaterialCompileCommand(string url, AssetItem assetItem, MaterialAsset value, AssetCompilerContext context)
                 : base(url, value, assetItem.Package)
             {
-                Version = 2;
+                Version = 3;
                 this.assetItem = assetItem;
                 colorSpace = context.GetColorSpace();
                 assetUrl = new UFile(url);
@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
 
                 foreach (var compileTimeDependency in ((MaterialAsset)assetItem.Asset).FindMaterialReferences())
                 {
-                    var linkedAsset = Package.FindAsset(compileTimeDependency);
+                    var linkedAsset = AssetFinder.FindAsset(compileTimeDependency.Id);
                     if (linkedAsset?.Asset != null)
                     {
                         writer.SerializeExtended(linkedAsset.Asset, ArchiveMode.Serialize);
@@ -118,7 +118,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
                     Content = assetManager,
                     ColorSpace = colorSpace
                 };
-                materialContext.AddLoadingFromSession(Package);
+                materialContext.AddLoadingFromSession(AssetFinder);
 
                 var materialClone = AssetCloner.Clone(Parameters);
                 var result = MaterialGenerator.Generate(new MaterialDescriptor { MaterialId = materialClone.Id, Attributes = materialClone.Attributes, Layers = materialClone.Layers}, materialContext, string.Format("{0}:{1}", materialClone.Id, assetUrl));

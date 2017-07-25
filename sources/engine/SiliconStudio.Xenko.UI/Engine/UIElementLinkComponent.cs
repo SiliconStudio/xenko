@@ -8,7 +8,7 @@ using SiliconStudio.Xenko.Engine.Processors;
 namespace SiliconStudio.Xenko.Engine
 {
     [DataContract("UIElementLinkComponent")]
-    [Display("UI Element Link", Expand = ExpandRule.Once)]
+    [Display("UI element link", Expand = ExpandRule.Once)]
     [DefaultEntityComponentProcessor(typeof(UIElementLinkProcessor))]
     [ComponentOrder(1600)]
     public sealed class UIElementLinkComponent : EntityComponent

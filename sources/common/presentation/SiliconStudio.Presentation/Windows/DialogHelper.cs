@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Interop;
 using System.Windows.Threading;
@@ -13,6 +14,11 @@ namespace SiliconStudio.Presentation.Windows
 {
     public static class DialogHelper
     {
+        /// <summary>
+        /// Don't ask again
+        /// </summary>
+        public static readonly string DontAskAgain = Tr._("Don't ask again");
+
         [NotNull]
         public static Task<MessageBoxResult> MessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None)
         {
@@ -28,7 +34,7 @@ namespace SiliconStudio.Presentation.Windows
         [NotNull]
         public static Task<CheckedMessageBoxResult> CheckedMessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, bool? isChecked, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None)
         {
-            return dispatcher.InvokeTask(() => Windows.CheckedMessageBox.Show(message, caption, button, image, Tr._("Don't ask me again"), isChecked));
+            return dispatcher.InvokeTask(() => Windows.CheckedMessageBox.Show(message, caption, button, image, DontAskAgain, isChecked));
         }
 
         [NotNull]
@@ -66,6 +72,29 @@ namespace SiliconStudio.Presentation.Windows
         public static CheckedMessageBoxResult BlockingCheckedMessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, bool? isChecked, string checkboxMessage, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None)
         {
             return PushFrame(dispatcher, () => CheckedMessageBox(dispatcher, message, caption, isChecked, checkboxMessage, buttons, image));
+        }
+
+        /// <summary>
+        /// Create buttons corresponding to the provided button <paramref name="captions"/>
+        /// </summary>
+        /// <param name="captions">An enumeration of button captions.</param>
+        /// <param name="defaultIndex">The 1-based index of the button that is the default button, or <c>null</c> if there is no default button.</param>
+        /// <param name="cancelIndex">The 1-based index of the button that is the cancel button, or <c>null</c> if there is no cancel button.</param>
+        /// <returns>An enumeration of buttons corresponding to the provided button <paramref name="captions"/>, which associated value are successived indices starting at <c>1</c>.</returns>
+        /// <remarks>
+        /// Index <c>0</c> is reserved for when the dialog is closed without clicking on a button.
+        /// </remarks>
+        [ItemNotNull, NotNull]
+        public static IList<DialogButtonInfo> CreateButtons([NotNull] IEnumerable<string> captions, int? defaultIndex = null, int? cancelIndex = null)
+        {
+            var i = 1;
+            var buttons = captions.Select(s =>
+            {
+                var buttonInfo = new DialogButtonInfo(s, i, defaultIndex == i, cancelIndex == i);
+                i++;
+                return buttonInfo;
+            });
+            return buttons.ToList();
         }
 
         private static TResult PushFrame<TResult>([NotNull] IDispatcherService dispatcher, Func<Task<TResult>> task)

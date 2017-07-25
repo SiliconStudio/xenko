@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Assets.Rendering
     }
 
     [DataContract("GraphicsCompositorAsset")]
-    [Display(8000, "Graphics Compositor")]
+    [Display(8000, "Graphics compositor")]
     [AssetContentType(typeof(GraphicsCompositor))]
     [AssetDescription(FileExtension)]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
