@@ -48,17 +48,17 @@ namespace SiliconStudio.Xenko.Streaming
         public TimeSpan ResourceUpdatesInterval = TimeSpan.FromMilliseconds(200);
 
         /// <summary>
-        /// The <see cref="StreamableResource"/> live timeout. If any resource is not used for a while it's quality gets down.
+        /// The <see cref="StreamableResource"/> live timeout. Resources that aren't used for a while are downscaled in quality.
         /// </summary>
         public TimeSpan ResourceLiveTimeout = TimeSpan.FromSeconds(5);
         
         /// <summary>
-        /// The maximum amount of resources updated per streaming manager tick. Used to balance performance/streaming speed.
+        /// The maximum number of resources updated per streaming manager tick. Used to balance performance/streaming speed.
         /// </summary>
         public int MaxResourcesPerUpdate = 10;
 
         /// <summary>
-        /// The maximum amount of resources being streamed at the same time. Used to balance performance/streaming speed.
+        /// The maximum number of resources streamed at the same time. Used to balance performance/streaming speed.
         /// </summary>
 #if SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS
         public const int MaxTasksRunningSimultaneously = 1;
@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.Streaming
         public ICollection<StreamableResource> Resources => resources;
 
         /// <summary>
-        /// Gets or sets a value indicating whether resources streaming should be disabled.
+        /// Gets or sets a value indicating whether resource streaming should be disabled.
         /// </summary>
         public bool DisableStreaming { get; set; }
 
@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// </summary>
         /// <param name="services">The servicies registry.</param>
         /// <remarks>
-        /// The GameSystem is expecting the following services to be registered: <see cref="T:SiliconStudio.Xenko.Games.IGame" /> and <see cref="T:SiliconStudio.Core.Serialization.Contents.IContentManager" />.
+        /// The GameSystem expects the following services to be registered: <see cref="T:SiliconStudio.Xenko.Games.IGame" /> and <see cref="T:SiliconStudio.Core.Serialization.Contents.IContentManager" />.
         /// </remarks>
         public StreamingManager(IServiceRegistry services) : base(services)
         {
@@ -135,7 +135,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// </summary>
         /// <typeparam name="T">The type of the streamable resource.</typeparam>
         /// <param name="obj">The object.</param>
-        /// <returns>Streamable resource or null if cannot find it.</returns>
+        /// <returns>Streamable resource, or null if it can't be found.</returns>
         [CanBeNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Get<T>(object obj) where T : StreamableResource
@@ -149,7 +149,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// Gets the <see cref="StreamingTexture"/> corresponding to the given texture object.
         /// </summary>
         /// <param name="obj">The texture object.</param>
-        /// <returns>Streamable texture or null if cannot find it.</returns>
+        /// <returns>Streamable texture, or null if it can't be found.</returns>
         [CanBeNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public StreamingTexture Get(Texture obj)
@@ -420,7 +420,7 @@ namespace SiliconStudio.Xenko.Streaming
         }
 
         /// <summary>
-        /// Called when render mesh is submited to rendering. Registers referenced resources to stream them.
+        /// Called when render mesh is submitted to rendering. Registers referenced resources to stream them.
         /// </summary>
         /// <param name="renderMesh">The render mesh.</param>
         public void StreamResources(RenderMesh renderMesh)
@@ -432,7 +432,7 @@ namespace SiliconStudio.Xenko.Streaming
         }
 
         /// <summary>
-        /// Called when material parameters are submited to rendering. Registers referenced resources to stream them.
+        /// Called when material parameters are submitted to rendering. Registers referenced resources to stream them.
         /// </summary>
         /// <param name="parameters">The material parameters.</param>
         public void StreamResources(ParameterCollection parameters)
@@ -455,7 +455,7 @@ namespace SiliconStudio.Xenko.Streaming
         }
 
         /// <summary>
-        /// Called when texture is submited to be used during rendering. Registers referenced resources to stream them.
+        /// Called when texture is submitted to rendering. Registers referenced resources to stream them.
         /// </summary>
         /// <param name="texture">The texture.</param>
         public void StreamResources(Texture texture)
@@ -471,7 +471,7 @@ namespace SiliconStudio.Xenko.Streaming
         }
         
         /// <summary>
-        /// Called when render mesh is submited to rendering. Registers referenced resources to stream them up to the maximum quality level.
+        /// Called when render mesh is submitted to rendering. Registers referenced resources to stream them to the maximum quality level.
         /// </summary>
         /// <param name="renderMesh">The render mesh.</param>
         public void StreamResourcesFully(RenderMesh renderMesh)
@@ -483,7 +483,7 @@ namespace SiliconStudio.Xenko.Streaming
         }
 
         /// <summary>
-        /// Called when material parameters are submited to rendering. Registers referenced resources to stream them up to the maximum quality level.
+        /// Called when material parameters are submitted to rendering. Registers referenced resources to stream them to the maximum quality level.
         /// </summary>
         /// <param name="parameters">The material parameters.</param>
         public void StreamResourcesFully(ParameterCollection parameters)
@@ -507,7 +507,7 @@ namespace SiliconStudio.Xenko.Streaming
         }
 
         /// <summary>
-        /// Called when texture is submited to be used during rendering. Registers referenced resources to stream them up to the maximum quality level.
+        /// Called when texture is submitted to rendering. Registers referenced resources to stream them to the maximum quality level.
         /// </summary>
         /// <param name="texture">The texture.</param>
         public void StreamResourcesFully(Texture texture)
