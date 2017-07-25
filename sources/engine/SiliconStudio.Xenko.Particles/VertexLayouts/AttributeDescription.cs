@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return string.Equals(Name, other.Name);
+            return string.Equals(Name, other.Name, StringComparison.Ordinal);
         }
 
         /// <inheritdoc />
