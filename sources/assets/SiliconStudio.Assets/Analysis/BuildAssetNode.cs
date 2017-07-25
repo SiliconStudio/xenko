@@ -131,46 +131,45 @@ namespace SiliconStudio.Assets.Analysis
         /// Performs analysis on the asset to figure out all the needed dependencies
         /// </summary>
         /// <param name="context">The compiler context</param>
-        public void Analyze(AssetCompilerContext context)
+        /// <returns>True if the node was updated, false otherwise.</returns>
+        public bool Analyze(AssetCompilerContext context)
         {
             var assetVersion = AssetItem.Version;
             if (Interlocked.Exchange(ref version, assetVersion) == assetVersion)
-                return; //same version, skip analysis, do not clear links
+            {
+                // This node is up-to-date. Let's check if CompileAsset links are also up-to-date.
+                // Otherwise we need to refresh this node since this kind of link can bring additional dependencies.
+                var upToDate = true;
+                foreach (var node in References)
+                {
+                    if (node.HasOne(BuildDependencyType.CompileAsset))
+                    {
+                        if (node.Target.Analyze(context))
+                            upToDate = false;
+                    }
+                }
+
+                if (upToDate)
+                    return false; // Same version, skip analysis, do not clear links
+            }
 
             var mainCompiler = BuildDependencyManager.AssetCompilerRegistry.GetCompiler(AssetItem.Asset.GetType(), CompilationContext);
             if (mainCompiler == null)
-                return; //scripts and such don't have compiler
+                return false; // Scripts and such don't have compiler
 
             var typesToInclude = new HashSet<BuildDependencyInfo>(mainCompiler.GetInputTypes(AssetItem));
             var typesToExclude = new HashSet<Type>(mainCompiler.GetInputTypesToExclude(AssetItem));
 
-            //clean up our references
+            // Clean up our references
             references.Clear();
 
-            //DependencyManager check
-            //for now we use the dependency manager itself to resolve runtime dependencies, in the future we might want to unify the builddependency manager with the dependency manager
-            var dependencies = AssetItem.Package.Session.DependencyManager.ComputeDependencies(AssetItem.Id, AssetDependencySearchOptions.Out);
-            if (dependencies != null)
-            {
-                foreach (var assetDependency in dependencies.LinksOut)
-                {
-                    var assetType = assetDependency.Item.Asset.GetType();
-                    if (!typesToExclude.Contains(assetType)) //filter out what we do not need
-                    {
-                        foreach (var input in typesToInclude.Where(x => x.AssetType == assetType))
-                        {
-                            var node = buildDependencyManager.FindOrCreateNode(assetDependency.Item, input.CompilationContext);
-                            var link = new BuildAssetLink(this, node, input.DependencyType);
-                            references.TryAdd(link, link);
-                        }
-                    }
-                }
-            }
+            // DependencyManager check
+            AddDependencies(AssetItem, typesToInclude, typesToExclude);
 
-            //Input files required
+            // Input files required
             foreach (var inputFile in new HashSet<ObjectUrl>(mainCompiler.GetInputFiles(AssetItem))) //directly resolve by input files, in the future we might just want this pass
             {
-                if (inputFile.Type == UrlType.Content || inputFile.Type == UrlType.ContentLink)
+                if (inputFile.Type == UrlType.Content)
                 {
                     var asset = AssetItem.Package.Session.FindAsset(inputFile.Path); //this will search all packages
                     if (asset == null)
@@ -203,6 +202,34 @@ namespace SiliconStudio.Assets.Analysis
                         var node = buildDependencyManager.FindOrCreateNode(asset, typeof(AssetCompilationContext));
                         var link = new BuildAssetLink(this, node, dependencyType);
                         references.TryAdd(link, link);
+                    }
+                }
+            }
+            return true;
+        }
+
+        private void AddDependencies(AssetItem assetItem, HashSet<BuildDependencyInfo> typesToInclude, HashSet<Type> typesToExclude)
+        {
+            // for now we use the dependency manager itself to resolve runtime dependencies, in the future we might want to unify the builddependency manager with the dependency manager
+            var dependencies = assetItem.Package.Session.DependencyManager.ComputeDependencies(assetItem.Id, AssetDependencySearchOptions.Out);
+            if (dependencies != null)
+            {
+                foreach (var assetDependency in dependencies.LinksOut)
+                {
+                    var assetType = assetDependency.Item.Asset.GetType();
+                    if (!typesToExclude.Contains(assetType)) //filter out what we do not need
+                    {
+                        foreach (var input in typesToInclude.Where(x => x.AssetType == assetType))
+                        {
+                            var node = buildDependencyManager.FindOrCreateNode(assetDependency.Item, input.CompilationContext);
+                            var link = new BuildAssetLink(this, node, input.DependencyType);
+                            references.TryAdd(link, link);
+                            if (link.HasOne(BuildDependencyType.CompileAsset))
+                            {
+                                // When we have a CompileAsset type of dependency, we want to analyze this asset and extract other assets that it references and are needed by this asset.
+                                AddDependencies(assetDependency.Item, typesToInclude, typesToExclude);
+                            }
+                        }
                     }
                 }
             }

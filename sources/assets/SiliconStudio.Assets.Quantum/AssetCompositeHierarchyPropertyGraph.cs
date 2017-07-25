@@ -4,13 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Assets.Quantum.Visitors;
-using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Assets.Quantum
@@ -27,7 +24,7 @@ namespace SiliconStudio.Assets.Quantum
         /// A dictionary mapping a tuple of (base part id, instance id) to the corresponding asset part in this asset.
         /// </summary>
         /// <remarks>Part stored here are preserved after being removed, in case they have to come back later, for example if a part in the base is being moved (removed + added again).</remarks>
-        private readonly Dictionary<Tuple<Guid, Guid>, TAssetPart> baseInstanceMapping = new Dictionary<Tuple<Guid, Guid>, TAssetPart>();
+        private readonly Dictionary<Tuple<Guid, Guid>, TAssetPartDesign> baseInstanceMapping = new Dictionary<Tuple<Guid, Guid>, TAssetPartDesign>();
 
         /// <summary>
         /// A mapping of (base part id, instance id) corresponding to deleted parts in specific instances of this asset which base part exists in the base asset.
@@ -427,6 +424,30 @@ namespace SiliconStudio.Assets.Quantum
         protected abstract void RemoveChildPartFromParentPart([NotNull] TAssetPart parentPart, [NotNull] TAssetPart childPart);
 
         /// <summary>
+        /// When a part is added to the base asset, it could be the result of a move (remove + add).
+        /// In that case, remove the new <paramref name="clonedPart"/> and replace it with the <paramref name="existingPart"/>.
+        /// </summary>
+        /// <param name="baseHierarchy">The cloned base hierarchy.</param>
+        /// <param name="clonedPart">The cloned part to replace.</param>
+        /// <param name="existingPart">The existing part to restore.</param>
+        /// <seealso cref="PartAddedInBaseAsset"/>
+        /// <remarks>
+        /// Inheriting instance can override this method to perform additional operations.
+        /// </remarks>
+        protected virtual void ReuseExistingPart([NotNull] AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> baseHierarchy, [NotNull] TAssetPartDesign clonedPart, [NotNull] TAssetPartDesign existingPart)
+        {
+            // Replace the cloned part by the one to restore in the list of root if needed
+            if (baseHierarchy.RootParts.Remove(clonedPart.Part))
+            {
+                baseHierarchy.RootParts.Add(existingPart.Part);
+            }
+
+            // Replace the cloned part by the one to restore in the list of parts
+            if (!baseHierarchy.Parts.Remove(clonedPart.Part.Id)) throw new InvalidOperationException("The new part should be in the baseHierarchy.");
+            baseHierarchy.Parts.Add(existingPart);
+        }
+
+        /// <summary>
         /// Indicates whether a new part added in a base asset should be also cloned and added to this asset.
         /// </summary>
         /// <param name="baseAssetGraph">The property graph of the base asset.</param>
@@ -610,7 +631,7 @@ namespace SiliconStudio.Assets.Quantum
                 }
 
                 // Update mapping
-                baseInstanceMapping[Tuple.Create(part.Base.BasePartId, part.Base.InstanceId)] = part.Part;
+                baseInstanceMapping[Tuple.Create(part.Base.BasePartId, part.Base.InstanceId)] = part;
 
                 // Update common ancestors
                 Guid ancestorId;
@@ -678,19 +699,11 @@ namespace SiliconStudio.Assets.Quantum
 
                     clone.Base = new BasePart(new AssetReference(e.AssetItem.Id, e.AssetItem.Location), ids.Key, instanceId);
 
-                    // This add could actually be a move (remove + add). So we compare to the existing baseInstanceMapping and perform another remap if necessary
+                    // This add could actually be a move (remove + add). So we compare to the existing baseInstanceMapping and reuse the existing part if necessary
                     var mappingKey = Tuple.Create(ids.Key, instanceId);
-                    if (!deletedPartsInstanceMapping.Contains(mappingKey) && baseInstanceMapping.TryGetValue(mappingKey, out TAssetPart existingPart))
+                    if (!deletedPartsInstanceMapping.Contains(mappingKey) && baseInstanceMapping.TryGetValue(mappingKey, out TAssetPartDesign existingPart))
                     {
-                        // Replace the cloned part by the one to restore in the list of root if needed
-                        if (baseHierarchy.RootParts.Remove(clone.Part))
-                            baseHierarchy.RootParts.Add(existingPart);
-
-                        // Overwrite the Ids of the cloned part with the id of the existing one so the cloned part will be considered as a proxy object by the fix reference pass
-                        RewriteIds(clone.Part, existingPart);
-                        // Replace the cloned part itself by the existing part.
-                        var part = Container.NodeContainer.GetOrCreateNode(clone);
-                        part[PartName].Update(existingPart);
+                        ReuseExistingPart(baseHierarchy, clone, existingPart);
                     }
                 }
 

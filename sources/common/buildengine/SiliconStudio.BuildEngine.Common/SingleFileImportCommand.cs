@@ -1,7 +1,10 @@
 // Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
+
+using System.Collections.Generic;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.BuildEngine
 {
@@ -33,6 +36,11 @@ namespace SiliconStudio.BuildEngine
         /// </summary>
         /// <value>The location.</value>
         public UFile Location { get; set; }
+
+        public override IEnumerable<ObjectUrl> GetInputFiles()
+        {
+            yield return new ObjectUrl(UrlType.File, SourcePath);
+        }
 
         protected override void ComputeParameterHash(BinarySerializationWriter writer)
         {

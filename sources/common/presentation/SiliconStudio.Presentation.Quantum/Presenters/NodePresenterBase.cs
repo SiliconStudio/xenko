@@ -19,8 +19,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         protected NodePresenterBase([NotNull] INodePresenterFactoryInternal factory, [CanBeNull] IPropertyProviderViewModel propertyProvider, [CanBeNull] INodePresenter parent)
         {
-            if (factory == null) throw new ArgumentNullException(nameof(factory));
-            this.factory = factory;
+            this.factory = factory ?? throw new ArgumentNullException(nameof(factory));
             Parent = parent;
             PropertyProvider = propertyProvider;
         }
@@ -36,16 +35,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             }
         }
 
-        public INodePresenter this[string childName]
-        {
-            get
-            {
-                var firstChild = children.FirstOrDefault(x => string.Equals(x.Name, childName, StringComparison.Ordinal));
-                if (firstChild == null)
-                    throw new KeyNotFoundException($"Key {childName} not found in {nameof(INodePresenter)}");
-                return firstChild;
-            }
-        } 
+        public INodePresenter this[string childName] => TryGetChild(childName) ?? throw new KeyNotFoundException($"Key {childName} not found in {nameof(INodePresenter)}");
 
         public INodePresenter Root => Parent?.Root ?? Parent ?? this;
 
@@ -115,6 +105,12 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             {
                 CombineKey = newName;
             }
+        }
+
+        [CanBeNull]
+        public INodePresenter TryGetChild(string childName)
+        {
+            return children.FirstOrDefault(x => string.Equals(x.Name, childName, StringComparison.Ordinal));
         }
 
         public void AddDependency([NotNull] INodePresenter node, bool refreshOnNestedNodeChanges)

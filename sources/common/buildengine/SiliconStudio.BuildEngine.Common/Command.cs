@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Serialization.Contents;
@@ -19,8 +18,6 @@ namespace SiliconStudio.BuildEngine
     [DataContract(Inherited = true)]
     public abstract class Command
     {
-        private List<ObjectUrl> cachedInputFiles;
-
         /// <summary>
         /// The command cache version, should be bumped when binary serialization format changes (so that cache gets invalidated)
         /// </summary>
@@ -67,11 +64,6 @@ namespace SiliconStudio.BuildEngine
         /// </summary>
         /// <param name="commandContext"></param>
         protected abstract Task<ResultStatus> DoCommandOverride(ICommandContext commandContext);
-
-        protected Command()
-        {
-            InputFilesGetter = GetNullInputFiles;
-        }
 
         /// <summary>
         /// The method that indirectly call <see cref="DoCommandOverride"/> to execute the actual command code. 
@@ -121,17 +113,12 @@ namespace SiliconStudio.BuildEngine
         /// Gets the list of input files (that can be deduced without running the command, only from command parameters).
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<ObjectUrl> GetInputFiles()
+        public virtual IEnumerable<ObjectUrl> GetInputFiles()
         {
-            return cachedInputFiles ?? (cachedInputFiles = InputFilesGetter().ToList());
+            return InputFilesGetter?.Invoke() ?? Enumerable.Empty<ObjectUrl>();
         }
 
         public Func<IEnumerable<ObjectUrl>> InputFilesGetter;
-
-        private IEnumerable<ObjectUrl> GetNullInputFiles()
-        {
-            yield break;
-        }
 
         /// <summary>
         /// Check some conditions that determine if the command should be executed. This method may not be called if some previous check determinated that it already needs to be executed.

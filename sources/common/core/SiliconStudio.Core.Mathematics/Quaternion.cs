@@ -919,11 +919,11 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Creates a quaternion given a yaw, pitch, and roll value.
+        /// Creates a quaternion given a yaw, pitch, and roll value (angles in radians).
         /// </summary>
-        /// <param name="yaw">The yaw of rotation.</param>
-        /// <param name="pitch">The pitch of rotation.</param>
-        /// <param name="roll">The roll of rotation.</param>
+        /// <param name="yaw">The yaw of rotation in radians.</param>
+        /// <param name="pitch">The pitch of rotation in radians.</param>
+        /// <param name="roll">The roll of rotation in radians.</param>
         /// <param name="result">When the method completes, contains the newly created quaternion.</param>
         public static void RotationYawPitchRoll(float yaw, float pitch, float roll, out Quaternion result)
         {
