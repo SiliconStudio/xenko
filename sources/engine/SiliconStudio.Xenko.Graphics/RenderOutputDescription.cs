@@ -39,6 +39,12 @@ namespace SiliconStudio.Xenko.Graphics
         [DefaultValue(MultisampleCount.None)]
         public MultisampleCount MultisampleCount;
 
+        /// <summary>
+        /// Enable scissor-rectangle culling. All pixels ouside an active scissor rectangle are culled.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool ScissorTestEnable;
+
         public RenderOutputDescription(PixelFormat renderTargetFormat, PixelFormat depthStencilFormat = PixelFormat.None, MultisampleCount multisampleCount = MultisampleCount.None) : this()
         {
             RenderTargetCount = renderTargetFormat != PixelFormat.None ? 1 : 0;
@@ -51,6 +57,8 @@ namespace SiliconStudio.Xenko.Graphics
         {
             DepthStencilFormat = commandList.DepthStencilBuffer != null ? commandList.DepthStencilBuffer.ViewFormat : PixelFormat.None;
             MultisampleCount = commandList.DepthStencilBuffer != null ? commandList.DepthStencilBuffer.MultisampleCount : MultisampleCount.None;
+
+            ScissorTestEnable = !commandList.Scissor.IsEmpty;
 
             RenderTargetCount = commandList.RenderTargetCount;
             fixed (PixelFormat* renderTargetFormat0 = &RenderTargetFormat0)
@@ -75,7 +83,8 @@ namespace SiliconStudio.Xenko.Graphics
                    && RenderTargetFormat5 == other.RenderTargetFormat5
                    && RenderTargetFormat6 == other.RenderTargetFormat6
                    && RenderTargetFormat7 == other.RenderTargetFormat7
-                   && DepthStencilFormat == other.DepthStencilFormat;
+                   && DepthStencilFormat == other.DepthStencilFormat
+                   && ScissorTestEnable == other.ScissorTestEnable;
         }
 
         public override bool Equals(object obj)
@@ -98,6 +107,7 @@ namespace SiliconStudio.Xenko.Graphics
                 hashCode = (hashCode*397) ^ (int)RenderTargetFormat6;
                 hashCode = (hashCode*397) ^ (int)RenderTargetFormat7;
                 hashCode = (hashCode*397) ^ (int)DepthStencilFormat;
+                hashCode = (hashCode*397) ^ (ScissorTestEnable ? 1 : 0);
                 return hashCode;
             }
         }
