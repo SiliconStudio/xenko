@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         {
             Name = "Clear";
             ClearFlags = ClearRendererFlags.ColorAndDepth;
-            Color = Core.Mathematics.Color.FromBgra(0xFFC4D9FF);
+            Color = Core.Mathematics.Color.FromBgra(0xFF67696F);
             Depth = 1.0f;
             Stencil = 0;
         }
