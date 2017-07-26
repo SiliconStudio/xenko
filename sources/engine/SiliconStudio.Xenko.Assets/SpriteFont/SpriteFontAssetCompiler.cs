@@ -22,25 +22,6 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     {
         private static readonly FontDataFactory FontDataFactory = new FontDataFactory();
 
-        public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
-        {
-            var asset = (SpriteFontAsset)assetItem.Asset;
-            var fontTypeStatic = asset.FontType as OfflineRasterizedSpriteFontType;
-            if (fontTypeStatic != null)
-            {
-                if (File.Exists(fontTypeStatic.CharacterSet))
-                    yield return new ObjectUrl(UrlType.File, fontTypeStatic.CharacterSet);
-            }
-
-            var fontTypeSdf = asset.FontType as SignedDistanceFieldSpriteFontType;
-            if (fontTypeSdf != null)
-            {
-                if (File.Exists(fontTypeSdf.CharacterSet))
-                    yield return new ObjectUrl(UrlType.File, fontTypeSdf.CharacterSet);
-
-            }
-        }
-
         protected override void Prepare(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (SpriteFontAsset)assetItem.Asset;
@@ -90,10 +71,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                     fontTypeStatic.CharacterSet = !string.IsNullOrEmpty(fontTypeStatic.CharacterSet) ? UPath.Combine(assetDirectory, fontTypeStatic.CharacterSet): null;
 
                     result.BuildSteps = new AssetBuildStep(assetItem);
-                    result.BuildSteps.Add(new OfflineRasterizedFontCommand(targetUrlInStorage, assetClone, colorSpace, assetItem.Package)
-                    {
-                        InputFilesGetter = () => GetInputFiles(assetItem)
-                    });
+                    result.BuildSteps.Add(new OfflineRasterizedFontCommand(targetUrlInStorage, assetClone, colorSpace, assetItem.Package));
                 }
         }
 
@@ -101,10 +79,29 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         {
             private ColorSpace colorspace;
 
-            public OfflineRasterizedFontCommand(string url, SpriteFontAsset description, ColorSpace colorspace, Package package)
-                : base(url, description, package)
+            public OfflineRasterizedFontCommand(string url, SpriteFontAsset description, ColorSpace colorspace, IAssetFinder assetFinder)
+                : base(url, description, assetFinder)
             {
                 this.colorspace = colorspace;
+            }
+
+            public override IEnumerable<ObjectUrl> GetInputFiles()
+            {
+                var asset = Parameters;
+                var fontTypeStatic = asset.FontType as OfflineRasterizedSpriteFontType;
+                if (fontTypeStatic != null)
+                {
+                    if (File.Exists(fontTypeStatic.CharacterSet))
+                        yield return new ObjectUrl(UrlType.File, fontTypeStatic.CharacterSet);
+                }
+
+                var fontTypeSdf = asset.FontType as SignedDistanceFieldSpriteFontType;
+                if (fontTypeSdf != null)
+                {
+                    if (File.Exists(fontTypeSdf.CharacterSet))
+                        yield return new ObjectUrl(UrlType.File, fontTypeSdf.CharacterSet);
+
+                }
             }
 
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
@@ -148,8 +145,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </summary>
         internal class SignedDistanceFieldFontCommand : AssetCommand<SpriteFontAsset>
         {
-            public SignedDistanceFieldFontCommand(string url, SpriteFontAsset description, Package package)
-                : base(url, description, package)
+            public SignedDistanceFieldFontCommand(string url, SpriteFontAsset description, IAssetFinder assetFinder)
+                : base(url, description, assetFinder)
             {
             }
 
@@ -185,8 +182,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
         internal class RuntimeRasterizedFontCommand : AssetCommand<SpriteFontAsset>
         {
-            public RuntimeRasterizedFontCommand(string url, SpriteFontAsset description, Package package)
-                : base(url, description, package)
+            public RuntimeRasterizedFontCommand(string url, SpriteFontAsset description, IAssetFinder assetFinder)
+                : base(url, description, assetFinder)
             {
             }
 

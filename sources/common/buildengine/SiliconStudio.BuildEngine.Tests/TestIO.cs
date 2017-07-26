@@ -20,7 +20,7 @@ namespace SiliconStudio.BuildEngine.Tests
             builder.Run(Builder.Mode.Build);
             builder.WriteIndexFile(false);
 
-            Assert.Contains(new ObjectUrl(UrlType.ContentLink, "/db/url1"), step.Result.OutputObjects.Keys);
+            Assert.Contains(new ObjectUrl(UrlType.Content, "/db/url1"), step.Result.OutputObjects.Keys);
 
             var indexMap = ContentIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
             indexMap.UseTransaction = true;
@@ -29,7 +29,7 @@ namespace SiliconStudio.BuildEngine.Tests
             ObjectId outputId;
             bool objectIdFound = indexMap.TryGetValue("/db/url1", out outputId);
             Assert.IsTrue(objectIdFound);
-            Assert.That(step.Result.OutputObjects[new ObjectUrl(UrlType.ContentLink, "/db/url1")], Is.EqualTo(outputId));
+            Assert.That(step.Result.OutputObjects[new ObjectUrl(UrlType.Content, "/db/url1")], Is.EqualTo(outputId));
         }
 
         [Test]
@@ -61,8 +61,8 @@ namespace SiliconStudio.BuildEngine.Tests
             builder.Run(Builder.Mode.Build);
             builder.WriteIndexFile(false);
 
-            Assert.IsTrue(step.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.ContentLink, "/db/url1")));
-            Assert.IsTrue(childStep.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.ContentLink, "/db/url1")));
+            Assert.IsTrue(step.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.Content, "/db/url1")));
+            Assert.IsTrue(childStep.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.Content, "/db/url1")));
 
             var indexMap = ContentIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
             indexMap.UseTransaction = true;
@@ -71,7 +71,7 @@ namespace SiliconStudio.BuildEngine.Tests
             ObjectId outputId;
             bool objectIdFound = indexMap.TryGetValue("/db/url1", out outputId);
             Assert.IsTrue(objectIdFound);
-            Assert.That(childStep.Result.OutputObjects[new ObjectUrl(UrlType.ContentLink, "/db/url1")], Is.EqualTo(outputId));
+            Assert.That(childStep.Result.OutputObjects[new ObjectUrl(UrlType.Content, "/db/url1")], Is.EqualTo(outputId));
         }
 
         [Test]
@@ -92,8 +92,8 @@ namespace SiliconStudio.BuildEngine.Tests
             builder2.Run(Builder.Mode.Build);
             builder2.WriteIndexFile(false);
 
-            Assert.IsTrue(step1.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.ContentLink, "/db/url1")));
-            Assert.IsTrue(step2.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.ContentLink, "/db/url1")));
+            Assert.IsTrue(step1.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.Content, "/db/url1")));
+            Assert.IsTrue(step2.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.Content, "/db/url1")));
 
             var indexMap = ContentIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
             indexMap.UseTransaction = true;
@@ -105,8 +105,8 @@ namespace SiliconStudio.BuildEngine.Tests
 
             Assert.That(step1.Status, Is.EqualTo(ResultStatus.Successful));
             Assert.That(step2.Status, Is.EqualTo(ResultStatus.Successful));
-            Assert.That(step1.Result.OutputObjects[new ObjectUrl(UrlType.ContentLink, "/db/url1")], !Is.EqualTo(outputId));
-            Assert.That(step2.Result.OutputObjects[new ObjectUrl(UrlType.ContentLink, "/db/url1")], Is.EqualTo(outputId));
+            Assert.That(step1.Result.OutputObjects[new ObjectUrl(UrlType.Content, "/db/url1")], !Is.EqualTo(outputId));
+            Assert.That(step2.Result.OutputObjects[new ObjectUrl(UrlType.Content, "/db/url1")], Is.EqualTo(outputId));
         }
 
         [Test]
@@ -125,7 +125,7 @@ namespace SiliconStudio.BuildEngine.Tests
             builder2.WriteIndexFile(false);
 
             Assert.That(step.Status, Is.EqualTo(ResultStatus.NotTriggeredWasSuccessful));
-            Assert.IsTrue(step.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.ContentLink, "/db/url1")));
+            Assert.IsTrue(step.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.Content, "/db/url1")));
 
             var indexMap = ContentIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
             indexMap.UseTransaction = true;
@@ -134,7 +134,7 @@ namespace SiliconStudio.BuildEngine.Tests
             ObjectId outputId;
             bool objectIdFound = indexMap.TryGetValue("/db/url1", out outputId);
             Assert.IsTrue(objectIdFound);
-            Assert.That(step.Result.OutputObjects[new ObjectUrl(UrlType.ContentLink, "/db/url1")], Is.EqualTo(outputId));
+            Assert.That(step.Result.OutputObjects[new ObjectUrl(UrlType.Content, "/db/url1")], Is.EqualTo(outputId));
         }
 
         [Test]
@@ -173,8 +173,8 @@ namespace SiliconStudio.BuildEngine.Tests
             builder.Run(Builder.Mode.Build);
             builder.WriteIndexFile(false);
 
-            Assert.IsTrue(step.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.ContentLink, "/db/url1")));
-            Assert.IsTrue(childStep.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.ContentLink, "/db/url2")));
+            Assert.IsTrue(step.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.Content, "/db/url1")));
+            Assert.IsTrue(childStep.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.Content, "/db/url2")));
 
             var indexMap = ContentIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
             indexMap.UseTransaction = true;
@@ -183,7 +183,7 @@ namespace SiliconStudio.BuildEngine.Tests
             ObjectId outputId;
             bool objectIdFound = indexMap.TryGetValue("/db/url2", out outputId);
             Assert.IsTrue(objectIdFound);
-            Assert.That(childStep.Result.OutputObjects[new ObjectUrl(UrlType.ContentLink, "/db/url2")], Is.EqualTo(outputId));
+            Assert.That(childStep.Result.OutputObjects[new ObjectUrl(UrlType.Content, "/db/url2")], Is.EqualTo(outputId));
         }
 
         [Test]
@@ -194,13 +194,13 @@ namespace SiliconStudio.BuildEngine.Tests
 
             var builder1 = Utils.CreateBuilder(false);
             CommandBuildStep step = builder1.Root.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.File, Utils.GetSourcePath("input1")), OutputUrl = "/db/url1" });
-            CommandBuildStep childStep = builder1.Root.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.ContentLink, "/db/url1"), OutputUrl = "/db/url2" });
+            CommandBuildStep childStep = builder1.Root.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.Content, "/db/url1"), OutputUrl = "/db/url2" });
             BuildStep.LinkBuildSteps(step, childStep);
             builder1.Run(Builder.Mode.Build);
 
             var builder2 = Utils.CreateBuilder(true);
             step = builder2.Root.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.File, Utils.GetSourcePath("input1")), OutputUrl = "/db/url1" });
-            childStep = builder2.Root.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.ContentLink, "/db/url1"), OutputUrl = "/db/url2" });
+            childStep = builder2.Root.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.Content, "/db/url1"), OutputUrl = "/db/url2" });
             BuildStep.LinkBuildSteps(step, childStep);
             builder2.Run(Builder.Mode.Build);
             builder2.WriteIndexFile(false);
@@ -208,8 +208,8 @@ namespace SiliconStudio.BuildEngine.Tests
             Assert.That(step.Status, Is.EqualTo(ResultStatus.NotTriggeredWasSuccessful));
             Assert.That(childStep.Status, Is.EqualTo(ResultStatus.NotTriggeredWasSuccessful));
 
-            Assert.IsTrue(step.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.ContentLink, "/db/url1")));
-            Assert.IsTrue(childStep.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.ContentLink, "/db/url2")));
+            Assert.IsTrue(step.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.Content, "/db/url1")));
+            Assert.IsTrue(childStep.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.Content, "/db/url2")));
 
             var indexMap = ContentIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
             indexMap.UseTransaction = true;
@@ -218,7 +218,7 @@ namespace SiliconStudio.BuildEngine.Tests
             ObjectId outputId;
             bool objectIdFound = indexMap.TryGetValue("/db/url2", out outputId);
             Assert.IsTrue(objectIdFound);
-            Assert.That(childStep.Result.OutputObjects[new ObjectUrl(UrlType.ContentLink, "/db/url2")], Is.EqualTo(outputId));
+            Assert.That(childStep.Result.OutputObjects[new ObjectUrl(UrlType.Content, "/db/url2")], Is.EqualTo(outputId));
         }
 
         [Test]
@@ -283,8 +283,8 @@ namespace SiliconStudio.BuildEngine.Tests
 
             var builder = Utils.CreateBuilder(false);
             CommandBuildStep step = builder.Root.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.File, Utils.GetSourcePath("input1")), OutputUrl = "/db/url1", InputDependencies = { inputDep } });
-            CommandBuildStep concurrencyStep1 = builder.Root.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.ContentLink, "/db/url1"), OutputUrl = "/db/url1", InputDependencies = { inputDep } });
-            CommandBuildStep concurrencyStep2 = builder.Root.Add(new InputOutputTestCommand { Delay = 150, Source = new ObjectUrl(UrlType.ContentLink, "/db/url1"), OutputUrl = "/db/url2", InputDependencies = { inputDep } });
+            CommandBuildStep concurrencyStep1 = builder.Root.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.Content, "/db/url1"), OutputUrl = "/db/url1", InputDependencies = { inputDep } });
+            CommandBuildStep concurrencyStep2 = builder.Root.Add(new InputOutputTestCommand { Delay = 150, Source = new ObjectUrl(UrlType.Content, "/db/url1"), OutputUrl = "/db/url2", InputDependencies = { inputDep } });
             BuildStep.LinkBuildSteps(step, concurrencyStep1);
             BuildStep.LinkBuildSteps(step, concurrencyStep2);
 
