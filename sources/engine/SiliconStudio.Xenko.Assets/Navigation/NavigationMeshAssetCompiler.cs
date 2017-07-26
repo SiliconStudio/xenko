@@ -241,7 +241,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     if (asset.Scene != null)
                     {
                         string sceneUrl = AttachedReferenceManager.GetUrl(asset.Scene);
-                        var sceneAsset = (SceneAsset)Package.Session.FindAsset(sceneUrl)?.Asset;
+                        var sceneAsset = (SceneAsset)AssetFinder.FindAsset(sceneUrl)?.Asset;
 
                         // Clone scene asset because we update the world transformation matrices
                         clonedSceneAsset = (SceneAsset)AssetCloner.Clone(sceneAsset);

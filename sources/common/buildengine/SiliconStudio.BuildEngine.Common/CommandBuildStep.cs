@@ -79,7 +79,6 @@ namespace SiliconStudio.BuildEngine
                                     executeContext.Logger.Error("Unable to delete file: " + outputObject.Key.Path);
                                 }
                                 break;
-                            case UrlType.ContentLink:
                             case UrlType.Content:
                                 executeContext.ResultMap.Delete(outputObject.Value);
                                 break;
@@ -337,7 +336,8 @@ namespace SiliconStudio.BuildEngine
                     //    }
                     //}
 
-                    await process.WaitForExitAsync();
+                    // Note: we don't want the thread to schedule another job since the CPU core will be in use by the process, so we do a blocking WaitForExit.
+                    process.WaitForExit();
 
                     host.Close();
 

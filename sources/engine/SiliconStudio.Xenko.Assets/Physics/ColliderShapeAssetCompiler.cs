@@ -60,8 +60,8 @@ namespace SiliconStudio.Xenko.Assets.Physics
 
         public class ColliderShapeCombineCommand : AssetCommand<ColliderShapeAsset>
         {
-            public ColliderShapeCombineCommand(string url, ColliderShapeAsset parameters, Package package)
-                : base(url, parameters, package)
+            public ColliderShapeCombineCommand(string url, ColliderShapeAsset parameters, IAssetFinder assetFinder)
+                : base(url, parameters, assetFinder)
             {
             }
 
