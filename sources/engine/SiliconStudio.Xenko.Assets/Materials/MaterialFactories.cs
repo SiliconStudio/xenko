@@ -160,14 +160,14 @@ namespace SiliconStudio.Xenko.Assets.Materials
             {
                 Texture = AttachedReferenceManager.CreateProxyObject<Texture>(new AssetId("7e2761d1-ef86-420a-b7a7-a0ed1c16f9bb"), "XenkoCarPaintMetalFlakesNM"),
                 Scale = new Vector2(128, 128),
-                UseRandomTexCoordinates = true
+                UseRandomTextureCoordinates = true
             };
 
             var metalFlakesMask = new ComputeTextureScalar
             {
                 Texture = AttachedReferenceManager.CreateProxyObject<Texture>(new AssetId("7e2761d1-ef86-420a-b7a7-a0ed1c16f9bb"), "XenkoCarPaintMetalFlakesNM"),
                 Scale = new Vector2(128, 128),
-                UseRandomTexCoordinates = true
+                UseRandomTextureCoordinates = true
             };
 
             // Red Paint
