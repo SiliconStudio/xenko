@@ -29,12 +29,6 @@ namespace SiliconStudio.BuildEngine
         public abstract string Title { get; }
 
         /// <summary>
-        /// List every tag created by the command. The first item of each entry is the <see cref="TagSymbol.Name"/> of the <see cref="TagSymbol"/>, The second item is the pattern or a description of the <see cref="TagSymbol.RealName"/>
-        /// </summary>
-        [DataMemberIgnore]
-        public virtual IEnumerable<Tuple<string, string>> TagList { get { yield break; } }
-
-        /// <summary>
         /// The object this command writes (if any).
         /// </summary>
         public virtual string OutputLocation => null;
@@ -42,22 +36,17 @@ namespace SiliconStudio.BuildEngine
         /// <summary>
         /// Safeguard to ensure inheritance will always call base.PreCommand
         /// </summary>
-        internal bool BasePreCommandCalled = false;
+        internal bool BasePreCommandCalled;
 
         /// <summary>
         /// Safeguard to ensure inheritance will always call base.PostCommand
         /// </summary>
-        internal bool BasePostCommandCalled = false;
+        internal bool BasePostCommandCalled;
 
         /// <summary>
         /// Cancellation Token. Must be checked frequently by the <see cref="DoCommandOverride"/> implementation in order to interrupt the command while running
         /// </summary>
         protected internal CancellationToken CancellationToken;
-
-        /// <summary>
-        /// List 
-        /// </summary>
-        protected internal Dictionary<string, TagSymbol> TagSymbols = new Dictionary<string, TagSymbol>();
 
         /// <summary>
         /// The method to override containing the actual command code. It is called by the <see cref="DoCommand"/> function
@@ -169,8 +158,7 @@ namespace SiliconStudio.BuildEngine
 
         public void ComputeCommandHash(Stream stream, IPrepareContext prepareContext)
         {
-            var writer = new BinarySerializationWriter(stream);
-            writer.Context.SerializerSelector = SerializerSelector.AssetWithReuse;
+            var writer = new BinarySerializationWriter(stream) { Context = { SerializerSelector = SerializerSelector.AssetWithReuse } };
 
             writer.Write(CommandCacheVersion);
 
@@ -191,13 +179,6 @@ namespace SiliconStudio.BuildEngine
 
             // Gets the hash of the assembly of the command
             //writer.Write(AssemblyHash.ComputeAssemblyHash(GetType().Assembly));
-        }
-
-        protected TagSymbol RegisterTag(string name, Func<string> getValue)
-        {
-            var tagSymbol = new TagSymbol(name, getValue);
-            TagSymbols.Add(name, tagSymbol);
-            return tagSymbol;
         }
 
         /// <summary>

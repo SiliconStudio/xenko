@@ -2,12 +2,14 @@
 // See LICENSE.md for full license information.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Audio;
 using SiliconStudio.Xenko.Engine.Design;
@@ -15,6 +17,7 @@ using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Profiling;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Sprites;
 
@@ -28,9 +31,18 @@ namespace SiliconStudio.Xenko.Engine
     [Display(Expand = ExpandRule.Once)]
     [AllowMultipleComponents]
     [ComponentOrder(1000)]
-    public abstract class ScriptComponent : EntityComponent, IScriptContext
+    public abstract class ScriptComponent : EntityComponent
     {
         public const uint LiveScriptingMask = 128;
+
+        /// <summary>
+        /// The global profiling key for scripts. Activate/deactivate this key to activate/deactivate profiling for all your scripts.
+        /// </summary>
+        public static readonly ProfilingKey ScriptGlobalProfilingKey = new ProfilingKey("Script");
+
+        private static readonly Dictionary<Type, ProfilingKey> ScriptToProfilingKey = new Dictionary<Type, ProfilingKey>();
+
+        private ProfilingKey profilingKey;
 
         private IGraphicsDeviceService graphicsDeviceService;
         private Logger logger;
@@ -53,6 +65,29 @@ namespace SiliconStudio.Xenko.Engine
             EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
             Audio = Services.GetSafeServiceAs<AudioSystem>();
             SpriteAnimation = Services.GetSafeServiceAs<SpriteAnimationSystem>();
+            GameProfiler = Services.GetSafeServiceAs<GameProfilingSystem>();
+        }
+
+        /// <summary>
+        /// Gets the profiling key to activate/deactivate profiling for the current script class.
+        /// </summary>
+        [DataMemberIgnore]
+        public ProfilingKey ProfilingKey
+        {
+            get
+            {
+                if (profilingKey != null)
+                    return profilingKey;
+
+                var scriptType = GetType();
+                if (!ScriptToProfilingKey.TryGetValue(scriptType, out profilingKey))
+                {
+                    profilingKey = new ProfilingKey(ScriptGlobalProfilingKey, scriptType.FullName);
+                    ScriptToProfilingKey[scriptType] = profilingKey;
+                }
+
+                return profilingKey;
+            }
         }
 
         [DataMemberIgnore]
@@ -69,6 +104,9 @@ namespace SiliconStudio.Xenko.Engine
 
         [DataMemberIgnore]
         public ContentManager Content { get; private set; }
+
+        [DataMemberIgnore]
+        public GameProfilingSystem GameProfiler { get; private set; }
 
         [DataMemberIgnore]
         public GraphicsDevice GraphicsDevice => graphicsDeviceService?.GraphicsDevice;

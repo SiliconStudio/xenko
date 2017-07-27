@@ -59,11 +59,6 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
                 test.TestCreationDestructionOfTheGame();
             }
             {
-                var test = new TestScriptContext();
-                test.TestScriptCreationDestruction();
-                test.TestScriptAudioAccess();
-            }
-            {
                 var test = new TestAssetLoading();
                 test.TestSoundEffectLoading();
                 test.TestSoundMusicLoading();

@@ -14,7 +14,7 @@ namespace SiliconStudio.BuildEngine
     /// </summary>
     public static class MicrothreadLocalDatabases
     {
-        private static readonly IDictionary<ObjectUrl, OutputObject> SharedOutputObjects = new Dictionary<ObjectUrl, OutputObject>();
+        private static readonly Dictionary<ObjectUrl, OutputObject> SharedOutputObjects = new Dictionary<ObjectUrl, OutputObject>();
         private static readonly MicroThreadLocal<DatabaseFileProvider> MicroThreadLocalDatabaseFileProvider;
 
         static MicrothreadLocalDatabases()
@@ -37,7 +37,7 @@ namespace SiliconStudio.BuildEngine
         /// Merges the given dictionary of build output objects into the shared group. Objects merged here will be integrated to every database.
         /// </summary>
         /// <param name="outputObjects">The dictionary containing the <see cref="OutputObject"/> to merge into the shared group.</param>
-        public static void AddToSharedGroup(IDictionary<ObjectUrl, OutputObject> outputObjects)
+        public static void AddToSharedGroup(IReadOnlyDictionary<ObjectUrl, OutputObject> outputObjects)
         {
             lock (SharedOutputObjects)
             {
@@ -61,7 +61,7 @@ namespace SiliconStudio.BuildEngine
         /// <see cref="MicroThreadLocalDatabaseFileProvider"/>.
         /// </summary>
         /// <param name="outputObjectsGroups">A collection of dictionaries representing a group of output object.</param>
-        public static void MountDatabase(IEnumerable<IDictionary<ObjectUrl, OutputObject>> outputObjectsGroups)
+        public static void MountDatabase(IEnumerable<IReadOnlyDictionary<ObjectUrl, OutputObject>> outputObjectsGroups)
         {
             MountDatabase(CreateTransaction(outputObjectsGroups));
         }
@@ -82,7 +82,7 @@ namespace SiliconStudio.BuildEngine
             MicroThreadLocalDatabaseFileProvider.ClearValue();
         }
 
-        public static IEnumerable<IDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups(IEnumerable<IDictionary<ObjectUrl, OutputObject>> transactionOutputObjectsGroups)
+        public static IEnumerable<IReadOnlyDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups(IEnumerable<IReadOnlyDictionary<ObjectUrl, OutputObject>> transactionOutputObjectsGroups)
         {
             if (transactionOutputObjectsGroups != null)
             {
@@ -97,7 +97,7 @@ namespace SiliconStudio.BuildEngine
             MicroThreadLocalDatabaseFileProvider.Value = CreateDatabase(transaction); 
         }
 
-        internal static BuildTransaction CreateTransaction(IEnumerable<IDictionary<ObjectUrl, OutputObject>> transactionOutputObjectsGroups)
+        internal static BuildTransaction CreateTransaction(IEnumerable<IReadOnlyDictionary<ObjectUrl, OutputObject>> transactionOutputObjectsGroups)
         {
             return new BuildTransaction(Builder.ObjectDatabase.ContentIndexMap, GetOutputObjectsGroups(transactionOutputObjectsGroups));
         }
