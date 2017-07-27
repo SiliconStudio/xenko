@@ -169,7 +169,7 @@ namespace SiliconStudio.Assets.Analysis
             // Input files required
             foreach (var inputFile in new HashSet<ObjectUrl>(mainCompiler.GetInputFiles(AssetItem))) //directly resolve by input files, in the future we might just want this pass
             {
-                if (inputFile.Type == UrlType.Content || inputFile.Type == UrlType.ContentLink)
+                if (inputFile.Type == UrlType.Content)
                 {
                     var asset = AssetItem.Package.Session.FindAsset(inputFile.Path); //this will search all packages
                     if (asset == null)

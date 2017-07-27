@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Serialization.Contents;
@@ -19,8 +18,6 @@ namespace SiliconStudio.BuildEngine
     [DataContract(Inherited = true)]
     public abstract class Command
     {
-        private List<ObjectUrl> cachedInputFiles;
-
         /// <summary>
         /// The command cache version, should be bumped when binary serialization format changes (so that cache gets invalidated)
         /// </summary>
@@ -32,12 +29,6 @@ namespace SiliconStudio.BuildEngine
         public abstract string Title { get; }
 
         /// <summary>
-        /// List every tag created by the command. The first item of each entry is the <see cref="TagSymbol.Name"/> of the <see cref="TagSymbol"/>, The second item is the pattern or a description of the <see cref="TagSymbol.RealName"/>
-        /// </summary>
-        [DataMemberIgnore]
-        public virtual IEnumerable<Tuple<string, string>> TagList { get { yield break; } }
-
-        /// <summary>
         /// The object this command writes (if any).
         /// </summary>
         public virtual string OutputLocation => null;
@@ -45,12 +36,12 @@ namespace SiliconStudio.BuildEngine
         /// <summary>
         /// Safeguard to ensure inheritance will always call base.PreCommand
         /// </summary>
-        internal bool BasePreCommandCalled = false;
+        internal bool BasePreCommandCalled;
 
         /// <summary>
         /// Safeguard to ensure inheritance will always call base.PostCommand
         /// </summary>
-        internal bool BasePostCommandCalled = false;
+        internal bool BasePostCommandCalled;
 
         /// <summary>
         /// Cancellation Token. Must be checked frequently by the <see cref="DoCommandOverride"/> implementation in order to interrupt the command while running
@@ -58,20 +49,10 @@ namespace SiliconStudio.BuildEngine
         protected internal CancellationToken CancellationToken;
 
         /// <summary>
-        /// List 
-        /// </summary>
-        protected internal Dictionary<string, TagSymbol> TagSymbols = new Dictionary<string, TagSymbol>();
-
-        /// <summary>
         /// The method to override containing the actual command code. It is called by the <see cref="DoCommand"/> function
         /// </summary>
         /// <param name="commandContext"></param>
         protected abstract Task<ResultStatus> DoCommandOverride(ICommandContext commandContext);
-
-        protected Command()
-        {
-            InputFilesGetter = GetNullInputFiles;
-        }
 
         /// <summary>
         /// The method that indirectly call <see cref="DoCommandOverride"/> to execute the actual command code. 
@@ -121,17 +102,12 @@ namespace SiliconStudio.BuildEngine
         /// Gets the list of input files (that can be deduced without running the command, only from command parameters).
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<ObjectUrl> GetInputFiles()
+        public virtual IEnumerable<ObjectUrl> GetInputFiles()
         {
-            return cachedInputFiles ?? (cachedInputFiles = InputFilesGetter().ToList());
+            return InputFilesGetter?.Invoke() ?? Enumerable.Empty<ObjectUrl>();
         }
 
         public Func<IEnumerable<ObjectUrl>> InputFilesGetter;
-
-        private IEnumerable<ObjectUrl> GetNullInputFiles()
-        {
-            yield break;
-        }
 
         /// <summary>
         /// Check some conditions that determine if the command should be executed. This method may not be called if some previous check determinated that it already needs to be executed.
@@ -182,8 +158,7 @@ namespace SiliconStudio.BuildEngine
 
         public void ComputeCommandHash(Stream stream, IPrepareContext prepareContext)
         {
-            var writer = new BinarySerializationWriter(stream);
-            writer.Context.SerializerSelector = SerializerSelector.AssetWithReuse;
+            var writer = new BinarySerializationWriter(stream) { Context = { SerializerSelector = SerializerSelector.AssetWithReuse } };
 
             writer.Write(CommandCacheVersion);
 
@@ -204,13 +179,6 @@ namespace SiliconStudio.BuildEngine
 
             // Gets the hash of the assembly of the command
             //writer.Write(AssemblyHash.ComputeAssemblyHash(GetType().Assembly));
-        }
-
-        protected TagSymbol RegisterTag(string name, Func<string> getValue)
-        {
-            var tagSymbol = new TagSymbol(name, getValue);
-            TagSymbols.Add(name, tagSymbol);
-            return tagSymbol;
         }
 
         /// <summary>
