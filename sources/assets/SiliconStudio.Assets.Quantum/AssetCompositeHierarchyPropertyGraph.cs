@@ -218,6 +218,7 @@ namespace SiliconStudio.Assets.Quantum
                 // Note: we must do this first so instances of this base will be able to properly make the connection with the base part being cleared
                 var containedIdentifiables = IdentifiableObjectCollector.Collect(Definition, Container.NodeContainer.GetNode(partToDelete.Part));
                 containedIdentifiables.Keys.ForEach(x => referencesToClear.Add(x));
+                referencesToClear.Add(partToDelete.Part.Id);
                 // Then actually remove the part from the hierarchy
                 RemovePartFromAsset(partToDelete);
                 // Keep track of deleted part instances

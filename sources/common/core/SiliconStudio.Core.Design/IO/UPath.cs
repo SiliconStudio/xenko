@@ -328,7 +328,8 @@ namespace SiliconStudio.Core.IO
         /// <param name="leftPath">The left path.</param>
         /// <param name="rightPath">The right path.</param>
         /// <returns>The combination of both paths.</returns>
-        public static T Combine<T>(UDirectory leftPath, T rightPath) where T : UPath
+        [NotNull]
+        public static T Combine<T>([NotNull] UDirectory leftPath, [NotNull] T rightPath) where T : UPath
         {
             if (leftPath == null) throw new ArgumentNullException(nameof(leftPath));
             if (rightPath == null) throw new ArgumentNullException(nameof(rightPath));

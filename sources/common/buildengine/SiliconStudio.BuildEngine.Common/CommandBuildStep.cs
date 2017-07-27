@@ -10,7 +10,6 @@ using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.IO;
 using System.Diagnostics;
 using System.ServiceModel;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.VisualStudio;
 
@@ -18,26 +17,26 @@ namespace SiliconStudio.BuildEngine
 {
     public class CommandBuildStep : BuildStep
     {
-        /// <inheritdoc />
-        public override string Title { get { return Command != null ? Command.Title : "<No command>"; } }
+        public CommandBuildStep(Command command)
+        {
+            Command = command;
+        }
 
-        public Command Command { get; private set; }
+        /// <inheritdoc />
+        public override string Title => Command != null ? Command.Title : "<No command>";
+
+        public Command Command { get; }
+
+        /// <summary>
+        /// Command Result, set only after step completion. Not thread safe, should not be modified
+        /// </summary>
+        public CommandResultEntry Result { get; private set; }
 
         /// <inheritdoc/>
         public override string OutputLocation => Command.OutputLocation;
 
         /// <inheritdoc/>
         public override IEnumerable<KeyValuePair<ObjectUrl, ObjectId>> OutputObjectIds => Result.OutputObjects;
-
-        /// <summary>
-        /// Command Result, set only after step completion. Not thread safe, should not be modified
-        /// </summary>
-        public CommandResultEntry Result;
-
-        public CommandBuildStep(Command command)
-        {
-            Command = command;
-        }
 
         public override string ToString()
         {
@@ -79,7 +78,6 @@ namespace SiliconStudio.BuildEngine
                                     executeContext.Logger.Error("Unable to delete file: " + outputObject.Key.Path);
                                 }
                                 break;
-                            case UrlType.ContentLink:
                             case UrlType.Content:
                                 executeContext.ResultMap.Delete(outputObject.Value);
                                 break;
@@ -102,22 +100,19 @@ namespace SiliconStudio.BuildEngine
             var status = ResultStatus.NotProcessed;
             // if any external input has changed since the last execution (or if we don't have a successful execution in cache, trigger the command
             CommandResultEntry matchingResult;
-            ObjectId commandHash;
             try
-            {               
+            {
+                // try to retrieve result from one of the object store
+                var commandHash = Command.ComputeCommandHash(executeContext);
+                // Early exit if the hash of the command failed
+                if (commandHash == ObjectId.Empty)
                 {
-                    // try to retrieve result from one of the object store
-                    commandHash = Command.ComputeCommandHash(executeContext);
-                    // Early exit if the hash of the command failed
-                    if (commandHash == ObjectId.Empty)
-                    {
-                        return ResultStatus.Failed;
-                    }
-
-                    var commandResultsFileStream = executeContext.ResultMap.OpenStream(commandHash, VirtualFileMode.OpenOrCreate, VirtualFileAccess.ReadWrite, VirtualFileShare.ReadWrite);
-                    commandResultEntries = new ListStore<CommandResultEntry>(commandResultsFileStream) { AutoLoadNewValues = false };
-                    commandResultEntries.LoadNewValues();
+                    return ResultStatus.Failed;
                 }
+
+                var commandResultsFileStream = executeContext.ResultMap.OpenStream(commandHash, VirtualFileMode.OpenOrCreate, VirtualFileAccess.ReadWrite, VirtualFileShare.ReadWrite);
+                commandResultEntries = new ListStore<CommandResultEntry>(commandResultsFileStream) { AutoLoadNewValues = false };
+                commandResultEntries.LoadNewValues();
 
                 if (ShouldExecute(executeContext, commandResultEntries.GetValues(), commandHash, out matchingResult))
                 {
@@ -203,7 +198,7 @@ namespace SiliconStudio.BuildEngine
 
         internal bool ShouldExecute(IExecuteContext executeContext, CommandResultEntry[] previousResultCollection, ObjectId commandHash, out CommandResultEntry matchingResult)
         {
-            IEnumerable<IDictionary<ObjectUrl, OutputObject>> outputObjectsGroups = executeContext.GetOutputObjectsGroups();
+            var outputObjectsGroups = executeContext.GetOutputObjectsGroups();
             MicrothreadLocalDatabases.MountDatabase(outputObjectsGroups);
             try
             {
@@ -289,7 +284,7 @@ namespace SiliconStudio.BuildEngine
                     }
 
                     var address = "net.pipe://localhost/" + Guid.NewGuid();
-                    var arguments = string.Format("--slave=\"{0}\" --build-path=\"{1}\" --profile=\"{2}\"", address, builderContext.BuildPath, builderContext.BuildProfile);
+                    var arguments = $"--slave=\"{address}\" --build-path=\"{builderContext.BuildPath}\" --profile=\"{builderContext.BuildProfile}\"";
 
                     using (var debugger = VisualStudioDebugger.GetAttached())
                     {
@@ -366,16 +361,7 @@ namespace SiliconStudio.BuildEngine
                         // Register tags
                         foreach (var tag in processBuilderRemote.Result.TagSymbols)
                         {
-                            TagSymbol tagSymbol;
-
-                            // Resolve tag locally
-                            if (!Command.TagSymbols.TryGetValue(tag.Value, out tagSymbol))
-                            {
-                                // Should we ignore silently? (with warning)
-                                throw new InvalidOperationException("Could not find tag symbol.");
-                            }
-
-                            commandContext.AddTag(tag.Key, tagSymbol);
+                            commandContext.AddTag(tag.Key, tag.Value);
                         }
                     }
 

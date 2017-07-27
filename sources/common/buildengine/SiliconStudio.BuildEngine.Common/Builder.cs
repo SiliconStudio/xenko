@@ -14,8 +14,6 @@ using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.IO;
-
-using System.Reflection;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Serialization.Contents;
 
@@ -165,14 +163,12 @@ namespace SiliconStudio.BuildEngine
 
         public Builder(ILogger logger, string buildPath, string buildProfile, string indexName)
         {
-            if (buildPath == null) throw new ArgumentNullException(nameof(buildPath));
-
             MonitorPipeNames = new List<string>();
             startTime = DateTime.Now;
             this.buildProfile = buildProfile;
             this.indexName = indexName;
             Logger = logger;
-            this.buildPath = buildPath;
+            this.buildPath = buildPath ?? throw new ArgumentNullException(nameof(buildPath));
             Root = new ListBuildStep();
             ioMonitor = new CommandIOMonitor(Logger);
             ThreadCount = Environment.ProcessorCount;
@@ -233,7 +229,7 @@ namespace SiliconStudio.BuildEngine
                 builder.ScheduleBuildStep(builderContext, buildStep, step, Variables);
             }
 
-            public IEnumerable<IDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups()
+            public IEnumerable<IReadOnlyDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups()
             {
                 return buildStep.GetOutputObjectsGroups();
             }
@@ -247,7 +243,6 @@ namespace SiliconStudio.BuildEngine
                     case UrlType.File:
                         hash = builderContext.InputHashes.ComputeFileHash(filePath);
                         break;
-                    case UrlType.ContentLink:              
                     case UrlType.Content:
                         if (!buildTransaction.TryGetValue(filePath, out hash))
                             Logger.Warning("Location " + filePath + " does not exist currently and is required to compute the current command hash. The build cache will not work for this command!");
@@ -317,17 +312,10 @@ namespace SiliconStudio.BuildEngine
                 {
                     MicroThread microThread = scheduler.Create();
 
-                    // Find priority from this build step, or one of its parent.
-                    var buildStepPriority = buildStep;
-                    while (buildStepPriority != null)
+                    // Set priority from this build step, if we have one.
+                    if (buildStep.Priority.HasValue)
                     {
-                        if (buildStepPriority.Priority.HasValue)
-                        {
-                            microThread.Priority = buildStepPriority.Priority.Value;
-                            break;
-                        }
-
-                        buildStepPriority = buildStepPriority.Parent;
+                        microThread.Priority = buildStep.Priority.Value;
                     }
 
                     buildStep.ExecutionId = microThread.Id;
@@ -357,7 +345,7 @@ namespace SiliconStudio.BuildEngine
                         {
                             try
                             {
-                                IEnumerable<IDictionary<ObjectUrl, OutputObject>> outputObjectsGroups = executeContext.GetOutputObjectsGroups();
+                                var outputObjectsGroups = executeContext.GetOutputObjectsGroups();
                                 MicrothreadLocalDatabases.MountDatabase(outputObjectsGroups);
 
                                 // Execute
@@ -500,16 +488,13 @@ namespace SiliconStudio.BuildEngine
             {
                 // Filter database Location
                 indexFile.AddValues(
-                    Root.OutputObjects.Where(x => x.Key.Type == UrlType.ContentLink)
+                    Root.OutputObjects.Where(x => x.Key.Type == UrlType.Content)
                         .Select(x => new KeyValuePair<string, ObjectId>(x.Key.Path, x.Value.ObjectId)));
 
-                foreach (var x in Root.OutputObjects)
+                foreach (var outputObject in Root.OutputObjects.Where(x => x.Key.Type == UrlType.Content).Select(x => x.Value))
                 {
-                    if(x.Key.Type != UrlType.ContentLink)
-                        continue;
-
-                    if (x.Value.Tags.Contains(DoNotCompressTag))
-                        DisableCompressionIds.Add(x.Value.ObjectId);
+                    if (outputObject.Tags.Contains(DoNotCompressTag))
+                        DisableCompressionIds.Add(outputObject.ObjectId);
                 }
             }
         }
