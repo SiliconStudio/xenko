@@ -2,21 +2,14 @@
 // See LICENSE.md for full license information.
 using SiliconStudio.Core.Serialization.Contents;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.BuildEngine
 {
-    public interface IBuildStepCollection
-    {
-
-    }
-
-    public class ListBuildStep : BuildStep, IBuildStepCollection
+    public class ListBuildStep : BuildStep
     {
         private readonly List<BuildStep> steps = new List<BuildStep>();
         private readonly List<BuildStep> executedSteps = new List<BuildStep>();
@@ -27,7 +20,7 @@ namespace SiliconStudio.BuildEngine
         /// <inheritdoc />
         public override string Title => ToString();
 
-        public IDictionary<ObjectUrl, OutputObject> OutputObjects => outputObjects;
+        public IReadOnlyDictionary<ObjectUrl, OutputObject> OutputObjects => outputObjects;
 
         /// <inheritdoc/>
         public override IEnumerable<KeyValuePair<ObjectUrl, ObjectId>> OutputObjectIds => outputObjects.Select(x => new KeyValuePair<ObjectUrl, ObjectId>(x.Key, x.Value.ObjectId));
@@ -200,18 +193,14 @@ namespace SiliconStudio.BuildEngine
             {
                 // Resolve tags from TagSymbol
                 // TODO: Handle removed tags
-                foreach (var tagGroup in buildStep.Result
-                    .TagSymbols
-                    .Where(x => buildStep.Command.TagSymbols.ContainsKey(x.Value))
-                    .GroupBy(x => x.Key, x => buildStep.Command.TagSymbols[x.Value].RealName))
+                foreach (var tag in buildStep.Result.TagSymbols)
                 {
-                    var url = tagGroup.Key;
+                    var url = tag.Key;
 
                     // TODO: Improve search complexity?
-                    OutputObject outputObject;
-                    if (outputObjects.TryGetValue(url, out outputObject))
+                    if (outputObjects.TryGetValue(url, out var outputObject))
                     {
-                        outputObject.Tags.UnionWith(tagGroup);
+                        outputObject.Tags.Add(tag.Value);
                     }
                 }
             }
@@ -340,6 +329,12 @@ namespace SiliconStudio.BuildEngine
                 throw new InvalidOperationException("Unable to add a build step to an already processed ListBuildStep.");
 
             buildStep.Parent = this;
+            // Propagate priority if we have one
+            if (Priority.HasValue)
+            {
+                // Overwrite only if the new priority is smaller or if we didn't have a priority before
+                buildStep.Priority = buildStep.Priority.HasValue ? Math.Min(buildStep.Priority.Value, Priority.Value) : Priority.Value;
+            }
             steps.Add(buildStep);
         }
     }
