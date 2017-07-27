@@ -14,11 +14,11 @@ using SiliconStudio.Xenko.Shaders;
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
     [DataContract("MaterialClearCoatFeature")]
-    [Display("Clear Coat")]
+    [Display("Clear coat")]
 
-    [CategoryOrder(5, "Base Paint")]
-    [CategoryOrder(10, "Metal Flakes")]
-    [CategoryOrder(15, "Clear Coat")]
+    [CategoryOrder(5, "Base paint")]
+    [CategoryOrder(10, "Metal flakes")]
+    [CategoryOrder(15, "Clear coat")]
     public class MaterialClearCoatFeature : MaterialFeature, IMaterialClearCoatFeature
     {
         /// <summary>
@@ -26,10 +26,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// </summary>
         /// <value>The transition distance.</value>
         /// <userdoc>
-        /// The transition distance value.
+        /// The distance (in meters) at which the base paint layer transitions to the metal flake layer
         /// </userdoc>
         [DataMember(100)]
-        [Display("Layer Transition Distance")]
+        [Display("Layer transition distance")]
         [NotNull]
         [DataMemberRange(0.001, 2.000, 0.0100, 0.100, 3)]
         public IComputeScalar LODDistance { get; set; }
@@ -40,23 +40,23 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// </summary>
         /// <value>The diffuse map.</value>
         /// <userdoc>
-        /// The diffuse map used by the base paint layer.
+        /// The diffuse map used by the base paint layer (the lowest  layer). This determines the color of the layer.
         /// </userdoc>
         [DataMember(110)]
-        [Display("Base Paint Diffuse Map", "Base Paint")]
+        [Display("Base paint diffuse map", "Base paint")]
         [NotNull]
         [DataMemberCustomSerializer]
         public IComputeColor BasePaintDiffuseMap { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the base paint smoothness map.
         /// </summary>
         /// <value>The smoothness map.</value>
         /// <userdoc>
-        /// The glossiness map used by the base paint layer.
+        /// The glossiness map used by the base paint layer. For a coherent result, use the metal flake normal map as a mask.   
         /// </userdoc>
         [DataMember(120)]
-        [Display("Base Paint Glossiness Map", "Base Paint")]
+        [Display("Base paint glossiness map", "Base paint")]
         [NotNull]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
         public IComputeScalar BasePaintGlossinessMap { get; set; }
@@ -65,10 +65,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets a value indicating whether the <see cref="BasePaintGlossinessMap"/> is invert.
         /// </summary>
         /// <value><c>true</c> if invert; otherwise, <c>false</c>.</value>
-        /// <userdoc>When checked, considers the map as a roughness map instead of a glossiness map. 
-        /// A roughness value of 1.0 corresponds to a glossiness value of 0.0 and vice-versa.</userdoc>
+        /// <userdoc>Inverts the glossiness value (eg a value of 1.0 produces zero glossiness instead of maximum). This effectively turns the glossiness attribute into a roughness attribute found in other game engines.
+        /// </userdoc>
         [DataMember(130)]
-        [Display("Invert Glossiness", "Base Paint")]
+        [Display("Invert glossiness", "Base paint")]
         [DefaultValue(false)]
         public bool BasePaintGlossinessInvert { get; set; }
         #endregion
@@ -79,10 +79,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// </summary>
         /// <value>The diffuse map.</value>
         /// <userdoc>
-        /// The diffuse map used by the metal flakes layer.
+        /// The diffuse map used by the metal flakes layer (the layer above the base paint). For a coherent result, use a value close to the base paint value.
         /// </userdoc>
         [DataMember(140)]
-        [Display("Metal Flakes Diffuse Map", "Metal Flakes")]
+        [Display("Metal flake diffuse map", "Metal flakes")]
         [NotNull]
         [DataMemberCustomSerializer]
         public IComputeColor MetalFlakesDiffuseMap { get; set; }
@@ -92,10 +92,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// </summary>
         /// <value>The smoothness map.</value>
         /// <userdoc>
-        /// The glossiness map used by the metal flakes layer.
+        /// The glossiness map used by the metal flakes layer. For a coherent result, use the metal flakes normal map as a mask.
         /// </userdoc>
         [DataMember(150)]
-        [Display("Metal Flakes Glossiness Map", "Metal Flakes")]
+        [Display("Metal flake glossiness map", "Metal flakes")]
         [NotNull]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
         public IComputeScalar MetalFlakesGlossinessMap { get; set; }
@@ -104,10 +104,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets a value indicating whether this <see cref="MetalFlakesGlossinessMap"/> is invert.
         /// </summary>
         /// <value><c>true</c> if invert; otherwise, <c>false</c>.</value>
-        /// <userdoc>When checked, considers the map as a roughness map instead of a glossiness map. 
-        /// A roughness value of 1.0 corresponds to a glossiness value of 0.0 and vice-versa.</userdoc>
+        /// <userdoc>Inverts the glossiness value (eg a value of 1.0 produces zero glossiness instead of maximum). This effectively turns the glossiness attribute into a roughness attribute found in other game engines.
+        /// </userdoc>
         [DataMember(160)]
-        [Display("Invert Glossiness", "Metal Flakes")]
+        [Display("Invert glossiness", "Metal flakes")]
         [DefaultValue(false)]
         public bool MetalFlakesGlossinessInvert { get; set; } = false;
 
@@ -115,10 +115,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets the metal flakes metalness map.
         /// </summary>
         /// <userdoc>
-        /// The metalness map used by the metal flakes layer.
+        /// The metalness map used by the metal flakes layer. For best results, use high values.
         /// </userdoc>
         [DataMember(170)]
-        [Display("Metal Flakes Metalness Map", "Metal Flakes")]
+        [Display("Metal flake metalness map", "Metal flakes")]
         [NotNull]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
         public IComputeScalar MetalFlakesMetalnessMap { get; set; }
@@ -128,10 +128,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// </summary>
         /// <value>The normal map.</value>
         /// <userdoc>
-        /// The normal map used by the metal flakes layer.
+        /// The normal map used by the metal flakes layer. This shapes the flake geometry. If the texture has a high UV scale, enable Use random texture coordinates below to reduce tiling effects.
         /// </userdoc>
         [DataMember(180)]
-        [Display("Metal Flakes Normal Map", "Metal Flakes")]
+        [Display("Metal flake normal map", "Metal flakes")]
         [NotNull]
         public IComputeColor MetalFlakesNormalMap { get; set; }
 
@@ -144,7 +144,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// </userdoc>
         [DataMember(190)]
         [DefaultValue(true)]
-        [Display("Scale & Offset", "Metal Flakes")]
+        [Display("Scale and offset", "Metal flakes")]
         public bool MetalFlakesScaleAndBias { get; set; } = true;
 
         /// <summary>
@@ -152,11 +152,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// </summary>
         /// <value><c>true</c> if this instance is xy normal; otherwise, <c>false</c>.</value>
         /// <userdoc>
-        /// The Z component of the normal vector will be calculated from X and Y assuming Z = sqrt(1 - x*x - y*y).
+        /// Calculate the Z component of the normal vector from X and Y, assuming Z = sqrt(1 - x*x - y*y).
         /// </userdoc>
         [DataMember(200)]
         [DefaultValue(false)]
-        [Display("Reconstruct Z", "Metal Flakes")]
+        [Display("Reconstruct Z", "Metal flakes")]
         public bool MetalFlakeslIsXYNormal { get; set; }
         #endregion
 
@@ -166,10 +166,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// </summary>
         /// <value>The smoothness map.</value>
         /// <userdoc>
-        /// The glossiness map used by the clear coat layer.
+        /// The glossiness map used by the clear coat layer. Change this value to simulate different kinds of paint (eg matte).
         /// </userdoc>
         [DataMember(210)]
-        [Display("Clear Coat Glossiness Map", "Clear Coat")]
+        [Display("Clear coat glossiness map", "Clear coat")]
         [NotNull]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
         public IComputeScalar ClearCoatGlossinessMap { get; set; }
@@ -178,10 +178,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets a value indicating whether the <see cref="ClearCoatGlossinessMap"/> is invert.
         /// </summary>
         /// <value><c>true</c> if invert; otherwise, <c>false</c>.</value>
-        /// <userdoc>When checked, considers the map as a roughness map instead of a glossiness map. 
-        /// A roughness value of 1.0 corresponds to a glossiness value of 0.0 and vice-versa.</userdoc>
+        /// <userdoc>Inverts the glossiness value (eg a value of 1.0 produces zero glossiness instead of maximum). This effectively turns the glossiness attribute into a roughness attribute found in other game engines.
+        /// </userdoc>
         [DataMember(220)]
-        [Display("Invert Glossiness", "Clear Coat")]
+        [Display("Invert glossiness", "Clear coat")]
         [DefaultValue(false)]
         public bool ClearCoatGlossinessInvert { get; set; }
 
@@ -189,10 +189,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets the clear coat metalness map.
         /// </summary>
         /// <userdoc>
-        /// The metalness map used by the clear coat layer.
+        /// The metalness map used by the clear coat layer
         /// </userdoc>
         [DataMember(230)]
-        [Display("Clear Coat Metalness Map", "Clear Coat")]
+        [Display("Clear coat metalness map", "Clear coat")]
         [NotNull]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 3)]
         public IComputeScalar ClearCoatMetalnessMap { get; set; }
@@ -202,10 +202,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// </summary>
         /// <value>The normal map.</value>
         /// <userdoc>
-        /// The normal map used by the clear coat layer.
+        /// The normal map used by the clear coat layer to create an "orange peel" effect. This reflects light in different angles, simulating paint imperfections whereby the texture appears bumpy, like the skin of an orange.
         /// </userdoc>
         [DataMember(240)]
-        [Display("Orange Peel Normal Map", "Clear Coat")]
+        [Display("Orange peel normal map", "Clear coat")]
         [NotNull]
         public IComputeColor OrangePeelNormalMap { get; set; }
 
@@ -218,7 +218,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// </userdoc>
         [DataMember(250)]
         [DefaultValue(true)]
-        [Display("Scale & Offset", "Clear Coat")]
+        [Display("Scale and offset", "Clear coat")]
         public bool OrangePeelScaleAndBias { get; set; } = true;
 
         /// <summary>
@@ -226,11 +226,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// </summary>
         /// <value><c>true</c> if this instance is xy normal; otherwise, <c>false</c>.</value>
         /// <userdoc>
-        /// The Z component of the normal vector will be calculated from X and Y assuming Z = sqrt(1 - x*x - y*y).
+        /// If there's no Z component in the texture, reconstruct it from the X and Y components. This assumes that Z = sqrt(1 - x*x - y*y) and that Z is always positive, so no normal vector can point to the back side of the surface. We recommend you enable this option, as Xenko might remove the Z component when you compress normal maps.
         /// </userdoc>
         [DataMember(260)]
         [DefaultValue(false)]
-        [Display("Reconstruct Z", "Clear Coat")]
+        [Display("Reconstruct Z", "Clear coat")]
         public bool OrangePeelIsXYNormal { get; set; }
         #endregion
 
