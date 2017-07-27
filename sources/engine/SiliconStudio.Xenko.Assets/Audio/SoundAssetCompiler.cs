@@ -28,12 +28,9 @@ namespace SiliconStudio.Xenko.Assets.Audio
 
         private class DecodeSoundFileCommand : AssetCommand<SoundAsset>
         {
-            private readonly TagSymbol disableCompressionSymbol;
-
             public DecodeSoundFileCommand(string url, SoundAsset asset, IAssetFinder assetFinder) 
                 : base(url, asset, assetFinder)
             {
-                disableCompressionSymbol = RegisterTag(Builder.DoNotCompressTag, () => Builder.DoNotCompressTag);
             }
 
             private static int RunProcessAndGetOutput(string command, string parameters)
@@ -105,7 +102,7 @@ namespace SiliconStudio.Xenko.Assets.Audio
                 };
 
                 //make sure we don't compress celt data
-                commandContext.AddTag(new ObjectUrl(UrlType.Content, dataUrl), disableCompressionSymbol);
+                commandContext.AddTag(new ObjectUrl(UrlType.Content, dataUrl), Builder.DoNotCompressTag);
 
                 var frameSize = CompressedSoundSource.SamplesPerFrame* channels;
                 using (var reader = new BinaryReader(new FileStream(tempPcmFile, FileMode.Open, FileAccess.Read)))

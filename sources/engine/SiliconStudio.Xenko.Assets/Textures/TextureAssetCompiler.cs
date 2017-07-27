@@ -52,11 +52,9 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </summary>
         public class TextureConvertCommand : AssetCommand<TextureConvertParameters>
         {
-            private readonly TagSymbol disableCompressionSymbol;
             public TextureConvertCommand(string url, TextureConvertParameters description, IAssetFinder assetFinder)
                 : base(url, description, assetFinder)
             {
-                disableCompressionSymbol = RegisterTag(Builder.DoNotCompressTag, () => Builder.DoNotCompressTag);
                 Version = 3;
             }
 
@@ -81,7 +79,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
                     // Make sure we don't compress mips data
                     var dataUrl = Url + "_Data";
-                    commandContext.AddTag(new ObjectUrl(UrlType.Content, dataUrl), disableCompressionSymbol);
+                    commandContext.AddTag(new ObjectUrl(UrlType.Content, dataUrl), Builder.DoNotCompressTag);
                     
                     using (var outputImage = textureTool.ConvertToXenkoImage(texImage))
                     {

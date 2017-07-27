@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Core.MicroThreading
 {
@@ -14,7 +15,7 @@ namespace SiliconStudio.Core.MicroThreading
     /// </summary>
     public class MicroThread
     {
-        internal string ScriptId;
+        internal ProfilingKey ProfilingKey;
 
         /// <summary>
         /// Gets the attached properties to this component.
@@ -161,8 +162,6 @@ namespace SiliconStudio.Core.MicroThreading
         /// <exception cref="System.InvalidOperationException">MicroThread was already started before.</exception>
         public void Start(Func<Task> microThreadFunction, ScheduleMode scheduleMode = ScheduleMode.Last)
         {
-            ScriptId = microThreadFunction.Target.GetType().FullName;
-
             // TODO: Interlocked compare exchange?
             if (Interlocked.CompareExchange(ref state, (int)MicroThreadState.Starting, (int)MicroThreadState.None) != (int)MicroThreadState.None)
                 throw new InvalidOperationException("MicroThread was already started before.");

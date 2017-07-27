@@ -3,14 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using SiliconStudio.Assets.Analysis;
-using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Assets.Tracking;
 using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets
 {
@@ -51,11 +48,9 @@ namespace SiliconStudio.Assets
         /// <exception cref="ArgumentNullException">asset</exception>
         internal AssetItem([NotNull] UFile location, [NotNull] Asset asset, Package package)
         {
-            if (location == null) throw new ArgumentNullException(nameof(location));
-            if (asset == null) throw new ArgumentNullException(nameof(asset));
-            this.location = location;
-            this.asset = asset;
-            this.Package = package;
+            this.location = location ?? throw new ArgumentNullException(nameof(location));
+            this.asset = asset ?? throw new ArgumentNullException(nameof(asset));
+            Package = package;
             isDirty = true;
         }
 
@@ -63,15 +58,8 @@ namespace SiliconStudio.Assets
         /// Gets the location of this asset.
         /// </summary>
         /// <value>The location.</value>
-        public UFile Location
-        {
-            get { return location; }
-            internal set
-            {
-                if (value == null) throw new ArgumentNullException(nameof(value));
-                location = value;
-            }
-        }
+        [NotNull]
+        public UFile Location { get => location; internal set => location = value ?? throw new ArgumentNullException(nameof(value)); }
 
         /// <summary>
         /// Gets the directory where the assets will be stored on the disk relative to the <see cref="Package"/>. The directory
@@ -129,13 +117,12 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Clones this instance without the attached package.
         /// </summary>
-        /// <param name="keepPackage"></param>
+        /// <param name="keepPackage">if set to <c>true</c> copy package information, only used by the <see cref="Analysis.AssetDependencyManager" />.</param>
         /// <param name="newLocation">The new location that will be used in the cloned <see cref="AssetItem" />. If this parameter
         /// is null, it keeps the original location of the asset.</param>
         /// <param name="newAsset">The new asset that will be used in the cloned <see cref="AssetItem" />. If this parameter
         /// is null, it clones the original asset. otherwise, the specified asset is used as-is in the new <see cref="AssetItem" />
         /// (no clone on newAsset is performed)</param>
-        /// <param name="keepPackage">if set to <c>true</c> copy package information, only used by the <see cref="Analysis.AssetDependencyManager" />.</param>
         /// <param name="flags">Flags used with <see cref="AssetCloner.Clone"/>.</param>
         /// <returns>A clone of this instance.</returns>
         [NotNull]
@@ -160,14 +147,15 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The full absolute path of this asset on the disk.</value>
         /// <remarks>
-        /// This value is only valid if this instance is attached to a <see cref="Package"/>, and that the package has 
+        /// This value is only valid if this instance is attached to a <see cref="Package"/>, and that the package has
         /// a non null <see cref="Assets.Package.RootDirectory"/>.
         /// </remarks>
+        [NotNull]
         public UFile FullPath
         {
             get
             {
-                var localSourceFolder = SourceFolder ?? (Package != null ? 
+                var localSourceFolder = SourceFolder ?? (Package != null ?
                     Package.GetDefaultAssetFolder()
                     : UDirectory.This );
 
@@ -195,18 +183,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The asset.</value>
         [NotNull]
-        public Asset Asset
-        {
-            get
-            {
-                return asset;
-            }
-            internal set
-            {
-                if (value == null) throw new ArgumentNullException(nameof(value));
-                asset = value;
-            }
-        }
+        public Asset Asset { get => asset; internal set => asset = value ?? throw new ArgumentNullException(nameof(value)); }
 
         /// <summary>
         /// Gets the modified time. See remarks.
@@ -223,17 +200,7 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Gets the asset version incremental counter, increased everytime the asset is edited.
         /// </summary>
-        public long Version
-        {
-            get
-            {
-                return Interlocked.Read(ref version);
-            }
-            internal set
-            {
-                Interlocked.Exchange(ref version, value);
-            }
-        } 
+        public long Version { get => Interlocked.Read(ref version); internal set => Interlocked.Exchange(ref version, value); }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is dirty. See remarks.
@@ -285,6 +252,7 @@ namespace SiliconStudio.Assets
         /// on this instance)
         /// </summary>
         /// <returns>The base item or null if not found.</returns>
+        [CanBeNull]
         public AssetItem FindBase()
         {
             if (Package?.Session == null || Asset.Archetype == null)
@@ -313,6 +281,7 @@ namespace SiliconStudio.Assets
 
             return sourceFiles;
         }
+
         private class AssetItemComparerById : IEqualityComparer<AssetItem>
         {
             public bool Equals(AssetItem x, AssetItem y)
