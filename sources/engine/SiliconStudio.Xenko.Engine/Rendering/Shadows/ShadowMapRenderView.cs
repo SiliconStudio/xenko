@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         /// </summary>
         public Rectangle Rectangle;
 
-        public ProfilingKey ProfilingKey { get; } = new ProfilingKey($"ShadowMapRenderView", ProfilingKeyFlags.GpuProfiling);
+        public ProfilingKey ProfilingKey { get; } = new ProfilingKey($"ShadowMapRenderView");
         
         /// <summary>
         /// Ignore depth planes in visibility test
