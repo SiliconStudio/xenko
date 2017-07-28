@@ -240,14 +240,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         /// <summary>
         /// Helper structure with data for temporal reprojection done per camera.
+        /// Note: we may use the same camera for a few times per frame so every rendering pass should pick a proper data.
         /// </summary>
         private class TemporalFrameCache
         {
             public CameraComponent Camera;
             public int LastUsageFrame;
             public Texture TemporalBuffer;
-            // ReSharper disable once InconsistentNaming
-            public Matrix PrevVP;
+            public Matrix PrevViewProjection;
 
             public void Resize(GraphicsDevice device, ref Size3 size)
             {
@@ -268,7 +268,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
         }
 
-        private readonly List<TemporalFrameCache> _frameCache = new List<TemporalFrameCache>(4);
+        private readonly List<TemporalFrameCache> frameCache = new List<TemporalFrameCache>(4);
 
         [NotNull]
         private TemporalFrameCache GetFrameCache(int frameIndex, CameraComponent camera)
@@ -276,9 +276,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
             TemporalFrameCache cache;
 
             // Find free temporal cache
-            for (int i = 0; i < _frameCache.Count; i++)
+            for (int i = 0; i < frameCache.Count; i++)
             {
-                cache = _frameCache[i];
+                cache = frameCache[i];
                 if (cache.Camera == camera && cache.LastUsageFrame != frameIndex)
                 {
                     cache.LastUsageFrame = frameIndex;
@@ -290,19 +290,19 @@ namespace SiliconStudio.Xenko.Rendering.Images
             cache = new TemporalFrameCache();
             cache.Camera = camera;
             cache.LastUsageFrame = frameIndex;
-            _frameCache.Add(cache);
+            frameCache.Add(cache);
 
             return cache;
         }
 
         private void FlushCache(int frameIndex)
         {
-            for (int i = 0; i < _frameCache.Count; i++)
+            for (int i = 0; i < frameCache.Count; i++)
             {
-                if (frameIndex - _frameCache[i].LastUsageFrame > 100)
+                if (frameIndex - frameCache[i].LastUsageFrame > 100)
                 {
-                    _frameCache[i].Dispose();
-                    _frameCache.RemoveAt(i--);
+                    frameCache[i].Dispose();
+                    frameCache.RemoveAt(i--);
                 }
             }
         }
@@ -322,8 +322,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         protected override void Destroy()
         {
-            _frameCache.ForEach(x => x.Dispose());
-            _frameCache.Clear();
+            frameCache.ForEach(x => x.Dispose());
+            frameCache.Clear();
 
             cachedColorBuffer0Mips?.ForEach(view => view?.Dispose());
             cachedColorBuffer1Mips?.ForEach(view => view?.Dispose());
@@ -420,11 +420,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
             if (TemporalEffect)
             {
                 temporalPassShader.Parameters.Set(SSLRTemporalPassKeys.IVP, ref inverseViewProjectionMatrix);
-                temporalPassShader.Parameters.Set(SSLRTemporalPassKeys.prevVP, ref cache.PrevVP);
+                temporalPassShader.Parameters.Set(SSLRTemporalPassKeys.prevVP, ref cache.PrevViewProjection);
                 temporalPassShader.Parameters.Set(SSLRTemporalPassKeys.TemporalResponse, TemporalResponse);
                 temporalPassShader.Parameters.Set(SSLRTemporalPassKeys.TemporalScale, TemporalScale);
 
-                cache.PrevVP = viewProjectionMatrix;
+                cache.PrevViewProjection = viewProjectionMatrix;
             }
 
             combinePassShader.Parameters.Set(SSLRCommonKeys.ViewFarPlane, farclip);
