@@ -1,10 +1,15 @@
+// Copyright (c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 #if DEBUG
 // Enables/disables Screen Space Local Reflections effect debugging
 #define SSLR_DEBUG
 #endif
 
-// Copyright (c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
+#if SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS
+// Use different render targets formats on mobile
+#define SSLR_MOBILE
+#endif
 
 using System;
 using System.Collections.Generic;
@@ -36,7 +41,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
         // 4) Temporal blur [optional]
         // 5) Combine final image
 
+#if SSLR_MOBILE
+        private const PixelFormat RayTraceTargetFormat = PixelFormat.R8G8B8A8_UNorm;
+        private const PixelFormat ReflectionsFormat = PixelFormat.R16G16B16A16_Float;
+#else
+        private const PixelFormat RayTraceTargetFormat = PixelFormat.R11G11B10_Float;
         private const PixelFormat ReflectionsFormat = PixelFormat.R11G11B10_Float;
+#endif
 
         private ImageEffectShader depthPassShader;
         private ImageEffectShader blurPassShaderH;
@@ -454,7 +465,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // Get temporary buffers
             var rayTraceBuffersSize = GetBufferResolution(outputBuffer, RayTracePassResolution);
             var resolveBuffersSize = GetBufferResolution(outputBuffer, ResolvePassResolution);
-            Texture rayTraceBuffer = NewScopedRenderTarget2D(rayTraceBuffersSize.Width, rayTraceBuffersSize.Height, PixelFormat.R11G11B10_Float, 1);
+            Texture rayTraceBuffer = NewScopedRenderTarget2D(rayTraceBuffersSize.Width, rayTraceBuffersSize.Height, RayTraceTargetFormat, 1);
             Texture resolveBuffer = NewScopedRenderTarget2D(resolveBuffersSize.Width, resolveBuffersSize.Height, ReflectionsFormat, 1);
 
             // Check if resize depth
