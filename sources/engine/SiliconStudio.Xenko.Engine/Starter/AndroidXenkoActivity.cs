@@ -10,6 +10,7 @@ using Android.Views;
 using Android.Widget;
 using Android.Content;
 using Android.Media;
+using Android.Runtime;
 using OpenTK.Graphics;
 using OpenTK.Platform.Android;
 using SiliconStudio.Core;
@@ -53,10 +54,6 @@ namespace SiliconStudio.Xenko.Starter
             // Set the android global context
             if (PlatformAndroid.Context == null)
                 PlatformAndroid.Context = this;
-
-            // Set the format of the window color buffer (avoid conversions)
-            // TODO: PDX-364: depth format is currently hard coded (need to investigate how it can be transmitted)
-            Window.SetFormat(Format.Rgba8888);
 
             // Remove the title bar
             RequestWindowFeature(WindowFeatures.NoTitle);
@@ -122,9 +119,27 @@ namespace SiliconStudio.Xenko.Starter
 
         private void SetupGameViewAndGameContext()
         {
+            // Force the format of the window color buffer (avoid conversions)
+            // TODO: PDX-364: depth format is currently hard coded (need to investigate how it can be transmitted)
+            var windowColorBufferFormat = Format.Rgba8888;
+            
             // Set the main view of the Game
-            SetContentView(Resource.Layout.Game);
-            mainLayout = FindViewById<RelativeLayout>(Resource.Id.GameViewLayout);
+            var context = PlatformAndroid.Context;
+            if (context == this)
+            {
+                Window.SetFormat(windowColorBufferFormat);
+                SetContentView(Resource.Layout.Game);
+                mainLayout = FindViewById<RelativeLayout>(Resource.Id.GameViewLayout);
+            }
+            else
+            {
+                var windowManager = context.GetSystemService(WindowService).JavaCast<IWindowManager>();
+                var mainView = LayoutInflater.From(context).Inflate(Resource.Layout.Game, null);
+                windowManager.AddView(mainView, new WindowManagerLayoutParams(WindowManagerTypes.SystemAlert, WindowManagerFlags.Fullscreen, windowColorBufferFormat)); 
+                mainLayout = mainView.FindViewById<RelativeLayout>(Resource.Id.GameViewLayout);
+            }
+
+            // Set the content of the view
             mainLayout.AddView(GameView);
 
             // Create the Game context
