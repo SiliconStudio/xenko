@@ -28,6 +28,7 @@
         <AndroidResource Include="Resources\Layout\Game.axml">
           <SubType>AndroidResource</SubType>
         </AndroidResource>
+	    <Reference Include="System.Xml" />
       </ItemGroup>
     </When>
   </Choose>
