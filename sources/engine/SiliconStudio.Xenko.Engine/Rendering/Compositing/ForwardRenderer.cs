@@ -212,7 +212,11 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             {
                 if (PostEffects.RequiresNormalBuffer)
                 {
+#if SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS
+                    renderOutputValidator.Add<NormalTargetSemantic>(PixelFormat.R16G16B16A16_Float);
+#else
                     renderOutputValidator.Add<NormalTargetSemantic>(PixelFormat.R10G10B10A2_UNorm);
+#endif
                 }
 
                 if (PostEffects.RequiresSpecularRoughnessBuffer)
