@@ -223,6 +223,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Core\NormalUpdate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>NormalUpdate.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Images\LocalReflections\SSLRDepthPass.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
