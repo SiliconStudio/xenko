@@ -27,8 +27,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         [NonOverridable]
         public Guid Id { get; set; }
 
-        public override string Name => GetType().Name;
-
         protected SceneRendererBase()
         {
             Id = Guid.NewGuid();

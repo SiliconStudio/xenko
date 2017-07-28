@@ -104,7 +104,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Gets the game profiler system
         /// </summary>
-        public GameProfilingSystem ProfilerSystem { get; private set; }
+        public GameProfilingSystem ProfilingSystem { get; private set; }
 
         /// <summary>
         /// Gets the VR Device System
@@ -211,8 +211,8 @@ namespace SiliconStudio.Xenko.Engine
             DebugConsoleSystem = new DebugConsoleSystem(Services);
             Services.AddService(typeof(DebugConsoleSystem), DebugConsoleSystem);
 
-            ProfilerSystem = new GameProfilingSystem(Services);
-            Services.AddService(typeof(GameProfilingSystem), ProfilerSystem);
+            ProfilingSystem = new GameProfilingSystem(Services);
+            Services.AddService(typeof(GameProfilingSystem), ProfilingSystem);
 
             VRDeviceSystem = new VRDeviceSystem(Services);
             Services.AddService(typeof(VRDeviceSystem), VRDeviceSystem);
@@ -354,7 +354,7 @@ namespace SiliconStudio.Xenko.Engine
             GameSystems.Add(SpriteAnimation);
 
             GameSystems.Add(DebugConsoleSystem);
-            GameSystems.Add(ProfilerSystem);
+            GameSystems.Add(ProfilingSystem);
 
             EffectSystem = new EffectSystem(Services);
             Services.AddService(typeof(EffectSystem), EffectSystem);

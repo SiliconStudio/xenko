@@ -13,7 +13,6 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Assets.Entities;
-using SiliconStudio.Xenko.Assets.Materials;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Extensions;
 using SiliconStudio.Xenko.Graphics;
@@ -32,6 +31,10 @@ namespace SiliconStudio.Xenko.Assets.Models
         {
             // We need to read the prefab asset to collect models
             yield return new BuildDependencyInfo(typeof(PrefabAsset), typeof(AssetCompilationContext), BuildDependencyType.CompileAsset);
+            foreach (var type in AssetRegistry.GetAssetTypes(typeof(Model)))
+            {
+                yield return new BuildDependencyInfo(type, typeof(AssetCompilationContext), BuildDependencyType.CompileContent);
+            }
         }
 
         public override IEnumerable<ObjectUrl> GetInputFiles(AssetItem assetItem)
@@ -88,7 +91,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             {
                 base.ComputeParameterHash(writer);
 
-                var prefabAsset = Package.Session.FindAssetFromProxyObject(Parameters.Prefab);
+                var prefabAsset = AssetFinder.FindAssetFromProxyObject(Parameters.Prefab);
                 if (prefabAsset != null)
                 {
                     writer.Write(prefabAsset.Version);
@@ -317,7 +320,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 
                 if (Parameters.Prefab != null)
                 {
-                    var prefab = Package.Session.FindAssetFromProxyObject(Parameters.Prefab)?.Asset as PrefabAsset;
+                    var prefab = AssetFinder.FindAssetFromProxyObject(Parameters.Prefab)?.Asset as PrefabAsset;
                     if (prefab != null)
                         allEntities = prefab.Hierarchy.Parts.Values.Select(x => x.Entity).ToList();
                 }
@@ -338,7 +341,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                     if (modelComponent?.Model == null || (modelComponent.Skeleton != null && modelComponent.Skeleton.Nodes.Length != 1) || !modelComponent.Enabled)
                         continue;
 
-                    var modelAsset = Package.Session.FindAssetFromProxyObject(modelComponent.Model);
+                    var modelAsset = AssetFinder.FindAssetFromProxyObject(modelComponent.Model);
                     if (modelAsset == null)
                         continue;
 

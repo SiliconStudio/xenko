@@ -17,7 +17,7 @@ namespace SiliconStudio.BuildEngine
 
         protected internal readonly CommandResultEntry ResultEntry;
 
-        public abstract IEnumerable<IDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups();
+        public abstract IEnumerable<IReadOnlyDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups();
 
         protected internal abstract ObjectId ComputeInputHash(UrlType type, string filePath);
 
@@ -45,9 +45,11 @@ namespace SiliconStudio.BuildEngine
             }
         }
 
-        public void AddTag(ObjectUrl url, TagSymbol tagSymbol)
+        public void AddTag(ObjectUrl url, string tag)
         {
-            ResultEntry.TagSymbols.Add(new KeyValuePair<ObjectUrl, string>(url, tagSymbol.Name));
+            ResultEntry.TagSymbols.Add(new KeyValuePair<ObjectUrl, string>(url, tag));
         }
+
+
     }
 }

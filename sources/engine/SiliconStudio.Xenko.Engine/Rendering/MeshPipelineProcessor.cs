@@ -13,7 +13,8 @@ namespace SiliconStudio.Xenko.Rendering
 
         public override void Process(RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState)
         {
-            var isMultisample = renderNode.RenderStage.Output.MultisampleCount != MultisampleCount.None;
+            var output = renderNode.RenderStage.Output;
+            var isMultisample = output.MultisampleCount != MultisampleCount.None;
             var renderMesh = (RenderMesh)renderObject;
 
             // Make object in transparent stage use AlphaBlend and DepthRead
@@ -66,9 +67,11 @@ namespace SiliconStudio.Xenko.Rendering
 
             if (isMultisample)
             {
-                pipelineState.RasterizerState.MultisampleCount = renderNode.RenderStage.Output.MultisampleCount;
+                pipelineState.RasterizerState.MultisampleCount = output.MultisampleCount;
                 pipelineState.RasterizerState.MultisampleAntiAliasLine = true;
             }
+
+            pipelineState.RasterizerState.ScissorTestEnable = output.ScissorTestEnable;
         }
     }
 }

@@ -71,8 +71,8 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
         {
             private readonly ColorSpace colorSpace;
 
-            public SpriteStudioModelAssetCommand(string url, SpriteStudioModelAsset asset, ColorSpace colorSpace, Package package)
-                : base(url, asset, package)
+            public SpriteStudioModelAssetCommand(string url, SpriteStudioModelAsset asset, ColorSpace colorSpace, IAssetFinder assetFinder)
+                : base(url, asset, assetFinder)
             {
                 this.colorSpace = colorSpace;
             }
