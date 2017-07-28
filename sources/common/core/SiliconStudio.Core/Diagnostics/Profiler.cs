@@ -56,11 +56,34 @@ namespace SiliconStudio.Core.Diagnostics
     /// </remarks>
     public static class Profiler
     {
+        private class RollingBuffer
+        {
+            private const int rollingBufferCount = 2;
+            private int currentBufferIndex;
+            private readonly List<FastList<ProfilingEvent>> rollingBuffers = new List<FastList<ProfilingEvent>>(rollingBufferCount);
+
+            public RollingBuffer()
+            {
+                for (int i = 0; i < rollingBufferCount; i++)
+                    rollingBuffers.Add(new FastList<ProfilingEvent>());
+            }
+
+            public FastList<ProfilingEvent> GetBuffer()
+            {
+                return rollingBuffers[currentBufferIndex];
+            }
+
+            public void MoveToNextBuffer()
+            {
+                currentBufferIndex = (currentBufferIndex + 1) % rollingBufferCount;
+                rollingBuffers[currentBufferIndex].Clear();
+            }
+        }
+
         internal static Logger Logger = GlobalLogger.GetLogger("Profiler"); // Global logger for all profiling
-        private static readonly FastList<ProfilingEvent> events = new FastList<ProfilingEvent>();
-        private static readonly Dictionary<ProfilingKey, ProfilingResult> eventsByKey = new Dictionary<ProfilingKey, ProfilingResult>();
-        private static readonly List<ProfilingResult> profilingResults = new List<ProfilingResult>();
-        private static readonly StringBuilder profilerResultBuilder = new StringBuilder();
+        
+        private static readonly RollingBuffer cpuEvents = new RollingBuffer();
+        private static readonly RollingBuffer gpuEvents= new RollingBuffer();
         private static readonly object Locker = new object();
         private static bool enableAll;
         private static int profileId;
@@ -159,26 +182,11 @@ namespace SiliconStudio.Core.Diagnostics
         /// being profiled. See remarks.
         /// </summary>
         /// <param name="profilingKey">The profile key.</param>
-        /// <returns>A profiler state.</returns>
-        /// <remarks>It is recommended to call this method with <c>using (var profile = Profiler.Profile(...))</c> in order to make sure that the Dispose() method will be called on the
-        /// <see cref="ProfilingState" /> returned object.</remarks>
-        public static ProfilingState Begin([NotNull] ProfilingKey profilingKey)
-        {
-            var profiler = New(profilingKey);
-            profiler.Begin();
-            return profiler;
-        }
-
-        /// <summary>
-        /// Creates a profiler with the specified key. The returned object must be disposed at the end of the section
-        /// being profiled. See remarks.
-        /// </summary>
-        /// <param name="profilingKey">The profile key.</param>
         /// <param name="text">The text to log with the profile.</param>
         /// <returns>A profiler state.</returns>
         /// <remarks>It is recommended to call this method with <c>using (var profile = Profiler.Profile(...))</c> in order to make sure that the Dispose() method will be called on the
         /// <see cref="ProfilingState" /> returned object.</remarks>
-        public static ProfilingState Begin([NotNull] ProfilingKey profilingKey, string text)
+        public static ProfilingState Begin([NotNull] ProfilingKey profilingKey, string text = null)
         {
             var profiler = New(profilingKey);
             profiler.Begin(text);
@@ -243,13 +251,6 @@ namespace SiliconStudio.Core.Diagnostics
             return profiler;
         }
 
-        public static ProfilingState Begin([NotNull] ProfilingKey profilingKey, long timeStamp)
-        {
-            var profiler = New(profilingKey);
-            profiler.Begin(timeStamp);
-            return profiler;
-        }
-
         /// <summary>
         /// Resets the id counter to zero and disable all registered profiles.
         /// </summary>
@@ -259,12 +260,13 @@ namespace SiliconStudio.Core.Diagnostics
             profileId = 0;
         }
 
-        public static void ProcessEvent(ref ProfilingEvent profilingEvent)
+        public static void ProcessEvent(ref ProfilingEvent profilingEvent, ProfilingEventType eventType)
         {
             // Add event
             lock (Locker)
             {
-                events.Add(profilingEvent);
+                var list = eventType == ProfilingEventType.CpuProfilingEvent ? cpuEvents.GetBuffer() : gpuEvents.GetBuffer();
+                list.Add(profilingEvent);
             }
 
             // Log it
@@ -272,135 +274,42 @@ namespace SiliconStudio.Core.Diagnostics
                 Logger.Log(new ProfilingMessage(profilingEvent.Id, profilingEvent.Key, profilingEvent.Type) { Attributes = profilingEvent.Attributes, ElapsedTime = new TimeSpan((profilingEvent.ElapsedTime * 10000000) / Stopwatch.Frequency), Text = profilingEvent.Text });
         }
 
-        private struct ProfilingResult
-        {
-            public ProfilingKey Key;
-            public long AccumulatedTime;
-            public long MinTime;
-            public long MaxTime;
-            public int Count;
-        }
-        
-        public static ProfilingEvent[] GetEvents()
+        /// <summary>
+        /// Retrieve the selected type of events and returns the number of elapsed frames.
+        /// </summary>
+        /// <param name="eventType">The type of events to retrieve</param>
+        /// <param name="clearOtherEventTypes">if true, also clears the event types to avoid event over-accumulation.</param>
+        /// <returns></returns>
+        public static FastList<ProfilingEvent> GetEvents(ProfilingEventType eventType, bool clearOtherEventTypes = true)
         {
             lock (Locker)
             {
-                if (events.Count == 0) return null;
+                var returnValue = eventType == ProfilingEventType.CpuProfilingEvent ? cpuEvents.GetBuffer() : gpuEvents.GetBuffer();
 
-                var res = events.ToArray();
+                if (eventType == ProfilingEventType.CpuProfilingEvent || clearOtherEventTypes)
+                {
+                    cpuEvents.MoveToNextBuffer();
+                }
+                if (eventType == ProfilingEventType.GpuProfilingEvent || clearOtherEventTypes)
+                {
+                    gpuEvents.MoveToNextBuffer();
+                }
 
-                events.Clear();
-                eventsByKey.Clear();
-
-                return res;
+                return returnValue;
             }
         }
 
-        [NotNull]
-        public static string ReportEvents()
+        /// <summary>
+        /// Append the provided time properly formated at the end of the string. 
+        /// <paramref name="tickFrequency"/> is used to convert the ticks into time.
+        /// If <paramref name="tickFrequency"/> is 0 then <see cref="Stopwatch.Frequency"/> is used to perform the calculation.
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="accumulatedTicks"></param>
+        /// <param name="tickFrequency"></param>
+        public static void AppendTime([NotNull] StringBuilder builder, long accumulatedTicks, long tickFrequency = 0)
         {
-            lock (Locker)
-            {
-                if (events.Count == 0)
-                    return "No profiling events.";
-
-                if (GpuTimestampFrequencyRatio <= 0.0)
-                {
-                    throw new ArgumentOutOfRangeException("Invalid GPU clock frequency ratio (value has not been set and/or is <= 0)");
-                }
-
-                // Group by profiling keys
-                var elapsedTime = events.Count > 0 ? events[events.Count - 1].TimeStamp - events[0].TimeStamp : 0;
-
-                foreach (var profilingEvent in events)
-                {
-                    ProfilingResult profilingResult;
-                    if (!eventsByKey.TryGetValue(profilingEvent.Key, out profilingResult))
-                    {
-                        profilingResult.Key = profilingEvent.Key;
-                        profilingResult.MinTime = long.MaxValue;
-                    }
-
-                    //if (profilingEvent.Type == ProfilingMessageType.Begin)
-                    //{
-                    //    Console.WriteLine("{0} {1}: {2}", profilingEvent.TimeStamp, profilingEvent.Type, profilingEvent.Key.Name);
-                    //}
-                    //else if (profilingEvent.Type == ProfilingMessageType.End)
-                    //{
-                    //    Console.WriteLine("{0} {1}: {2} ({3})", profilingEvent.TimeStamp, profilingEvent.Type, profilingEvent.Key.Name, profilingEvent.ElapsedTime);
-                    //}
-
-                    if (profilingEvent.Type == ProfilingMessageType.End)
-                    {
-                        profilingResult.AccumulatedTime += profilingEvent.ElapsedTime;
-                        if (profilingEvent.ElapsedTime < profilingResult.MinTime)
-                            profilingResult.MinTime = profilingEvent.ElapsedTime;
-                        if (profilingEvent.ElapsedTime > profilingResult.MaxTime)
-                            profilingResult.MaxTime = profilingEvent.ElapsedTime;
-
-                    }
-                    else // counter incremented only for Begin and Mark
-                    {
-                        profilingResult.Count++;
-                    }
-
-                    eventsByKey[profilingResult.Key] = profilingResult;
-                }
-
-                foreach (var profilingResult in eventsByKey)
-                {
-                    profilingResults.Add(profilingResult.Value);
-                }
-
-                // Clear events
-                events.Clear();
-                eventsByKey.Clear();
-
-                // Sort by accumulated time
-                profilingResults.Sort((x1, x2) => Math.Sign(x2.AccumulatedTime - x1.AccumulatedTime));
-
-                // Generate result string
-                foreach (var profilingResult in profilingResults)
-                {
-                    profilerResultBuilder.AppendFormat("{0,5:P1} | ", (double)profilingResult.AccumulatedTime / (double)elapsedTime);
-
-                    if ((profilingResult.Key.Flags & ProfilingKeyFlags.GpuProfiling) == ProfilingKeyFlags.GpuProfiling)
-                    {                
-                        double minTimeMs = profilingResult.MinTime / GpuTimestampFrequencyRatio;
-                        double accTimeMs = (profilingResult.Count != 0 ? profilingResult.AccumulatedTime / (double)profilingResult.Count : 0.0) / GpuTimestampFrequencyRatio;
-                        double maxTimeMs = profilingResult.MaxTime / GpuTimestampFrequencyRatio;
-
-                        profilerResultBuilder.AppendFormat("{0:000.000}ms", accTimeMs);
-                        profilerResultBuilder.Append(" |  ");
-                        profilerResultBuilder.AppendFormat("{0:000.000}ms", minTimeMs);
-                        profilerResultBuilder.Append(" |  ");
-                        profilerResultBuilder.AppendFormat("{0:000.000}ms", maxTimeMs);
-                    }
-                    else
-                    {
-                        AppendTime(profilerResultBuilder, profilingResult.AccumulatedTime);
-                        profilerResultBuilder.Append(" |  ");
-                        AppendTime(profilerResultBuilder, profilingResult.MinTime);
-                        profilerResultBuilder.Append(" |  ");
-                        AppendTime(profilerResultBuilder, profilingResult.Count != 0 ? profilingResult.AccumulatedTime / profilingResult.Count : 0);
-                        profilerResultBuilder.Append(" |  ");
-                        AppendTime(profilerResultBuilder, profilingResult.MaxTime);
-                    }
-                    profilerResultBuilder.AppendFormat(" | {0:00000} | {1}", profilingResult.Count, profilingResult.Key);
-                    profilerResultBuilder.AppendLine();
-                }
-
-                profilingResults.Clear();
-
-                var result = profilerResultBuilder.ToString();
-                profilerResultBuilder.Clear();
-                return result;
-            }
-        }
-
-        public static void AppendTime([NotNull] StringBuilder builder, long accumulatedTime)
-        {
-            var accumulatedTimeSpan = new TimeSpan((accumulatedTime * 10000000) / Stopwatch.Frequency);
+            var accumulatedTimeSpan = new TimeSpan((accumulatedTicks * 10000000) / (tickFrequency != 0? tickFrequency: Stopwatch.Frequency));
             if (accumulatedTimeSpan > new TimeSpan(0, 0, 1, 0))
             {
                 builder.AppendFormat("{0:000.000}m ", accumulatedTimeSpan.TotalMinutes);

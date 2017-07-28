@@ -59,6 +59,7 @@ namespace SiliconStudio.Xenko.Graphics
             this.adapterOrdinal = adapterOrdinal;
             adapter = defaultFactory.GetAdapter1(adapterOrdinal).DisposeBy(this);
             description = adapter.Description1;
+            description.Description = description.Description.TrimEnd('\0'); // for some reason sharpDX returns an adaptater name of fixed size filled with trailing '\0'
             //var nativeOutputs = adapter.Outputs;
 
             var count = adapter.GetOutputCount();

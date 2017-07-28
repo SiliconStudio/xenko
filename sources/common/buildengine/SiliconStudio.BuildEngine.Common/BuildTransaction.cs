@@ -12,9 +12,9 @@ namespace SiliconStudio.BuildEngine
     {
         private readonly Dictionary<ObjectUrl, ObjectId> transactionOutputObjects = new Dictionary<ObjectUrl, ObjectId>();
         private readonly IContentIndexMap contentIndexMap;
-        private readonly IEnumerable<IDictionary<ObjectUrl, OutputObject>> outputObjectsGroups;
+        private readonly IEnumerable<IReadOnlyDictionary<ObjectUrl, OutputObject>> outputObjectsGroups;
 
-        public BuildTransaction(IContentIndexMap contentIndexMap, IEnumerable<IDictionary<ObjectUrl, OutputObject>> outputObjectsGroups)
+        public BuildTransaction(IContentIndexMap contentIndexMap, IEnumerable<IReadOnlyDictionary<ObjectUrl, OutputObject>> outputObjectsGroups)
         {
             this.contentIndexMap = contentIndexMap;
             this.outputObjectsGroups = outputObjectsGroups;
@@ -35,7 +35,7 @@ namespace SiliconStudio.BuildEngine
 
         public bool TryGetValue(string url, out ObjectId objectId)
         {
-            var objUrl = new ObjectUrl(UrlType.ContentLink, url);
+            var objUrl = new ObjectUrl(UrlType.Content, url);
 
             // Lock TransactionAssetIndexMap
             lock (transactionOutputObjects)
@@ -103,7 +103,7 @@ namespace SiliconStudio.BuildEngine
                 {
                     lock (buildTransaction.transactionOutputObjects)
                     {
-                        buildTransaction.transactionOutputObjects[new ObjectUrl(UrlType.ContentLink, url)] = value;
+                        buildTransaction.transactionOutputObjects[new ObjectUrl(UrlType.Content, url)] = value;
                     }
                 }
             }

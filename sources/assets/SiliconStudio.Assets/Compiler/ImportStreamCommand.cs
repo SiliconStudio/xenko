@@ -5,7 +5,6 @@ using System.ComponentModel;
 using System.IO;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Serialization.Contents;
 
@@ -21,17 +20,13 @@ namespace SiliconStudio.Assets.Compiler
 
         public bool SaveSourcePath { get; set; }
 
-        private readonly TagSymbol disableCompressionSymbol;
-
         public ImportStreamCommand() : this(null, null)
         {
-            InputFilesGetter = GetInputFilesImpl;
         }
 
         public ImportStreamCommand(UFile location, UFile sourcePath)
             : base(location, sourcePath)
         {
-            disableCompressionSymbol = RegisterTag(Builder.DoNotCompressTag, () => Builder.DoNotCompressTag);
         }
 
         protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
@@ -42,10 +37,10 @@ namespace SiliconStudio.Assets.Compiler
             {
                 inputStream.CopyTo(outputStream);
 
-                var objectURL = new ObjectUrl(UrlType.ContentLink, Location);
+                var objectUrl = new ObjectUrl(UrlType.Content, Location);
 
                 if (DisableCompression)
-                    commandContext.AddTag(objectURL, disableCompressionSymbol);
+                    commandContext.AddTag(objectUrl, Builder.DoNotCompressTag);
             }
 
             if (SaveSourcePath)
@@ -63,11 +58,6 @@ namespace SiliconStudio.Assets.Compiler
             }
 
             return Task.FromResult(ResultStatus.Successful);
-        }
-
-        private IEnumerable<ObjectUrl> GetInputFilesImpl()
-        {
-            yield return new ObjectUrl(UrlType.File, SourcePath);
         }
 
         public override string ToString()

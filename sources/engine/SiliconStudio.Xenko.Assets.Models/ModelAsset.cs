@@ -8,8 +8,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Yaml;
-using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.Models
@@ -46,19 +44,28 @@ namespace SiliconStudio.Xenko.Assets.Models
         public UFile Source { get; set; } = new UFile("");
 
         /// <summary>
+        /// Gets or sets the Skeleton.
+        /// </summary>
+        /// <userdoc>
+        /// Describes the node hierarchy that will be active at runtime.
+        /// </userdoc>
+        [DataMember(10)]
+        public Skeleton Skeleton { get; set; }
+
+        /// <summary>
         /// Gets or sets the pivot position, that will be used as center of object. If a Skeleton is set, its value will be used instead.
         /// </summary>
         /// <userdoc>
         /// The root (pivot) of the animation will be offset by this distance. If a Skeleton is set, its value will be used instead.
         /// </userdoc>
-        [DataMember(10)]
+        [DataMember(20)]
         public Vector3 PivotPosition { get; set; }
 
         /// <summary>
         /// Gets or sets the scale import. If a Skeleton is set, its value will be used instead.
         /// </summary>
         /// <userdoc>The scale applied when importing a model. If a Skeleton is set, its value will be used instead.</userdoc>
-        [DataMember(15)]
+        [DataMember(30)]
         [DefaultValue(1.0f)]
         public float ScaleImport { get; set; } = 1.0f;
 
@@ -68,33 +75,8 @@ namespace SiliconStudio.Xenko.Assets.Models
         [Category]
         public List<ModelMaterial> Materials { get; } = new List<ModelMaterial>();
 
-        /// <summary>
-        /// Gets or sets the Skeleton.
-        /// </summary>
-        /// <userdoc>
-        /// Describes the node hierarchy that will be active at runtime.
-        /// </userdoc>
-        [DataMember(50)]
-        public Skeleton Skeleton { get; set; }
-
+        /// <inheritdoc/>
         [DataMemberIgnore]
         public override UFile MainSource => Source;
-
-        class Upgrader : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                foreach (var modelMaterial in asset.Materials)
-                {
-                    var material = modelMaterial.Material;
-                    if (material != null)
-                    {
-                        modelMaterial.MaterialInstance = new YamlMappingNode();
-                        modelMaterial.MaterialInstance.Material = material;
-                        modelMaterial.Material = DynamicYamlEmpty.Default;
-                    }
-                }
-            }
-        }
     }
 }

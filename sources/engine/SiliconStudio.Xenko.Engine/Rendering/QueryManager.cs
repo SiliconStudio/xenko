@@ -148,13 +148,13 @@ namespace SiliconStudio.Xenko.Rendering
                 if (query.ProfilingKey != null)
                 {
                     var profilingState = Profiler.New(query.ProfilingKey);
-                    profilingState.Begin(timeStamp: queryResults[query.Index]);
+                    profilingState.Begin(queryResults[query.Index]);
                     profilingStates.Push(profilingState);
                 }
                 else
                 {
                     var profilingState = profilingStates.Pop();
-                    profilingState.End(timeStamp: queryResults[query.Index]);
+                    profilingState.End(queryResults[query.Index]);
                 }
             }
         }
