@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Internal;
 
 namespace SiliconStudio.Presentation.Controls
@@ -148,7 +149,20 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public TextLogViewer()
         {
-            Loaded += (s, e) => { if (AutoScroll) logTextBox?.ScrollToEnd(); };
+            Loaded += (s, e) =>
+            {
+                try
+                {
+                    if (AutoScroll)
+                        logTextBox?.ScrollToEnd();
+                }
+                catch (Exception ex)
+                {
+                    // It happened a few times that ScrollToEnd throws an exception that crashes the whole application.
+                    // Let's ignore it if this happens again.
+                    ex.Ignore();
+                }
+            };
         }
 
         /// <summary>

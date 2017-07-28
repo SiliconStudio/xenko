@@ -14,6 +14,11 @@ namespace SiliconStudio.Presentation.Windows
 {
     public static class DialogHelper
     {
+        /// <summary>
+        /// Don't ask again
+        /// </summary>
+        public static readonly string DontAskAgain = Tr._("Don't ask again");
+
         [NotNull]
         public static Task<MessageBoxResult> MessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None)
         {
@@ -29,7 +34,7 @@ namespace SiliconStudio.Presentation.Windows
         [NotNull]
         public static Task<CheckedMessageBoxResult> CheckedMessageBox([NotNull] IDispatcherService dispatcher, string message, string caption, bool? isChecked, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None)
         {
-            return dispatcher.InvokeTask(() => Windows.CheckedMessageBox.Show(message, caption, button, image, Tr._("Don't ask me again"), isChecked));
+            return dispatcher.InvokeTask(() => Windows.CheckedMessageBox.Show(message, caption, button, image, DontAskAgain, isChecked));
         }
 
         [NotNull]
@@ -80,7 +85,7 @@ namespace SiliconStudio.Presentation.Windows
         /// Index <c>0</c> is reserved for when the dialog is closed without clicking on a button.
         /// </remarks>
         [ItemNotNull, NotNull]
-        public static IEnumerable<DialogButtonInfo> CreateButtons([NotNull] IEnumerable<string> captions, int? defaultIndex = null, int? cancelIndex = null)
+        public static IList<DialogButtonInfo> CreateButtons([NotNull] IEnumerable<string> captions, int? defaultIndex = null, int? cancelIndex = null)
         {
             var i = 1;
             var buttons = captions.Select(s =>
@@ -89,7 +94,7 @@ namespace SiliconStudio.Presentation.Windows
                 i++;
                 return buttonInfo;
             });
-            return buttons;
+            return buttons.ToList();
         }
 
         private static TResult PushFrame<TResult>([NotNull] IDispatcherService dispatcher, Func<Task<TResult>> task)

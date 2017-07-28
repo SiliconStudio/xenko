@@ -27,7 +27,7 @@ namespace SiliconStudio.Quantum
                 this.linker = linker;
             }
 
-            public void Reset(IGraphNode sourceNode, IGraphNode targetNode)
+            public void Reset([NotNull] IGraphNode sourceNode, IGraphNode targetNode)
             {
                 VisitedLinks.Clear();
                 VisitedLinks.Add(sourceNode, targetNode);
@@ -44,8 +44,7 @@ namespace SiliconStudio.Quantum
 
             protected override void VisitChildren(IObjectNode node)
             {
-                IGraphNode targetNodeParent;
-                if (VisitedLinks.TryGetValue(node, out targetNodeParent))
+                if (VisitedLinks.TryGetValue(node, out IGraphNode targetNodeParent))
                 {
                     foreach (var child in node.Members)
                     {
@@ -64,8 +63,7 @@ namespace SiliconStudio.Quantum
                     if (VisitedLinks.ContainsKey(reference.TargetNode))
                         return;
 
-                    IGraphNode targetNode;
-                    if (VisitedLinks.TryGetValue(referencer, out targetNode))
+                    if (VisitedLinks.TryGetValue(referencer, out IGraphNode targetNode))
                     {
                         ObjectReference targetReference = null;
                         if (targetNode != null)
@@ -108,7 +106,7 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="sourceNode">The root node of the "source" object to link.</param>
         /// <param name="targetNode">The root node of the "target" object to link.</param>
-        public void LinkGraph(IGraphNode sourceNode, IGraphNode targetNode)
+        public void LinkGraph([NotNull] IGraphNode sourceNode, IGraphNode targetNode)
         {
             visitor.Reset(sourceNode, targetNode);
             visitor.Visit(sourceNode);
