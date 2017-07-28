@@ -465,6 +465,18 @@ namespace SiliconStudio.Xenko.Graphics
                     type = PixelType.HalfFloat;
                     pixelSize = 8;
                     break;
+                case PixelFormat.R10G10B10A2_UNorm:
+                    internalFormat = PixelInternalFormat.Rgb10A2;
+                    format = PixelFormatGl.Rgba;
+                    type = PixelType.UnsignedInt1010102;
+                    pixelSize = 4;
+                    break;
+                case PixelFormat.R11G11B10_Float:
+                    internalFormat = PixelInternalFormat.R11fG11fB10f;
+                    format = PixelFormatGl.Rgb;
+                    type = PixelType.HalfFloat;
+                    pixelSize = 4;
+                    break;
                 case PixelFormat.R32_SInt:
                     internalFormat = PixelInternalFormat.R32i;
                     format = PixelFormatGl.RedInteger;
