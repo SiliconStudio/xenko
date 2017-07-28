@@ -223,6 +223,26 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Materials\IMaterialClearCoatFeature.cs" />
+    <Compile Include="Rendering\Materials\MaterialClearCoatFeature.cs" />
+    <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureScaledOffsetDynamicSamplerRandomUV.cs">
+      <DependentUpon>ComputeColorTextureScaledOffsetDynamicSamplerRandomUV.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Materials\Shaders\MaterialSurfaceDiffuseMetalFlakes.cs">
+      <DependentUpon>MaterialSurfaceDiffuseMetalFlakes.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Materials\Shaders\MaterialSurfaceGlossinessMapMetalFlakes.cs">
+      <DependentUpon>MaterialSurfaceGlossinessMapMetalFlakes.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Rendering\QueryManager.cs" />
     <Compile Include="Rendering\Images\ImageScaler\SamplingPattern.cs" />
     <Compile Include="Rendering\Images\LightShafts\AdditiveLightEffect.cs">
@@ -807,6 +827,10 @@
       <LastGenOutput>LightPoint1.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Materials\CelShading\MaterialSurfaceShadingSpecularCelShading.xksl" />
+    <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureScaledOffsetDynamicSamplerRandomUV.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorTextureScaledOffsetDynamicSamplerRandomUV.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorThreshold.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorThreshold.cs</LastGenOutput>
@@ -838,6 +862,14 @@
     <None Include="Rendering\Materials\Shaders\MaterialSpecularMicrofacetEnvironmentGGXPolynomial.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialSpecularMicrofacetEnvironmentGGXPolynomial.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\Shaders\MaterialSurfaceDiffuseMetalFlakes.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSurfaceDiffuseMetalFlakes.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\Shaders\MaterialSurfaceGlossinessMapMetalFlakes.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MaterialSurfaceGlossinessMapMetalFlakes.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Materials\Shaders\MaterialTransmittanceReflectanceStream.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>

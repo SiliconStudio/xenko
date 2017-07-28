@@ -318,7 +318,7 @@ Example of use:
       <UnitTest Include="31-CoreDesign.Tests\SiliconStudio.Core.Yaml.Tests"/>
       <UnitTest Include="41-Assets.Tests\SiliconStudio.Assets.Quantum.Tests"/>
       <UnitTest Include="41-Assets.Tests\SiliconStudio.Assets.Tests"/>
-      <!-- Need fix <UnitTest Include="51-Presentation.Tests\SiliconStudio.Presentation.Quantum.Tests"/>-->
+      <UnitTest Include="51-Presentation.Tests\SiliconStudio.Presentation.Quantum.Tests"/>
       <UnitTest Include="51-Presentation.Tests\SiliconStudio.Presentation.Tests"/>
       <UnitTest Include="51-Presentation.Tests\SiliconStudio.Quantum.Tests"/>
       <UnitTest Include="61-Editor.Tests\SiliconStudio.Assets.Editor.Tests"/>

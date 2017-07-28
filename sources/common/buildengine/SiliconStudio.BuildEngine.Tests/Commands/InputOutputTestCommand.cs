@@ -55,11 +55,6 @@ namespace SiliconStudio.BuildEngine.Tests.Commands
 
         public override string OutputLocation => Location;
 
-        public InputOutputTestCommand()
-        {
-            InputFilesGetter = GetInputFilesImpl;
-        }
-
         private bool WaitDelay()
         {
             // Simulating actual work on input to generate output
@@ -73,6 +68,11 @@ namespace SiliconStudio.BuildEngine.Tests.Commands
 
             Thread.Sleep(Delay - (nbSleep * 100));
             return true;
+        }
+
+        public override IEnumerable<ObjectUrl> GetInputFiles()
+        {
+            yield return Source;
         }
 
         protected override async Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
@@ -91,7 +91,6 @@ namespace SiliconStudio.BuildEngine.Tests.Commands
                         result = DataContainer.Load(fileStream);
                     }
                     break;
-                case UrlType.ContentLink:
                 case UrlType.Content:
                     var container = assetManager.Load<DataContainer>(Source.Path);
 
@@ -109,11 +108,6 @@ namespace SiliconStudio.BuildEngine.Tests.Commands
                 commandContext.RegisterInputDependency(inputDep);
             }
             return ResultStatus.Successful;
-        }
-
-        private IEnumerable<ObjectUrl> GetInputFilesImpl()
-        {
-            yield return Source;
         }
 
         protected override void ComputeParameterHash(BinarySerializationWriter writer)

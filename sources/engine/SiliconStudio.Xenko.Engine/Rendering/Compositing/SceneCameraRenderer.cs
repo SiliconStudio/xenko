@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         protected virtual CameraComponent ResolveCamera(RenderContext renderContext)
         {
             var camera = Camera?.Camera;
-            if (camera == null) throw new InvalidOperationException($"A {nameof(SceneCameraRenderer)} in use has no camera set. Make sure the camera component to use is enabled and has its [{nameof(CameraComponent.Slot)}] property correctly set.");
+            if (camera == null) throw new InvalidOperationException($"A {nameof(SceneCameraRenderer)} in use has no camera assigned to its [{nameof(CameraComponent.Slot)}]. Make sure a camera is enabled and assigned to the [{nameof(CameraComponent.Slot)}].");
             return camera;
         }
 
