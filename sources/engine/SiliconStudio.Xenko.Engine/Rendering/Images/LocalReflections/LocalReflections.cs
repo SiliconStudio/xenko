@@ -432,11 +432,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
             if (TemporalEffect)
             {
                 temporalPassShader.Parameters.Set(SSLRTemporalPassKeys.IVP, ref inverseViewProjectionMatrix);
-                temporalPassShader.Parameters.Set(SSLRTemporalPassKeys.prevVP, ref cache.PrevViewProjection);
                 temporalPassShader.Parameters.Set(SSLRTemporalPassKeys.TemporalResponse, TemporalResponse);
                 temporalPassShader.Parameters.Set(SSLRTemporalPassKeys.TemporalScale, TemporalScale);
 
-                cache.PrevViewProjection = viewProjectionMatrix;
+                if (cache != null)
+                {
+                    temporalPassShader.Parameters.Set(SSLRTemporalPassKeys.prevVP, ref cache.PrevViewProjection);
+                    cache.PrevViewProjection = viewProjectionMatrix;
+                }
             }
 
             combinePassShader.Parameters.Set(SSLRCommonKeys.ViewFarPlane, farclip);
