@@ -3,7 +3,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -18,11 +17,30 @@ namespace SiliconStudio.Xenko.Streaming
     /// </summary>
     public class StreamingTexture : StreamableResource
     {
-        protected Texture _texture;
-        protected Texture _textureToSync;
-        protected ImageDescription _desc;
-        protected int _residentMips;
-        protected MipInfo[] _mipsInfo;
+        /// <summary>
+        /// The texture to stream.
+        /// </summary>
+        protected Texture texture;
+
+        /// <summary>
+        /// The texture to synchronize. Created and prepared in a background to be swaped with the streamed texture. See <see cref="FlushSync"/>.
+        /// </summary>
+        protected Texture textureToSync;
+
+        /// <summary>
+        /// The actual texture description.
+        /// </summary>
+        protected ImageDescription description;
+
+        /// <summary>
+        /// The amount of the resident mips (uploaded to the GPU).
+        /// </summary>
+        protected int residentMips;
+
+        /// <summary>
+        /// The texture cached mip maps infos.
+        /// </summary>
+        protected MipInfo[] mipInfos;
 
         /// <summary>
         /// Helper structure used to pre-cache <see cref="StreamingTexture"/> mip maps metadata. Used to improve streaming performance (smaller CPU usage).
@@ -48,72 +66,72 @@ namespace SiliconStudio.Xenko.Streaming
         internal StreamingTexture(StreamingManager manager, [NotNull] Texture texture)
             : base(manager)
         {
-            _texture = texture;
-            this.DisposeBy(_texture);
-            _residentMips = 0;
+            this.texture = texture;
+            this.DisposeBy(this.texture);
+            residentMips = 0;
         }
 
         /// <summary>
         /// Gets the texture object.
         /// </summary>
-        public Texture Texture => _texture;
+        public Texture Texture => texture;
 
         /// <summary>
         /// Gets the texture image description (available in the storage container).
         /// </summary>
-        public ImageDescription Description => _desc;
+        public ImageDescription Description => description;
 
         /// <summary>
         /// Gets the total amount of mip levels.
         /// </summary>
-        public int TotalMipLevels => _desc.MipLevels;
+        public int TotalMipLevels => description.MipLevels;
 
         /// <summary>
         /// Gets the width of maximum texture mip.
         /// </summary>
-        public int TotalWidth => _desc.Width;
+        public int TotalWidth => description.Width;
 
         /// <summary>
         /// Gets the height of maximum texture mip.
         /// </summary>
-        public int TotalHeight => _desc.Height;
+        public int TotalHeight => description.Height;
 
         /// <summary>
         /// Gets the number of textures in an array.
         /// </summary>
-        public int ArraySize => _desc.ArraySize;
+        public int ArraySize => description.ArraySize;
 
         /// <summary>
         /// Gets a value indicating whether this texture is a cube map.
         /// </summary>
         /// <value><c>true</c> if this texture is a cube map; otherwise, <c>false</c>.</value>
-        public bool IsCubeMap => _desc.Dimension == TextureDimension.TextureCube;
+        public bool IsCubeMap => description.Dimension == TextureDimension.TextureCube;
         
         /// <summary>	
         /// Gets the texture texels format
         /// </summary>	
-        public PixelFormat Format => _desc.Format;
+        public PixelFormat Format => description.Format;
 
         /// <summary>
         /// Gets index of the highest resident mip map (may be equal to MipLevels if no mip has been uploaded). Note: mip=0 is the highest (top quality)
         /// </summary>
         /// <returns>Mip index</returns>
-        public int HighestResidentMipIndex => TotalMipLevels - _residentMips;
+        public int HighestResidentMipIndex => TotalMipLevels - residentMips;
 
         /// <inheritdoc />
-        public override object Resource => _texture;
+        public override object Resource => texture;
 
         /// <inheritdoc />
-        public override int CurrentResidency => _residentMips;
+        public override int CurrentResidency => residentMips;
 
         /// <inheritdoc />
         public override int AllocatedResidency => Texture.MipLevels;
 
         /// <inheritdoc />
-        public override int MaxResidency => _desc.MipLevels;
+        public override int MaxResidency => description.MipLevels;
 
         /// <inheritdoc />
-        internal override bool CanBeUpdated => _textureToSync == null && base.CanBeUpdated;
+        internal override bool CanBeUpdated => textureToSync == null && base.CanBeUpdated;
 
         /// <inheritdoc />
         public override int CalculateTargetResidency(StreamingQuality quality)
@@ -165,15 +183,15 @@ namespace SiliconStudio.Xenko.Streaming
                 throw new ContentStreamingException("Texture streaming supports only 2D textures and 2D texture arrays.", storage);
 
             Init(storage);
-            _desc = imageDescription;
-            _residentMips = 0;
+            description = imageDescription;
+            residentMips = 0;
             CacheMipMaps();
         }
 
         private void CacheMipMaps()
         {
             var mipLevels = TotalMipLevels;
-            _mipsInfo = new MipInfo[mipLevels];
+            mipInfos = new MipInfo[mipLevels];
             bool isBlockCompressed =
                 (Format >= PixelFormat.BC1_Typeless && Format <= PixelFormat.BC5_SNorm) ||
                 (Format >= PixelFormat.BC6H_Typeless && Format <= PixelFormat.BC7_UNorm_SRgb);
@@ -188,7 +206,7 @@ namespace SiliconStudio.Xenko.Streaming
                 int heightPacked;
                 Image.ComputePitch(Format, mipWidth, mipHeight, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
 
-                _mipsInfo[mipIndex] = new MipInfo(mipWidth, mipHeight, rowPitch, slicePitch, ArraySize);
+                mipInfos[mipIndex] = new MipInfo(mipWidth, mipHeight, rowPitch, slicePitch, ArraySize);
             }
         }
 
@@ -217,8 +235,8 @@ namespace SiliconStudio.Xenko.Streaming
             if (residency == 0)
             {
                 // Release
-                _texture.ReleaseData();
-                _residentMips = 0;
+                texture.ReleaseData();
+                residentMips = 0;
                 return;
             }
 
@@ -227,10 +245,10 @@ namespace SiliconStudio.Xenko.Streaming
                 Storage.LockChunks();
 
                 // Setup texture description
-                TextureDescription newDesc = _desc;
+                TextureDescription newDesc = description;
                 int newHighestResidentMipIndex = TotalMipLevels - mipsCount;
                 newDesc.MipLevels = mipsCount;
-                var topMip = _mipsInfo[_desc.MipLevels - newDesc.MipLevels];
+                var topMip = mipInfos[description.MipLevels - newDesc.MipLevels];
                 newDesc.Width = topMip.Width;
                 newDesc.Height = topMip.Height;
                 
@@ -243,7 +261,7 @@ namespace SiliconStudio.Xenko.Streaming
                     if (chunk == null)
                         throw new ContentStreamingException("Data chunk is missing.", Storage);
                     
-                    if (chunk.Size != _mipsInfo[totalMipIndex].TotalSize)
+                    if (chunk.Size != mipInfos[totalMipIndex].TotalSize)
                         throw new ContentStreamingException("Data chunk has invalid size.", Storage);
 
                     var data = chunk.GetData(fileProvider);
@@ -264,7 +282,7 @@ namespace SiliconStudio.Xenko.Streaming
                     for (int mipIndex = 0; mipIndex < mipsCount; mipIndex++)
                     {
                         int totalMipIndex = newHighestResidentMipIndex + mipIndex;
-                        var info = _mipsInfo[totalMipIndex];
+                        var info = mipInfos[totalMipIndex];
 
                         dataBoxes[dataBoxIndex].DataPointer = mipsData[mipIndex] + info.SlicePitch * arrayIndex;
                         dataBoxes[dataBoxIndex].RowPitch = info.RowPitch;
@@ -277,9 +295,9 @@ namespace SiliconStudio.Xenko.Streaming
                     return;
 
                 // Create texture (use staging object and swap it on sync)
-                _textureToSync = Texture.New(_texture.GraphicsDevice, newDesc, new TextureViewDescription(), dataBoxes);
+                textureToSync = Texture.New(texture.GraphicsDevice, newDesc, new TextureViewDescription(), dataBoxes);
 
-                _residentMips = newDesc.MipLevels;
+                residentMips = newDesc.MipLevels;
             }
             finally
             {
@@ -296,20 +314,20 @@ namespace SiliconStudio.Xenko.Streaming
         /// <inheritdoc />
         internal override void FlushSync()
         {
-            if (_textureToSync == null)
+            if (textureToSync == null)
                 return;
 
             // Texture is loaded and created in the async task.
             // But we have to sync on main therad with the engine to prevent leaks.
-            // Here we internaly swap two textures data (_texture with _textureToSync).
+            // Here we internaly swap two textures data (texture with textureToSync).
 
-            _texture.Swap(_textureToSync);
+            texture.Swap(textureToSync);
 #if DEBUG
-            _texture.Name = Storage.Url;
+            texture.Name = Storage.Url;
 #endif
 
-            _textureToSync.Dispose();
-            _textureToSync = null;
+            textureToSync.Dispose();
+            textureToSync = null;
         }
 
         /// <inheritdoc />
@@ -326,10 +344,10 @@ namespace SiliconStudio.Xenko.Streaming
         {
             StopStreaming();
 
-            if (_textureToSync != null)
+            if (textureToSync != null)
             {
-                _textureToSync.Dispose();
-                _textureToSync = null;
+                textureToSync.Dispose();
+                textureToSync = null;
             }
 
             base.Destroy();
