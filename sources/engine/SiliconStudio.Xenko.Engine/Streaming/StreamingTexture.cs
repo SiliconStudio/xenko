@@ -304,6 +304,9 @@ namespace SiliconStudio.Xenko.Streaming
             // Here we internaly swap two textures data (_texture with _textureToSync).
 
             _texture.Swap(_textureToSync);
+#if DEBUG
+            _texture.Name = Storage.Url;
+#endif
 
             _textureToSync.Dispose();
             _textureToSync = null;
