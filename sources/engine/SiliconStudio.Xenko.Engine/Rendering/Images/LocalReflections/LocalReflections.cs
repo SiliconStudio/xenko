@@ -301,6 +301,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             cache = new TemporalFrameCache();
             cache.Camera = camera;
             cache.LastUsageFrame = frameIndex;
+            cache.PrevViewProjection = camera.ViewProjectionMatrix;
             frameCache.Add(cache);
 
             return cache;
