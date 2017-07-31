@@ -13,7 +13,7 @@ namespace SiliconStudio.Core.Streaming
     /// </summary>
     public class ContentStreamingService : IDisposable
     {
-        private readonly Dictionary<int, ContentStorage> containers = new Dictionary<int, ContentStorage>();
+        private readonly Dictionary<string, ContentStorage> containers = new Dictionary<string, ContentStorage>();
 
         /// <summary>
         /// The unused data chunks lifetime.
@@ -31,11 +31,10 @@ namespace SiliconStudio.Core.Streaming
 
             lock (containers)
             {
-                int hash = storageHeader.DataUrl.GetHashCode();
-                if (!containers.TryGetValue(hash, out result))
+                if (!containers.TryGetValue(storageHeader.DataUrl, out result))
                 {
                     result = new ContentStorage(this);
-                    containers.Add(hash, result);
+                    containers.Add(storageHeader.DataUrl, result);
                 }
                 result.Init(ref storageHeader);
             }
@@ -72,7 +71,7 @@ namespace SiliconStudio.Core.Streaming
         {
             lock (containers)
             {
-                containers.Remove(storage.Url.GetHashCode());
+                containers.Remove(storage.Url);
             }
         }
     }
