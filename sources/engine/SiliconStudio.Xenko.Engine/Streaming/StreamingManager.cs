@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// The <see cref="StreamableResource"/> live timeout. Resources that aren't used for a while are downscaled in quality.
         /// </summary>
         public TimeSpan ResourceLiveTimeout = TimeSpan.FromSeconds(5);
-        
+
         /// <summary>
         /// The maximum number of resources updated per streaming manager tick. Used to balance performance/streaming speed.
         /// </summary>
@@ -159,6 +159,110 @@ namespace SiliconStudio.Xenko.Streaming
             return result as StreamingTexture;
         }
 
+        /// <summary>
+        /// Called when render mesh is submitted to rendering. Registers referenced resources to stream them.
+        /// </summary>
+        /// <param name="renderMesh">The render mesh.</param>
+        public void StreamResources(RenderMesh renderMesh)
+        {
+            if (renderMesh.MaterialPass != null)
+            {
+                StreamResources(renderMesh.MaterialPass.Parameters);
+            }
+        }
+
+        /// <summary>
+        /// Called when material parameters are submitted to rendering. Registers referenced resources to stream them.
+        /// </summary>
+        /// <param name="parameters">The material parameters.</param>
+        public void StreamResources(ParameterCollection parameters)
+        {
+            if (parameters.ObjectValues == null)
+                return;
+
+            // Register all binded textures
+            foreach (var e in parameters.ObjectValues)
+            {
+                if (e is Texture t)
+                {
+                    var resource = Get(t);
+                    if (resource != null)
+                    {
+                        resource.LastTimeUsed = frameIndex;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called when texture is submitted to rendering. Registers referenced resources to stream them.
+        /// </summary>
+        /// <param name="texture">The texture.</param>
+        public void StreamResources(Texture texture)
+        {
+            if (texture == null)
+                return;
+
+            var resource = Get(texture);
+            if (resource != null)
+            {
+                resource.LastTimeUsed = frameIndex;
+            }
+        }
+
+        /// <summary>
+        /// Called when render mesh is submitted to rendering. Registers referenced resources to stream them to the maximum quality level.
+        /// </summary>
+        /// <param name="renderMesh">The render mesh.</param>
+        public void StreamResourcesFully(RenderMesh renderMesh)
+        {
+            if (renderMesh.MaterialPass != null)
+            {
+                StreamResourcesFully(renderMesh.MaterialPass.Parameters);
+            }
+        }
+
+        /// <summary>
+        /// Called when material parameters are submitted to rendering. Registers referenced resources to stream them to the maximum quality level.
+        /// </summary>
+        /// <param name="parameters">The material parameters.</param>
+        public void StreamResourcesFully(ParameterCollection parameters)
+        {
+            if (parameters.ObjectValues == null)
+                return;
+
+            // Register all binded textures
+            foreach (var e in parameters.ObjectValues)
+            {
+                if (e is Texture t)
+                {
+                    var resource = Get(t);
+                    if (resource != null)
+                    {
+                        resource.ForceFullyLoaded = true;
+                        resource.LastTimeUsed = frameIndex;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called when texture is submitted to rendering. Registers referenced resources to stream them to the maximum quality level.
+        /// </summary>
+        /// <param name="texture">The texture.</param>
+        public void StreamResourcesFully(Texture texture)
+        {
+            if (texture == null)
+                return;
+
+            var resource = Get(texture);
+            if (resource != null)
+            {
+                resource.ForceFullyLoaded = true;
+                resource.LastTimeUsed = frameIndex;
+            }
+        }
+
         internal void RegisterResource(StreamableResource resource)
         {
             Debug.Assert(resource != null && isDisposing == false);
@@ -206,7 +310,7 @@ namespace SiliconStudio.Xenko.Streaming
 
             // Update resource storage/description information (may be modified on asset rebuilding)
             resource.Init(storage, ref imageDescription);
-            
+
             // Check if cannot use streaming
             if (DisableStreaming)
             {
@@ -215,7 +319,7 @@ namespace SiliconStudio.Xenko.Streaming
 
             return resource;
         }
-        
+
         /// <inheritdoc />
         void ITexturesStreamingProvider.FullyLoadTexture(Texture obj, ref ImageDescription imageDescription, ref ContentStorageHeader storageHeader)
         {
@@ -288,7 +392,7 @@ namespace SiliconStudio.Xenko.Streaming
                 FlushSync();
 
 #if USE_TEST_MANUAL_QUALITY
-                // Temporary testing code used for testing quality changing using K/L keys
+// Temporary testing code used for testing quality changing using K/L keys
                 if (((Game)Game).Input.IsKeyPressed(SiliconStudio.Xenko.Input.Keys.K))
                 {
                     testQuality = Math.Min(testQuality + 5, 100);
@@ -331,7 +435,7 @@ namespace SiliconStudio.Xenko.Streaming
                         // TODO: add StreamingManager stats, update time per frame, updates per frame, etc.
                     }
                 }
-                
+
                 ContentStreaming.Update();
 
                 frameIndex++;
@@ -416,110 +520,6 @@ namespace SiliconStudio.Xenko.Streaming
                 resource.FlushSync();
                 activeStreaming.RemoveAt(i);
                 i--;
-            }
-        }
-
-        /// <summary>
-        /// Called when render mesh is submitted to rendering. Registers referenced resources to stream them.
-        /// </summary>
-        /// <param name="renderMesh">The render mesh.</param>
-        public void StreamResources(RenderMesh renderMesh)
-        {
-            if (renderMesh.MaterialPass != null)
-            {
-                StreamResources(renderMesh.MaterialPass.Parameters);
-            }
-        }
-
-        /// <summary>
-        /// Called when material parameters are submitted to rendering. Registers referenced resources to stream them.
-        /// </summary>
-        /// <param name="parameters">The material parameters.</param>
-        public void StreamResources(ParameterCollection parameters)
-        {
-            if (parameters.ObjectValues == null)
-                return;
-
-            // Register all binded textures
-            foreach (var e in parameters.ObjectValues)
-            {
-                if (e is Texture t)
-                {
-                    var resource = Get(t);
-                    if (resource != null)
-                    {
-                        resource.LastTimeUsed = frameIndex;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Called when texture is submitted to rendering. Registers referenced resources to stream them.
-        /// </summary>
-        /// <param name="texture">The texture.</param>
-        public void StreamResources(Texture texture)
-        {
-            if (texture == null)
-                return;
-
-            var resource = Get(texture);
-            if (resource != null)
-            {
-                resource.LastTimeUsed = frameIndex;
-            }
-        }
-        
-        /// <summary>
-        /// Called when render mesh is submitted to rendering. Registers referenced resources to stream them to the maximum quality level.
-        /// </summary>
-        /// <param name="renderMesh">The render mesh.</param>
-        public void StreamResourcesFully(RenderMesh renderMesh)
-        {
-            if (renderMesh.MaterialPass != null)
-            {
-                StreamResourcesFully(renderMesh.MaterialPass.Parameters);
-            }
-        }
-
-        /// <summary>
-        /// Called when material parameters are submitted to rendering. Registers referenced resources to stream them to the maximum quality level.
-        /// </summary>
-        /// <param name="parameters">The material parameters.</param>
-        public void StreamResourcesFully(ParameterCollection parameters)
-        {
-            if (parameters.ObjectValues == null)
-                return;
-
-            // Register all binded textures
-            foreach (var e in parameters.ObjectValues)
-            {
-                if (e is Texture t)
-                {
-                    var resource = Get(t);
-                    if (resource != null)
-                    {
-                        resource.ForceFullyLoaded = true;
-                        resource.LastTimeUsed = frameIndex;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Called when texture is submitted to rendering. Registers referenced resources to stream them to the maximum quality level.
-        /// </summary>
-        /// <param name="texture">The texture.</param>
-        public void StreamResourcesFully(Texture texture)
-        {
-            if (texture == null)
-                return;
-
-            var resource = Get(texture);
-            if (resource != null)
-            {
-                resource.ForceFullyLoaded = true;
-                resource.LastTimeUsed = frameIndex;
             }
         }
     }
