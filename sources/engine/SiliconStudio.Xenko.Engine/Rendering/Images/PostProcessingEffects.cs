@@ -39,6 +39,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         public PostProcessingEffects()
         {
             AmbientOcclusion = new AmbientOcclusion();
+            LocalReflections = new LocalReflections();
             DepthOfField = new DepthOfField();
             luminanceEffect = new LuminanceEffect();
             BrightFilter = new BrightFilter();
@@ -75,6 +76,15 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [DataMember(8)]
         [Category]
         public AmbientOcclusion AmbientOcclusion { get; private set; }
+
+        /// <summary>
+        /// Gets the local reflections effect.
+        /// </summary>
+        /// <value>The local reflection technique.</value>
+        /// <userdoc>Enable local reflections (glossy materials reflect the scene)</userdoc>
+        [DataMember(9)]
+        [Category]
+        public LocalReflections LocalReflections { get; private set; }
 
         /// <summary>
         /// Gets the depth of field effect.
@@ -146,6 +156,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         public void DisableAll()
         {
             AmbientOcclusion.Enabled = false;
+            LocalReflections.Enabled = false;
             DepthOfField.Enabled = false;
             Bloom.Enabled = false;
             LightStreak.Enabled = false;
@@ -170,6 +181,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             base.InitializeCore();
 
             AmbientOcclusion = ToLoadAndUnload(AmbientOcclusion);
+            LocalReflections = ToLoadAndUnload(LocalReflections);
             DepthOfField = ToLoadAndUnload(DepthOfField);
             luminanceEffect = ToLoadAndUnload(luminanceEffect);
             BrightFilter = ToLoadAndUnload(BrightFilter);
@@ -198,12 +210,24 @@ namespace SiliconStudio.Xenko.Rendering.Images
             SetInput(0, inputs[colorIndex]);
             SetInput(1, inputDepthStencil);
 
+            var normalsIndex = outputValidator.Find<NormalTargetSemantic>();
+            if (normalsIndex >= 0)
+            {
+                SetInput(2, inputs[normalsIndex]);
+            }
+
+            var specularRoughnessIndex = outputValidator.Find<SpecularColorRoughnessTargetSemantic>();
+            if (specularRoughnessIndex >= 0)
+            {
+                SetInput(3, inputs[specularRoughnessIndex]);
+            }
+
             var reflectionIndex0 = outputValidator.Find<OctahedronNormalSpecularColorTargetSemantic>();
             var reflectionIndex1 = outputValidator.Find<EnvironmentLightRoughnessTargetSemantic>();
             if (reflectionIndex0 >= 0 && reflectionIndex1 >= 0)
             {
-                SetInput(2, inputs[reflectionIndex0]);
-                SetInput(3, inputs[reflectionIndex1]);
+                SetInput(4, inputs[reflectionIndex0]);
+                SetInput(5, inputs[reflectionIndex1]);
             }
             
             SetOutput(outputTarget);
@@ -212,9 +236,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         public bool RequiresVelocityBuffer => false;
 
-        public bool RequiresNormalBuffer => false;
+        public bool RequiresNormalBuffer => LocalReflections.Enabled;
 
-        public bool RequiresSsrGBuffers => false; // localReflections.Enabled; TODO : to merge with RLR branch.
+        public bool RequiresSpecularRoughnessBuffer => LocalReflections.Enabled;
 
         protected override void DrawCore(RenderDrawContext context)
         {
@@ -294,6 +318,22 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 AmbientOcclusion.SetOutput(aoOutput);
                 AmbientOcclusion.Draw(context);
                 currentInput = aoOutput;
+            }
+
+            if (LocalReflections.Enabled && inputDepthTexture != null)
+            {
+                var normalsBuffer = GetInput(2);
+                var specularRoughnessBuffer = GetInput(3);
+
+                if (normalsBuffer != null && specularRoughnessBuffer != null)
+                {
+                    // Local reflections
+                    var rlrOutput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
+                    LocalReflections.SetInputSurfaces(currentInput, inputDepthTexture, normalsBuffer, specularRoughnessBuffer);
+                    LocalReflections.SetOutput(rlrOutput);
+                    LocalReflections.Draw(context);
+                    currentInput = rlrOutput;
+                }
             }
 
             if (DepthOfField.Enabled && inputDepthTexture != null)
