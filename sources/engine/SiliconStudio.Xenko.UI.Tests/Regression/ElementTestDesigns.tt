@@ -1,4 +1,4 @@
-﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ template debug="false" hostspecific="true" language="C#" #>
 <#@ assembly name="System.Core" #>
 <#@ import namespace="System.IO" #>
 <#@ import namespace="System.Linq" #>
@@ -7,6 +7,7 @@
 <#@ output extension=".cs" #>
 namespace SiliconStudio.Xenko.UI.Tests.Regression
 {
+
     public static class ElementTestDesigns
     {
 		public static byte[] EditTextActive = <#= ConvertFileToByteArray(@"..\Resources\EditTextActive.dds") #>;
@@ -18,6 +19,11 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 		public static byte[] ToggleButtonChecked = <#= ConvertFileToByteArray(@"..\Resources\ToggleChecked.dds") #>;
 		public static byte[] ToggleButtonUnchecked = <#= ConvertFileToByteArray(@"..\Resources\ToggleUnchecked.dds") #>;
 		public static byte[] ToggleButtonIndeterminate = <#= ConvertFileToByteArray(@"..\Resources\ToggleIndetermate.dds") #>;
+    }
+
+	public static class DefaultDesigns
+    {
+		public static byte[] Designs = <#= ConvertFileToByteArray(@"..\Resources\UIDesigns.dds") #>;
     }
 }
 

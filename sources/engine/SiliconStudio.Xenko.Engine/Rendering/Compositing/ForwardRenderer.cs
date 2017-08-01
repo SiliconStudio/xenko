@@ -212,18 +212,21 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             {
                 if (PostEffects.RequiresNormalBuffer)
                 {
+#if SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS
                     renderOutputValidator.Add<NormalTargetSemantic>(PixelFormat.R16G16B16A16_Float);
+#else
+                    renderOutputValidator.Add<NormalTargetSemantic>(PixelFormat.R10G10B10A2_UNorm);
+#endif
+                }
+
+                if (PostEffects.RequiresSpecularRoughnessBuffer)
+                {
+                    renderOutputValidator.Add<SpecularColorRoughnessTargetSemantic>(PixelFormat.R8G8B8A8_UNorm);
                 }
 
                 if (PostEffects.RequiresVelocityBuffer)
                 {
                     renderOutputValidator.Add<VelocityTargetSemantic>(PixelFormat.R16G16_Float);
-                }
-
-                if (PostEffects.RequiresSsrGBuffers)
-                {
-                    renderOutputValidator.Add<OctahedronNormalSpecularColorTargetSemantic>(PixelFormat.R16G16B16A16_Float);
-                    renderOutputValidator.Add<EnvironmentLightRoughnessTargetSemantic>(PixelFormat.R16G16B16A16_Float);
                 }
             }
         }

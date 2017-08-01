@@ -28,7 +28,7 @@
         <AndroidResource Include="Resources\Layout\Game.axml">
           <SubType>AndroidResource</SubType>
         </AndroidResource>
-	    <Reference Include="System.Xml" />
+        <Reference Include="System.Xml" />
       </ItemGroup>
     </When>
   </Choose>
@@ -224,6 +224,43 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Core\NormalUpdate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>NormalUpdate.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Images\LocalReflections\SSLRDepthPass.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SSLRDepthPass.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Images\LocalReflections\SSLRKeys.cs" />
+    <Compile Include="Rendering\Images\LocalReflections\SSLRResolvePass.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SSLRResolvePass.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Images\LocalReflections\SSLRTemporalPass.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SSLRTemporalPass.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Materials\Shaders\GBufferOutputNormals.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>GBufferOutputNormals.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Materials\Shaders\GBufferOutputSpecularColorRoughness.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>GBufferOutputSpecularColorRoughness.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Materials\IMaterialClearCoatFeature.cs" />
     <Compile Include="Rendering\Materials\MaterialClearCoatFeature.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorTextureScaledOffsetDynamicSamplerRandomUV.cs">
@@ -246,6 +283,13 @@
     </Compile>
     <Compile Include="Rendering\QueryManager.cs" />
     <Compile Include="Rendering\Images\ImageScaler\SamplingPattern.cs" />
+    <Compile Include="Rendering\Images\LocalReflections\LocalReflections.cs" />
+    <Compile Include="Rendering\Images\LocalReflections\SSLRBlurPass.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SSLRBlurPass.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Images\LightShafts\AdditiveLightEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -259,7 +303,49 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LightShaftsEffect.xkfx</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Images\LocalReflections\SSLRCombinePass.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SSLRCombinePass.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Images\LocalReflections\SSLRCommon.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SSLRCommon.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Images\LocalReflections\SSLRRayTracePass.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SSLRRayTracePass.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Images\LightShafts\LightShaftsEffectKeys.cs" />
+    <None Include="Rendering\Core\NormalUpdate.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>NormalUpdate.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\LocalReflections\SSLRBlurPass.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SSLRBlurPass.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\LocalReflections\SSLRCombinePass.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SSLRCombinePass.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\LocalReflections\SSLRCommon.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SSLRCommon.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\LocalReflections\SSLRDepthPass.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SSLRDepthPass.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\LocalReflections\SSLRRayTracePass.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SSLRRayTracePass.cs</LastGenOutput>
+    </None>
     <Compile Include="Rendering\Images\RangeConversion\RangeCompressorShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -435,6 +521,14 @@
     <None Include="Rendering\Images\LightShafts\LightShaftsEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>LightShaftsEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\LocalReflections\SSLRResolvePass.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SSLRResolvePass.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\LocalReflections\SSLRTemporalPass.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SSLRTemporalPass.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Images\RangeConversion\RangeCompressorShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
@@ -843,6 +937,14 @@
     <None Include="Rendering\LightProbes\ComputeSphericalHarmonics.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeSphericalHarmonics.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\Shaders\GBufferOutputNormals.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>GBufferOutputNormals.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Materials\Shaders\GBufferOutputSpecularColorRoughness.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>GBufferOutputSpecularColorRoughness.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Materials\Shaders\IMaterialSpecularMicrofacetEnvironmentFunction.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
@@ -3926,8 +4028,6 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>PickingShader.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\XenkoDefaultSplashScreen.xktex" />
-    <None Include="Rendering\XenkoDefaultFont.xkfnt" />
     <None Include="Rendering\XenkoWireframeShadingEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>XenkoWireframeShadingEffect.cs</LastGenOutput>
@@ -4235,9 +4335,6 @@
     <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\..\..\build\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Rendering\XenkoDefaultSplashScreen.jpg" />
   </ItemGroup>
   <Import Project="..\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems" Label="Shared" />
   <Choose>

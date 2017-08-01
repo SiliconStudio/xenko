@@ -1,0 +1,16 @@
+// Copyright (c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Materials.Shaders
+{
+	/// <summary>
+    /// Outputs material specular color (RGB) and roughness (A)
+    /// </summary>
+    shader GBufferOutputSpecularColorRoughness : ComputeColor, MaterialPixelShadingStream, Utilities
+    {
+        override float4 Compute()
+        {
+            return float4(streams.matSpecularVisible, sqrt(streams.alphaRoughness)); // alphaRoughness = roughness^2
+        }
+    };
+}

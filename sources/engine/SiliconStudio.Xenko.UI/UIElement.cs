@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -62,8 +62,6 @@ namespace SiliconStudio.Xenko.UI
         private Matrix localMatrix = Matrix.Identity;
         private MouseOverState mouseOverState;
         private LayoutingContext layoutingContext;
-        private Style style;
-        private ResourceDictionary resourceDictionary;
 
         protected bool ArrangeChanged;
         protected bool LocalMatrixChanged;
@@ -81,7 +79,7 @@ namespace SiliconStudio.Xenko.UI
             DependencyProperties = new PropertyContainerClass(this);
             VisualChildrenCollection = new UIElementCollection();
         }
-        
+
         /// <summary>
         /// The <see cref="UIElement"/> that currently has the focus.
         /// </summary>
@@ -111,7 +109,7 @@ namespace SiliconStudio.Xenko.UI
         [DataMemberIgnore]
         public Matrix LocalMatrix
         {
-            get { return localMatrix; }
+            get => localMatrix;
             set
             {
                 localMatrix = value;
@@ -138,7 +136,7 @@ namespace SiliconStudio.Xenko.UI
         [DefaultValue(1.0f)]
         public float Opacity
         {
-            get { return opacity; }
+            get => opacity;
             set
             {
                 if (float.IsNaN(value))
@@ -156,7 +154,7 @@ namespace SiliconStudio.Xenko.UI
         [DefaultValue(Visibility.Visible)]
         public Visibility Visibility
         {
-            get { return visibility; }
+            get => visibility;
             set
             {
                 if (value == visibility)
@@ -168,7 +166,7 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to clip the content of this element (or content coming from the child elements of this element) 
+        /// Gets or sets a value indicating whether to clip the content of this element (or content coming from the child elements of this element)
         /// to fit into the size of the containing element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
@@ -179,7 +177,7 @@ namespace SiliconStudio.Xenko.UI
         public bool ClipToBounds { get; set; } = false;
 
         /// <summary>
-        /// The number of layers used to draw this element. 
+        /// The number of layers used to draw this element.
         /// This value has to be modified by the user when he redefines the default element renderer,
         /// so that <see cref="DepthBias"/> values of the relatives keeps enough spaces to draw the different layers.
         /// </summary>
@@ -198,7 +196,7 @@ namespace SiliconStudio.Xenko.UI
         [DefaultValue(true)]
         public virtual bool IsEnabled
         {
-            get { return isEnabled; }
+            get => isEnabled;
             set
             {
                 isEnabled = value;
@@ -208,7 +206,7 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Indicate if the UIElement can be hit by the user. 
+        /// Indicate if the UIElement can be hit by the user.
         /// If this property is true, the UI system performs hit test on the UIElement.
         /// </summary>
         /// <userdoc>True if the UI system should perform hit test on this element, False otherwise.</userdoc>
@@ -228,7 +226,7 @@ namespace SiliconStudio.Xenko.UI
         [DefaultValue(float.NaN)]
         public float Width
         {
-            get { return width; }
+            get => width;
             set
             {
                 width = MathUtil.Clamp(value, 0.0f, float.MaxValue);
@@ -247,7 +245,7 @@ namespace SiliconStudio.Xenko.UI
         [DefaultValue(float.NaN)]
         public float Height
         {
-            get { return height; }
+            get => height;
             set
             {
                 height = MathUtil.Clamp(value, 0.0f, float.MaxValue);
@@ -266,7 +264,7 @@ namespace SiliconStudio.Xenko.UI
         [DefaultValue(float.NaN)]
         public float Depth
         {
-            get { return depth; }
+            get => depth;
             set
             {
                 depth = MathUtil.Clamp(value, 0.0f, float.MaxValue);
@@ -280,7 +278,7 @@ namespace SiliconStudio.Xenko.UI
         [DataMemberIgnore]
         public Vector3 Size
         {
-            get { return new Vector3(Width, Height, Depth); }
+            get => new Vector3(Width, Height, Depth);
             set
             {
                 Width = value.X;
@@ -298,7 +296,7 @@ namespace SiliconStudio.Xenko.UI
         [DefaultValue(HorizontalAlignment.Stretch)]
         public HorizontalAlignment HorizontalAlignment
         {
-            get { return horizontalAlignment; }
+            get => horizontalAlignment;
             set
             {
                 horizontalAlignment = value;
@@ -315,7 +313,7 @@ namespace SiliconStudio.Xenko.UI
         [DefaultValue(VerticalAlignment.Stretch)]
         public VerticalAlignment VerticalAlignment
         {
-            get { return verticalAlignment; }
+            get => verticalAlignment;
             set
             {
                 verticalAlignment = value;
@@ -332,7 +330,7 @@ namespace SiliconStudio.Xenko.UI
         [DefaultValue(DepthAlignment.Center)]
         public DepthAlignment DepthAlignment
         {
-            get { return depthAlignment; }
+            get => depthAlignment;
             set
             {
                 depthAlignment = value;
@@ -348,7 +346,7 @@ namespace SiliconStudio.Xenko.UI
         [Display(category: LayoutCategory)]
         public Thickness Margin
         {
-            get { return MarginInternal; }
+            get => MarginInternal;
             set
             {
                 MarginInternal = value;
@@ -367,7 +365,7 @@ namespace SiliconStudio.Xenko.UI
         [DefaultValue(0.0f)]
         public float MinimumWidth
         {
-            get { return minimumWidth; }
+            get => minimumWidth;
             set
             {
                 if (float.IsNaN(value))
@@ -388,7 +386,7 @@ namespace SiliconStudio.Xenko.UI
         [DefaultValue(0.0f)]
         public float MinimumHeight
         {
-            get { return minimumHeight; }
+            get => minimumHeight;
             set
             {
                 if (float.IsNaN(value))
@@ -409,7 +407,7 @@ namespace SiliconStudio.Xenko.UI
         [DefaultValue(0.0f)]
         public float MinimumDepth
         {
-            get { return minimumDepth; }
+            get => minimumDepth;
             set
             {
                 if (float.IsNaN(value))
@@ -430,7 +428,7 @@ namespace SiliconStudio.Xenko.UI
         [DefaultValue(float.PositiveInfinity)]
         public float MaximumWidth
         {
-            get { return maximumWidth; }
+            get => maximumWidth;
             set
             {
                 if (float.IsNaN(value))
@@ -451,7 +449,7 @@ namespace SiliconStudio.Xenko.UI
         [DefaultValue(float.PositiveInfinity)]
         public float MaximumHeight
         {
-            get { return maximumHeight; }
+            get => maximumHeight;
             set
             {
                 if (float.IsNaN(value))
@@ -472,7 +470,7 @@ namespace SiliconStudio.Xenko.UI
         [DefaultValue(float.PositiveInfinity)]
         public float MaximumDepth
         {
-            get { return maximumDepth; }
+            get => maximumDepth;
             set
             {
                 if (float.IsNaN(value))
@@ -493,7 +491,7 @@ namespace SiliconStudio.Xenko.UI
         [DefaultValue(0.0f)]
         public float DefaultWidth
         {
-            get { return defaultWidth; }
+            get => defaultWidth;
             set
             {
                 if (float.IsNaN(value))
@@ -514,12 +512,12 @@ namespace SiliconStudio.Xenko.UI
         [DefaultValue(0.0f)]
         public float DefaultHeight
         {
-            get { return defaultHeight; }
+            get => defaultHeight;
             set
             {
                 if (float.IsNaN(value))
                     return;
-                defaultHeight = MathUtil.Clamp(value, 0.0f, float.MaxValue); ;
+                defaultHeight = MathUtil.Clamp(value, 0.0f, float.MaxValue);
                 InvalidateMeasure();
             }
         }
@@ -535,7 +533,7 @@ namespace SiliconStudio.Xenko.UI
         [DefaultValue(0.0f)]
         public float DefaultDepth
         {
-            get { return defaultDepth; }
+            get => defaultDepth;
             set
             {
                 if (float.IsNaN(value))
@@ -554,7 +552,7 @@ namespace SiliconStudio.Xenko.UI
         [DefaultValue(null)]
         public string Name
         {
-            get { return name; }
+            get => name;
             set
             {
                 if (name == value)
@@ -598,19 +596,8 @@ namespace SiliconStudio.Xenko.UI
         [DataMemberIgnore]
         public Matrix WorldMatrix
         {
-            get { return WorldMatrixInternal; }
-            private set { WorldMatrixInternal = value; }
-        }
-
-        /// <summary>
-        /// The world matrix of the UIElement.
-        /// The origin of the element is the center of the object's bounding box defined by <see cref="RenderSize"/>.
-        /// </summary>
-        [DataMemberIgnore]
-        public Matrix WorldMatrixPicking
-        {
-            get { return WorldMatrixPickingInternal; }
-            private set { WorldMatrixPickingInternal = value; }
+            get => WorldMatrixInternal;
+            private set => WorldMatrixInternal = value;
         }
 
         /// <summary>
@@ -628,72 +615,11 @@ namespace SiliconStudio.Xenko.UI
         internal bool ForceNextArrange = true;
 
         /// <summary>
-        /// Gets or sets the style of this UI element.
-        /// </summary>
-        internal Style Style
-        {
-            get { return style; }
-            set
-            {
-                // Style is same, skip
-                if (style == value)
-                    return;
-
-                // Check if we already had a style
-                if (style != null)
-                    throw new InvalidOperationException("Style can't be changed once it has been applied.");
-
-                // Run each setter for undefined values
-                var currentStyle = value;
-                while (currentStyle != null)
-                {
-                    foreach (var setter in currentStyle.Setters)
-                    {
-                        setter.ApplyIfNotSet(DependencyProperties);
-                    }
-                    currentStyle = currentStyle.BasedOn;
-                }
-
-                // Set it as current style
-                style = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the resource dictionary associated to this element.
-        /// </summary>
-        internal ResourceDictionary ResourceDictionary
-        {
-            get { return resourceDictionary; }
-            set
-            {
-                if (value == resourceDictionary)
-                    return;
-
-                resourceDictionary = value;
-
-                if (resourceDictionary != null)
-                {
-                    // Try to find matching style
-                    object matchingStyle;
-                    if (resourceDictionary.TryGetValue(GetType(), out matchingStyle))
-                    {
-                        // Apply style
-                        Style = (Style)matchingStyle;
-                    }
-                }
-
-                foreach (var child in VisualChildren)
-                    child.ResourceDictionary = value;
-            }
-        }
-
-        /// <summary>
         /// The ratio between the element real size on the screen and the element virtual size.
         /// </summary>
         protected internal LayoutingContext LayoutingContext
         {
-            get { return layoutingContext; }
+            get => layoutingContext;
             set
             {
                 if (value == null)
@@ -730,14 +656,14 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// The visual children of this element. 
+        /// The visual children of this element.
         /// </summary>
         /// <remarks>If the class is inherited it is the responsibility of the descendant class to correctly update this collection</remarks>
         [DataMemberIgnore]
         protected internal UIElementCollection VisualChildrenCollection { get; }
 
         /// <summary>
-        /// Invalidates the arrange state (layout) for the element. 
+        /// Invalidates the arrange state (layout) for the element.
         /// </summary>
         protected internal void InvalidateArrange()
         {
@@ -871,7 +797,7 @@ namespace SiliconStudio.Xenko.UI
         protected internal virtual FastCollection<UIElement> HitableChildren => VisualChildrenCollection;
 
         /// <summary>
-        /// The opacity used to render element. 
+        /// The opacity used to render element.
         /// </summary>
         [DataMemberIgnore]
         public float RenderOpacity { get; private set; }
@@ -882,8 +808,8 @@ namespace SiliconStudio.Xenko.UI
         [DataMemberIgnore]
         public Vector3 RenderSize
         {
-            get { return RenderSizeInternal; }
-            private set { RenderSizeInternal = value; }
+            get => RenderSizeInternal;
+            private set => RenderSizeInternal = value;
         }
 
         /// <summary>
@@ -911,7 +837,7 @@ namespace SiliconStudio.Xenko.UI
         IEnumerable<IUIElementChildren> IUIElementChildren.Children => EnumerateChildren();
 
         /// <summary>
-        /// Enumerates the children of this element. 
+        /// Enumerates the children of this element.
         /// </summary>
         /// <returns>A sequence containing all the children of this element.</returns>
         /// <remarks>This method is used by the implementation of the <see cref="IUIElementChildren"/> interface.</remarks>
@@ -934,8 +860,8 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Updates the <see cref="DesiredSize"/> of a <see cref="UIElement"/>. 
-        /// Parent elements call this method from their own implementations to form a recursive layout update. 
+        /// Updates the <see cref="DesiredSize"/> of a <see cref="UIElement"/>.
+        /// Parent elements call this method from their own implementations to form a recursive layout update.
         /// Calling this method constitutes the first pass (the "Measure" pass) of a layout update.
         /// </summary>
         /// <param name="availableSizeWithMargins">The available space that a parent element can allocate a child element with its margins.
@@ -961,7 +887,7 @@ namespace SiliconStudio.Xenko.UI
                 return;
             }
 
-            // variable containing the temporary desired size 
+            // variable containing the temporary desired size
             var desiredSize = new Vector3(Width, Height, Depth);
 
             // width, height or the depth of the UIElement might be undetermined
@@ -1024,7 +950,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// When overridden in a derived class, measures the size in layout required for possible child elements and determines a size for the <see cref="UIElement"/>-derived class.
         /// </summary>
-        /// <param name="availableSizeWithoutMargins">The available size that this element can give to child elements. 
+        /// <param name="availableSizeWithoutMargins">The available size that this element can give to child elements.
         /// Infinity can be specified as a value to indicate that the element will size to whatever content is available.</param>
         /// <returns>The size desired by the children</returns>
         protected virtual Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)
@@ -1033,7 +959,7 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Positions child elements and determines the size of the UIElement. 
+        /// Positions child elements and determines the size of the UIElement.
         /// This method constitutes the second pass of a layout update.
         /// </summary>
         /// <param name="finalSizeWithMargins">The final size that the parent computes for the child element with the margins.</param>
@@ -1086,9 +1012,9 @@ namespace SiliconStudio.Xenko.UI
                 Math.Max(MinimumHeight, Math.Min(MaximumHeight, elementSize.Y)),
                 Math.Max(MinimumDepth, Math.Min(MaximumDepth, elementSize.Z)));
 
-            // let ArrangeOverride decide of the final taken size 
+            // let ArrangeOverride decide of the final taken size
             elementSize = ArrangeOverride(elementSize);
-            
+
             // compute the rendering offsets
             var renderOffsets = CalculateAdjustmentOffsets(ref MarginInternal, ref finalSizeWithMargins, ref elementSize);
 
@@ -1134,7 +1060,7 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Propagate the collapsing to a child element <paramref name="element"/>. 
+        /// Propagate the collapsing to a child element <paramref name="element"/>.
         /// </summary>
         /// <param name="element">A child element to which propagate the collapse.</param>
         /// <exception cref="InvalidOperationException"><paramref name="element"/> is not a child of this element.</exception>
@@ -1146,7 +1072,7 @@ namespace SiliconStudio.Xenko.UI
             element.InvalidateMeasure();
             element.CollapseOverride();
         }
-        
+
         /// <summary>
         /// Finds an element that has the provided identifier name in the element children.
         /// </summary>
@@ -1191,7 +1117,6 @@ namespace SiliconStudio.Xenko.UI
 
             if (parent != null)
             {
-                child.ResourceDictionary = parent.ResourceDictionary;
                 child.LayoutingContext = parent.layoutingContext;
                 parent.VisualChildrenCollection.Add(child);
             }
@@ -1302,7 +1227,7 @@ namespace SiliconStudio.Xenko.UI
                 Matrix.Multiply(ref localMatrixCopy, ref parentWorldMatrix, out worldMatrix);
                 WorldMatrix = worldMatrix;
 
-                // Picking (see XK-4689) - this fix relates to the inverted axis introduced in 
+                // Picking (see XK-4689) - this fix relates to the inverted axis introduced in
                 //  UIRenderFeature.PickingUpdate(RenderUIElement renderUIElement, Viewport viewport, ref Matrix worldViewProj, GameTime drawTime)
                 localMatrixCopy.M13 *= -1;
                 localMatrixCopy.M31 *= -1;
@@ -1341,7 +1266,7 @@ namespace SiliconStudio.Xenko.UI
                     Math.Max(0, sizeWithMargins.Y - thickness.Top - thickness.Bottom),
                     Math.Max(0, sizeWithMargins.Z - thickness.Front - thickness.Back));
         }
-        
+
         /// <summary>
         /// Computes the (X,Y,Z) offsets to position correctly the UI element given the total provided space to it.
         /// </summary>
@@ -1351,7 +1276,7 @@ namespace SiliconStudio.Xenko.UI
         /// <returns>The offsets</returns>
         protected Vector3 CalculateAdjustmentOffsets(ref Thickness thickness, ref Vector3 providedSpace, ref Vector3 usedSpaceWithoutThickness)
         {
-            // compute the size of the element with the thickness included 
+            // compute the size of the element with the thickness included
             var usedSpaceWithThickness = CalculateSizeWithThickness(ref usedSpaceWithoutThickness, ref thickness);
 
             // set offset for left and stretch alignments
