@@ -19,9 +19,26 @@ namespace SiliconStudio.Xenko.Streaming
     [DebuggerDisplay("Resource {Storage.Url}; Residency: {CurrentResidency}/{MaxResidency}")]
     public abstract class StreamableResource : ComponentBase
     {
-        protected DatabaseFileProvider fileProvider;
-        protected CancellationTokenSource _cancellationToken;
-        private Task _streamingTask;
+        /// <summary>
+        /// The last update time.
+        /// </summary>
+        internal DateTime LastUpdate;
+
+        /// <summary>
+        /// The last target residency change time.
+        /// </summary>
+        internal DateTime TargetResidencyChange;
+
+        internal int LastTimeUsed;
+        protected DatabaseFileProvider FileProvider;
+        protected CancellationTokenSource CancellationToken;
+        private Task streamingTask;
+
+        protected StreamableResource(StreamingManager manager)
+        {
+            Manager = manager;
+            LastUpdate = TargetResidencyChange = DateTime.MinValue;
+        }
 
         /// <summary>
         /// Gets the manager.
@@ -32,7 +49,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// Gets the resource storage.
         /// </summary>
         public ContentStorage Storage { get; private set; }
-        
+
         /// <summary>
         /// Gets the resource object.
         /// </summary>
@@ -75,46 +92,22 @@ namespace SiliconStudio.Xenko.Streaming
         /// <value>
         ///   <c>true</c> if async task is active; otherwise, <c>false</c>.
         /// </value>
-        internal virtual bool IsTaskActive => _streamingTask != null && !_streamingTask.IsCompleted;
+        internal virtual bool IsTaskActive => streamingTask != null && !streamingTask.IsCompleted;
 
         /// <summary>
         /// Determines whether this instance can be updated. Which means: no async streaming, no pending action in background.
         /// </summary>
         /// <returns><c>true</c> if this instance can be updated; otherwise, <c>false</c>.</returns>
-        internal virtual bool CanBeUpdated => _streamingTask == null || _streamingTask.IsCompleted;
-
-        /// <summary>
-        /// The last update time.
-        /// </summary>
-        internal DateTime LastUpdate;
-
-        /// <summary>
-        /// The last target residency change time.
-        /// </summary>
-        internal DateTime TargetResidencyChange;
-
-        internal int LastTimeUsed;
-
-        protected StreamableResource(StreamingManager manager)
-        {
-            Manager = manager;
-            LastUpdate = TargetResidencyChange = DateTime.MinValue;
-        }
+        internal virtual bool CanBeUpdated => streamingTask == null || streamingTask.IsCompleted;
 
         protected void Init(ContentStorage storage)
         {
-            if (Storage != null)
-            {
-                Storage.RemoveDisposeBy(this);
-            }
+            Storage?.RemoveDisposeBy(this);
 
             Storage = storage;
-            fileProvider = ContentManager.FileProvider;
+            FileProvider = ContentManager.FileProvider;
 
-            if (Storage != null)
-            {
-                Storage.DisposeBy(this);
-            }
+            Storage?.DisposeBy(this);
         }
 
         /// <summary>
@@ -138,19 +131,12 @@ namespace SiliconStudio.Xenko.Streaming
         /// </summary>
         /// <param name="residency">The target residency.</param>
         [NotNull]
-        protected abstract Task StreamAsync(int residency);
-
-        /// <summary>
-        /// Stream resource to the target residency level.
-        /// </summary>
-        /// <param name="residency">The target residency.</param>
-        [NotNull]
         internal Task StreamAsyncInternal(int residency)
         {
             Debug.Assert(CanBeUpdated && residency <= MaxResidency);
 
-            _cancellationToken = new CancellationTokenSource();
-            return _streamingTask = StreamAsync(residency);
+            CancellationToken = new CancellationTokenSource();
+            return streamingTask = StreamAsync(residency);
         }
 
         /// <summary>
@@ -168,20 +154,6 @@ namespace SiliconStudio.Xenko.Streaming
             Dispose();
         }
 
-        /// <summary>
-        /// Stops the resource streaming using cancellation token.
-        /// </summary>
-        protected void StopStreaming()
-        {
-            if (_streamingTask != null && !_streamingTask.IsCompleted)
-            {
-                _cancellationToken.Cancel();
-                if (!_streamingTask.IsCompleted)
-                    _streamingTask.Wait();
-            }
-            _streamingTask = null;
-        }
-
         /// <inheritdoc />
         protected override void Destroy()
         {
@@ -189,6 +161,27 @@ namespace SiliconStudio.Xenko.Streaming
             Manager = null;
 
             base.Destroy();
+        }
+
+        /// <summary>
+        /// Stream resource to the target residency level.
+        /// </summary>
+        /// <param name="residency">The target residency.</param>
+        [NotNull]
+        protected abstract Task StreamAsync(int residency);
+
+        /// <summary>
+        /// Stops the resource streaming using cancellation token.
+        /// </summary>
+        protected void StopStreaming()
+        {
+            if (streamingTask != null && !streamingTask.IsCompleted)
+            {
+                CancellationToken.Cancel();
+                if (!streamingTask.IsCompleted)
+                    streamingTask.Wait();
+            }
+            streamingTask = null;
         }
     }
 }

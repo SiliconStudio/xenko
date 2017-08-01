@@ -126,7 +126,7 @@
     <Compile Include="BufferPoolAllocationResult.cs" />
     <Compile Include="CommandList.cs" />
     <Compile Include="CompiledCommandList.cs" />
-    <Compile Include="Data\IStreamingServiciesProvider.cs" />
+    <Compile Include="Data\ITexturesStreamingProvider.cs" />
     <Compile Include="Data\TextureSerializationData.cs" />
     <Compile Include="DefaultCommandListLock.cs" />
     <Compile Include="Direct3D12\CompiledCommandList.Direct3D12.cs" />

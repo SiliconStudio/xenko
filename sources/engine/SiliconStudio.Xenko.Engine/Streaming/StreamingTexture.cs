@@ -106,10 +106,10 @@ namespace SiliconStudio.Xenko.Streaming
         /// </summary>
         /// <value><c>true</c> if this texture is a cube map; otherwise, <c>false</c>.</value>
         public bool IsCubeMap => description.Dimension == TextureDimension.TextureCube;
-        
-        /// <summary>	
+
+        /// <summary>
         /// Gets the texture texels format
-        /// </summary>	
+        /// </summary>
         public PixelFormat Format => description.Format;
 
         /// <summary>
@@ -131,9 +131,6 @@ namespace SiliconStudio.Xenko.Streaming
         public override int MaxResidency => description.MipLevels;
 
         /// <inheritdoc />
-        internal override bool CanBeUpdated => textureToSync == null && base.CanBeUpdated;
-
-        /// <inheritdoc />
         public override int CalculateTargetResidency(StreamingQuality quality)
         {
             if (MathUtil.IsZero(quality))
@@ -152,7 +149,7 @@ namespace SiliconStudio.Xenko.Streaming
         public override int CalculateRequestedResidency(int targetResidency)
         {
             int requestedResidency;
-            
+
             // Check if need to increase it's residency or decrease
             if (targetResidency > CurrentResidency)
             {
@@ -160,7 +157,7 @@ namespace SiliconStudio.Xenko.Streaming
                 requestedResidency = Math.Min(targetResidency, Math.Max(CurrentResidency + 4, 4));
 
                 // Stream target quality in steps
-                //requestedResidency = currentResidency + 1; 
+                //requestedResidency = currentResidency + 1;
 
                 // Stream target quality at once
                 //requestedResidency = targetResidency;
@@ -168,7 +165,7 @@ namespace SiliconStudio.Xenko.Streaming
             else
             {
                 // Stream target quality in steps
-                //requestedResidency = currentResidency - 1; 
+                //requestedResidency = currentResidency - 1;
 
                 // Stream target quality at once
                 requestedResidency = targetResidency;
@@ -176,6 +173,9 @@ namespace SiliconStudio.Xenko.Streaming
 
             return requestedResidency;
         }
+
+        /// <inheritdoc />
+        internal override bool CanBeUpdated => textureToSync == null && base.CanBeUpdated;
 
         internal void Init([NotNull] ContentStorage storage, ref ImageDescription imageDescription)
         {
@@ -186,129 +186,6 @@ namespace SiliconStudio.Xenko.Streaming
             description = imageDescription;
             residentMips = 0;
             CacheMipMaps();
-        }
-
-        private void CacheMipMaps()
-        {
-            var mipLevels = TotalMipLevels;
-            mipInfos = new MipInfo[mipLevels];
-            bool isBlockCompressed =
-                (Format >= PixelFormat.BC1_Typeless && Format <= PixelFormat.BC5_SNorm) ||
-                (Format >= PixelFormat.BC6H_Typeless && Format <= PixelFormat.BC7_UNorm_SRgb);
-
-            for (int mipIndex = 0; mipIndex < mipLevels; mipIndex++)
-            {
-                int mipWidth, mipHeight;
-                GetMipSize(isBlockCompressed, mipIndex, out mipWidth, out mipHeight);
-
-                int rowPitch, slicePitch;
-                int widthPacked;
-                int heightPacked;
-                Image.ComputePitch(Format, mipWidth, mipHeight, out rowPitch, out slicePitch, out widthPacked, out heightPacked);
-
-                mipInfos[mipIndex] = new MipInfo(mipWidth, mipHeight, rowPitch, slicePitch, ArraySize);
-            }
-        }
-
-        private void GetMipSize(bool isBlockCompressed, int mipIndex, out int width, out int height)
-        {
-            width = Math.Max(1, TotalWidth >> mipIndex);
-            height = Math.Max(1, TotalHeight >> mipIndex);
-
-            if (isBlockCompressed && ((width % 4) != 0 || (height % 4) != 0))
-            {
-                width = unchecked((int)(((uint)(width + 3)) & ~(uint)3));
-                height = unchecked((int)(((uint)(height + 3)) & ~(uint)3));
-            }
-        }
-
-        private void StreamingTask(int residency)
-        {
-            if (_cancellationToken.IsCancellationRequested)
-                return;
-
-            // Cache data
-            int mipsChange = residency - CurrentResidency;
-            int mipsCount = residency;
-            Debug.Assert(mipsChange != 0);
-
-            if (residency == 0)
-            {
-                // Release
-                texture.ReleaseData();
-                residentMips = 0;
-                return;
-            }
-
-            try
-            {
-                Storage.LockChunks();
-
-                // Setup texture description
-                TextureDescription newDesc = description;
-                int newHighestResidentMipIndex = TotalMipLevels - mipsCount;
-                newDesc.MipLevels = mipsCount;
-                var topMip = mipInfos[description.MipLevels - newDesc.MipLevels];
-                newDesc.Width = topMip.Width;
-                newDesc.Height = topMip.Height;
-                
-                // Load chunks
-                var mipsData = new IntPtr[mipsCount];
-                for (int mipIndex = 0; mipIndex < mipsCount; mipIndex++)
-                {
-                    int totalMipIndex = newHighestResidentMipIndex + mipIndex;
-                    var chunk = Storage.GetChunk(totalMipIndex);
-                    if (chunk == null)
-                        throw new ContentStreamingException("Data chunk is missing.", Storage);
-                    
-                    if (chunk.Size != mipInfos[totalMipIndex].TotalSize)
-                        throw new ContentStreamingException("Data chunk has invalid size.", Storage);
-
-                    var data = chunk.GetData(fileProvider);
-                    if (!chunk.IsLoaded)
-                        throw new ContentStreamingException("Data chunk is not loaded.", Storage);
-
-                    if (_cancellationToken.IsCancellationRequested)
-                        return;
-                    
-                    mipsData[mipIndex] = data;
-                }
-
-                // Get data boxes
-                int dataBoxIndex = 0;
-                var dataBoxes = new DataBox[newDesc.MipLevels * newDesc.ArraySize];
-                for (int arrayIndex = 0; arrayIndex < newDesc.ArraySize; arrayIndex++)
-                {
-                    for (int mipIndex = 0; mipIndex < mipsCount; mipIndex++)
-                    {
-                        int totalMipIndex = newHighestResidentMipIndex + mipIndex;
-                        var info = mipInfos[totalMipIndex];
-
-                        dataBoxes[dataBoxIndex].DataPointer = mipsData[mipIndex] + info.SlicePitch * arrayIndex;
-                        dataBoxes[dataBoxIndex].RowPitch = info.RowPitch;
-                        dataBoxes[dataBoxIndex].SlicePitch = info.SlicePitch;
-                        dataBoxIndex++;
-                    }
-                }
-
-                if (_cancellationToken.IsCancellationRequested)
-                    return;
-
-                // Create texture (use staging object and swap it on sync)
-                textureToSync = Texture.New(texture.GraphicsDevice, newDesc, new TextureViewDescription(), dataBoxes);
-
-                residentMips = newDesc.MipLevels;
-            }
-            finally
-            {
-                Storage.UnlockChunks();
-            }
-        }
-
-        /// <inheritdoc />
-        protected override Task StreamAsync(int residency)
-        {
-            return new Task(() => StreamingTask(residency), _cancellationToken.Token);
         }
 
         /// <inheritdoc />
@@ -351,6 +228,125 @@ namespace SiliconStudio.Xenko.Streaming
             }
 
             base.Destroy();
+        }
+
+        /// <inheritdoc />
+        protected override Task StreamAsync(int residency)
+        {
+            return new Task(() => StreamingTask(residency), CancellationToken.Token);
+        }
+
+        private void CacheMipMaps()
+        {
+            var mipLevels = TotalMipLevels;
+            mipInfos = new MipInfo[mipLevels];
+            var isBlockCompressed =
+                (Format >= PixelFormat.BC1_Typeless && Format <= PixelFormat.BC5_SNorm) ||
+                (Format >= PixelFormat.BC6H_Typeless && Format <= PixelFormat.BC7_UNorm_SRgb);
+
+            for (var mipIndex = 0; mipIndex < mipLevels; mipIndex++)
+            {
+                GetMipSize(isBlockCompressed, mipIndex, out int mipWidth, out int mipHeight);
+
+                Image.ComputePitch(Format, mipWidth, mipHeight, out int rowPitch, out int slicePitch, out int _, out int _);
+
+                mipInfos[mipIndex] = new MipInfo(mipWidth, mipHeight, rowPitch, slicePitch, ArraySize);
+            }
+        }
+
+        private void GetMipSize(bool isBlockCompressed, int mipIndex, out int width, out int height)
+        {
+            width = Math.Max(1, TotalWidth >> mipIndex);
+            height = Math.Max(1, TotalHeight >> mipIndex);
+
+            if (isBlockCompressed && ((width % 4) != 0 || (height % 4) != 0))
+            {
+                width = unchecked((int)(((uint)(width + 3)) & ~(uint)3));
+                height = unchecked((int)(((uint)(height + 3)) & ~(uint)3));
+            }
+        }
+
+        private void StreamingTask(int residency)
+        {
+            if (CancellationToken.IsCancellationRequested)
+                return;
+
+            // Cache data
+            var mipsChange = residency - CurrentResidency;
+            var mipsCount = residency;
+            Debug.Assert(mipsChange != 0);
+
+            if (residency == 0)
+            {
+                // Release
+                texture.ReleaseData();
+                residentMips = 0;
+                return;
+            }
+
+            try
+            {
+                Storage.LockChunks();
+
+                // Setup texture description
+                TextureDescription newDesc = description;
+                var newHighestResidentMipIndex = TotalMipLevels - mipsCount;
+                newDesc.MipLevels = mipsCount;
+                var topMip = mipInfos[description.MipLevels - newDesc.MipLevels];
+                newDesc.Width = topMip.Width;
+                newDesc.Height = topMip.Height;
+
+                // Load chunks
+                var mipsData = new IntPtr[mipsCount];
+                for (var mipIndex = 0; mipIndex < mipsCount; mipIndex++)
+                {
+                    var totalMipIndex = newHighestResidentMipIndex + mipIndex;
+                    var chunk = Storage.GetChunk(totalMipIndex);
+                    if (chunk == null)
+                        throw new ContentStreamingException("Data chunk is missing.", Storage);
+
+                    if (chunk.Size != mipInfos[totalMipIndex].TotalSize)
+                        throw new ContentStreamingException("Data chunk has invalid size.", Storage);
+
+                    var data = chunk.GetData(FileProvider);
+                    if (!chunk.IsLoaded)
+                        throw new ContentStreamingException("Data chunk is not loaded.", Storage);
+
+                    if (CancellationToken.IsCancellationRequested)
+                        return;
+
+                    mipsData[mipIndex] = data;
+                }
+
+                // Get data boxes
+                var dataBoxIndex = 0;
+                var dataBoxes = new DataBox[newDesc.MipLevels * newDesc.ArraySize];
+                for (var arrayIndex = 0; arrayIndex < newDesc.ArraySize; arrayIndex++)
+                {
+                    for (var mipIndex = 0; mipIndex < mipsCount; mipIndex++)
+                    {
+                        var totalMipIndex = newHighestResidentMipIndex + mipIndex;
+                        var info = mipInfos[totalMipIndex];
+
+                        dataBoxes[dataBoxIndex].DataPointer = mipsData[mipIndex] + info.SlicePitch * arrayIndex;
+                        dataBoxes[dataBoxIndex].RowPitch = info.RowPitch;
+                        dataBoxes[dataBoxIndex].SlicePitch = info.SlicePitch;
+                        dataBoxIndex++;
+                    }
+                }
+
+                if (CancellationToken.IsCancellationRequested)
+                    return;
+
+                // Create texture (use staging object and swap it on sync)
+                textureToSync = Texture.New(texture.GraphicsDevice, newDesc, new TextureViewDescription(), dataBoxes);
+
+                residentMips = newDesc.MipLevels;
+            }
+            finally
+            {
+                Storage.UnlockChunks();
+            }
         }
     }
 }
