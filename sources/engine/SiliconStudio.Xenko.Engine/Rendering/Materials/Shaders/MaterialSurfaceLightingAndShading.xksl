@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// Performs the shading of a material according to the lights
     /// </summary>
-    shader MaterialSurfaceLightingAndShading : IMaterialSurfacePixel, DirectLightGroupArray, EnvironmentLightArray, MaterialPixelShadingStream, Math, Transformation, ShaderBaseStream
+    shader MaterialSurfaceLightingAndShading : IMaterialSurfacePixel, DirectLightGroupArray, EnvironmentLightArray, MaterialPixelShadingStream, Math, Transformation, ShaderBaseStream, NormalUpdate
     {
         compose IMaterialSurfaceShading surfaces[];
 

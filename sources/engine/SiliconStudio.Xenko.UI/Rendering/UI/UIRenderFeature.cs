@@ -92,7 +92,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 var renderNodeReference = renderViewStage.SortedRenderNodes[index].RenderNode;
                 var renderNode = GetRenderNode(renderNodeReference);
                 var renderElement = (RenderUIElement)renderNode.RenderObject;
- 
+
                 uiElementStates.Add(new UIElementState(renderElement));
             }
 
@@ -127,7 +127,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 var rootElement = uiComponent.Page?.RootElement;
                 if (rootElement == null)
                     continue;
-                
+
                 // calculate the size of the virtual resolution depending on target size (UI canvas)
                 var virtualResolution = uiComponent.Resolution;
 
@@ -196,7 +196,6 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 rootElement.UIElementServices = new UIElementServices { Services = RenderSystem.Services };
 
                 // set default resource dictionary
-                rootElement.ResourceDictionary = uiSystem.DefaultResourceDictionary;
 
                 // update layouting context.
                 layoutingContext.VirtualResolution = virtualResolution;
@@ -237,7 +236,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
             PickingClear();
 
-            // revert the depth stencil buffer to the default value 
+            // revert the depth stencil buffer to the default value
             context.CommandList.SetRenderTargets(context.CommandList.DepthStencilBuffer, context.CommandList.RenderTargetCount, context.CommandList.RenderTargets);
 
             // Release scroped texture

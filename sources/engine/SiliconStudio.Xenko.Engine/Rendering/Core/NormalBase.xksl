@@ -3,7 +3,7 @@
 /// <summary>
 /// Defines the methods to get the normal in view space and inserts them in the pipeline.
 /// </summary>
-shader NormalBase : NormalStream, ShaderBase
+shader NormalBase : NormalUpdate, ShaderBase
 {
     override stage void VSMain()
     {
@@ -13,21 +13,12 @@ shader NormalBase : NormalStream, ShaderBase
         // TODO: Another mechanism (compute on first access?)
         GenerateNormal_VS();
     }
-
+	
     override stage void PSMain()
     {
         // Perform normal generation at beginning so that it is accessible during PS.
         // TODO: Another mechanism (compute on first access?)
         GenerateNormal_PS();
         base.PSMain();
-    }
-
-    stage void GenerateNormal_VS()
-    {
-        streams.normalWS = 0.0f;
-    }
-
-    stage void GenerateNormal_PS()
-    {
     }
 };
