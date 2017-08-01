@@ -1440,7 +1440,7 @@ namespace SiliconStudio.Xenko.Graphics
                     if (expectedWidth != depthStencilBuffer.Width || expectedHeight != depthStencilBuffer.Height)
                         throw new Exception("Depth buffer is not the same size as the render target");
                 }
-                for (int i = 1; i < renderTargets.Length; ++i)
+                for (int i = 1; i < renderTargetCount; ++i)
                 {
                     if (renderTargets[i] != null && (expectedWidth != renderTargets[i].Width || expectedHeight != renderTargets[i].Height))
                         throw new Exception("Render targets do not have the same size");
