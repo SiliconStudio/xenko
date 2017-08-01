@@ -467,6 +467,19 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="AssetPackage\Assets\Shared\DefaultGraphicsCompositorLevel10.xkgfxcomp" />
+    <None Include="AssetPackage\Assets\Shared\DefaultGraphicsCompositorLevel9.xkgfxcomp" />
+    <None Include="AssetPackage\Assets\Shared\XenkoClearCoatMetalFlakesNM.xktex" />
+    <None Include="AssetPackage\Assets\Shared\XenkoClearCoatOrangePeelNM.xktex" />
+    <None Include="AssetPackage\Assets\Shared\XenkoDebugSpriteFont.xktex" />
+    <None Include="AssetPackage\Assets\Shared\XenkoDefaultFont.xkfnt" />
+    <None Include="AssetPackage\Assets\Shared\XenkoDefaultSplashScreen.xktex" />
+    <None Include="AssetPackage\Assets\Shared\XenkoEnvironmentLightingDFGLUT16.xktex" />
+    <None Include="AssetPackage\Assets\Shared\XenkoEnvironmentLightingDFGLUT8.xktex" />
+    <None Include="AssetPackage\Assets\Shared\XenkoUIDesigns.xksheet" />
+    <None Include="AssetPackage\Assets\Shared\XenkoUILibrary.xkuilib" />
+    <None Include="AssetPackage\Workfiles\UIDesigns.pdn" />
+    <None Include="AssetPackage\XenkoAssetPackage.xkpkg" />
     <None Include="packages.config" />
     <None Include="UI\Resources\UIDesigns.dds" />
     <None Include="UI\Resources\UIDesigns.pdn" />
@@ -487,6 +500,13 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Compile Include="Navigation\NavigationMeshAssetCompiler.cs" />
+    <None Include="AssetPackage\Resources\ClearCoatMetalFlakesNM.dds" />
+    <None Include="AssetPackage\Resources\ClearCoatOrangePeelNM.dds" />
+    <None Include="AssetPackage\Resources\EnvironmentLightingDFGLUT16.dds" />
+    <None Include="AssetPackage\Resources\EnvironmentLightingDFGLUT8.dds" />
+    <None Include="AssetPackage\Resources\UIDesigns.dds" />
+    <None Include="AssetPackage\Resources\XenkoDebugSpriteFont.png" />
+    <None Include="AssetPackage\Resources\XenkoDefaultSplashScreen.png" />
   </ItemGroup>
   <Import Project="..\..\assets\SiliconStudio.Archive\SiliconStudio.Archive.projitems" Label="Shared" />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
