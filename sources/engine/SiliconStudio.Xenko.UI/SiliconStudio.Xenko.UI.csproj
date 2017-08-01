@@ -93,11 +93,6 @@
     <Compile Include="Events\RoutedEventHandlerInfo.cs" />
     <Compile Include="Events\RoutingStrategy.cs" />
     <Compile Include="Panels\StackPanel.cs" />
-    <Compile Include="DefaultDesigns.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DefaultDesigns.tt</DependentUpon>
-    </Compile>
     <Compile Include="Renderers\DefaultScrollingTextRenderer.cs" />
     <Compile Include="Renderers\DefaultScrollBarRenderer.cs" />
     <Compile Include="Renderers\DefaultSliderRenderer.cs" />
@@ -182,16 +177,9 @@
   <ItemGroup>
     <None Include="en.lproj\Localizable.strings" />
     <None Include="ja.lproj\Localizable.strings" />
-    <None Include="DefaultDesigns.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>DefaultDesigns.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\UIDesigns.dds" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -28,7 +28,7 @@
         <AndroidResource Include="Resources\Layout\Game.axml">
           <SubType>AndroidResource</SubType>
         </AndroidResource>
-	    <Reference Include="System.Xml" />
+        <Reference Include="System.Xml" />
       </ItemGroup>
     </When>
   </Choose>
@@ -4024,8 +4024,6 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>PickingShader.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\XenkoDefaultSplashScreen.xktex" />
-    <None Include="Rendering\XenkoDefaultFont.xkfnt" />
     <None Include="Rendering\XenkoWireframeShadingEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>XenkoWireframeShadingEffect.cs</LastGenOutput>
@@ -4333,9 +4331,6 @@
     <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\..\..\build\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Rendering\XenkoDefaultSplashScreen.jpg" />
   </ItemGroup>
   <Import Project="..\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems" Label="Shared" />
   <Choose>
