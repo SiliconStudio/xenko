@@ -158,6 +158,11 @@ SharedRenderers:
         Id: 608bf04d-8640-469d-b710-1ecf6a46f794
         AmbientOcclusion:
             Enabled: false
+        LocalReflections:
+            Enabled: false
+            ResolvePassResolution: Full
+            DebugMode: None
+            DepthResolution: Half
         DepthOfField:
             Enabled: false
             DOFAreas: {X: 0.5, Y: 6.0, Z: 50.0, W: 200.0}
@@ -191,6 +196,7 @@ Game: !SiliconStudio.Xenko.Rendering.Compositing.SceneCameraRenderer,SiliconStud
         Children:
             d39c5ddbf8b7d5ca02bafb6496b1cc3c: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
             01d338078e9b21121ead0868932613dd: !SiliconStudio.Xenko.Rendering.Compositing.DebugRenderer,SiliconStudio.Xenko.Engine ref!! 2f51782e-e23a-46fc-b1a4-6385a207d263
+    RenderMask: All
 SingleView: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 04d863bd-4bbd-4dca-9a49-29e21171975a
 Editor: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! 4d409a59-d3c6-4b55-a5c7-4bd9b8886ea5
 BlockPositions: {}
