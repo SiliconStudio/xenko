@@ -163,7 +163,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 			}
 			
 			// Check if has valid result after ray traycing
-			if(currSampleIndex >= numSamples)
+			if(currSampleIndex >= numSamples || currOffset.z > 0.999)
 			{
 				// All samples done but no result
 				return 0;
