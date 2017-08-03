@@ -172,8 +172,12 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             sprite.PixelsPerUnit = new Vector2(PixelsPerUnit);
             if (texture != null)
             {
-                sprite.Center = center + (centerFromMiddle ? new Vector2(texture.Width, texture.Height) / 2 : Vector2.Zero);
-                sprite.Region = new RectangleF(0, 0, texture.Width, texture.Height);
+                var fullQualitySize = texture.FullQualitySize;
+                var isFullTexture = texture.ViewType == ViewType.Full;
+                var width = isFullTexture ? fullQualitySize.Width : texture.ViewWidth;
+                var height = isFullTexture ? fullQualitySize.Height : texture.ViewHeight;
+                sprite.Center = center + (centerFromMiddle ? new Vector2(width, height) / 2 : Vector2.Zero);
+                sprite.Region = new RectangleF(0, 0, width, height);
             }
         }
 

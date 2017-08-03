@@ -48,6 +48,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private TextureDescription textureDescription;
         private TextureViewDescription textureViewDescription;
+        private Size3? fullQualitySize;
 
         /// <summary>
         /// Common description for the original texture. See remarks.
@@ -359,6 +360,15 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 return new Size3(ViewWidth, ViewHeight, ViewDepth);
             }
+        }
+
+        /// <summary>
+        /// When texture streaming is activated, the size of the texture when loaded at full quality.
+        /// </summary>
+        public Size3 FullQualitySize
+        {
+            get => fullQualitySize ?? Size;
+            internal set => fullQualitySize = value;
         }
 
         /// <summary>
@@ -1166,6 +1176,7 @@ namespace SiliconStudio.Xenko.Graphics
             Utilities.Swap(ref textureDescription, ref other.textureDescription);
             Utilities.Swap(ref textureViewDescription, ref other.textureViewDescription);
             Utilities.Swap(ref mipmapDescriptions, ref other.mipmapDescriptions);
+            Utilities.Swap(ref fullQualitySize, ref other.fullQualitySize);
             //
             var temp = ViewWidth;
             ViewWidth = other.ViewWidth;
