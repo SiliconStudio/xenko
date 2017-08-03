@@ -154,7 +154,7 @@ namespace SiliconStudio.Xenko.Streaming
             if (targetResidency > CurrentResidency)
             {
                 // Stream target quality in steps but lower mips at once
-                requestedResidency = Math.Min(targetResidency, Math.Max(CurrentResidency + 4, 4));
+                requestedResidency = Math.Min(targetResidency, Math.Max(CurrentResidency+2, 4));
 
                 // Stream target quality in steps
                 //requestedResidency = currentResidency + 1;
@@ -183,6 +183,7 @@ namespace SiliconStudio.Xenko.Streaming
                 throw new ContentStreamingException("Texture streaming supports only 2D textures and 2D texture arrays.", storage);
 
             Init(storage);
+            texture.FullQualitySize = new Size3(imageDescription.Width, imageDescription.Height, imageDescription.Depth);
             description = imageDescription;
             residentMips = 0;
             CacheMipMaps();
@@ -340,6 +341,7 @@ namespace SiliconStudio.Xenko.Streaming
 
                 // Create texture (use staging object and swap it on sync)
                 textureToSync = Texture.New(texture.GraphicsDevice, newDesc, new TextureViewDescription(), dataBoxes);
+                textureToSync.FullQualitySize = texture.FullQualitySize;
 
                 residentMips = newDesc.MipLevels;
             }

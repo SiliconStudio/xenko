@@ -185,6 +185,18 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                 worldMatrix.M42 -= centerOffset.X * worldMatrix.M12 + centerOffset.Y * worldMatrix.M22;
                 worldMatrix.M43 -= centerOffset.X * worldMatrix.M13 + centerOffset.Y * worldMatrix.M23;
 
+                // adapt the source region to match what is expected at full resolution
+                if (texture.ViewType == ViewType.Full && texture.ViewWidth != texture.FullQualitySize.Width)
+                {
+                    var fullQualitySize = texture.FullQualitySize;
+                    var horizontalRatio = texture.ViewWidth / (float) fullQualitySize.Width;
+                    var verticalRatio = texture.ViewHeight / (float) fullQualitySize.Height;
+                    sourceRegion.X *= horizontalRatio;
+                    sourceRegion.Width *= horizontalRatio;
+                    sourceRegion.Y *= verticalRatio;
+                    sourceRegion.Height *= verticalRatio;
+                }
+
                 // draw the sprite
                 batchContext.SpriteBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref sprite.SizeInternal, ref color, sprite.Orientation, spriteComp.Swizzle, projectedZ);
             }
