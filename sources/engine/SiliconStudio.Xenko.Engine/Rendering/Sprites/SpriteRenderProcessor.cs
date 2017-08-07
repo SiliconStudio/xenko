@@ -63,6 +63,27 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                     // Register resources usage
                     if(currentSprite != null)
                         streamingManager?.StreamResources(currentSprite.Texture);
+                    // update the sprite bounding box
+                    Vector3 halfBoxSize;
+                    var halfSpriteSize = currentSprite?.Size / 2 ?? Vector2.Zero;
+                    var worldMatrix = renderSprite.TransformComponent.WorldMatrix;
+                    var boxOffset = worldMatrix.TranslationVector;
+                    if (renderSprite.SpriteComponent.SpriteType == SpriteType.Billboard)
+                    {
+                        // Make a gross estimation here as we don't have access to the camera view matrix
+                        // TODO: move this code or grant camera view matrix access to this processor
+                        var maxScale = Math.Max(worldMatrix.Row1.Length(), Math.Max(worldMatrix.Row2.Length(), worldMatrix.Row3.Length()));
+                        halfBoxSize = maxScale * halfSpriteSize.Length() * Vector3.One;
+                    }
+                    else
+                    {
+                        halfBoxSize = new Vector3(
+                            worldMatrix.M11 * halfSpriteSize.X + worldMatrix.M21 * halfSpriteSize.Y,
+                            worldMatrix.M12 * halfSpriteSize.X + worldMatrix.M22 * halfSpriteSize.Y,
+                            worldMatrix.M13 * halfSpriteSize.X + worldMatrix.M23 * halfSpriteSize.Y);
+
+                    }
+                    renderSprite.BoundingBox = new BoundingBoxExt(boxOffset - halfBoxSize, boxOffset + halfBoxSize);
                 }
 
                 // TODO Should we allow adding RenderSprite without a CurrentSprite instead? (if yes, need some improvement in RenderSystem)
