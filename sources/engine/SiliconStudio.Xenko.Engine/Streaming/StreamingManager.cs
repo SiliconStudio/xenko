@@ -127,7 +127,10 @@ namespace SiliconStudio.Xenko.Streaming
         public T Get<T>(object obj) where T : StreamableResource
         {
             StreamableResource result;
-            resourcesLookup.TryGetValue(obj, out result);
+            lock (resources)
+            {
+                resourcesLookup.TryGetValue(obj, out result);
+            }
             return result as T;
         }
 
