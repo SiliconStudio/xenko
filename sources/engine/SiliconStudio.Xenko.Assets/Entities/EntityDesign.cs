@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     /// Associate an <see cref="Entity"/> with design-time data.
     /// </summary>
     [DataContract("EntityDesign")]
-    public class EntityDesign : IAssetPartDesign<Entity>, IEquatable<EntityDesign>
+    public sealed class EntityDesign : IAssetPartDesign<Entity>, IEquatable<EntityDesign>
     {
         /// <summary>
         /// Initializes a new instance of <see cref="EntityDesign"/>.
@@ -57,6 +57,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// <summary>
         /// The entity.
         /// </summary>
+        /// <remarks>
+        /// The setter should only be used during serialization.
+        /// </remarks>
         [DataMember(10)]
         [NotNull]
         public Entity Entity { get; set; }
@@ -70,7 +73,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         IIdentifiable IAssetPartDesign.Part => Entity;
 
         /// <inheritdoc/>
-        Entity IAssetPartDesign<Entity>.Part { get => Entity; set => Entity = value; }
+        Entity IAssetPartDesign<Entity>.Part => Entity;
 
         /// <inheritdoc />
         public bool Equals(EntityDesign other)
@@ -85,8 +88,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((EntityDesign)obj);
+            return Equals(obj as EntityDesign);
         }
 
         /// <inheritdoc />

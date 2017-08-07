@@ -3,18 +3,49 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Assets.Yaml
 {
+    /// <summary>
+    /// Equality comparer for <see cref="YamlAssetPath"/> hwne used as a key in a hashing collection (e.g. <see cref="Dictionary{TKey,TValue}"/>.
+    /// </summary>
+    /// <remarks>
+    /// To stay valid the compared <see cref="YamlAssetPath"/> must not change while used as keys in the hashing collection.
+    /// </remarks>
+    public class YamlAssetPathComparer : EqualityComparer<YamlAssetPath>
+    {
+        public new static YamlAssetPathComparer Default { get; } = new YamlAssetPathComparer();
+
+        /// <inheritdoc />
+        public override bool Equals(YamlAssetPath x, YamlAssetPath y)
+        {
+            if (ReferenceEquals(x, y)) return true;
+            return x.Match(y);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode(YamlAssetPath obj)
+        {
+            return obj?.Elements.Aggregate(0, (hashCode, element) => (hashCode * 397) ^ element.GetHashCode()) ?? 0;
+        }
+    }
+
     /// <summary>
     /// A container class to transfer metadata between the asset and the YAML serializer.
     /// </summary>
     /// <typeparam name="T">The type of metadata.</typeparam>
     public class YamlAssetMetadata<T> : IYamlAssetMetadata, IEnumerable<KeyValuePair<YamlAssetPath, T>>
     {
-        private readonly Dictionary<YamlAssetPath, T> metadata = new Dictionary<YamlAssetPath, T>();
+
+        private readonly Dictionary<YamlAssetPath, T> metadata = new Dictionary<YamlAssetPath, T>(YamlAssetPathComparer.Default);
         private bool isAttached;
+
+        /// <summary>
+        /// Gets the number of key/value pairs contained in the <see cref="YamlAssetMetadata{T}"/>
+        /// </summary>
+        public int Count => metadata.Count;
 
         /// <summary>
         /// Attaches the given metadata value to the given YAML path.
@@ -36,7 +67,6 @@ namespace SiliconStudio.Assets.Yaml
             if (isAttached) throw new InvalidOperationException("Cannot modify a YamlAssetMetadata after it has been attached.");
             metadata.Remove(path);
         }
-
 
         /// <summary>
         /// Tries to retrieve the metadata for the given path.

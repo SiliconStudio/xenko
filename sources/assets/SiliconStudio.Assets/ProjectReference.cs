@@ -18,6 +18,9 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Initializes a new instance of the <see cref="ProjectReference"/> class.
         /// </summary>
+        /// <remarks>
+        /// This constructor is used only for serialization.
+        /// </remarks>
         public ProjectReference()
         {
         }
@@ -39,6 +42,9 @@ namespace SiliconStudio.Assets
         /// Gets or sets the unique identifier of the VS project.
         /// </summary>
         /// <value>The identifier.</value>
+        /// <remarks>
+        /// The setter should only be used during serialization.
+        /// </remarks>
         [DataMember(10)]
         [NonOverridable]
         public Guid Id { get; set; }
@@ -47,6 +53,9 @@ namespace SiliconStudio.Assets
         /// Gets or sets the location of the file on the disk.
         /// </summary>
         /// <value>The location.</value>
+        /// <remarks>
+        /// The setter should only be used during serialization.
+        /// </remarks>
         [DataMember(20)]
         public UFile Location { get; set; }
 
@@ -54,6 +63,9 @@ namespace SiliconStudio.Assets
         /// Gets or sets the type of project.
         /// </summary>
         /// <value>The type.</value>
+        /// <remarks>
+        /// The setter should only be used during serialization.
+        /// </remarks>
         [DataMember(30)]
         public ProjectType Type { get; set; }
 
@@ -74,16 +86,18 @@ namespace SiliconStudio.Assets
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj is ProjectReference && Equals((ProjectReference)obj);
+            return Equals(obj as ProjectReference);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
+                // ReSharper disable NonReadonlyMemberInGetHashCode - these properties are not supposed to be changed, except in initializers
                 var hashCode = Id.GetHashCode();
                 hashCode = (hashCode*397) ^ (Location != null ? Location.GetHashCode() : 0);
                 hashCode = (hashCode*397) ^ (int)Type;
+                // ReSharper restore NonReadonlyMemberInGetHashCode
                 return hashCode;
             }
         }

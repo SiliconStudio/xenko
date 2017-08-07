@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Assets.UI
     /// Associate an <see cref="UIElement"/> with design-time data.
     /// </summary>
     [DataContract("UIElementDesign")]
-    public class UIElementDesign : IAssetPartDesign<UIElement>, IEquatable<UIElementDesign>
+    public sealed class UIElementDesign : IAssetPartDesign<UIElement>, IEquatable<UIElementDesign>
     {
         /// <summary>
         /// Initializes a new instance of <see cref="UIElementDesign"/>.
@@ -39,6 +39,9 @@ namespace SiliconStudio.Xenko.Assets.UI
         /// <summary>
         /// The UI element.
         /// </summary>
+        /// <remarks>
+        /// The setter should only be used during serialization.
+        /// </remarks>
         [DataMember(10)]
         [NotNull]
         public UIElement UIElement { get; set; }
@@ -52,7 +55,7 @@ namespace SiliconStudio.Xenko.Assets.UI
         IIdentifiable IAssetPartDesign.Part => UIElement;
 
         /// <inheritdoc/>
-        UIElement IAssetPartDesign<UIElement>.Part { get => UIElement; set => UIElement = value; }
+        UIElement IAssetPartDesign<UIElement>.Part => UIElement;
 
         /// <inheritdoc />
         public bool Equals(UIElementDesign other)
@@ -67,8 +70,7 @@ namespace SiliconStudio.Xenko.Assets.UI
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((UIElementDesign)obj);
+            return Equals(obj as UIElementDesign);
         }
 
         /// <inheritdoc />
@@ -78,13 +80,11 @@ namespace SiliconStudio.Xenko.Assets.UI
             return UIElement.GetHashCode();
         }
 
-        /// <inheritdoc />
         public static bool operator ==(UIElementDesign left, UIElementDesign right)
         {
             return Equals(left, right);
         }
 
-        /// <inheritdoc />
         public static bool operator !=(UIElementDesign left, UIElementDesign right)
         {
             return !Equals(left, right);

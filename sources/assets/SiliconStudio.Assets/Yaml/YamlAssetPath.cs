@@ -17,7 +17,7 @@ namespace SiliconStudio.Assets.Yaml
     /// A class representing the path of a member or item of an Asset as it is created/consumed by the YAML asset serializers.
     /// </summary>
     [DataContract]
-    public class YamlAssetPath : IEquatable<YamlAssetPath>
+    public sealed class YamlAssetPath
     {
         /// <summary>
         /// An enum representing the type of an element of the path.
@@ -84,8 +84,7 @@ namespace SiliconStudio.Assets.Yaml
             /// <inheritdoc/>
             public override bool Equals(object obj)
             {
-                if (ReferenceEquals(null, obj))
-                    return false;
+                if (ReferenceEquals(null, obj)) return false;
                 return obj is Element && Equals((Element)obj);
             }
 
@@ -93,6 +92,16 @@ namespace SiliconStudio.Assets.Yaml
             public override int GetHashCode()
             {
                 unchecked { return ((int)Type*397) ^ (Value?.GetHashCode() ?? 0); }
+            }
+
+            public static bool operator ==(Element left, Element right)
+            {
+                return left.Equals(right);
+            }
+
+            public static bool operator !=(Element left, Element right)
+            {
+                return !left.Equals(right);
             }
         }
 
@@ -119,6 +128,20 @@ namespace SiliconStudio.Assets.Yaml
         /// The elements constituting this path.
         /// </summary>
         public IReadOnlyList<Element> Elements => elements;
+
+        /// <summary>
+        /// Indicates whether the current path represents the same path of another object.
+        /// </summary>
+        /// <param name="other">An object to compare with this path.</param>
+        /// <returns><c>true</c> if the current path matches the <paramref name="other"/> parameter; otherwise, <c>false</c>.</returns>
+        public bool Match(YamlAssetPath other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            if (Elements.Count != other.Elements.Count) return false;
+
+            return Elements.SequenceEqual(other.Elements);
+        }
 
         /// <summary>
         /// Adds an additional element to the path representing an access to a member of an object.
@@ -190,7 +213,7 @@ namespace SiliconStudio.Assets.Yaml
         /// </summary>
         /// <param name="root">The actual instance that is root of this path.</param>
         /// <returns>An instance of <see cref="MemberPath"/> corresponding to the same target than this <see cref="YamlAssetPath"/>.</returns>
-        [NotNull]
+        [NotNull, Pure]
         public MemberPath ToMemberPath(object root)
         {
             var currentObject = root;
@@ -215,22 +238,19 @@ namespace SiliconStudio.Assets.Yaml
                     case ElementType.Index:
                     {
                         var typeDescriptor = TypeDescriptorFactory.Default.Find(currentObject.GetType());
-                        var arrayDescriptor = typeDescriptor as ArrayDescriptor;
-                        if (arrayDescriptor != null)
+                        if (typeDescriptor is ArrayDescriptor arrayDescriptor)
                         {
                             if (!(item.Value is int)) throw new InvalidOperationException($"The path [{ToString()}] contains non-integer index on an array.");
                             memberPath.Push(arrayDescriptor, (int)item.Value);
                             currentObject = arrayDescriptor.GetValue(currentObject, (int)item.Value);
                         }
-                        var collectionDescriptor = typeDescriptor as CollectionDescriptor;
-                        if (collectionDescriptor != null)
+                        if (typeDescriptor is CollectionDescriptor collectionDescriptor)
                         {
                             if (!(item.Value is int)) throw new InvalidOperationException($"The path [{ToString()}] contains non-integer index on a collection.");
                             memberPath.Push(collectionDescriptor, (int)item.Value);
                             currentObject = collectionDescriptor.GetValue(currentObject, (int)item.Value);
                         }
-                        var dictionaryDescriptor = typeDescriptor as DictionaryDescriptor;
-                        if (dictionaryDescriptor != null)
+                        if (typeDescriptor is DictionaryDescriptor dictionaryDescriptor)
                         {
                             if (item.Value == null) throw new InvalidOperationException($"The path [{ToString()}] contains a null key on an dictionary.");
                             memberPath.Push(dictionaryDescriptor, item.Value);
@@ -243,22 +263,19 @@ namespace SiliconStudio.Assets.Yaml
                         var ids = CollectionItemIdHelper.GetCollectionItemIds(currentObject);
                         var key = ids.GetKey(item.AsItemId());
                         var typeDescriptor = TypeDescriptorFactory.Default.Find(currentObject.GetType());
-                        var arrayDescriptor = typeDescriptor as ArrayDescriptor;
-                        if (arrayDescriptor != null)
+                        if (typeDescriptor is ArrayDescriptor arrayDescriptor)
                         {
                             if (!(key is int)) throw new InvalidOperationException($"The path [{ToString()}] contains a non-valid item id on an array.");
                             memberPath.Push(arrayDescriptor, (int)key);
                             currentObject = arrayDescriptor.GetValue(currentObject, (int)key);
                         }
-                        var collectionDescriptor = typeDescriptor as CollectionDescriptor;
-                        if (collectionDescriptor != null)
+                        if (typeDescriptor is CollectionDescriptor collectionDescriptor)
                         {
                             if (!(key is int)) throw new InvalidOperationException($"The path [{ToString()}] contains a non-valid item id on a collection.");
                             memberPath.Push(collectionDescriptor, (int)key);
                             currentObject = collectionDescriptor.GetValue(currentObject, (int)key);
                         }
-                        var dictionaryDescriptor = typeDescriptor as DictionaryDescriptor;
-                        if (dictionaryDescriptor != null)
+                        if (typeDescriptor is DictionaryDescriptor dictionaryDescriptor)
                         {
                             if (key == null) throw new InvalidOperationException($"The path [{ToString()}] contains a non-valid item id on an dictionary.");
                             memberPath.Push(dictionaryDescriptor, key);
@@ -297,26 +314,22 @@ namespace SiliconStudio.Assets.Yaml
                 else
                 {
                     object index = null;
-                    var arrayItem = item as MemberPath.ArrayPathItem;
-                    if (arrayItem != null)
+                    if (item is MemberPath.ArrayPathItem arrayItem)
                     {
                         clone.Push(arrayItem.Descriptor, arrayItem.Index);
                         index = arrayItem.Index;
                     }
-                    var collectionItem = item as MemberPath.CollectionPathItem;
-                    if (collectionItem != null)
+                    if (item is MemberPath.CollectionPathItem collectionItem)
                     {
                         clone.Push(collectionItem.Descriptor, collectionItem.Index);
                         index = collectionItem.Index;
                     }
-                    var dictionaryItem = item as MemberPath.DictionaryPathItem;
-                    if (dictionaryItem != null)
+                    if (item is MemberPath.DictionaryPathItem dictionaryItem)
                     {
                         clone.Push(dictionaryItem.Descriptor, dictionaryItem.Key);
                         index = dictionaryItem.Key;
                     }
-                    CollectionItemIdentifiers ids;
-                    if (!CollectionItemIdHelper.TryGetCollectionItemIds(clone.GetValue(root), out ids))
+                    if (!CollectionItemIdHelper.TryGetCollectionItemIds(clone.GetValue(root), out CollectionItemIdentifiers ids))
                     {
                         result.PushIndex(index);
                     }
@@ -346,51 +359,6 @@ namespace SiliconStudio.Assets.Yaml
             }
 
             return true;
-        }
-
-        /// <inheritdoc/>
-        public bool Equals(YamlAssetPath other)
-        {
-            if (Elements.Count != other?.Elements.Count)
-                return false;
-
-            for (var i = 0; i < Elements.Count; ++i)
-            {
-                if (!Elements[i].Equals(other.Elements[i]))
-                    return false;
-            }
-
-            return true;
-        }
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-                return false;
-            if (ReferenceEquals(this, obj))
-                return true;
-            if (obj.GetType() != GetType())
-                return false;
-            return Equals((YamlAssetPath)obj);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return elements.Aggregate(0, (hashCode, item) => (hashCode * 397) ^ item.GetHashCode());
-        }
-
-        /// <inheritdoc/>
-        public static bool operator ==(YamlAssetPath left, YamlAssetPath right)
-        {
-            return Equals(left, right);
-        }
-
-        /// <inheritdoc/>
-        public static bool operator !=(YamlAssetPath left, YamlAssetPath right)
-        {
-            return !Equals(left, right);
         }
 
         /// <inheritdoc/>

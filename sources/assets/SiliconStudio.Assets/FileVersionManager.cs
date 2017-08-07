@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using SiliconStudio.BuildEngine;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Storage;
@@ -35,6 +36,7 @@ namespace SiliconStudio.Assets
             asyncRunner.Start();
         }
 
+        [NotNull]
         public static FileVersionManager Instance
         {
             get
@@ -45,7 +47,7 @@ namespace SiliconStudio.Assets
                         return instance;
 
                     instance = new FileVersionManager();
-                    AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
+                    AppDomain.CurrentDomain.ProcessExit += CurrentDomainProcessExit;
                     return instance;
                 }
             }
@@ -70,8 +72,7 @@ namespace SiliconStudio.Assets
             return tracker.ComputeFileHash(path);
         }
 
-
-        public void ComputeFileHashAsync(UFile path, Action<UFile, ObjectId> fileHashCallback = null, CancellationToken? cancellationToken = null)
+        public void ComputeFileHashAsync([NotNull] UFile path, Action<UFile, ObjectId> fileHashCallback = null, CancellationToken? cancellationToken = null)
         {
             if (path == null) throw new ArgumentNullException(nameof(path));
 
@@ -82,7 +83,7 @@ namespace SiliconStudio.Assets
             asyncRequestAvailable.Set();
         }
 
-        public void ComputeFileHashAsync(IEnumerable<UFile> paths, Action<UFile, ObjectId> fileHashCallback = null, CancellationToken? cancellationToken = null)
+        public void ComputeFileHashAsync([NotNull] IEnumerable<UFile> paths, Action<UFile, ObjectId> fileHashCallback = null, CancellationToken? cancellationToken = null)
         {
             if (paths == null) throw new ArgumentNullException(nameof(paths));
 
@@ -157,7 +158,7 @@ namespace SiliconStudio.Assets
             }
         }
 
-        private static void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        private static void CurrentDomainProcessExit(object sender, EventArgs e)
         {
             Shutdown();
         }
@@ -193,7 +194,9 @@ namespace SiliconStudio.Assets
 
             public bool Equals(AsyncRequest other)
             {
-                return Equals(File, other.File) && Equals(FileHashCallback, other.FileHashCallback) && CancellationToken.Equals(other.CancellationToken);
+                return Equals(File, other.File) &&
+                       Equals(FileHashCallback, other.FileHashCallback) &&
+                       CancellationToken.Equals(other.CancellationToken);
             }
 
             public override bool Equals(object obj)
@@ -206,7 +209,7 @@ namespace SiliconStudio.Assets
             {
                 unchecked
                 {
-                    int hashCode = File?.GetHashCode() ?? 0;
+                    var hashCode = File?.GetHashCode() ?? 0;
                     hashCode = (hashCode*397) ^ (FileHashCallback?.GetHashCode() ?? 0);
                     hashCode = (hashCode*397) ^ CancellationToken.GetHashCode();
                     return hashCode;
