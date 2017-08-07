@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Streaming;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
@@ -31,6 +32,7 @@ namespace SiliconStudio.Xenko.Streaming
         private int lastUpdateResourcesIndex;
         private bool isDisposing;
         private int frameIndex;
+        private bool streamingEnabled = true;
 #if USE_TEST_MANUAL_QUALITY
         private int testQuality = 100;
 #endif
@@ -65,7 +67,24 @@ namespace SiliconStudio.Xenko.Streaming
         /// <summary>
         /// Gets or sets a value indicating whether resource streaming should be disabled.
         /// </summary>
-        public bool StreamingEnabled { get; set; } = true;
+        public bool StreamingEnabled
+        {
+            get => streamingEnabled;
+            set
+            {
+                streamingEnabled = value;
+                if (!streamingEnabled)
+                {
+                    lock (resources)
+                    {
+                        activeStreaming.ForEach(stream=>stream.StopStreaming());
+                        FlushSync();
+
+                        resources.ForEach(FullyLoadResource);
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamingManager"/> class.
@@ -394,42 +413,44 @@ namespace SiliconStudio.Xenko.Streaming
                 // Update resources
                 lock (resources)
                 {
-                    // Perform synchronization
-                    FlushSync();
+                    if (StreamingEnabled)
+                    {
+                        // Perform synchronization
+                        FlushSync();
 
-#if USE_TEST_MANUAL_QUALITY
-                    // Temporary testing code used for testing quality changing using K/L keys
-                    if (((Game)Game).Input.IsKeyPressed(SiliconStudio.Xenko.Input.Keys.K))
-                    {
-                        testQuality = Math.Min(testQuality + 5, 100);
-                    }
-                    if (((Game)Game).Input.IsKeyPressed(SiliconStudio.Xenko.Input.Keys.L))
-                    {
-                        testQuality = Math.Max(testQuality - 5, 0);
-                    }
-#endif
-                    int resourcesCount = Resources.Count;
-                    if (resourcesCount > 0)
-                    {
-                        var now = DateTime.UtcNow;
-                        var resourcesChecks = resourcesCount;
-
-                        while (resourcesChecks-- > 0 && HasActiveTaskSlotFree)
+#if USE_TEST_MANUAL_QUALITY // Temporary testing code used for testing quality changing using K/L keys
+                        if (((Game)Game).Input.IsKeyPressed(SiliconStudio.Xenko.Input.Keys.K))
                         {
-                            // Move forward
-                            // Note: we update resources like in a ring buffer
-                            lastUpdateResourcesIndex++;
-                            if (lastUpdateResourcesIndex >= resourcesCount)
-                                lastUpdateResourcesIndex = 0;
-                            
-                            // Update resource
-                            var resource = resources[lastUpdateResourcesIndex];
-                            if (resource.CanBeUpdated)
-                            {
-                                Update(resource, ref now);
-                            }
+                            testQuality = Math.Min(testQuality + 5, 100);
                         }
-                        // TODO: add StreamingManager stats, update time per frame, updates per frame, etc.
+                        if (((Game)Game).Input.IsKeyPressed(SiliconStudio.Xenko.Input.Keys.L))
+                        {
+                            testQuality = Math.Max(testQuality - 5, 0);
+                        }
+    #endif
+                        int resourcesCount = Resources.Count;
+                        if (resourcesCount > 0)
+                        {
+                            var now = DateTime.UtcNow;
+                            var resourcesChecks = resourcesCount;
+
+                            while (resourcesChecks-- > 0 && HasActiveTaskSlotFree)
+                            {
+                                // Move forward
+                                // Note: we update resources like in a ring buffer
+                                lastUpdateResourcesIndex++;
+                                if (lastUpdateResourcesIndex >= resourcesCount)
+                                    lastUpdateResourcesIndex = 0;
+
+                                // Update resource
+                                var resource = resources[lastUpdateResourcesIndex];
+                                if (resource.CanBeUpdated)
+                                {
+                                    Update(resource, ref now);
+                                }
+                            }
+                            // TODO: add StreamingManager stats, update time per frame, updates per frame, etc.
+                        }
                     }
                 }
 
