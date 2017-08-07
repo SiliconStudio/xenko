@@ -21,6 +21,7 @@ namespace SiliconStudio.Core.Streaming
     {
         private ContentChunk[] chunks;
         private long locks;
+        private readonly Object storageLock = new object();
 
         /// <summary>
         /// The content streaming service which manages this storage container.
@@ -102,11 +103,14 @@ namespace SiliconStudio.Core.Streaming
             if (Interlocked.Read(ref locks) != 0)
                 return;
 
-            var now = DateTime.UtcNow;
-            foreach (var chunk in chunks)
+            lock (storageLock)
             {
-                if (chunk.IsLoaded && now - chunk.LastAccessTime >= Service.UnusedDataChunksLifetime)
-                    chunk.Unload();
+                var now = DateTime.UtcNow;
+                foreach (var chunk in chunks)
+                {
+                    if (chunk.IsLoaded && now - chunk.LastAccessTime >= Service.UnusedDataChunksLifetime)
+                        chunk.Unload();
+                }
             }
         }
 
@@ -115,7 +119,8 @@ namespace SiliconStudio.Core.Streaming
             if (Interlocked.Read(ref locks) != 0)
                 return;
 
-            chunks.ForEach(x => x.Unload());
+            lock (storageLock)
+                chunks.ForEach(x => x.Unload());
         }
 
         /// <summary>
@@ -124,6 +129,7 @@ namespace SiliconStudio.Core.Streaming
         public void LockChunks()
         {
             Interlocked.Increment(ref locks);
+            Monitor.Enter(storageLock);
         }
 
         /// <summary>
@@ -131,6 +137,7 @@ namespace SiliconStudio.Core.Streaming
         /// </summary>
         public void UnlockChunks()
         {
+            Monitor.Exit(storageLock);
             Interlocked.Decrement(ref locks);
         }
 
