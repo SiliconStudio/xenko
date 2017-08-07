@@ -3050,6 +3050,7 @@
     <Compile Include="Streaming\StreamingManager.cs" />
     <Compile Include="Streaming\StreamingOptions.cs" />
     <Compile Include="Streaming\StreamingQuality.cs" />
+    <Compile Include="Streaming\StreamingSettings.cs" />
     <Compile Include="Streaming\StreamingTexture.cs" />
     <Compile Include="Updater\ArrayUpdateResolver.cs" />
     <Compile Include="Updater\BlittableHelper.cs" />

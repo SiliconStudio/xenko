@@ -39,9 +39,10 @@ namespace SiliconStudio.Xenko.Assets
 #else
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
 #endif
+    [AssetUpgrader(XenkoConfig.PackageName, "2.0.0.0", "2.1.0.3", typeof(UpgradeAddStreamingSettings))]
     public class GameSettingsAsset : Asset
     {
-        private const string CurrentVersion = "2.0.0.0";
+        private const string CurrentVersion = "2.1.0.3";
 
         /// <summary>
         /// The default file extension used by the <see cref="GameSettingsAsset"/>.
@@ -63,7 +64,7 @@ namespace SiliconStudio.Xenko.Assets
         public GraphicsCompositor GraphicsCompositor { get; set; }
 
         /// <userdoc>
-        /// The image (eg company logo) displayed as the splash screen 
+        /// The image (eg company logo) displayed as the splash screen
         /// </userdoc>
         [Display("Texture", "Splash screen")]
         [DataMember(1600)]
@@ -224,10 +225,20 @@ namespace SiliconStudio.Xenko.Assets
                 settings.BuildSettings = buildSettings;
 
                 var groups = new DynamicYamlArray(new YamlSequenceNode());
-                
+
                 // Agent settings array
                 settings.Groups = groups;
 
+                asset.Defaults.Add(settings);
+            }
+        }
+
+        private class UpgradeAddStreamingSettings : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
+                OverrideUpgraderHint overrideHint)
+            {
+                dynamic settings = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Streaming.StreamingSettings,SiliconStudio.Xenko.Engine" });
                 asset.Defaults.Add(settings);
             }
         }
