@@ -1,6 +1,7 @@
 // Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using SiliconStudio.Assets;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Assets.Textures;
@@ -8,11 +9,13 @@ using SiliconStudio.Xenko.Audio;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Navigation;
 using SiliconStudio.Xenko.Physics;
+using SiliconStudio.Xenko.Streaming;
 
 namespace SiliconStudio.Xenko.Assets
 {
     public class GameSettingsFactory : AssetFactory<GameSettingsAsset>
     {
+        [NotNull]
         public static GameSettingsAsset Create()
         {
             var asset = new GameSettingsAsset();
@@ -38,10 +41,13 @@ namespace SiliconStudio.Xenko.Assets
             asset.GetOrCreate<PhysicsSettings>();
             asset.GetOrCreate<AudioEngineSettings>();
             asset.GetOrCreate<NavigationSettings>();
+            asset.GetOrCreate<StreamingSettings>();
 
             return asset;
         }
 
+        /// <inheritdoc/>
+        [NotNull]
         public override GameSettingsAsset New()
         {
             return Create();
