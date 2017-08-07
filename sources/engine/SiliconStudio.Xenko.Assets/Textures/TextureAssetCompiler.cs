@@ -66,70 +66,13 @@ namespace SiliconStudio.Xenko.Assets.Textures
             private ResultStatus Import(ICommandContext commandContext, TextureTool textureTool, TexImage texImage, TextureHelper.ImportParameters convertParameters)
             {
                 var assetManager = new ContentManager();
-                bool useSeparateDataContainer = Parameters.IsStreamable && (texImage.Dimension == TexImage.TextureDimension.Texture2D || texImage.Dimension == TexImage.TextureDimension.TextureCube);
+                var useSeparateDataContainer = TextureHelper.ShouldUseDataContainer(Parameters.IsStreamable, texImage.Dimension);
 
                 // Note: for streamable textures we want to store mip maps in a separate storage container and read them on request instead of whole asset deserialization (at once)
 
-                if (useSeparateDataContainer)
-                {
-                    // Perform normal texture importing (but don't save it to file now)
-                    var importResult = TextureHelper.ImportTextureImageRaw(textureTool, texImage, convertParameters, CancellationToken, commandContext.Logger);
-                    if (importResult != ResultStatus.Successful)
-                        return importResult;
-
-                    // Make sure we don't compress mips data
-                    var dataUrl = Url + "_Data";
-                    commandContext.AddTag(new ObjectUrl(UrlType.Content, dataUrl), Builder.DoNotCompressTag);
-                    
-                    using (var outputImage = textureTool.ConvertToXenkoImage(texImage))
-                    {
-                        if (CancellationToken.IsCancellationRequested)
-                            return ResultStatus.Cancelled;
-
-                        // Create texture mips data containers (storage all array slices for every mip in separate chunks)
-                        var desc = outputImage.Description;
-                        List<byte[]> mipsData = new List<byte[]>(desc.MipLevels);
-                        for (int mipIndex = 0; mipIndex < desc.MipLevels; mipIndex++)
-                        {
-                            int totalSize = 0;
-                            for (int arrayIndex = 0; arrayIndex < desc.ArraySize; arrayIndex++)
-                            {
-                                var pixelBuffer = outputImage.GetPixelBuffer(arrayIndex, 0, mipIndex);
-                                totalSize += pixelBuffer.BufferStride;
-                            }
-
-                            var buf = new byte[totalSize];
-                            int startIndex = 0;
-                            for (int arrayIndex = 0; arrayIndex < desc.ArraySize; arrayIndex++)
-                            {
-                                var pixelBuffer = outputImage.GetPixelBuffer(arrayIndex, 0, mipIndex);
-                                int size = pixelBuffer.BufferStride;
-
-                                Marshal.Copy(pixelBuffer.DataPointer, buf, startIndex, size);
-                                startIndex += size;
-                            }
-                            mipsData.Add(buf);
-                        }
-
-                        // Pack mip maps to the storage container
-                        ContentStorageHeader storageHeader;
-                        ContentStorage.Create(dataUrl, mipsData, out storageHeader);
-                        
-                        if (CancellationToken.IsCancellationRequested)
-                            return ResultStatus.Cancelled;
-
-                        // Serialize texture to file
-                        var outputTexture = new TextureSerializationData(outputImage, Parameters.IsStreamable, storageHeader);
-                        assetManager.Save(convertParameters.OutputUrl, outputTexture.ToSerializableVersion(), typeof(Texture));
-
-                        commandContext.Logger.Verbose($"Compression successful [{dataUrl}] to ({outputImage.Description.Width}x{outputImage.Description.Height},{outputImage.Description.Format})");
-                    }
-
-                    return ResultStatus.Successful;
-                }
-
-                // Import texture and save to file
-                return TextureHelper.ImportTextureImage(assetManager, textureTool, texImage, convertParameters, CancellationToken, commandContext.Logger);
+                return useSeparateDataContainer
+                    ? TextureHelper.ImportStreamableTextureImage(assetManager, textureTool, texImage, convertParameters, CancellationToken, commandContext)
+                    : TextureHelper.ImportTextureImage(assetManager, textureTool, texImage, convertParameters, CancellationToken, commandContext.Logger);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)

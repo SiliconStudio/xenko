@@ -9,7 +9,6 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
@@ -70,7 +69,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     var textureAsset = new TextureAsset
                     {
                         Id = AssetId.Empty, // CAUTION: It is important to use an empty GUID here, as we don't want the command to be rebuilt (by default, a new asset is creating a new guid)
-                        IsStreamable = false,
+                        IsStreamable = asset.IsStreamable && asset.Type != SpriteSheetType.UI,
                         IsCompressed = asset.IsCompressed,
                         GenerateMipmaps = asset.GenerateMipmaps,
                         Type = new ColorTextureType
@@ -136,7 +135,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                 var isPacking = Parameters.SheetAsset.Packing.Enabled;
                 if (isPacking)
                 {
-                    var resultStatus = CreateAtlasTextures(commandContext.Logger, out spriteToPackedSprite);
+                    var resultStatus = CreateAtlasTextures(commandContext, out spriteToPackedSprite);
 
                     if (resultStatus != ResultStatus.Successful)
                         return Task.FromResult(resultStatus);
@@ -277,10 +276,10 @@ namespace SiliconStudio.Xenko.Assets.Sprite
             /// <summary>
             /// Creates and Saves texture atlas image from images in GroupAsset
             /// </summary>
-            /// <param name="logger">Status Logger</param>
+            /// <param name="commandContext">The command context</param>
             /// <param name="spriteToPackedSprite">A map associating the packed sprite info to the original sprite</param>
             /// <returns>Status of building</returns>
-            private ResultStatus CreateAtlasTextures(Logger logger, out Dictionary<SpriteInfo, PackedSpriteInfo> spriteToPackedSprite)
+            private ResultStatus CreateAtlasTextures(ICommandContext commandContext, out Dictionary<SpriteInfo, PackedSpriteInfo> spriteToPackedSprite)
             {
                 var assetManager = new ContentManager();
                 spriteToPackedSprite = new Dictionary<SpriteInfo, PackedSpriteInfo>();
@@ -342,7 +341,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
 
                     if (!canPackAllTextures)
                     {
-                        logger.Error("Failed to pack all textures");
+                        commandContext.Logger.Error("Failed to pack all textures");
                         return ResultStatus.Failed;
                     }
 
@@ -357,7 +356,9 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                         {
                             var outputUrl = SpriteSheetAsset.BuildTextureAtlasUrl(Url, textureAtlasIndex);
                             var convertParameters = new TextureHelper.ImportParameters(Parameters) { OutputUrl = outputUrl };
-                            resultStatus = TextureHelper.ImportTextureImage(assetManager, texTool, texImage, convertParameters, CancellationToken, logger);
+                            resultStatus = TextureHelper.ShouldUseDataContainer(Parameters.SheetAsset.IsStreamable && Parameters.SheetAsset.Type != SpriteSheetType.UI, texImage.Dimension)? 
+                                TextureHelper.ImportStreamableTextureImage(assetManager, texTool, texImage, convertParameters, CancellationToken, commandContext) : 
+                                TextureHelper.ImportTextureImage(assetManager, texTool, texImage, convertParameters, CancellationToken, commandContext.Logger);
                         }
 
                         foreach (var texture in atlasLayout.Textures)
