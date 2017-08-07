@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             Services.AddService(typeof(IGraphicsDeviceService), GraphicsDeviceManager);
 
             // Disable streaming
-            Streaming.DisableStreaming = true;
+            Streaming.StreamingEnabled = false;
 
             // Enable profiling
             //Profiler.EnableAll();

@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Streaming
     {
         private readonly List<StreamableResource> resources = new List<StreamableResource>(512);
         private readonly Dictionary<object, StreamableResource> resourcesLookup = new Dictionary<object, StreamableResource>(512);
-        private readonly List<StreamableResource> activeStreaming = new List<StreamableResource>(64);
+        private readonly List<StreamableResource> activeStreaming = new List<StreamableResource>(8); // Important: alwasy use inside lock(resources)
         private int lastUpdateResourcesIndex;
         private bool isDisposing;
         private int frameIndex;
@@ -35,17 +35,12 @@ namespace SiliconStudio.Xenko.Streaming
         private int testQuality = 100;
 #endif
 
-        private bool HasActiveTaskSlotFree => activeStreaming.Count < MaxTasksRunningSimultaneously;
+        private bool HasActiveTaskSlotFree => activeStreaming.Count < MaxResourcesPerUpdate;
 
         /// <summary>
         /// The interval between <see cref="StreamingManager"/> updates.
         /// </summary>
         public TimeSpan ManagerUpdatesInterval = TimeSpan.FromMilliseconds(33);
-
-        /// <summary>
-        /// The inverval between streaming updates per single <see cref="StreamableResource"/>
-        /// </summary>
-        public TimeSpan ResourceUpdatesInterval = TimeSpan.FromMilliseconds(200);
 
         /// <summary>
         /// The <see cref="StreamableResource"/> live timeout. Resources that aren't used for a while are downscaled in quality.
@@ -55,16 +50,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// <summary>
         /// The maximum number of resources updated per streaming manager tick. Used to balance performance/streaming speed.
         /// </summary>
-        public int MaxResourcesPerUpdate = 10;
-
-        /// <summary>
-        /// The maximum number of resources streamed at the same time. Used to balance performance/streaming speed.
-        /// </summary>
-#if SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS
-        public const int MaxTasksRunningSimultaneously = 1;
-#else
-        public const int MaxTasksRunningSimultaneously = 4;
-#endif
+        public int MaxResourcesPerUpdate = 8;
 
         /// <summary>
         /// Gets the content streaming service.
@@ -79,7 +65,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// <summary>
         /// Gets or sets a value indicating whether resource streaming should be disabled.
         /// </summary>
-        public bool DisableStreaming { get; set; }
+        public bool StreamingEnabled { get; set; } = true;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamingManager"/> class.
@@ -154,20 +140,19 @@ namespace SiliconStudio.Xenko.Streaming
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public StreamingTexture Get(Texture obj)
         {
-            StreamableResource result;
-            resourcesLookup.TryGetValue(obj, out result);
-            return result as StreamingTexture;
+            return Get<StreamingTexture>(obj);
         }
 
         /// <summary>
         /// Called when render mesh is submitted to rendering. Registers referenced resources to stream them.
         /// </summary>
         /// <param name="renderMesh">The render mesh.</param>
-        public void StreamResources(RenderMesh renderMesh)
+        /// <param name="options">The streaming options when streaming those resources</param>
+        public void StreamResources(RenderMesh renderMesh, StreamingOptions? options = null)
         {
             if (renderMesh.MaterialPass != null)
             {
-                StreamResources(renderMesh.MaterialPass.Parameters);
+                StreamResources(renderMesh.MaterialPass.Parameters, options);
             }
         }
 
@@ -175,7 +160,8 @@ namespace SiliconStudio.Xenko.Streaming
         /// Called when material parameters are submitted to rendering. Registers referenced resources to stream them.
         /// </summary>
         /// <param name="parameters">The material parameters.</param>
-        public void StreamResources(ParameterCollection parameters)
+        /// <param name="options">The streaming options when streaming those resources</param>
+        public void StreamResources(ParameterCollection parameters, StreamingOptions? options = null)
         {
             if (parameters.ObjectValues == null)
                 return;
@@ -184,13 +170,7 @@ namespace SiliconStudio.Xenko.Streaming
             foreach (var e in parameters.ObjectValues)
             {
                 if (e is Texture t)
-                {
-                    var resource = Get(t);
-                    if (resource != null)
-                    {
-                        resource.LastTimeUsed = frameIndex;
-                    }
-                }
+                    StreamResources(t, options);
             }
         }
 
@@ -198,7 +178,8 @@ namespace SiliconStudio.Xenko.Streaming
         /// Called when texture is submitted to rendering. Registers referenced resources to stream them.
         /// </summary>
         /// <param name="texture">The texture.</param>
-        public void StreamResources(Texture texture)
+        /// <param name="options">The streaming options when streaming those resources</param>
+        public void StreamResources(Texture texture, StreamingOptions? options = null)
         {
             if (texture == null)
                 return;
@@ -207,26 +188,30 @@ namespace SiliconStudio.Xenko.Streaming
             if (resource != null)
             {
                 resource.LastTimeUsed = frameIndex;
+                if (options.HasValue)
+                    SetResourceStreamingOptions(resource, options.Value, true);
             }
         }
 
         /// <summary>
-        /// Called when render mesh is submitted to rendering. Registers referenced resources to stream them to the maximum quality level.
+        /// Set the streaming options for the resources
         /// </summary>
         /// <param name="renderMesh">The render mesh.</param>
-        public void StreamResourcesFully(RenderMesh renderMesh)
+        /// <param name="options">The streaming options when streaming those resources</param>
+        public void SetResourceStreamingOptions(RenderMesh renderMesh, StreamingOptions? options = null)
         {
             if (renderMesh.MaterialPass != null)
             {
-                StreamResourcesFully(renderMesh.MaterialPass.Parameters);
+                SetResourceStreamingOptions(renderMesh.MaterialPass.Parameters, options);
             }
         }
 
         /// <summary>
-        /// Called when material parameters are submitted to rendering. Registers referenced resources to stream them to the maximum quality level.
+        /// Set the streaming options for the resources
         /// </summary>
         /// <param name="parameters">The material parameters.</param>
-        public void StreamResourcesFully(ParameterCollection parameters)
+        /// <param name="options">The streaming options when streaming those resources</param>
+        public void SetResourceStreamingOptions(ParameterCollection parameters, StreamingOptions? options = null)
         {
             if (parameters.ObjectValues == null)
                 return;
@@ -235,22 +220,16 @@ namespace SiliconStudio.Xenko.Streaming
             foreach (var e in parameters.ObjectValues)
             {
                 if (e is Texture t)
-                {
-                    var resource = Get(t);
-                    if (resource != null)
-                    {
-                        resource.ForceFullyLoaded = true;
-                        resource.LastTimeUsed = frameIndex;
-                    }
-                }
+                    StreamResources(t, options);
             }
         }
 
         /// <summary>
-        /// Called when texture is submitted to rendering. Registers referenced resources to stream them to the maximum quality level.
+        /// Set the streaming options for the resources
         /// </summary>
         /// <param name="texture">The texture.</param>
-        public void StreamResourcesFully(Texture texture)
+        /// <param name="options">The streaming options when streaming those resources</param>
+        public void SetResourceStreamingOptions(Texture texture, StreamingOptions? options = null)
         {
             if (texture == null)
                 return;
@@ -258,8 +237,29 @@ namespace SiliconStudio.Xenko.Streaming
             var resource = Get(texture);
             if (resource != null)
             {
-                resource.ForceFullyLoaded = true;
-                resource.LastTimeUsed = frameIndex;
+                if (options.HasValue)
+                    SetResourceStreamingOptions(resource, options.Value, false);
+            }
+        }
+
+        private void SetResourceStreamingOptions(StreamingTexture resource, StreamingOptions options, bool combineOptions)
+        {
+            var alreadyHasOptions = resource.StreamingOptions.HasValue;
+            resource.StreamingOptions = combineOptions && alreadyHasOptions? options.CombineWith(resource.StreamingOptions.Value) : options;
+            if (options.LoadImmediately)
+            {
+                lock (resources)
+                {
+                    // ensure that the resource is not currently streaming
+                    if (resource.IsTaskActive)
+                    {
+                        resource.StopStreaming();
+                        FlushSync();
+                    }
+
+                    // Stream resource to the maximum level
+                    FullyLoadResource(resource);
+                }
             }
         }
 
@@ -312,7 +312,7 @@ namespace SiliconStudio.Xenko.Streaming
             resource.Init(storage, ref imageDescription);
 
             // Check if cannot use streaming
-            if (DisableStreaming)
+            if (!StreamingEnabled)
             {
                 FullyLoadResource(resource);
             }
@@ -372,8 +372,8 @@ namespace SiliconStudio.Xenko.Streaming
 
         private void FullyLoadResource(StreamableResource resource)
         {
-            // Disable dynamic streaming for the esource
-            resource.ForceFullyLoaded = true;
+            if (resource.AllocatedResidency == resource.MaxResidency)
+                return;
 
             // Stream resource to the maximum level
             // Note: this does not care about MaxTasksRunningSimultaneously limit
@@ -388,50 +388,44 @@ namespace SiliconStudio.Xenko.Streaming
         {
             while (!IsDisposed)
             {
-                // Perform synchronization
-                FlushSync();
-
-#if USE_TEST_MANUAL_QUALITY
-// Temporary testing code used for testing quality changing using K/L keys
-                if (((Game)Game).Input.IsKeyPressed(SiliconStudio.Xenko.Input.Keys.K))
-                {
-                    testQuality = Math.Min(testQuality + 5, 100);
-                }
-                if (((Game)Game).Input.IsKeyPressed(SiliconStudio.Xenko.Input.Keys.L))
-                {
-                    testQuality = Math.Max(testQuality - 5, 0);
-                }
-#endif
-
                 // Update resources
                 lock (resources)
                 {
+                    // Perform synchronization
+                    FlushSync();
+
+#if USE_TEST_MANUAL_QUALITY
+                    // Temporary testing code used for testing quality changing using K/L keys
+                    if (((Game)Game).Input.IsKeyPressed(SiliconStudio.Xenko.Input.Keys.K))
+                    {
+                        testQuality = Math.Min(testQuality + 5, 100);
+                    }
+                    if (((Game)Game).Input.IsKeyPressed(SiliconStudio.Xenko.Input.Keys.L))
+                    {
+                        testQuality = Math.Max(testQuality - 5, 0);
+                    }
+#endif
                     int resourcesCount = Resources.Count;
                     if (resourcesCount > 0)
                     {
                         var now = DateTime.UtcNow;
-                        int resourcesUpdates = Math.Min(MaxResourcesPerUpdate, resourcesCount);
-                        int resourcesChecks = resourcesCount;
+                        var resourcesChecks = resourcesCount;
 
-                        while (resourcesUpdates > 0 && resourcesChecks-- > 0 && HasActiveTaskSlotFree)
+                        while (resourcesChecks-- > 0 && HasActiveTaskSlotFree)
                         {
                             // Move forward
                             // Note: we update resources like in a ring buffer
                             lastUpdateResourcesIndex++;
                             if (lastUpdateResourcesIndex >= resourcesCount)
                                 lastUpdateResourcesIndex = 0;
-
-                            // Peek resource
+                            
+                            // Update resource
                             var resource = resources[lastUpdateResourcesIndex];
-
-                            // Try to update it
-                            if (now - resource.LastUpdate >= ResourceUpdatesInterval && resource.CanBeUpdated)
+                            if (resource.CanBeUpdated)
                             {
                                 Update(resource, ref now);
-                                resourcesUpdates--;
                             }
                         }
-
                         // TODO: add StreamingManager stats, update time per frame, updates per frame, etc.
                     }
                 }
@@ -447,16 +441,14 @@ namespace SiliconStudio.Xenko.Streaming
         {
             Debug.Assert(resource != null && resource.CanBeUpdated);
 
+            var options = resource.StreamingOptions ?? StreamingOptions.Default;
+
             // Calculate target quality for that asset
             StreamingQuality targetQuality = StreamingQuality.Mininum;
-            if (resource.ForceFullyLoaded)
-            {
-                targetQuality = StreamingQuality.Maximum;
-            }
-            else if (resource.LastTimeUsed > 0)
+            if (resource.LastTimeUsed > 0 || options.KeepLoaded)
             {
                 var lastUsageTimespan = new TimeSpan((frameIndex - resource.LastTimeUsed) * ManagerUpdatesInterval.Ticks);
-                if (lastUsageTimespan < ResourceLiveTimeout)
+                if (lastUsageTimespan < ResourceLiveTimeout || options.KeepLoaded)
                 {
                     targetQuality = StreamingQuality.Maximum;
 #if USE_TEST_MANUAL_QUALITY
@@ -494,6 +486,8 @@ namespace SiliconStudio.Xenko.Streaming
             {
                 // Calculate residency level to stream in (resources may want to incease/decrease it's quality in steps rather than at once)
                 var requestedResidency = resource.CalculateRequestedResidency(targetResidency);
+                if (options.ForceHighestQuality)
+                    requestedResidency = targetResidency;
 
                 // Create streaming task (resource type specific)
                 StreamAsync(resource, requestedResidency);

@@ -76,15 +76,14 @@ namespace SiliconStudio.Xenko.Streaming
         public int TargetResidency { get; internal set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether always fully load that resource.
-        /// </summary>
-        /// <value><c>true</c> if always fully load that resource; otherwise, <c>false</c>.</value>
-        public bool ForceFullyLoaded { get; set; }
-
-        /// <summary>
         /// Gets a value indicating whether this resource is allocated.
         /// </summary>
         public bool IsAllocated => AllocatedResidency > 0;
+
+        /// <summary>
+        /// The current streaming options of the resource.
+        /// </summary>
+        public StreamingOptions? StreamingOptions;
 
         /// <summary>
         /// Gets a value indicating whether this resource async task is active.
@@ -173,7 +172,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// <summary>
         /// Stops the resource streaming using cancellation token.
         /// </summary>
-        protected void StopStreaming()
+        public void StopStreaming()
         {
             if (streamingTask != null && !streamingTask.IsCompleted)
             {

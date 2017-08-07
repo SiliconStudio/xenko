@@ -3048,6 +3048,7 @@
     <Compile Include="Starter\iOSXenkoView.cs" />
     <Compile Include="Streaming\StreamableResource.cs" />
     <Compile Include="Streaming\StreamingManager.cs" />
+    <Compile Include="Streaming\StreamingOptions.cs" />
     <Compile Include="Streaming\StreamingQuality.cs" />
     <Compile Include="Streaming\StreamingTexture.cs" />
     <Compile Include="Updater\ArrayUpdateResolver.cs" />
