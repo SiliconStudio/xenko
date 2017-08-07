@@ -56,11 +56,7 @@ namespace SiliconStudio.Assets.Compiler
 
             EnsureTypes();
 
-            var typeData = new CompilerTypeData
-            {
-                Context = context,
-                Type = type
-            };
+            var typeData = new CompilerTypeData(context, type);
 
             IAssetCompiler compiler;
             if (!typeToCompiler.TryGetValue(typeData, out compiler))
@@ -85,15 +81,11 @@ namespace SiliconStudio.Assets.Compiler
         /// <param name="context"></param>
         public void RegisterCompiler(Type type, IAssetCompiler compiler, Type context)
         {
-            if (compiler == null) throw new ArgumentNullException("compiler");
+            if (compiler == null) throw new ArgumentNullException(nameof(compiler));
 
             AssertAssetType(type);
 
-            var typeData = new CompilerTypeData
-            {
-                Context = context,
-                Type = type
-            };
+            var typeData = new CompilerTypeData(context, type);
 
             typeToCompiler[typeData] = compiler;
         }
@@ -210,36 +202,47 @@ namespace SiliconStudio.Assets.Compiler
             assembliesChanged = true;
         }
 
-        private struct CompilerTypeData
+        private struct CompilerTypeData : IEquatable<CompilerTypeData>
         {
-            public Type Context;
-            public Type Type;
-            public static bool operator !=(CompilerTypeData x, CompilerTypeData y)
+            public readonly Type Context;
+            public readonly Type Type;
+
+            public CompilerTypeData(Type context, Type type)
             {
-                return x.Type != y.Type || x.Context != y.Context;
+                Context = context;
+                Type = type;
             }
 
-            public static bool operator ==(CompilerTypeData x, CompilerTypeData y)
+            /// <inheritdoc />
+            public bool Equals(CompilerTypeData other)
             {
-                return x.Type == y.Type && x.Context == y.Context;
+                return Context == other.Context && Type == other.Type;
             }
 
+            /// <inheritdoc/>
             public override bool Equals(object obj)
             {
-                if (obj == null) return false;
-                var other = (CompilerTypeData)obj;
-                return Type == other.Type && Context == other.Context;
+                if (ReferenceEquals(obj, null)) return false;
+                return obj is CompilerTypeData && Equals((CompilerTypeData)obj);
             }
 
+            /// <inheritdoc/>
             public override int GetHashCode()
             {
                 unchecked
                 {
-                    var hash = (int)2166136261;
-                    hash = (hash * 16777619) ^ Type.GetHashCode();
-                    hash = (hash * 16777619) ^ Context.GetHashCode();
-                    return hash;
+                    return ((Context != null ? Context.GetHashCode() : 0) * 397) ^ (Type != null ? Type.GetHashCode() : 0);
                 }
+            }
+
+            public static bool operator ==(CompilerTypeData left, CompilerTypeData right)
+            {
+                return left.Equals(right);
+            }
+
+            public static bool operator !=(CompilerTypeData left, CompilerTypeData right)
+            {
+                return !left.Equals(right);
             }
         }
     }

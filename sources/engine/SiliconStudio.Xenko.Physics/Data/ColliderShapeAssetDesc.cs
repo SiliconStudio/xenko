@@ -39,10 +39,5 @@ namespace SiliconStudio.Xenko.Physics
             // TODO: shouldn't we return true here?
             return other.Shape == Shape;
         }
-
-        public override int GetHashCode()
-        {
-            return Shape?.GetHashCode() ?? 0;
-        }
     }
 }

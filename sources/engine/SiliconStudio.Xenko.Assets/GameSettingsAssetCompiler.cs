@@ -37,6 +37,7 @@ namespace SiliconStudio.Xenko.Assets
         {
             yield return typeof(Scene);
             yield return typeof(GraphicsCompositor);
+            yield return typeof(Texture);
         }
 
         private class GameSettingsCompileCommand : AssetCommand<GameSettingsAsset>

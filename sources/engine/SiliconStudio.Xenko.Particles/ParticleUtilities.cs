@@ -3,8 +3,8 @@
 
 namespace SiliconStudio.Xenko.Particles
 {
-    static public class ParticleUtilities
-    {    
+    public static class ParticleUtilities
+    {
         public static int AlignedSize(int size, int alignment)
         {
             return (size % alignment == 0) ? size : (size + alignment - (size % alignment));

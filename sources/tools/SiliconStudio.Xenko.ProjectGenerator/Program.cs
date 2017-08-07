@@ -199,12 +199,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
             Directory.CreateDirectory(UPath.Combine(outputDirectory, (UDirectory)"Assets/Shared"));
 
             // Add Windows test as Shared library
-            var projectWindowsRef = new ProjectReference
-            {
-                Id = projectGuid,
-                Location = UPath.Combine(outputDirectory, (UFile)(name + ".Windows.csproj")),
-                Type = SiliconStudio.Assets.ProjectType.Library
-            };
+            var projectWindowsRef = new ProjectReference(projectGuid, UPath.Combine(outputDirectory, (UFile)(name + ".Windows.csproj")), SiliconStudio.Assets.ProjectType.Library);
             sharedProfile.ProjectReferences.Add(projectWindowsRef);
 
             // Generate executable projects for each platform
@@ -212,17 +207,12 @@ namespace SiliconStudio.Xenko.ProjectGenerator
             {
                 var platformProfile = new PackageProfile(platform.Name) { Platform = platform.Type };
                 platformProfile.AssetFolders.Add(new AssetFolder("Assets/"+ platform.Name));
-                
+
                 // Log progress
                 var projectName = name + "." + platform.Type;
 
                 // Create project reference
-                var projectPlatformRef = new ProjectReference
-                {
-                    Id = projectGuid,
-                    Location = UPath.Combine(outputDirectory, (UFile)(projectName + ".csproj")),
-                    Type = SiliconStudio.Assets.ProjectType.Executable
-                };
+                var projectPlatformRef = new ProjectReference(projectGuid, UPath.Combine(outputDirectory, (UFile)(projectName + ".csproj")), SiliconStudio.Assets.ProjectType.Executable);
 
                 platformProfile.ProjectReferences.Add(projectPlatformRef);
 
@@ -240,7 +230,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
         }
 
         /// <summary>
-        /// Given an asset package <paramref name="name"/> located in <paramref name="outputDirectory"/> try to extract the 
+        /// Given an asset package <paramref name="name"/> located in <paramref name="outputDirectory"/> try to extract the
         /// Id setting. If file does not exist or does not contain this property, a new Guid is generated.
         /// </summary>
         /// <param name="outputDirectory">Location of the package <paramref name="name"/></param>
@@ -272,7 +262,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
         }
 
         /// <summary>
-        /// Given a project <paramref name="name"/> located in <paramref name="outputDirectory"/> try to extract the 
+        /// Given a project <paramref name="name"/> located in <paramref name="outputDirectory"/> try to extract the
         /// ProjectGuid setting. If file does not exist or does not contain this property, a new Guid is generated.
         /// </summary>
         /// <param name="outputDirectory">Location of the project <paramref name="name"/></param>

@@ -62,19 +62,6 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         /// The groups that use this navigation mesh
         /// </userdoc>
         [DataMember(40)]
-        public List<Guid> SelectedGroups { get; private set; } = new List<Guid>();
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = SelectedGroups?.ComputeHash() ?? 0;
-                hashCode = (hashCode*397) ^ (int)IncludedCollisionGroups;
-                hashCode = (hashCode*397) ^ BuildSettings.GetHashCode();
-                if (Scene != null)
-                    hashCode = (hashCode*397) ^ Scene.Name.GetHashCode();
-                return hashCode;
-            }
-        }
+        public List<Guid> SelectedGroups { get; } = new List<Guid>();
     }
 }

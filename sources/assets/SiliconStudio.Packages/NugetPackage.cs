@@ -13,45 +13,42 @@ namespace SiliconStudio.Packages
     /// <summary>
     /// Nuget abstraction of a package.
     /// </summary>
-    public class NugetPackage
+    public sealed class NugetPackage : IEquatable<NugetPackage>
     {
         /// <summary>
         /// Initializes a new instance of <see cref="NugetPackage"/> using some NuGet data.
         /// </summary>
         /// <param name="package">The NuGet metadata we will use to construct the current instance.</param>
-        internal NugetPackage(NuGet.IPackageMetadata package)
+        internal NugetPackage([NotNull] IPackageMetadata package)
         {
-            packageMetadata = package;
+            packageMetadata = package ?? throw new ArgumentNullException(nameof(package));
         }
 
         /// <summary>
         /// Storage for the NuGet metatadata.
         /// </summary>
-        private readonly NuGet.IPackageMetadata packageMetadata;
+        private readonly IPackageMetadata packageMetadata;
 
-        /// <summary>
-        /// Determines whether the <paramref name="other"/> object is equal to the current object.
-        /// </summary>
-        /// <param name="other">The object to compare against the current object.</param>
-        /// <returns><c>true</c> if <paramref name="other"/> is equal to the current object, <c>false</c> otherwise.</returns>
-        protected bool Equals(NugetPackage other)
+        /// <inheritdoc />
+        public bool Equals(NugetPackage other)
         {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
             return Equals(packageMetadata, other.packageMetadata);
         }
 
-        /// <inheritdoc cref="object"/>
+        /// <inheritdoc />
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((NugetPackage)obj);
+            return Equals(obj as NugetPackage);
         }
 
-        /// <inheritdoc cref="object"/>
+        /// <inheritdoc />
         public override int GetHashCode()
         {
-            return packageMetadata?.GetHashCode() ?? 0;
+            return packageMetadata.GetHashCode();
         }
 
         /// <summary>
@@ -85,27 +82,13 @@ namespace SiliconStudio.Packages
         /// Nuget IPackage associated to current.
         /// </summary>
         /// <remarks>Internal since it exposes a NuGet type.</remarks>
-        internal NuGet.IPackage IPackage
-        {
-            get
-            {
-                var p = packageMetadata as NuGet.IPackage;
-                return p;
-            }
-        }
+        internal IPackage IPackage => packageMetadata as IPackage;
 
         /// <summary>
         /// Nuget IPackage associated to current.
         /// </summary>
         /// <remarks>Internal since it exposes a NuGet type.</remarks>
-        internal NuGet.IServerPackageMetadata IServerPackageMetadata
-        {
-            get
-            {
-                var p = packageMetadata as NuGet.IServerPackageMetadata;
-                return p;
-            }
-        }
+        internal IServerPackageMetadata IServerPackageMetadata => packageMetadata as IServerPackageMetadata;
 
         /// <summary>
         /// The Id of this package.
@@ -195,19 +178,19 @@ namespace SiliconStudio.Packages
         public string Copyright => packageMetadata.Copyright;
 
         /// <remarks>Internal since it exposes a NuGet type.</remarks>
-        internal IEnumerable<NuGet.FrameworkAssemblyReference> FrameworkAssemblies => packageMetadata.FrameworkAssemblies;
+        internal IEnumerable<FrameworkAssemblyReference> FrameworkAssemblies => packageMetadata.FrameworkAssemblies;
 
         /// <remarks>Internal since it exposes a NuGet type.</remarks>
-        internal ICollection<NuGet.PackageReferenceSet> PackageAssemblyReferences => packageMetadata.PackageAssemblyReferences;
+        internal ICollection<PackageReferenceSet> PackageAssemblyReferences => packageMetadata.PackageAssemblyReferences;
 
         /// <summary>
         /// The list of dependencies of this package.
         /// </summary>
         /// <remarks>Internal since it exposes a NuGet type.</remarks>
-        internal IEnumerable<NuGet.PackageDependencySet> DependencySets => packageMetadata.DependencySets;
+        internal IEnumerable<PackageDependencySet> DependencySets => packageMetadata.DependencySets;
 
         public Version MinClientVersion => packageMetadata.MinClientVersion;
-        
+
         /// <summary>
         /// The number of downloads for this package. It is specific to the version of this package.
         /// </summary>

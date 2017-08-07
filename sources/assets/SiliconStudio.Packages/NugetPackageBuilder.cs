@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using NuGet;
@@ -16,8 +15,9 @@ namespace SiliconStudio.Packages
     /// <summary>
     /// Abstraction to build a NuGet package.
     /// </summary>
-    public class NugetPackageBuilder
+    public sealed class NugetPackageBuilder : IEquatable<NugetPackageBuilder>
     {
+        [NotNull]
         internal IPackageBuilder Builder { get; }
 
         /// <summary>
@@ -28,29 +28,26 @@ namespace SiliconStudio.Packages
             Builder = new PackageBuilder();
         }
 
-        /// <summary>
-        /// Determines whether the <paramref name="other"/> object is equal to the current object.
-        /// </summary>
-        /// <param name="other">The object to compare against the current object.</param>
-        /// <returns><c>true</c> if <paramref name="other"/> is equal to the current object, <c>false</c> otherwise.</returns>
-        protected bool Equals(NugetPackageBuilder other)
+        /// <inheritdoc />
+        public bool Equals(NugetPackageBuilder other)
         {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
             return Equals(Builder, other.Builder);
         }
 
-        /// <inheritdoc cref="object"/>
+        /// <inheritdoc />
         public override bool Equals(object other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            if (other.GetType() != GetType()) return false;
-            return Equals((NugetPackageBuilder)other);
+            return Equals(other as NugetPackageBuilder);
         }
 
-        /// <inheritdoc cref="object"/>
+        /// <inheritdoc />
         public override int GetHashCode()
         {
-            return Builder?.GetHashCode() ?? 0;
+            return Builder.GetHashCode();
         }
 
         /// <summary>

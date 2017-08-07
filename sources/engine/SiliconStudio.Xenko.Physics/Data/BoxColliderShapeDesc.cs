@@ -41,17 +41,5 @@ namespace SiliconStudio.Xenko.Physics
             var other = obj as BoxColliderShapeDesc;
             return other?.Is2D == Is2D && other.Size == Size && other.LocalOffset == LocalOffset && other.LocalRotation == LocalRotation;
         }
-        
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = Is2D.GetHashCode();
-                hashCode = (hashCode*397) ^ Size.GetHashCode();
-                hashCode = (hashCode*397) ^ LocalOffset.GetHashCode();
-                hashCode = (hashCode*397) ^ LocalRotation.GetHashCode();
-                return hashCode;
-            }
-        }
     }
 }

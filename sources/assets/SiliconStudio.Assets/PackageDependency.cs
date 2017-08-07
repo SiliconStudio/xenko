@@ -4,6 +4,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Assets
 {
@@ -29,6 +30,9 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Initializes a new instance of the <see cref="PackageDependency"/> class.
         /// </summary>
+        /// <remarks>
+        /// This constructor is used only for serialization.
+        /// </remarks>
         public PackageDependency()
         {
         }
@@ -48,6 +52,9 @@ namespace SiliconStudio.Assets
         /// Gets or sets the package name Id.
         /// </summary>
         /// <value>The name.</value>
+        /// <remarks>
+        /// The setter should only be used during serialization.
+        /// </remarks>
         [DefaultValue(null)]
         [DataMember(10)]
         public string Name { get; set; }
@@ -64,6 +71,7 @@ namespace SiliconStudio.Assets
         /// Clones this instance.
         /// </summary>
         /// <returns>PackageDependency.</returns>
+        [NotNull]
         public PackageDependency Clone()
         {
             return new PackageDependency(Name, Version);
@@ -80,15 +88,13 @@ namespace SiliconStudio.Assets
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj is PackageDependency && Equals((PackageDependency)obj);
+            return Equals(obj as PackageDependency);
         }
 
         public override int GetHashCode()
         {
-            unchecked
-            {
-                return ((Name != null ? Name.GetHashCode() : 0)*397) ^ (Version != null ? Version.GetHashCode() : 0);
-            }
+            // ReSharper disable once NonReadonlyMemberInGetHashCode - this property is not supposed to be set except by serialization
+            return Name?.GetHashCode() ?? 0;
         }
 
         public static bool operator ==(PackageDependency left, PackageDependency right)
@@ -104,11 +110,7 @@ namespace SiliconStudio.Assets
         /// <inherit/>
         public override string ToString()
         {
-            if (Name != null)
-            {
-                return string.Format("{0} {1}", Name, Version);
-            }
-            return "Empty";
+            return Name != null ? $"{Name} {Version}" : "Empty";
         }
     }
 }

@@ -36,8 +36,7 @@ namespace SiliconStudio.Assets.Analysis
 
             public override bool Equals(object obj)
             {
-                if (ReferenceEquals(null, obj))
-                    return false;
+                if (ReferenceEquals(null, obj)) return false;
                 return obj is BuildNodeDesc && Equals((BuildNodeDesc)obj);
             }
 
@@ -45,7 +44,7 @@ namespace SiliconStudio.Assets.Analysis
             {
                 unchecked
                 {
-                    return (AssetId.GetHashCode() * 397) ^ (CompilationContext != null ? CompilationContext.GetHashCode() : 0);
+                    return (AssetId.GetHashCode() * 397) ^ (CompilationContext?.GetHashCode() ?? 0);
                 }
             }
 
@@ -87,7 +86,7 @@ namespace SiliconStudio.Assets.Analysis
                 nodes.TryAdd(nodeDesc, node);
             }
             else if (!ReferenceEquals(node.AssetItem, item))
-            {               
+            {
                 node = new BuildAssetNode(item, compilationContext, this);
                 nodes[nodeDesc] = node;
             }
