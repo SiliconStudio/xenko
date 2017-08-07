@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
@@ -19,21 +20,34 @@ namespace SiliconStudio.Xenko.Physics
     [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<PhysicsColliderShape>), Profile = "Content")]
     public class PhysicsColliderShape : IDisposable
     {
+        public PhysicsColliderShape()
+        {
+
+        }
+
+        public PhysicsColliderShape([NotNull] IEnumerable<IAssetColliderShapeDesc> descriptions)
+        {
+            Descriptions.AddRange(descriptions);
+        }
+
         /// <summary>
         /// Used to serialize one or more collider shapes into one single shape
         /// Reading this value will automatically parse the Shape property into its description
         /// Writing this value will automatically compose, create and populate the Shape property
         /// </summary>
-        public List<IAssetColliderShapeDesc> Descriptions { get; set; }
+        [DataMember]
+        public List<IAssetColliderShapeDesc> Descriptions { get; } = new List<IAssetColliderShapeDesc>();
 
         [DataMemberIgnore]
         public ColliderShape Shape { get; internal set; }
 
-        public static PhysicsColliderShape New(params IAssetColliderShapeDesc[] descriptions)
+        [NotNull]
+        public static PhysicsColliderShape New([NotNull] params IAssetColliderShapeDesc[] descriptions)
         {
-            return new PhysicsColliderShape { Descriptions = descriptions.ToList() };
+            if (descriptions == null) throw new ArgumentNullException(nameof(descriptions));
+            return new PhysicsColliderShape(descriptions);
         }
-        
+
         internal static ColliderShape Compose(IReadOnlyList<IAssetColliderShapeDesc> descs)
         {
             if (descs == null)
@@ -222,7 +236,7 @@ namespace SiliconStudio.Xenko.Physics
 
             return shape;
         }
-        
+
         public void Dispose()
         {
             if (Shape == null) return;
@@ -232,11 +246,6 @@ namespace SiliconStudio.Xenko.Physics
 
             Shape.Dispose();
             Shape = null;
-        }
-
-        public override int GetHashCode()
-        {
-            return Descriptions?.ComputeHash() ?? 0;
         }
     }
 }

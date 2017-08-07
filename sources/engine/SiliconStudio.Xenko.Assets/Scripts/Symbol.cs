@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         /// <inheritdoc/>
         IIdentifiable IAssetPartDesign.Part => this;
 
-        Symbol IAssetPartDesign<Symbol>.Part { get { return this; } set { throw new InvalidOperationException(); } }
+        Symbol IAssetPartDesign<Symbol>.Part => this;
 
         public override string ToString()
         {

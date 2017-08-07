@@ -279,16 +279,12 @@ namespace SiliconStudio.Core
 
         public static bool operator ==(PackageVersion version1, PackageVersion version2)
         {
-            if (ReferenceEquals(version1, null))
-            {
-                return ReferenceEquals(version2, null);
-            }
-            return version1.Equals(version2);
+            return Equals(version1, version2);
         }
 
         public static bool operator !=(PackageVersion version1, PackageVersion version2)
         {
-            return !(version1 == version2);
+            return !Equals(version1, version2);
         }
 
         public static bool operator <(PackageVersion version1, PackageVersion version2)
@@ -302,7 +298,7 @@ namespace SiliconStudio.Core
 
         public static bool operator <=(PackageVersion version1, PackageVersion version2)
         {
-            return (version1 == version2) || (version1 < version2);
+            return version1 == version2 || version1 < version2;
         }
 
         public static bool operator >(PackageVersion version1, PackageVersion version2)
@@ -316,36 +312,45 @@ namespace SiliconStudio.Core
 
         public static bool operator >=(PackageVersion version1, PackageVersion version2)
         {
-            return (version1 == version2) || (version1 > version2);
+            return version1 == version2 || version1 > version2;
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             return originalString;
         }
 
+        /// <inheritdoc/>
         public bool Equals(PackageVersion other)
         {
-            return !ReferenceEquals(null, other) &&
-                   Version.Equals(other.Version) &&
+            if (ReferenceEquals(other, null)) return false;
+            if (ReferenceEquals(other, this)) return true;
+            return Version.Equals(other.Version) &&
                    SpecialVersion.Equals(other.SpecialVersion, StringComparison.OrdinalIgnoreCase);
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
-            PackageVersion semVer = obj as PackageVersion;
-            return !ReferenceEquals(null, semVer) && Equals(semVer);
+            if (ReferenceEquals(obj, null)) return false;
+            if (ReferenceEquals(obj, this)) return true;
+            return Equals(obj as PackageVersion);
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
-            int hashCode = Version.GetHashCode();
-            if (SpecialVersion != null)
+            unchecked
             {
-                hashCode = hashCode*4567 + SpecialVersion.GetHashCode();
-            }
+                var hashCode = Version.GetHashCode();
+                if (SpecialVersion != null)
+                {
+                    hashCode = (hashCode * 4567) ^ SpecialVersion.GetHashCode();
+                }
 
-            return hashCode;
+                return hashCode;
+            }
         }
 
         internal class PackageVersionDataSerializer : DataSerializer<PackageVersion>

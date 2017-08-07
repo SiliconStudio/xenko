@@ -56,18 +56,6 @@ namespace SiliconStudio.Xenko.Navigation
         [DataMember(3)]
         [DataMemberRange(0, 3)]
         public float Radius;
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = Height.GetHashCode();
-                hashCode = (hashCode * 397) ^ Radius.GetHashCode();
-                hashCode = (hashCode * 397) ^ MaxClimb.GetHashCode();
-                hashCode = (hashCode * 397) ^ MaxSlope.GetHashCode();
-                return hashCode;
-            }
-        }
     }
 
     public class NavigationAgentSettingsFactory : IObjectFactory

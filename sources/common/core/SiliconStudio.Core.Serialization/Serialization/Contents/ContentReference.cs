@@ -17,19 +17,21 @@ namespace SiliconStudio.Core.Serialization.Contents
         /// </value>
         public abstract string Location { get; set; }
 
+        public abstract object ObjectValue { get; }
+
         public ContentReferenceState State { get; protected set; }
 
         public abstract Type Type { get; }
-
-        public abstract object ObjectValue { get; }
 
         public bool Equals(ContentReference other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(Location, other.Location);
+            return Equals(Location, other.Location) &&
+                   Type == other.Type;
         }
 
+        /// <inheritdoc />
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -38,9 +40,10 @@ namespace SiliconStudio.Core.Serialization.Contents
             return Equals((ContentReference)obj);
         }
 
+        /// <inheritdoc />
         public override int GetHashCode()
         {
-            return Location?.GetHashCode() ?? 0;
+            return Type.GetHashCode();
         }
 
         public static bool operator ==(ContentReference left, ContentReference right)
@@ -53,7 +56,7 @@ namespace SiliconStudio.Core.Serialization.Contents
             return !Equals(left, right);
         }
 
-
+        /// <inheritdoc />
         public override string ToString()
         {
             return $"{{{Location}}}";
@@ -67,12 +70,10 @@ namespace SiliconStudio.Core.Serialization.Contents
         private T value;
         private string url;
 
-        public override Type Type => typeof(T);
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ContentReference"/> class with the given value.
         /// </summary>
-        /// <param name="value">The value of the referenced conten.t</param>
+        /// <param name="value">The value of the referenced content.</param>
         /// <remarks>This constructor should be used during serialization.</remarks>
         public ContentReference(T value)
         {
@@ -89,27 +90,7 @@ namespace SiliconStudio.Core.Serialization.Contents
             Location = location;
         }
 
-        /// <summary>
-        /// Gets or sets the value.
-        /// </summary>
-        /// <value>
-        /// The value.
-        /// </value>
-        /// <exception cref="System.InvalidOperationException">Value can't be read in this state.</exception>
-        public T Value
-        {
-            get
-            {
-                return value;
-            }
-            set
-            {
-                State = ContentReferenceState.Modified;
-                this.value = value;
-                url = null;
-            }
-        }
-
+        /// <inheritdoc />
         public override string Location
         {
             get
@@ -133,6 +114,27 @@ namespace SiliconStudio.Core.Serialization.Contents
             }
         }
 
+        /// <inheritdoc />
         public override object ObjectValue => Value;
+
+        /// <inheritdoc />
+        public override Type Type => typeof(T);
+
+        /// <summary>
+        /// Gets or sets the value.
+        /// </summary>
+        /// <value>
+        /// The value.
+        /// </value>
+        public T Value
+        {
+            get => value;
+            set
+            {
+                State = ContentReferenceState.Modified;
+                this.value = value;
+                url = null;
+            }
+        }
     }
 }
