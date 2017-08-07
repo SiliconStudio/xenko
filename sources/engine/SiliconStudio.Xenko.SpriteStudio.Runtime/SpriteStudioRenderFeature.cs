@@ -3,7 +3,6 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
 
@@ -58,6 +57,19 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             base.Destroy();
         }
 
+        public override void Prepare(RenderDrawContext context)
+        {
+            base.Prepare(context);
+            
+            // Register resources usage
+            foreach (var renderObject in RenderObjects)
+            {
+                var renderSpriteStudio = (RenderSpriteStudio)renderObject;
+                foreach (var sprite in renderSpriteStudio.SpriteStudioComponent.Sheet.Sprites)
+                    Context.StreamingManager?.StreamResources(sprite.Texture);
+            }
+        }
+
         public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
             base.Draw(context, renderView, renderViewStage, startIndex, endIndex);
@@ -68,8 +80,6 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
             //TODO string comparison ...?
             var isPicking = RenderSystem.RenderStages[renderViewStage.Index].Name == "Picking";
-
-            var device = RenderSystem.GraphicsDevice;
 
             var hasBegin = false;
             for (var index = startIndex; index < endIndex; index++)

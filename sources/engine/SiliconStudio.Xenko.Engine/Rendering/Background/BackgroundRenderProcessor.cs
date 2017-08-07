@@ -1,12 +1,8 @@
 // Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
-using System;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Streaming;
 
 namespace SiliconStudio.Xenko.Rendering.Background
 {
@@ -15,8 +11,6 @@ namespace SiliconStudio.Xenko.Rendering.Background
     /// </summary>
     public class BackgroundRenderProcessor : EntityProcessor<BackgroundComponent, RenderBackground>, IEntityComponentRenderProcessor
     {
-        private StreamingManager streamingManager;
-
         public VisibilityGroup VisibilityGroup { get; set; }
 
         /// <summary>
@@ -24,14 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Background
         /// </summary>
         /// <value>The active background.</value>
         public RenderBackground ActiveBackground { get; private set; }
-
-        /// <inheritdoc />
-        protected internal override void OnSystemAdd()
-        {
-            base.OnSystemAdd();
-
-            streamingManager = Services.GetServiceAs<StreamingManager>();
-        }
+        
 
         /// <inheritdoc />
         protected internal override void OnSystemRemove()
@@ -41,8 +28,6 @@ namespace SiliconStudio.Xenko.Rendering.Background
                 VisibilityGroup.RenderObjects.Remove(ActiveBackground);
                 ActiveBackground = null;
             }
-
-            streamingManager = null;
 
             base.OnSystemRemove();
         }
@@ -69,9 +54,6 @@ namespace SiliconStudio.Xenko.Rendering.Background
                     renderBackground.Intensity = backgroundComponent.Intensity;
                     renderBackground.RenderGroup = backgroundComponent.RenderGroup;
                     renderBackground.Rotation = Quaternion.RotationMatrix(backgroundComponent.Entity.Transform.WorldMatrix);
-
-                    // Register texture usage
-                    streamingManager?.StreamResourcesFully(renderBackground.Texture);
 
                     ActiveBackground = renderBackground;
                     break;

@@ -165,6 +165,9 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 var materialInfo = (ParticleMaterialInfo)renderParticleEmitter.ParticleMaterialInfo;
                 var colorShade = renderParticleEmitter.RenderParticleSystem.ParticleSystemComponent.Color.ToColorSpace(context.GraphicsDevice.ColorSpace);
                 materialInfo?.Material.Parameters.Set(ParticleBaseKeys.ColorScale, colorShade);
+
+                // Register resources usage
+                Context.StreamingManager?.StreamResources(renderParticleEmitter.ParticleEmitter.Material.Parameters);
             }
 
             // Calculate the total vertex buffer size required

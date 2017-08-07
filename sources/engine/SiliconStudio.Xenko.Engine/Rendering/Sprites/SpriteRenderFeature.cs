@@ -7,8 +7,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Rendering.Sprites;
-using SiliconStudio.Xenko.Shaders.Compiler;
 
 namespace SiliconStudio.Xenko.Rendering.Sprites
 {
@@ -196,6 +194,9 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                     sourceRegion.Y *= verticalRatio;
                     sourceRegion.Height *= verticalRatio;
                 }
+
+                // register resource usage.
+                Context.StreamingManager?.StreamResources(texture);
 
                 // draw the sprite
                 batchContext.SpriteBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref sprite.SizeInternal, ref color, sprite.Orientation, spriteComp.Swizzle, projectedZ);

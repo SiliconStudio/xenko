@@ -1,11 +1,9 @@
 // Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
-using System.Collections.Generic;
-using SiliconStudio.Core;
+
+using System;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Streaming;
 
 namespace SiliconStudio.Xenko.Rendering.Sprites
 {
@@ -14,8 +12,6 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
     /// </summary>
     internal class SpriteRenderProcessor : EntityProcessor<SpriteComponent, SpriteRenderProcessor.SpriteInfo>, IEntityComponentRenderProcessor
     {
-        private StreamingManager streamingManager;
-
         public VisibilityGroup VisibilityGroup { get; set; }
 
         /// <summary>
@@ -24,22 +20,6 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         public SpriteRenderProcessor()
             : base(typeof(TransformComponent))
         {
-        }
-
-        /// <inheritdoc />
-        protected internal override void OnSystemAdd()
-        {
-            base.OnSystemAdd();
-
-            streamingManager = Services.GetServiceAs<StreamingManager>();
-        }
-
-        /// <inheritdoc />
-        protected internal override void OnSystemRemove()
-        {
-            streamingManager = null;
-
-            base.OnSystemRemove();
         }
 
         public override void Draw(RenderContext gameTime)
@@ -60,9 +40,6 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                     renderSprite.BoundingBox = new BoundingBoxExt { Center = transform.WorldMatrix.TranslationVector };
                     renderSprite.RenderGroup = renderSprite.SpriteComponent.RenderGroup;
 
-                    // Register resources usage
-                    if(currentSprite != null)
-                        streamingManager?.StreamResources(currentSprite.Texture);
                     // update the sprite bounding box
                     Vector3 halfBoxSize;
                     var halfSpriteSize = currentSprite?.Size / 2 ?? Vector2.Zero;
