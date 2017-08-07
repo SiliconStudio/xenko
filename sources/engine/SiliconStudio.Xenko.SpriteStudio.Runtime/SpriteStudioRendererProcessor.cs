@@ -1,13 +1,9 @@
 // Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
-using System.Collections.Generic;
-using System.Linq;
-using SiliconStudio.Core;
+
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Streaming;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 {
@@ -47,8 +43,6 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
         public override void Draw(RenderContext context)
         {
-            var streamingManager = Services.GetServiceAs<StreamingManager>();
-
             foreach (var spriteStateKeyPair in ComponentDatas)
             {
                 var renderSpriteStudio = spriteStateKeyPair.Value;
@@ -58,13 +52,6 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
                 renderSpriteStudio.BoundingBox = new BoundingBoxExt { Center = renderSpriteStudio.TransformComponent.WorldMatrix.TranslationVector };
                 renderSpriteStudio.RenderGroup = renderSpriteStudio.SpriteStudioComponent.RenderGroup;
-
-                // Register resources usage
-                if (streamingManager != null)
-                {
-                    foreach (var sprite in renderSpriteStudio.SpriteStudioComponent.Sheet.Sprites)
-                        streamingManager.StreamResources(sprite.Texture);
-                }
             }
         }
 

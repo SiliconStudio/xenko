@@ -2,13 +2,10 @@
 // See LICENSE.md for full license information.
 
 using System;
-using System.Linq;
-using SiliconStudio.Core;
-using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Skyboxes;
-using SiliconStudio.Xenko.Shaders;
+using SiliconStudio.Xenko.Streaming;
 
 namespace SiliconStudio.Xenko.Rendering.Background
 {
@@ -26,6 +23,18 @@ namespace SiliconStudio.Xenko.Rendering.Background
             SortKey = 192;
         }
 
+        public override void Prepare(RenderDrawContext context)
+        {
+            base.Prepare(context);
+
+            // Register resources usage
+            foreach (var renderObject in RenderObjects)
+            {
+                var renderBackground = (RenderBackground)renderObject;
+                Context.StreamingManager?.StreamResources(renderBackground.Texture, StreamingOptions.LoadAtOnce);
+            }
+        }
+
         public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
             for (int index = startIndex; index < endIndex; index++)
@@ -34,6 +43,9 @@ namespace SiliconStudio.Xenko.Rendering.Background
                 var renderNode = GetRenderNode(renderNodeReference);
                 var renderBackground = (RenderBackground)renderNode.RenderObject;
 
+                if (renderBackground.Texture == null)
+                    continue;
+                    
                 if (renderBackground.Texture.Dimension == TextureDimension.Texture2D)
                 {
                     Draw2D(context, renderBackground);
@@ -63,10 +75,20 @@ namespace SiliconStudio.Xenko.Rendering.Background
             var destination = new RectangleF(0, 0, 1, 1);
 
             var texture = renderBackground.Texture;
-
-            var imageBufferMinRatio = Math.Min(texture.ViewWidth / (float)target.ViewWidth, texture.ViewHeight / (float)target.ViewHeight);
+            var textureIsLoading = texture.ViewType == ViewType.Full && texture.FullQualitySize.Width != texture.ViewWidth;
+            var textureSize = textureIsLoading ? texture.FullQualitySize: new Size3(texture.ViewWidth, texture.ViewHeight, texture.ViewDepth);
+            var imageBufferMinRatio = Math.Min(textureSize.Width / (float)target.ViewWidth, textureSize.Height / (float)target.ViewHeight);
             var sourceSize = new Vector2(target.ViewWidth * imageBufferMinRatio, target.ViewHeight * imageBufferMinRatio);
-            var source = new RectangleF((texture.ViewWidth - sourceSize.X) / 2, (texture.ViewHeight - sourceSize.Y) / 2, sourceSize.X, sourceSize.Y);
+            var source = new RectangleF((textureSize.Width - sourceSize.X) / 2, (textureSize.Height - sourceSize.Y) / 2, sourceSize.X, sourceSize.Y);
+            if (textureIsLoading)
+            {
+                var verticalRatio = texture.ViewHeight / (float)textureSize.Height;
+                var horizontalRatio = texture.ViewWidth / (float)textureSize.Width;
+                source.X *= horizontalRatio;
+                source.Width *= horizontalRatio;
+                source.Y *= verticalRatio;
+                source.Height *= verticalRatio;
+            }
 
             backgroundEffect.UpdateEffect(graphicsDevice);
             spriteBatch.Begin(context.GraphicsContext, SpriteSortMode.FrontToBack, BlendStates.Opaque, graphicsDevice.SamplerStates.LinearClamp, DepthStencilStates.DepthRead, null, backgroundEffect);
