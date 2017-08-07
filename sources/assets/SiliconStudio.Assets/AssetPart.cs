@@ -38,17 +38,23 @@ namespace SiliconStudio.Assets
             baseUpdater(newBase);
         }
 
+        /// <inheritdoc/>
         public bool Equals(AssetPart other)
         {
-            return PartId.Equals(other.PartId) && Equals(Base?.BasePartAsset.Id, other.Base?.BasePartAsset.Id) && Equals(Base?.BasePartId, other.Base?.BasePartId) && Equals(Base?.InstanceId, other.Base?.InstanceId);
+            return PartId.Equals(other.PartId) &&
+                   Equals(Base?.BasePartAsset.Id, other.Base?.BasePartAsset.Id) &&
+                   Equals(Base?.BasePartId, other.Base?.BasePartId) &&
+                   Equals(Base?.InstanceId, other.Base?.InstanceId);
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             return obj is AssetPart && Equals((AssetPart)obj);
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             unchecked
@@ -56,13 +62,12 @@ namespace SiliconStudio.Assets
                 var hashCode = PartId.GetHashCode();
                 if (Base != null)
                 {
-                    hashCode = (hashCode*397) ^ Base.BasePartAsset.Id.GetHashCode();
-                    hashCode = (hashCode*397) ^ Base.BasePartId.GetHashCode();
-                    hashCode = (hashCode*397) ^ Base.InstanceId.GetHashCode();
+                    hashCode = (hashCode*397) ^ Base.GetHashCode();
                 }
                 return hashCode;
             }
         }
+
         public static bool operator ==(AssetPart left, AssetPart right)
         {
             return left.Equals(right);

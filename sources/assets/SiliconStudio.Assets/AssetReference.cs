@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 using System;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
@@ -14,10 +15,8 @@ namespace SiliconStudio.Assets
     [DataContract("aref")]
     [DataStyle(DataStyle.Compact)]
     [DataSerializer(typeof(AssetReferenceDataSerializer))]
-    public class AssetReference : IReference, IEquatable<AssetReference>
+    public sealed class AssetReference : IReference, IEquatable<AssetReference>
     {
-        private readonly UFile location;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AssetReference"/> class.
         /// </summary>
@@ -25,7 +24,7 @@ namespace SiliconStudio.Assets
         /// <param name="location">The location.</param>
         public AssetReference(AssetId id, UFile location)
         {
-            this.location = location;
+            Location = location;
             Id = id;
         }
 
@@ -41,28 +40,27 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The location.</value>
         [DataMember(20)]
-        public string Location => location;
+        public string Location { get; }
 
         public bool Equals(AssetReference other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(location, other.location) && Id.Equals(other.Id);
+            return Equals(Location, other.Location) && Id.Equals(other.Id);
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            var assetReference = obj as AssetReference;
-            return assetReference != null && Equals(assetReference);
+            return Equals(obj as AssetReference);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                return ((location != null ? location.GetHashCode() : 0)*397) ^ Id.GetHashCode();
+                return ((Location?.GetHashCode() ?? 0) * 397) ^ Id.GetHashCode();
             }
         }
 
@@ -92,7 +90,7 @@ namespace SiliconStudio.Assets
         public override string ToString()
         {
             // WARNING: This should not be modified as it is used for serializing
-            return $"{Id}:{location}";
+            return $"{Id}:{Location}";
         }
 
         /// <summary>
@@ -101,9 +99,10 @@ namespace SiliconStudio.Assets
         /// <param name="id">The identifier.</param>
         /// <param name="location">The location.</param>
         /// <returns><c>true</c> if parsing was successful, <c>false</c> otherwise.</returns>
+        [NotNull]
         public static AssetReference New(AssetId id, UFile location)
         {
-            return new AssetReference(id, location);            
+            return new AssetReference(id, location);
         }
 
         /// <summary>
@@ -114,19 +113,19 @@ namespace SiliconStudio.Assets
         /// <param name="location">The location.</param>
         /// <returns><c>true</c> if parsing was successful, <c>false</c> otherwise.</returns>
         /// <exception cref="System.ArgumentNullException">assetReferenceText</exception>
-        public static bool TryParse(string assetReferenceText, out AssetId id, out UFile location)
+        public static bool TryParse([NotNull] string assetReferenceText, out AssetId id, out UFile location)
         {
             if (assetReferenceText == null) throw new ArgumentNullException(nameof(assetReferenceText));
 
             id = AssetId.Empty;
             location = null;
-            int indexFirstSlash = assetReferenceText.IndexOf('/');
-            int indexBeforelocation = assetReferenceText.IndexOf(':');
+            var indexFirstSlash = assetReferenceText.IndexOf('/');
+            var indexBeforelocation = assetReferenceText.IndexOf(':');
             if (indexBeforelocation < 0)
             {
                 return false;
             }
-            int startNextGuid = 0;
+            var startNextGuid = 0;
             if (indexFirstSlash > 0 && indexFirstSlash < indexBeforelocation)
             {
                 startNextGuid = indexFirstSlash + 1;
@@ -148,7 +147,7 @@ namespace SiliconStudio.Assets
         /// <param name="assetReferenceText">The asset reference.</param>
         /// <param name="assetReference">The reference.</param>
         /// <returns><c>true</c> if parsing was successful, <c>false</c> otherwise.</returns>
-        public static bool TryParse(string assetReferenceText, out AssetReference assetReference)
+        public static bool TryParse([NotNull] string assetReferenceText, out AssetReference assetReference)
         {
             if (assetReferenceText == null) throw new ArgumentNullException(nameof(assetReferenceText));
 

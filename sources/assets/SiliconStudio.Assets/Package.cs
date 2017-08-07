@@ -344,13 +344,7 @@ namespace SiliconStudio.Assets
                     else
                     {
                         var platformType = VSProjectHelper.GetPlatformTypeFromProject(msProject) ?? PlatformType.Shared;
-
-                        var projectReference = new ProjectReference()
-                        {
-                            Id = VSProjectHelper.GetProjectGuid(msProject),
-                            Location = pathToMsproj.MakeRelative(RootDirectory),
-                            Type = projectType.Value
-                        };
+                        var projectReference = new ProjectReference(VSProjectHelper.GetProjectGuid(msProject), pathToMsproj.MakeRelative(RootDirectory), projectType.Value);
 
                         // Add the ProjectReference only for the compatible profiles (same platform or no platform)
                         foreach (var profile in Profiles.Where(profile => platformType == profile.Platform))

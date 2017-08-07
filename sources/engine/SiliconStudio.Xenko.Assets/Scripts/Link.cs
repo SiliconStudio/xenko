@@ -68,6 +68,6 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         IIdentifiable IAssetPartDesign.Part => this;
 
         /// <inheritdoc/>
-        Link IAssetPartDesign<Link>.Part { get { return this; } set { throw new InvalidOperationException(); } }
+        Link IAssetPartDesign<Link>.Part => this;
     }
 }

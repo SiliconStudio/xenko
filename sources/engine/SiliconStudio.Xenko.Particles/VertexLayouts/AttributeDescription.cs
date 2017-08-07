@@ -8,20 +8,45 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
     /// <summary>
     /// Attribute description code used for defining vertex attributes in the <see cref="ParticleVertexBuilder"/>
     /// </summary>
-    public class AttributeDescription : IEquatable<AttributeDescription>
+    public sealed class AttributeDescription : IEquatable<AttributeDescription>
     {
         private readonly int hashCode;
-        private readonly string name;
-        public string Name => name;
-
-        public override int GetHashCode() => hashCode;
 
         public AttributeDescription(string name)
         {
-            this.name = name;
+            Name = name;
             hashCode = name?.GetHashCode() ?? 0;
         }
 
-        public bool Equals(AttributeDescription other) => (hashCode == other.hashCode);
+        public string Name { get; }
+
+        /// <inheritdoc />
+        public bool Equals(AttributeDescription other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return string.Equals(Name, other.Name, StringComparison.Ordinal);
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            return Equals(obj as AttributeDescription);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode() => hashCode;
+
+        public static bool operator ==(AttributeDescription left, AttributeDescription right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(AttributeDescription left, AttributeDescription right)
+        {
+            return !Equals(left, right);
+        }
     }
 }

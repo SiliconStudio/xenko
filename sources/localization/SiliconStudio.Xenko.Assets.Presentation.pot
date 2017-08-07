@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2017-07-13 11:05:26+0900\n"
-"PO-Revision-Date: 2017-07-13 11:05:26+0900\n"
+"POT-Creation-Date: 2017-08-02 12:28:17+0900\n"
+"PO-Revision-Date: 2017-08-02 12:28:17+0900\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -18,24 +18,24 @@ msgid ""
 "already exists."
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/ViewModels/EntityHierarchyEditorViewModel.cs:494
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/ViewModels/EntityHierarchyEditorViewModel.cs:495
 msgctxt "Message"
 msgid "Are you sure you want to delete this entity?"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/ViewModels/EntityHierarchyEditorViewModel.cs:497
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/ViewModels/EntityHierarchyEditorViewModel.cs:498
 msgctxt "Message"
 msgid "Are you sure you want to delete these {0} entities?"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/ViewModels/EntityHierarchyEditorViewModel.cs:499
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/ViewModels/UIEditorBaseViewModel.cs:428
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/ViewModels/EntityHierarchyEditorViewModel.cs:500
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/ViewModels/UIEditorBaseViewModel.cs:429
 msgctxt "Button"
 msgid "Delete"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/ViewModels/EntityHierarchyEditorViewModel.cs:499
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/ViewModels/UIEditorBaseViewModel.cs:428
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/ViewModels/EntityHierarchyEditorViewModel.cs:500
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/ViewModels/UIEditorBaseViewModel.cs:429
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/AssetFromFileTemplateGenerator.cs:49
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ScriptTemplateGenerator.cs:60
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/Templates/UpdatePlatformsWindows.xaml.cs:69
@@ -110,16 +110,12 @@ msgctxt "Settings"
 msgid "Ask before deleting UI elements"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/ViewModels/UIEditorBaseViewModel.cs:429
-msgid "Don't ask again"
-msgstr ""
-
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/ViewModels/UIEditorBaseViewModel.cs:425
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/ViewModels/UIEditorBaseViewModel.cs:426
 msgctxt "Message"
 msgid "Are you sure you want to delete this UI element?"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/ViewModels/UIEditorBaseViewModel.cs:427
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/ViewModels/UIEditorBaseViewModel.cs:428
 msgctxt "Message"
 msgid "Are you sure you want to delete these {0} UI elements?"
 msgstr ""
@@ -334,7 +330,7 @@ msgstr ""
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:64
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:108
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:187
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:783
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:787
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/GraphicsCompositorEditor/Views/GraphicsCompositorEditorView.xaml:33
 msgctxt "Menu"
 msgid "Create"
@@ -349,14 +345,14 @@ msgstr ""
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:66
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:110
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:191
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:784
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:788
 msgctxt "Menu"
 msgid "Empty entity"
 msgstr ""
 
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:92
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:136
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:810
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:814
 msgctxt "Menu"
 msgid "Actions"
 msgstr ""
@@ -369,21 +365,21 @@ msgstr ""
 
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:94
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:140
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:813
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:817
 msgctxt "Menu"
 msgid "Select prefab in asset view"
 msgstr ""
 
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:95
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:141
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:814
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:818
 msgctxt "Menu"
 msgid "Break link to prefab"
 msgstr ""
 
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:96
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:142
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:815
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:819
 msgctxt "Menu"
 msgid "Create prefab from selection"
 msgstr ""
@@ -484,232 +480,232 @@ msgstr ""
 msgid "(Unloaded)"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:472
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:473
 msgctxt "ToolTip"
 msgid "Light probes and cubemaps..."
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:482
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:483
 msgid "Light probes"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:487
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:488
 msgid "Bounces:"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:491
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:492
 msgctxt "ToolTip"
 msgid "Compute lighting using light probes"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:499
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:500
 msgctxt "ToolTip"
 msgid "Reset light probes"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:503
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:504
 msgid "Reset"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:509
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:510
 msgid "Cubemap"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:513
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:514
 msgctxt "ToolTip"
 msgid "Generate a cubemap from the scene view and save as a texture"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:517
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:518
 msgid "Capture"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:525
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:527
 msgctxt "ToolTip"
 msgid "Navigation visibility..."
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:535
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:537
 msgid "Show navigation meshes:"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:537
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:593
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:539
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:596
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/SkeletonPropertyTemplates.xaml:25
 msgctxt "Button"
 msgid "All"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:538
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:594
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:540
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:597
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/View/SkeletonPropertyTemplates.xaml:27
 msgctxt "Button"
 msgid "None"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:563
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:566
 msgctxt "ToolTip"
 msgid "Grid and gizmo options..."
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:573
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:576
 msgid "Transformation gizmo size:"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:578
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:581
 msgid "Component gizmo size:"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:579
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:582
 msgctxt "Button"
 msgid "Fixed"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:587
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:590
 msgctxt "Button"
 msgid "Camera preview"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:588
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:591
 msgctxt "Button"
 msgid "Light probe volumes"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:605
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:608
 msgctxt "Button"
 msgid "Other entities"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:612
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:616
 msgctxt "ToolTip"
 msgid "Editor camera options..."
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:622
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:626
 msgid "Projection"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:625
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:629
 msgctxt "Button"
 msgid "Perspective"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:626
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:630
 msgctxt "Button"
 msgid "Orthographic"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:628
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:632
 msgid "Near plane:"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:630
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:634
 msgid "Far plane:"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:632
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:636
 msgid "Field of view:"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:638
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:642
 msgid "Orthographic size:"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:644
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:648
 msgid "Movement"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:648
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:652
 msgid "Speed:"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:653
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:657
 msgid "Orientation"
-msgstr ""
-
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:656
-msgctxt "Button"
-msgid "Front"
-msgstr ""
-
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:658
-msgctxt "Button"
-msgid "Back"
 msgstr ""
 
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:660
 msgctxt "Button"
-msgid "Top"
+msgid "Front"
 msgstr ""
 
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:662
 msgctxt "Button"
-msgid "Bottom"
+msgid "Back"
 msgstr ""
 
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:664
 msgctxt "Button"
-msgid "Left"
+msgid "Top"
 msgstr ""
 
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:666
 msgctxt "Button"
+msgid "Bottom"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:668
+msgctxt "Button"
+msgid "Left"
+msgstr ""
+
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:670
+msgctxt "Button"
 msgid "Right"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:679
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:683
 msgctxt "ToolTip"
 msgid "Snap translations to this value"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:688
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:692
 msgctxt "ToolTip"
 msgid "Snap rotations to this value"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:697
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:701
 msgctxt "ToolTip"
 msgid "Snap scale to this factor"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:739
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:743
 msgctxt "ToolTip"
 msgid ""
 "Toggle material selection (click a selected asset to select its material)"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:742
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:746
 msgctxt "ToolTip"
 msgid "Show or hide selection mask"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:744
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:748
 msgid "Loading assets..."
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:811
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:815
 msgctxt "Menu"
 msgid "Duplicate selected entities"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:812
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:816
 msgctxt "Menu"
 msgid "Open in prefab editor"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:851
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:855
 msgid ""
 "Before you resume, fix the failing asset (likely a graphics compositor or "
 "scene)."
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:853
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:857
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:516
 msgctxt "Button"
 msgid "Resume"
 msgstr ""
 
-#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:855
+#: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/EntityHierarchyEditor/Views/EntityHierarchyEditorView.xaml:859
 #: ../editor/SiliconStudio.Xenko.Assets.Presentation/AssetEditors/UIEditor/Views/UIEditorView.xaml:518
 msgctxt "Button"
 msgid "Copy error to clipboard"
