@@ -16,6 +16,9 @@ namespace SiliconStudio.Xenko.Streaming
     public sealed class StreamingSettings : Configuration
     {
         /// <inheritdoc cref="StreamingManager.StreamingEnabled"/>
+        /// <userdoc>
+        /// Enable the streaming of resources. If disabled all the other settings are ignored.
+        /// </userdoc>
         [DataMember]
         [DefaultValue(true)]
         public bool Enabled { get; set; } = true;
@@ -33,7 +36,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// The maximum number of resources updated per streaming manager tick. Used to balance performance/streaming speed.
         /// </userdoc>
         [DataMember]
-        [DataMemberRange(1.0, 0)]
+        [DataMemberRange(1, 0)]
         [DefaultValue(8)]
         public int MaxResourcesPerUpdate { get; set; } = 8;
 
@@ -42,15 +45,15 @@ namespace SiliconStudio.Xenko.Streaming
         /// Resources that aren't used for a while are downscaled in quality.
         /// </userdoc>
         [DataMember]
-        [DataMemberRange(1.0, 0)]
+        [DataMemberRange(0, 3)]
         public TimeSpan ResourceLiveTimeout { get; set; } = TimeSpan.FromSeconds(8);
 
         /// <inheritdoc cref="StreamingManager.TargetedMemoryBudget"/>
         /// <userdoc>
-        /// The targeted memory budget of the streaming system in KB. If the memory allocated by the streaming system is under this budget, it will not try to unload resources that are not visible.
+        /// The targeted memory budget of the streaming system in MB. If the memory allocated by the streaming system is under this budget, it will not try to unload resources that are not visible.
         /// </userdoc>
         [DataMember]
-        [DataMemberRange(1.0, 0)]
+        [DataMemberRange(0, 0)]
         [DefaultValue(512)]
         public int TargetedMemoryBudget { get; set; } = 512;
     }
