@@ -47,6 +47,9 @@ namespace SiliconStudio.Xenko.Profiling
         private readonly StringBuilder fpsStatStringBuilder = new StringBuilder();
         private string fpsStatString = "";
 
+        private readonly StringBuilder gpuGeneralInfoStringBuilder = new StringBuilder();
+        private string gpuGeneralInfoString = "";
+
         private readonly StringBuilder gpuInfoStringBuilder = new StringBuilder();
         private string gpuInfoString = "";
 
@@ -66,6 +69,9 @@ namespace SiliconStudio.Xenko.Profiling
         private float viewportHeight = 1000;
 
         private uint numberOfPages;
+
+        private uint trianglesCount;
+        private uint drawCallsCount;
 
         private struct ProfilingResult : IComparer<ProfilingResult>
         {
@@ -123,6 +129,7 @@ namespace SiliconStudio.Xenko.Profiling
             profilersStringBuilder.Clear();
             fpsStatStringBuilder.Clear();
             gpuInfoStringBuilder.Clear();
+            gpuGeneralInfoStringBuilder.Clear();
 
             //Advance any profiler that needs it
             gcProfiler.Tick();
@@ -248,7 +255,10 @@ namespace SiliconStudio.Xenko.Profiling
                     profilersStringBuilder.AppendFormat("PAGE {0} OF {1}", CurrentResultPage, numberOfPages);
 
                 gpuInfoStringBuilder.Clear();
-                gpuInfoStringBuilder.AppendFormat("Graphics> Device={0}, Platform={1}, Profile={2}, Resolution={3}", GraphicsDevice.Adapter.Description, GraphicsDevice.Platform, GraphicsDevice.ShaderProfile, renderTargetSize);
+                gpuInfoStringBuilder.AppendFormat("Drawn triangles={0}, Draw calls={1}, Buffer memory={2:0.0}MB, Texture memory={3:0.0}MB", trianglesCount, drawCallsCount, GraphicsDevice.BuffersMemory, GraphicsDevice.TextureMemory);
+
+                gpuGeneralInfoStringBuilder.Clear();
+                gpuGeneralInfoStringBuilder.AppendFormat("Device={0}, Platform={1}, Profile={2}, Resolution={3}", GraphicsDevice.Adapter.Description, GraphicsDevice.Platform, GraphicsDevice.ShaderProfile, renderTargetSize);
             }
 
             fpsStatStringBuilder.Clear();
@@ -261,6 +271,7 @@ namespace SiliconStudio.Xenko.Profiling
                 profilersString = profilersStringBuilder.ToString();
                 fpsStatString = fpsStatStringBuilder.ToString();
                 gpuInfoString = gpuInfoStringBuilder.ToString();
+                gpuGeneralInfoString = gpuGeneralInfoStringBuilder.ToString();
             }
         }
 
@@ -336,6 +347,10 @@ namespace SiliconStudio.Xenko.Profiling
 
         public override void Draw(GameTime gameTime)
         {
+            // copy those values before fast text render not to influence the game stats
+            drawCallsCount = GraphicsDevice.FrameDrawCalls;
+            trianglesCount = GraphicsDevice.FrameTriangleCount;
+
             if (dumpTiming.ElapsedMilliseconds > RefreshTime && FilteringMode == GameProfilingResults.GpuEvents)
             {
                 dumpTiming.Restart();
@@ -378,6 +393,8 @@ namespace SiliconStudio.Xenko.Profiling
                 }
                 else if(FilteringMode == GameProfilingResults.GpuEvents)
                 {
+                    fastTextRenderer.DrawString(Game.GraphicsContext, gpuGeneralInfoString, textDrawStartOffset.X, currentHeight);
+                    currentHeight += TopRowHeight;
                     fastTextRenderer.DrawString(Game.GraphicsContext, gpuInfoString, textDrawStartOffset.X, currentHeight);
                     currentHeight += TopRowHeight;
                 }
