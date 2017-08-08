@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Streaming
         public int MaxResourcesPerUpdate = 8;
 
         /// <summary>
-        /// The targeted memory budget of the streaming system in KB. If the memory allocated by streaming system is under this budget it will not try to unload not visible resources.
+        /// The targeted memory budget of the streaming system in MB. If the memory allocated by streaming system is under this budget it will not try to unload not visible resources.
         /// </summary>
         public int TargetedMemoryBudget = 512;
 
