@@ -121,6 +121,7 @@ namespace SiliconStudio.Xenko.Streaming
                 MaxResourcesPerUpdate = streamingSettings.MaxResourcesPerUpdate;
                 ResourceLiveTimeout = streamingSettings.ResourceLiveTimeout;
                 StreamingEnabled = streamingSettings.Enabled;
+                TargetedMemoryBudget = streamingSettings.TargetedMemoryBudget;
             }
         }
 
