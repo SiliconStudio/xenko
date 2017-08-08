@@ -3,6 +3,7 @@
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_UNIX
 using System;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
@@ -121,12 +122,12 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         private void ActivateEditTextImpl()
         {
-            var input = (InputManager)UIElementServices.Services.GetService(typeof(InputManager));
+            var input = UIElementServices.Services.GetSafeServiceAs<InputManager>();
             input.TextInput?.EnabledTextInput();
         }
         private void DeactivateEditTextImpl()
         {
-            var input = (InputManager)UIElementServices.Services.GetService(typeof(InputManager));
+            var input = UIElementServices.Services.GetSafeServiceAs<InputManager>();
             input.TextInput?.DisableTextInput();
             Composition = "";
 

@@ -21,6 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core
 {
@@ -40,25 +41,51 @@ namespace SiliconStudio.Core
         event EventHandler<ServiceEventArgs> ServiceRemoved;
 
         /// <summary>
+        /// Adds a service to this <see cref="ServiceRegistry"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of service to add.</typeparam>
+        /// <param name="service">The service to add.</param>
+        /// <exception cref="ArgumentNullException">Service cannot be null</exception>
+        /// <exception cref="ArgumentException">Service is already registered with this type</exception>
+        void AddService<T>(T service) where T : class;
+
+        /// <summary>
+        /// Gets the service object of the specified type.
+        /// </summary>
+        /// <typeparam name="T">The type of the service to retrieve.</typeparam>
+        /// <returns>A service of the requested type, or [null] if not found.</returns>
+        [CanBeNull]
+        T GetService<T>() where T : class;
+
+        /// <summary>
+        /// Removes the object providing a specified service.
+        /// </summary>
+        /// <typeparam name="T">The type of the service to remove.</typeparam>
+        void RemoveService<T>() where T : class;
+
+        /// <summary>
         /// Gets the service object of the specified type.
         /// </summary>
         /// <param name="serviceType">The type of the service to get.</param>
         /// <returns>A service of the requested type, or [null] if not found.</returns>
+        [Obsolete("Use the type-safe generic overload instead")]
         object GetService(Type serviceType);
 
         /// <summary>
         /// Adds a service to this service provider.
         /// </summary>
         /// <param name="type">The type of service to add.</param>
-        /// <param name="provider">The instance of the service provider to add.</param>
-        /// <exception cref="System.ArgumentNullException">Service type cannot be null</exception>
-        /// <exception cref="System.ArgumentException">Service is already registered</exception>
-        void AddService(Type type, object provider);
+        /// <param name="service">The instance of the service to add.</param>
+        /// <exception cref="ArgumentNullException">Service type cannot be null</exception>
+        /// <exception cref="ArgumentException">Service is already registered</exception>
+        [Obsolete("Use the type-safe  generic overload instead")]
+        void AddService(Type type, object service);
 
         /// <summary>
         /// Removes the object providing a specified service.
         /// </summary>
         /// <param name="type">The type of service.</param>
+        [Obsolete("Use the type-safe  generic overload instead")]
         void RemoveService(Type type);
     }
 }

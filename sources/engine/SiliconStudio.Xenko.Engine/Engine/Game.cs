@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Engine
         /// Gets the script system.
         /// </summary>
         /// <value>The script.</value>
-        public ScriptSystem Script { get; internal set; }
+        public ScriptSystem Script { get; }
 
         /// <summary>
         /// Gets the input manager.
@@ -77,46 +77,46 @@ namespace SiliconStudio.Xenko.Engine
         /// Gets the scene system.
         /// </summary>
         /// <value>The scene system.</value>
-        public SceneSystem SceneSystem { get; private set; }
+        public SceneSystem SceneSystem { get; }
 
         /// <summary>
         /// Gets the effect system.
         /// </summary>
         /// <value>The effect system.</value>
         public EffectSystem EffectSystem { get; private set; }
-        
+
         /// <summary>
         /// Gets the streaming system.
         /// </summary>
         /// <value>The streaming system.</value>
-        public StreamingManager Streaming { get; private set; }
+        public StreamingManager Streaming { get; }
 
         /// <summary>
         /// Gets the audio system.
         /// </summary>
         /// <value>The audio.</value>
-        public AudioSystem Audio { get; private set; }
+        public AudioSystem Audio { get; }
 
         /// <summary>
         /// Gets the sprite animation system.
         /// </summary>
         /// <value>The sprite animation system.</value>
-        public SpriteAnimationSystem SpriteAnimation { get; private set; }
+        public SpriteAnimationSystem SpriteAnimation { get; }
 
         /// <summary>
         /// Gets the game profiler system
         /// </summary>
-        public DebugConsoleSystem DebugConsoleSystem { get; private set; }
+        public DebugConsoleSystem DebugConsoleSystem { get; }
 
         /// <summary>
         /// Gets the game profiler system
         /// </summary>
-        public GameProfilingSystem ProfilingSystem { get; private set; }
+        public GameProfilingSystem ProfilingSystem { get; }
 
         /// <summary>
         /// Gets the VR Device System
         /// </summary>
-        public VRDeviceSystem VRDeviceSystem { get; private set; }
+        public VRDeviceSystem VRDeviceSystem { get; }
 
         /// <summary>
         /// Gets the font system.
@@ -156,7 +156,7 @@ namespace SiliconStudio.Xenko.Engine
                 {
                     consoleLogListener.LogMode = value;
                 }
-            }            
+            }
         }
 
         /// <summary>
@@ -199,39 +199,39 @@ namespace SiliconStudio.Xenko.Engine
             // Create all core services, except Input which is created during `Initialize'.
             // Registration takes place in `Initialize'.
             Script = new ScriptSystem(Services);
-            Services.AddService(typeof(ScriptSystem), Script);
+            Services.AddService(Script);
 
             SceneSystem = new SceneSystem(Services);
-            Services.AddService(typeof(SceneSystem), SceneSystem);
+            Services.AddService(SceneSystem);
 
             Streaming = new StreamingManager(Services);
 
             Audio = new AudioSystem(Services);
-            Services.AddService(typeof(AudioSystem), Audio);
-            Services.AddService(typeof(IAudioEngineProvider), Audio);
+            Services.AddService(Audio);
+            Services.AddService<IAudioEngineProvider>(Audio);
 
             gameFontSystem = new GameFontSystem(Services);
-            Services.AddService(typeof(FontSystem), gameFontSystem.FontSystem);
-            Services.AddService(typeof(IFontFactory), gameFontSystem.FontSystem);
+            Services.AddService(gameFontSystem.FontSystem);
+            Services.AddService<IFontFactory>(gameFontSystem.FontSystem);
 
             SpriteAnimation = new SpriteAnimationSystem(Services);
-            Services.AddService(typeof(SpriteAnimationSystem), SpriteAnimation);
+            Services.AddService(SpriteAnimation);
 
             DebugConsoleSystem = new DebugConsoleSystem(Services);
-            Services.AddService(typeof(DebugConsoleSystem), DebugConsoleSystem);
+            Services.AddService(DebugConsoleSystem);
 
             ProfilingSystem = new GameProfilingSystem(Services);
-            Services.AddService(typeof(GameProfilingSystem), ProfilingSystem);
+            Services.AddService(ProfilingSystem);
 
             VRDeviceSystem = new VRDeviceSystem(Services);
-            Services.AddService(typeof(VRDeviceSystem), VRDeviceSystem);
+            Services.AddService(VRDeviceSystem);
 
             Content.Serializer.LowLevelSerializerSelector = ParameterContainerExtensions.DefaultSceneSerializerSelector;
 
             // Creates the graphics device manager
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
-            Services.AddService(typeof(IGraphicsDeviceManager), GraphicsDeviceManager);
-            Services.AddService(typeof(IGraphicsDeviceService), GraphicsDeviceManager);
+            Services.AddService<IGraphicsDeviceManager>(GraphicsDeviceManager);
+            Services.AddService<IGraphicsDeviceService>(GraphicsDeviceManager);
 
             AutoLoadDefaultSettings = true;
         }
@@ -244,7 +244,7 @@ namespace SiliconStudio.Xenko.Engine
             DestroyAssetDatabase();
 
             base.Destroy();
-            
+
             if (logListener != null)
                 GlobalLogger.GlobalMessageLogged -= logListener;
         }
@@ -328,7 +328,7 @@ namespace SiliconStudio.Xenko.Engine
                     deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = (int)(deviceManager.PreferredBackBufferHeight * deviceAr);
                 }
                 else
-                { 
+                {
                     deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = (int)(deviceManager.PreferredBackBufferWidth / deviceAr);
                 }
             }
@@ -344,7 +344,7 @@ namespace SiliconStudio.Xenko.Engine
             // Add the input manager
             // Add it first so that it can obtained by the UI system
             Input = new InputManager(Services);
-            Services.AddService(typeof(InputManager), Input);
+            Services.AddService(Input);
             GameSystems.Add(Input);
 
             // Initialize the systems
@@ -366,7 +366,7 @@ namespace SiliconStudio.Xenko.Engine
             GameSystems.Add(ProfilingSystem);
 
             EffectSystem = new EffectSystem(Services);
-            Services.AddService(typeof(EffectSystem), EffectSystem);
+            Services.AddService(EffectSystem);
 
             // If requested in game settings, compile effects remotely and/or notify new shader requests
             if (Settings != null)
@@ -378,7 +378,7 @@ namespace SiliconStudio.Xenko.Engine
 
             GameSystems.Add(Streaming);
             GameSystems.Add(SceneSystem);
-            
+
             // Add the Audio System
             GameSystems.Add(Audio);
 
@@ -397,7 +397,7 @@ namespace SiliconStudio.Xenko.Engine
             {
                 // Create and mount database file system
                 var objDatabase = ObjectDatabase.CreateDefaultDatabase();
-                
+
                 // Only set a mount path if not mounted already
                 var mountPath = VirtualFileSystem.ResolveProviderUnsafe("/asset", true).Provider == null ? "/asset" : null;
                 var result = new DatabaseFileProvider(objDatabase, mountPath);

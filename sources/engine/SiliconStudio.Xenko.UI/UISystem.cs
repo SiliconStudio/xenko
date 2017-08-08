@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.UI
         {
             base.Initialize();
 
-            input = Services.GetServiceAs<InputManager>();
+            input = Services.GetService<InputManager>();
 
             Enabled = true;
             Visible = false;

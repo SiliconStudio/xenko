@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
             Scene.Entities.Add(knight);
 
-            camera = new TestCamera(Services.GetServiceAs<SceneSystem>().GraphicsCompositor);
+            camera = new TestCamera(Services.GetSafeServiceAs<SceneSystem>().GraphicsCompositor);
             CameraComponent = camera.Camera;
             Script.Add(camera);
 

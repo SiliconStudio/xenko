@@ -25,11 +25,11 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
     public class UITestGameBase : GameTestBase
     {
         protected readonly Logger Logger = GlobalLogger.GetLogger("Test Game");
-        
+
         protected Scene Scene;
         protected Entity Camera;
         protected Entity UIRoot;
-        
+
         protected UIComponent UIComponent => UIRoot.Get<UIComponent>();
 
         /// <summary>
@@ -93,11 +93,11 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             UIComponent.ResolutionStretch = ResolutionStretch.FixedWidthFixedHeight;
             Scene.Entities.Add(UIRoot);
 
-            UI = (UISystem)Services.GetService(typeof(UISystem));
+            UI = Services.GetService<UISystem>();
             if (UI == null)
             {
                 UI = new UISystem(Services);
-                Services.AddService(typeof(UISystem), UI);
+                Services.AddService(UI);
                 GameSystems.Add(UI);
             }
 
