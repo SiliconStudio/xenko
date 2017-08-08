@@ -25,6 +25,7 @@ using System;
 
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Games
@@ -53,12 +54,11 @@ namespace SiliconStudio.Xenko.Games
         /// <remarks>
         /// The GameSystem is expecting the following services to be registered: <see cref="IGame"/> and <see cref="IContentManager"/>.
         /// </remarks>
-        protected GameSystemBase(IServiceRegistry registry)
+        protected GameSystemBase([NotNull] IServiceRegistry registry)
         {
-            if (registry == null) throw new ArgumentNullException("registry");
-            this.registry = registry;
-            game = (GameBase)Services.GetServiceAs<IGame>();
-            contentManager = Services.GetServiceAs<IContentManager>();
+            this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
+            game = (GameBase)Services.GetService<IGame>();
+            contentManager = Services.GetService<IContentManager>();
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace SiliconStudio.Xenko.Games
         {
             get
             {
-                return graphicsDeviceService != null ? graphicsDeviceService.GraphicsDevice : null;
+                return graphicsDeviceService?.GraphicsDevice;
             }
         }
 
@@ -164,7 +164,7 @@ namespace SiliconStudio.Xenko.Games
         {
             if (graphicsDeviceService == null)
             {
-                graphicsDeviceService = (IGraphicsDeviceService)registry.GetService(typeof(IGraphicsDeviceService));
+                graphicsDeviceService = registry.GetService<IGraphicsDeviceService>();
             }
         }
 

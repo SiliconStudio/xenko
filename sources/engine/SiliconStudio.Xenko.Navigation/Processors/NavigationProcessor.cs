@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Navigation.Processors
 
         protected override void OnSystemAdd()
         {
-            gameSystemCollection = Services.GetServiceAs<IGameSystemCollection>() as GameSystemCollection;
+            gameSystemCollection = Services.GetService<IGameSystemCollection>() as GameSystemCollection;
             if (gameSystemCollection == null)
                 throw new Exception("NavigationProcessor can not access the game systems collection");
 

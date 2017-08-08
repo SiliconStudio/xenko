@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             Scene.Entities.Add(imageEntity3);
 
             // setup the camera
-            var camera = new TestUICamera(Services.GetServiceAs<SceneSystem>().GraphicsCompositor) { Yaw = MathUtil.Pi/4, Pitch = MathUtil.Pi/4, Position = new Vector3(500, 500, 500), MoveSpeed = 100 };
+            var camera = new TestUICamera(Services.GetSafeServiceAs<SceneSystem>().GraphicsCompositor) { Yaw = MathUtil.Pi/4, Pitch = MathUtil.Pi/4, Position = new Vector3(500, 500, 500), MoveSpeed = 100 };
             camera.SetTarget(cube, true);
             CameraComponent = camera.Camera;
             Script.Add(camera);

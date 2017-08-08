@@ -159,22 +159,22 @@ namespace SiliconStudio.Xenko.Physics
 
         protected override void OnSystemAdd()
         {
-            physicsSystem = (Bullet2PhysicsSystem)Services.GetServiceAs<IPhysicsSystem>();
+            physicsSystem = (Bullet2PhysicsSystem)Services.GetService<IPhysicsSystem>();
             if (physicsSystem == null)
             {
                 physicsSystem = new Bullet2PhysicsSystem(Services);
-                Services.AddService(typeof(IPhysicsSystem), physicsSystem);
-                var gameSystems = Services.GetServiceAs<IGameSystemCollection>();
+                Services.AddService<IPhysicsSystem>(physicsSystem);
+                var gameSystems = Services.GetSafeServiceAs<IGameSystemCollection>();
                 gameSystems.Add(physicsSystem);
             }
 
             ((IReferencable)physicsSystem).AddReference();
 
-            debugShapeRendering = Services.GetServiceAs<PhysicsShapesRenderingService>();
+            debugShapeRendering = Services.GetService<PhysicsShapesRenderingService>();
             if (debugShapeRendering == null)
             {
                 debugShapeRendering = new PhysicsShapesRenderingService(Services);
-                var gameSystems = Services.GetServiceAs<IGameSystemCollection>();
+                var gameSystems = Services.GetSafeServiceAs<IGameSystemCollection>();
                 gameSystems.Add(debugShapeRendering);
             }
 

@@ -154,7 +154,7 @@ namespace SiliconStudio.Xenko.Games
 
         public override void Initialize()
         {
-            var gamePlatform = (IGamePlatform)this.Services.GetService(typeof(IGamePlatform));
+            var gamePlatform = Services.GetService<IGamePlatform>();
             GameContext.RequestedWidth = PreferredBackBufferWidth;
             GameContext.RequestedHeight = PreferredBackBufferHeight;
             Window = gamePlatform.CreateWindow(GameContext);

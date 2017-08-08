@@ -168,7 +168,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
             // Load default graphics compositor
             SceneSystem.GraphicsCompositor = Content.Load<GraphicsCompositor>("GraphicsCompositor");
 
-            camera = new TestCamera(Services.GetServiceAs<SceneSystem>().GraphicsCompositor);
+            camera = new TestCamera(Services.GetSafeServiceAs<SceneSystem>().GraphicsCompositor);
             CameraComponent = camera.Camera;
             Script.Add(camera);
         }

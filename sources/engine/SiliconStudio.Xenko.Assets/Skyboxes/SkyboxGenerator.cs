@@ -25,23 +25,21 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
     {
         public SkyboxGeneratorContext(SkyboxAsset skybox)
         {
-            if (skybox == null) throw new ArgumentNullException(nameof(skybox));
-
-            Skybox = skybox;
+            Skybox = skybox ?? throw new ArgumentNullException(nameof(skybox));
             Services = new ServiceRegistry();
             Content = new ContentManager(Services);
-            Services.AddService(typeof(IContentManager), Content);
-            Services.AddService(typeof(ContentManager), Content);
+            Services.AddService<IContentManager>(Content);
+            Services.AddService(Content);
 
             GraphicsDevice = GraphicsDevice.New();
             GraphicsDeviceService = new GraphicsDeviceServiceLocal(Services, GraphicsDevice);
-            Services.AddService(typeof(IGraphicsDeviceService), GraphicsDeviceService);
+            Services.AddService(GraphicsDeviceService);
 
             var graphicsContext = new GraphicsContext(GraphicsDevice);
-            Services.AddService(typeof(GraphicsContext), graphicsContext);
+            Services.AddService(graphicsContext);
 
             EffectSystem = new EffectSystem(Services);
-            Services.AddService(typeof(EffectSystem), EffectSystem);
+            Services.AddService(EffectSystem);
             EffectSystem.Initialize();
             ((IContentable)EffectSystem).LoadContent();
             ((EffectCompilerCache)EffectSystem.Compiler).CompileEffectAsynchronously = false;

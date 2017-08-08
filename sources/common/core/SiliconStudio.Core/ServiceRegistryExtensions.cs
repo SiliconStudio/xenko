@@ -14,9 +14,12 @@ namespace SiliconStudio.Core
         /// <typeparam name="T">Type of the interface contract of the service</typeparam>
         /// <param name="registry">The registry.</param>
         /// <returns>An instance of the requested service registered to this registry.</returns>
+        [CanBeNull]
+        [Obsolete("Use the generic overload of IServiceRegistry.GetService instead")]
         public static T GetServiceAs<T>([NotNull] this IServiceRegistry registry)
+            where T : class
         {
-            return (T)registry.GetService(typeof(T));
+            return registry.GetService<T>();
         }
 
         /// <summary>
@@ -26,14 +29,13 @@ namespace SiliconStudio.Core
         /// <param name="registry">The registry.</param>
         /// <exception cref="ServiceNotFoundException">If the service was not found</exception>
         /// <returns>An instance of the requested service registered to this registry.</returns>
+        [NotNull]
         public static T GetSafeServiceAs<T>([NotNull] this IServiceRegistry registry)
+            where T : class
         {
-            var serviceFound = (T)registry.GetService(typeof(T));
-            if (Equals(serviceFound, default(T)))
-            {
-                throw new ServiceNotFoundException(typeof(T));
-            }
-            return serviceFound;
+            var service = registry.GetService<T>();
+            if (service == null) throw new ServiceNotFoundException(typeof(T));
+            return service;
         }
 
         /// <summary>
@@ -44,26 +46,27 @@ namespace SiliconStudio.Core
         /// <param name="serviceReady">The service ready.</param>
         /// <returns>An instance of the requested service registered to this registry.</returns>
         /// <exception cref="ServiceNotFoundException">If the service was not found</exception>
-        public static void GetServiceLate<T>([NotNull] this IServiceRegistry registry, Action<T> serviceReady)
+        public static void GetServiceLate<T>([NotNull] this IServiceRegistry registry, [NotNull] Action<T> serviceReady)
+            where T : class
         {
-            var instance = GetServiceAs<T>(registry);
-            if (Equals(instance, null))
+            var service = registry.GetService<T>();
+            if (service == null)
             {
                 var deferred = new ServiceDeferredRegister<T>(registry, serviceReady);
                 deferred.Register();
             }
             else
             {
-                serviceReady(instance);
+                serviceReady(service);
             }
-        }    
+        }
 
         private class ServiceDeferredRegister<T>
         {
             private readonly IServiceRegistry services;
             private readonly Action<T> serviceReady;
 
-            public ServiceDeferredRegister(IServiceRegistry registry, Action<T> serviceReady)
+            public ServiceDeferredRegister([NotNull] IServiceRegistry registry, [NotNull] Action<T> serviceReady)
             {
                 services = registry;
                 this.serviceReady = serviceReady;
@@ -71,15 +74,15 @@ namespace SiliconStudio.Core
 
             public void Register()
             {
-                services.ServiceAdded += Services_ServiceAdded;
+                services.ServiceAdded += OnServiceAdded;
             }
 
-            private void Services_ServiceAdded(object sender, [NotNull] ServiceEventArgs args)
+            private void OnServiceAdded(object sender, [NotNull] ServiceEventArgs args)
             {
                 if (args.ServiceType == typeof(T))
                 {
                     serviceReady((T)args.Instance);
-                    services.ServiceAdded -= Services_ServiceAdded;
+                    services.ServiceAdded -= OnServiceAdded;
                 }
             }
         }

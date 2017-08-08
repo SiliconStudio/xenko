@@ -129,7 +129,7 @@ namespace SiliconStudio.Xenko.Games
                     GraphicsProfile.Level_9_1, 
                 };
 
-            graphicsDeviceFactory = (IGraphicsDeviceFactory)game.Services.GetService(typeof(IGraphicsDeviceFactory));
+            graphicsDeviceFactory = game.Services.GetService<IGraphicsDeviceFactory>();
             if (graphicsDeviceFactory == null)
             {
                 throw new InvalidOperationException("IGraphicsDeviceFactory is not registered as a service");
@@ -569,13 +569,13 @@ namespace SiliconStudio.Xenko.Games
         {
             if (game != null)
             {
-                if (game.Services.GetService(typeof(IGraphicsDeviceService)) == this)
+                if (game.Services.GetService<IGraphicsDeviceService>() == this)
                 {
-                    game.Services.RemoveService(typeof(IGraphicsDeviceService));
+                    game.Services.RemoveService<IGraphicsDeviceService>();
                 }
-                if (game.Services.GetService(typeof(IGraphicsDeviceManager)) == this)
+                if (game.Services.GetService<IGraphicsDeviceManager>() == this)
                 {
-                    game.Services.RemoveService(typeof(IGraphicsDeviceManager));
+                    game.Services.RemoveService<IGraphicsDeviceManager>();
                 }
 
                 game.WindowCreated -= GameOnWindowCreated;

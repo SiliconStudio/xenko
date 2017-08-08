@@ -109,7 +109,7 @@ namespace SiliconStudio.Xenko.Assets
                 assetManager.Save(Url, result);
 
                 return Task.FromResult(ResultStatus.Successful);
-            }  
+            }
         }
 
         public static void SetPlatformOrientation(Package package, PlatformType platform, RequiredDisplayOrientation orientation)
