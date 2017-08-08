@@ -289,7 +289,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// <summary>
         /// Notify the streaming manager of the change memory used by the resources.
         /// </summary>
-        /// <param name="memoryUsedChange">The change of memory used in KB. This value can be positive of negative.</param>
+        /// <param name="memoryUsedChange">The change of memory used in MB. This value can be positive of negative.</param>
         public void RegisterMemoryUsage(int memoryUsedChange)
         {
             Interlocked.Add(ref currentlyAllocatedMemory, memoryUsedChange);
@@ -497,13 +497,14 @@ namespace SiliconStudio.Xenko.Streaming
             Debug.Assert(resource != null && resource.CanBeUpdated);
 
             var options = resource.StreamingOptions ?? StreamingOptions.Default;
+            var isUnderBudget = currentlyAllocatedMemory / 1024 < TargetedMemoryBudget;
 
             // Calculate target quality for that asset
             StreamingQuality targetQuality = StreamingQuality.Mininum;
-            if (resource.LastTimeUsed > 0 || options.KeepLoaded)
+            if (isUnderBudget || resource.LastTimeUsed > 0 || options.KeepLoaded)
             {
                 var lastUsageTimespan = new TimeSpan((frameIndex - resource.LastTimeUsed) * ManagerUpdatesInterval.Ticks);
-                if (lastUsageTimespan < ResourceLiveTimeout || currentlyAllocatedMemory/1024 < TargetedMemoryBudget || options.KeepLoaded)
+                if (isUnderBudget || lastUsageTimespan < ResourceLiveTimeout || options.KeepLoaded)
                 {
                     targetQuality = StreamingQuality.Maximum;
 #if USE_TEST_MANUAL_QUALITY
