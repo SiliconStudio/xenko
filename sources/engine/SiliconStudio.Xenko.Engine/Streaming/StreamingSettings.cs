@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -16,6 +17,7 @@ namespace SiliconStudio.Xenko.Streaming
     {
         /// <inheritdoc cref="StreamingManager.StreamingEnabled"/>
         [DataMember]
+        [DefaultValue(true)]
         public bool Enabled { get; set; } = true;
 
         /// <inheritdoc cref="StreamingManager.ManagerUpdatesInterval"/>
@@ -26,20 +28,30 @@ namespace SiliconStudio.Xenko.Streaming
         [DataMemberRange(0.001, 3)]
         public TimeSpan ManagerUpdatesInterval { get; set; } = TimeSpan.FromMilliseconds(33);
 
-        /// <inheritdoc cref="StreamingManager.ResourceLiveTimeout"/>
-        /// <userdoc>
-        /// Resources that aren't used for a while are downscaled in quality.
-        /// </userdoc>
-        [DataMember]
-        [DataMemberRange(1.0, 0)]
-        public TimeSpan ResourceLiveTimeout { get; set; } = TimeSpan.FromSeconds(5);
-
         /// <inheritdoc cref="StreamingManager.MaxResourcesPerUpdate"/>
         /// <userdoc>
         /// The maximum number of resources updated per streaming manager tick. Used to balance performance/streaming speed.
         /// </userdoc>
         [DataMember]
         [DataMemberRange(1.0, 0)]
+        [DefaultValue(8)]
         public int MaxResourcesPerUpdate { get; set; } = 8;
+
+        /// <inheritdoc cref="StreamingManager.ResourceLiveTimeout"/>
+        /// <userdoc>
+        /// Resources that aren't used for a while are downscaled in quality.
+        /// </userdoc>
+        [DataMember]
+        [DataMemberRange(1.0, 0)]
+        public TimeSpan ResourceLiveTimeout { get; set; } = TimeSpan.FromSeconds(8);
+
+        /// <inheritdoc cref="StreamingManager.TargetedMemoryBudget"/>
+        /// <userdoc>
+        /// The targeted memory budget of the streaming system in KB. If the memory allocated by the streaming system is under this budget, it will not try to unload resources that are not visible.
+        /// </userdoc>
+        [DataMember]
+        [DataMemberRange(1.0, 0)]
+        [DefaultValue(512)]
+        public int TargetedMemoryBudget { get; set; } = 512;
     }
 }
