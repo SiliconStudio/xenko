@@ -32,11 +32,10 @@ namespace SiliconStudio.Xenko.Rendering
         /// <exception cref="System.ArgumentNullException">services</exception>
         internal RenderContext(IServiceRegistry services)
         {
-            if (services == null) throw new ArgumentNullException(nameof(services));
-            Services = services;
+            Services = services ?? throw new ArgumentNullException(nameof(services));
             Effects = services.GetSafeServiceAs<EffectSystem>();
             GraphicsDevice = services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
-            Allocator = services.GetServiceAs<GraphicsContext>().Allocator ?? new GraphicsResourceAllocator(GraphicsDevice).DisposeBy(GraphicsDevice);
+            Allocator = services.GetSafeServiceAs<GraphicsContext>().Allocator ?? new GraphicsResourceAllocator(GraphicsDevice).DisposeBy(GraphicsDevice);
 
             threadContext = new ThreadLocal<RenderDrawContext>(() =>
             {

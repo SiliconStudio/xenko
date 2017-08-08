@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
 
         public override void Draw(RenderContext context)
         {
-            var graphicsCompositor = Services.GetServiceAs<SceneSystem>()?.GraphicsCompositor;
+            var graphicsCompositor = Services.GetService<SceneSystem>()?.GraphicsCompositor;
 
             // Monitor changes in the camera slots of the current compositor
             if (graphicsCompositor != currentCompositor)
@@ -137,7 +137,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             if (!camera.Enabled) throw new InvalidOperationException($"The camera [{camera.Entity.Name}] is disabled and can't be attached");
             if (camera.Slot.AttachedCompositor != null) throw new InvalidOperationException($"The camera [{camera.Entity.Name}] is already attached");
 
-            var graphicsCompositor = Services.GetServiceAs<SceneSystem>()?.GraphicsCompositor;
+            var graphicsCompositor = Services.GetService<SceneSystem>()?.GraphicsCompositor;
             if (graphicsCompositor != null)
             {
                 for (var i = 0; i < graphicsCompositor.Cameras.Count; ++i)

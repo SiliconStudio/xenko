@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Audio
         {
             base.OnSystemAdd();
 
-            audioSystem = Services.GetServiceAs<AudioSystem>();
+            audioSystem = Services.GetService<AudioSystem>();
         }
 
         protected internal override void OnSystemRemove()

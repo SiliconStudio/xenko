@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Audio
         {
             base.OnSystemAdd();
 
-            audioSystem = Services.GetServiceAs<AudioSystem>();
+            audioSystem = Services.GetSafeServiceAs<AudioSystem>();
 
             audioSystem.Listeners.CollectionChanged += OnListenerCollectionChanged;
         }

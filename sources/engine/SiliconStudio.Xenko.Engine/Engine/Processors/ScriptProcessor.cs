@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
 
         protected internal override void OnSystemAdd()
         {
-            scriptSystem = Services.GetServiceAs<ScriptSystem>();
+            scriptSystem = Services.GetService<ScriptSystem>();
         }
 
         /// <inheritdoc/>

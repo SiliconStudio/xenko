@@ -41,16 +41,16 @@ namespace SiliconStudio.Xenko.Rendering.UI
             base.InitializeCore();
 
             Name = "UIComponentRenderer";
-            game = (IGame)RenderSystem.Services.GetService(typeof(IGame));
-            input = (InputManager)RenderSystem.Services.GetService(typeof(InputManager));
-            uiSystem = (UISystem)RenderSystem.Services.GetService(typeof(UISystem));
+            game = RenderSystem.Services.GetService<IGame>();
+            input = RenderSystem.Services.GetService<InputManager>();
+            uiSystem = RenderSystem.Services.GetService<UISystem>();
             graphicsDeviceService = RenderSystem.Services.GetSafeServiceAs<IGraphicsDeviceService>();
 
             if (uiSystem == null)
             {
-                var gameSytems = RenderSystem.Services.GetServiceAs<IGameSystemCollection>();
+                var gameSytems = RenderSystem.Services.GetSafeServiceAs<IGameSystemCollection>();
                 uiSystem = new UISystem(RenderSystem.Services);
-                RenderSystem.Services.AddService(typeof(UISystem), uiSystem);
+                RenderSystem.Services.AddService(uiSystem);
                 gameSytems.Add(uiSystem);
             }
 

@@ -6,8 +6,6 @@ using NUnit.Framework;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
-using SiliconStudio.Xenko.Rendering.Images;
-using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Compositing;
@@ -21,15 +19,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
     public class TestScene : GraphicTestGameBase
     {
         private Entity cubeEntity;
-
-        public TestScene()
-        {
-        }
-
-        protected override void RegisterTests()
-        {
-            base.RegisterTests();
-        }
 
         protected override async Task LoadContent()
         {
@@ -66,7 +55,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             SceneSystem.GraphicsCompositor = GraphicsCompositorHelper.CreateDefault(false, graphicsProfile: GraphicsProfile.Level_9_1);
 
             // Create a camera entity and add it to the scene
-            var cameraEntity = new Entity { new CameraComponent { Slot = Services.GetServiceAs<SceneSystem>().GraphicsCompositor.Cameras[0].ToSlotId() } };
+            var cameraEntity = new Entity { new CameraComponent { Slot = Services.GetSafeServiceAs<SceneSystem>().GraphicsCompositor.Cameras[0].ToSlotId() } };
             cameraEntity.Transform.Position = new Vector3(0, 0, 5);
             scene.Entities.Add(cameraEntity);
 

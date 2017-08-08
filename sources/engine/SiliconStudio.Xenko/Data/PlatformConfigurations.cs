@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Data
         {
             //find default
             var config = Configurations.Where(x => x.Platforms == ConfigPlatforms.None).FirstOrDefault(x => x.Configuration is T);
-            
+
             //perform logic by platform and if required even gpu/cpu/specs
 
             var platform = ConfigPlatforms.None;
