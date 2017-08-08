@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -32,6 +33,7 @@ namespace SiliconStudio.Xenko.Streaming
         private bool isDisposing;
         private int frameIndex;
         private bool streamingEnabled = true;
+        private int currentlyAllocatedMemory; // in KB
 #if USE_TEST_MANUAL_QUALITY
         private int testQuality = 100;
 #endif
@@ -46,12 +48,17 @@ namespace SiliconStudio.Xenko.Streaming
         /// <summary>
         /// The <see cref="StreamableResource"/> live timeout. Resources that aren't used for a while are downscaled in quality.
         /// </summary>
-        public TimeSpan ResourceLiveTimeout = TimeSpan.FromSeconds(5);
+        public TimeSpan ResourceLiveTimeout = TimeSpan.FromSeconds(8);
 
         /// <summary>
         /// The maximum number of resources updated per streaming manager tick. Used to balance performance/streaming speed.
         /// </summary>
         public int MaxResourcesPerUpdate = 8;
+
+        /// <summary>
+        /// The targeted memory budget of the streaming system in KB. If the memory allocated by streaming system is under this budget it will not try to unload not visible resources.
+        /// </summary>
+        public int TargetedMemoryBudget = 512;
 
         /// <summary>
         /// Gets the content streaming service.
@@ -141,6 +148,7 @@ namespace SiliconStudio.Xenko.Streaming
                 resources.Clear();
                 resourcesLookup.Clear();
                 activeStreaming.Clear();
+                currentlyAllocatedMemory = 0;
             }
 
             ContentStreaming.Dispose();
@@ -275,6 +283,15 @@ namespace SiliconStudio.Xenko.Streaming
                 if (options.HasValue)
                     SetResourceStreamingOptions(resource, options.Value, false);
             }
+        }
+
+        /// <summary>
+        /// Notify the streaming manager of the change memory used by the resources.
+        /// </summary>
+        /// <param name="memoryUsedChange">The change of memory used in KB. This value can be positive of negative.</param>
+        public void RegisterMemoryUsage(int memoryUsedChange)
+        {
+            Interlocked.Add(ref currentlyAllocatedMemory, memoryUsedChange);
         }
 
         private void SetResourceStreamingOptions(StreamingTexture resource, StreamingOptions options, bool combineOptions)
@@ -485,7 +502,7 @@ namespace SiliconStudio.Xenko.Streaming
             if (resource.LastTimeUsed > 0 || options.KeepLoaded)
             {
                 var lastUsageTimespan = new TimeSpan((frameIndex - resource.LastTimeUsed) * ManagerUpdatesInterval.Ticks);
-                if (lastUsageTimespan < ResourceLiveTimeout || options.KeepLoaded)
+                if (lastUsageTimespan < ResourceLiveTimeout || currentlyAllocatedMemory/1024 < TargetedMemoryBudget || options.KeepLoaded)
                 {
                     targetQuality = StreamingQuality.Maximum;
 #if USE_TEST_MANUAL_QUALITY
