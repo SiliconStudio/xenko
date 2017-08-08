@@ -24,6 +24,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.ReferenceCounting;
@@ -385,6 +386,14 @@ namespace SiliconStudio.Xenko.Graphics
         /// The underlying parent texture (if this is a view).
         /// </summary>
         internal Texture ParentTexture { get; private set; }
+
+        /// <summary>
+        /// Returns the memory allocated by the texture in KB.
+        /// </summary>
+        internal int AllocatedMemory
+        {
+            get { return ArraySize * mipmapDescriptions?.Sum(desc => desc.MipmapSize) / 1024 ?? 0; }
+        }
 
         private MipMapDescription[] mipmapDescriptions;
 
