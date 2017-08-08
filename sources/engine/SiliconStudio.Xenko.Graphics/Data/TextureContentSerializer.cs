@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Graphics.Data
             {
                 var services = stream.Context.Tags.Get(ServiceRegistry.ServiceRegistryKey);
                 var graphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
-                var texturesStreamingProvider = services.GetServiceAs<ITexturesStreamingProvider>();
+                var texturesStreamingProvider = services.GetService<ITexturesStreamingProvider>();
 
                 var isStreamable = stream.ReadBoolean();
                 if (!isStreamable)

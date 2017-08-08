@@ -90,7 +90,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
             entities.Add(megalodon);
             entities.Add(knight);
 
-            camera = new TestCamera(Services.GetServiceAs<SceneSystem>().GraphicsCompositor);
+            camera = new TestCamera(Services.GetSafeServiceAs<SceneSystem>().GraphicsCompositor);
             CameraComponent = camera.Camera;
             Script.Add(camera);
 

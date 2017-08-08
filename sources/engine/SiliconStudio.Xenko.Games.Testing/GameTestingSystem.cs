@@ -37,9 +37,9 @@ namespace SiliconStudio.Xenko.Games.Testing
             DrawOrder = int.MaxValue;
             Enabled = true;
             Visible = true;
-            
+
             // Switch to simulated input
-            InputManager input = (InputManager)registry.GetService(typeof(InputManager));
+            var input = registry.GetSafeServiceAs<InputManager>();
             input.Sources.Clear();
             input.Sources.Add(inputSourceSimulated = new InputSourceSimulated());
             keyboardSimulated = inputSourceSimulated.AddKeyboard();

@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
         public void TestBasicInvalidations()
         {
             var services = new ServiceRegistry();
-            services.AddService(typeof(IGame), new Game());
+            services.AddService<IGame>(new Game());
 
             var edit = new EditText();
             edit.UIElementServices = new UIElementServices { Services = services };

@@ -9,7 +9,6 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Streaming;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
@@ -93,14 +92,14 @@ namespace SiliconStudio.Xenko.Streaming
         /// <remarks>
         /// The GameSystem expects the following services to be registered: <see cref="T:SiliconStudio.Xenko.Games.IGame" /> and <see cref="T:SiliconStudio.Core.Serialization.Contents.IContentManager" />.
         /// </remarks>
-        public StreamingManager(IServiceRegistry services) : base(services)
+        public StreamingManager([NotNull] IServiceRegistry services)
+            : base(services)
         {
-            services.AddService(typeof(StreamingManager), this);
-            services.AddService(typeof(IStreamingManager), this);
-            services.AddService(typeof(ITexturesStreamingProvider), this);
+            services.AddService(this);
+            services.AddService<IStreamingManager>(this);
+            services.AddService<ITexturesStreamingProvider>(this);
 
             ContentStreaming = new ContentStreamingService();
-
             (Game as Game)?.Script.AddTask(Update);
         }
 
@@ -109,17 +108,17 @@ namespace SiliconStudio.Xenko.Streaming
         {
             isDisposing = true;
 
-            if (Services.GetService(typeof(StreamingManager)) == this)
+            if (Services.GetService<StreamingManager>() == this)
             {
-                Services.RemoveService(typeof(StreamingManager));
+                Services.RemoveService<StreamingManager>();
             }
-            if (Services.GetService(typeof(IStreamingManager)) == this)
+            if (Services.GetService<IStreamingManager>() == this)
             {
-                Services.RemoveService(typeof(IStreamingManager));
+                Services.RemoveService<IStreamingManager>();
             }
-            if (Services.GetService(typeof(ITexturesStreamingProvider)) == this)
+            if (Services.GetService<ITexturesStreamingProvider>() == this)
             {
-                Services.RemoveService(typeof(ITexturesStreamingProvider));
+                Services.RemoveService<ITexturesStreamingProvider>();
             }
 
             lock (resources)

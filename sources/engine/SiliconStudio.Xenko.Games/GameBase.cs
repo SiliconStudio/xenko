@@ -108,12 +108,12 @@ namespace SiliconStudio.Xenko.Games
 
             // Content manager
             Content = new ContentManager(Services);
-            Services.AddService(typeof(IContentManager), Content);
-            Services.AddService(typeof(ContentManager), Content);
+            Services.AddService<IContentManager>(Content);
+            Services.AddService(Content);
 
             LaunchParameters = new LaunchParameters();
             GameSystems = new GameSystemCollection(Services);
-            Services.AddService(typeof(IGameSystemCollection), GameSystems);
+            Services.AddService<IGameSystemCollection>(GameSystems);
 
             // Create Platform
             gamePlatform = GamePlatform.Create(this);
@@ -123,9 +123,9 @@ namespace SiliconStudio.Xenko.Games
             gamePlatform.WindowCreated += GamePlatformOnWindowCreated;
 
             // Setup registry
-            Services.AddService(typeof(IGame), this);
-            Services.AddService(typeof(IGraphicsDeviceFactory), gamePlatform);
-            Services.AddService(typeof(IGamePlatform), gamePlatform);
+            Services.AddService<IGame>(this);
+            Services.AddService<IGraphicsDeviceFactory>(gamePlatform);
+            Services.AddService<IGamePlatform>(gamePlatform);
 
             IsActive = true;
         }
@@ -373,7 +373,7 @@ namespace SiliconStudio.Xenko.Games
                     graphicsDeviceManager.CreateDevice();
 
                     // Gets the graphics device service
-                    graphicsDeviceService = Services.GetService(typeof(IGraphicsDeviceService)) as IGraphicsDeviceService;
+                    graphicsDeviceService = Services.GetService<IGraphicsDeviceService>();
                     if (graphicsDeviceService == null)
                     {
                         throw new InvalidOperationException("No GraphicsDeviceService found");
@@ -436,7 +436,7 @@ namespace SiliconStudio.Xenko.Games
             }
 
             // Gets the graphics device manager
-            graphicsDeviceManager = Services.GetService(typeof(IGraphicsDeviceManager)) as IGraphicsDeviceManager;
+            graphicsDeviceManager = Services.GetService<IGraphicsDeviceManager>();
             if (graphicsDeviceManager == null)
             {
                 throw new InvalidOperationException("No GraphicsDeviceManager found");
@@ -703,7 +703,7 @@ namespace SiliconStudio.Xenko.Games
             if (GraphicsContext == null)
             {
                 GraphicsContext = new GraphicsContext(GraphicsDevice);
-                Services.AddService(typeof(GraphicsContext), GraphicsContext);
+                Services.AddService(GraphicsContext);
             }
             else
             {
@@ -979,7 +979,7 @@ namespace SiliconStudio.Xenko.Games
         private void SetupGraphicsDeviceEvents()
         {
             // Find the IGraphicsDeviceSerive.
-            graphicsDeviceService = Services.GetService(typeof(IGraphicsDeviceService)) as IGraphicsDeviceService;
+            graphicsDeviceService = Services.GetService<IGraphicsDeviceService>();
 
             // If there is no graphics device service, don't go further as the whole Game would not work
             if (graphicsDeviceService == null)

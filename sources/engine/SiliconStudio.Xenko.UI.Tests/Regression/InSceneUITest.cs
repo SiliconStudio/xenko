@@ -9,7 +9,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Graphics.Regression;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
@@ -21,7 +20,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
     /// </summary>
     public class InSceneUITest : UITestGameBase
     {
-        private List<Entity> elements = new List<Entity>();
+        private readonly List<Entity> elements = new List<Entity>();
 
         public InSceneUITest()
         {
@@ -33,7 +32,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             await base.LoadContent();
 
             // setup the camera
-            var camera = new TestUICamera(Services.GetServiceAs<SceneSystem>().GraphicsCompositor) { Yaw = 0, Pitch = 0, Position = new Vector3(0, 0, 1000), MoveSpeed = 100 };
+            var camera = new TestUICamera(Services.GetSafeServiceAs<SceneSystem>().GraphicsCompositor) { Yaw = 0, Pitch = 0, Position = new Vector3(0, 0, 1000), MoveSpeed = 100 };
             CameraComponent = camera.Camera;
             Script.Add(camera);
 

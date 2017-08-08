@@ -467,9 +467,8 @@ namespace SiliconStudio.Core.Serialization.Contents
                 // Check if need to fully stream resource
                 if (!settings.AllowContentStreaming)
                 {
-                    var streamingManager = services.GetServiceAs<IStreamingManager>();
-                    if(streamingManager != null)
-                        streamingManager.FullyLoadResource(reference.Object);
+                    var streamingManager = services.GetService<IStreamingManager>();
+                    streamingManager?.FullyLoadResource(reference.Object);
                 }
 
                 return reference.Object;

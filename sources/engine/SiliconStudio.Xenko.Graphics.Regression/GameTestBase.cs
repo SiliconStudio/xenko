@@ -64,8 +64,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 DeviceCreationFlags = DeviceCreationFlags.Debug,
                 PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_1 }
             };
-            Services.AddService(typeof(IGraphicsDeviceManager), GraphicsDeviceManager);
-            Services.AddService(typeof(IGraphicsDeviceService), GraphicsDeviceManager);
+            Services.AddService<IGraphicsDeviceManager>(GraphicsDeviceManager);
+            Services.AddService<IGraphicsDeviceService>(GraphicsDeviceManager);
 
             // Disable streaming
             Streaming.StreamingEnabled = false;

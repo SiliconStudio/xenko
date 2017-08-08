@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             Scheduler.ActionException -= Scheduler_ActionException;
             Scheduler = null;
 
-            Services.RemoveService(typeof(ScriptSystem));
+            Services.RemoveService<ScriptSystem>();
 
             base.Destroy();
         }

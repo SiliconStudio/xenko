@@ -59,12 +59,12 @@ namespace SiliconStudio.Xenko.UI.Renderers
             Content = services.GetSafeServiceAs<IContentManager>();
             GraphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
 
-            UI = services.GetServiceAs<UISystem>();
+            UI = services.GetService<UISystem>();
             if (UI == null)
             {
                 UI = new UISystem(services);
-                services.AddService(typeof(UISystem), UI);
-                var gameSystems = services.GetServiceAs<IGameSystemCollection>();
+                services.AddService(UI);
+                var gameSystems = services.GetService<IGameSystemCollection>();
                 gameSystems?.Add(UI);
             }
         }
