@@ -195,6 +195,9 @@ namespace SiliconStudio.Xenko.Streaming
             if (textureToSync == null)
                 return;
 
+            // register the new memory usage
+            Manager.RegisterMemoryUsage(textureToSync.AllocatedMemory - texture.AllocatedMemory);
+
             // Texture is loaded and created in the async task.
             // But we have to sync on main therad with the engine to prevent leaks.
             // Here we internaly swap two textures data (texture with textureToSync).
@@ -211,6 +214,9 @@ namespace SiliconStudio.Xenko.Streaming
         /// <inheritdoc />
         internal override void Release()
         {
+            // register the change of memory usage
+            Manager.RegisterMemoryUsage(-Texture.AllocatedMemory);
+
             // Unlink from the texture
             this.RemoveDisposeBy(Texture);
 
@@ -280,6 +286,7 @@ namespace SiliconStudio.Xenko.Streaming
             if (residency == 0)
             {
                 // Release
+                Manager.RegisterMemoryUsage(-texture.AllocatedMemory);
                 texture.ReleaseData();
                 residentMips = 0;
                 return;
