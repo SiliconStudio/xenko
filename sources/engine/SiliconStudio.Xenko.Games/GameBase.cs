@@ -966,7 +966,7 @@ namespace SiliconStudio.Xenko.Games
 
                     Draw(drawTime);
 
-                    profiler.End("Triangle count: {0} Draw calls: {1} Buffers mem: {2}M Textures mem: {3}M", GraphicsDevice.FrameTriangleCount, GraphicsDevice.FrameDrawCalls, GraphicsDevice.BuffersMemory, GraphicsDevice.TextureMemory);
+                    profiler.End("Triangle count: {0}", GraphicsDevice.FrameTriangleCount);
                     profilingDraw.End("Frame = {0}, Update = {1:0.000}ms, Draw = {2:0.000}ms, FPS = {3:0.00}", drawTime.FrameCount, updateTime.TimePerFrame.TotalMilliseconds, drawTime.TimePerFrame.TotalMilliseconds, drawTime.FramePerSecond);
                 }
             }
