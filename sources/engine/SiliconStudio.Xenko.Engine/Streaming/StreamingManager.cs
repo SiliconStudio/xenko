@@ -104,6 +104,20 @@ namespace SiliconStudio.Xenko.Streaming
         }
 
         /// <inheritdoc />
+        public override void Initialize()
+        {
+            var settings = (Game as Game)?.Settings;
+            if (settings != null)
+            {
+                var streamingSettings = settings.Configurations.Get<StreamingSettings>();
+                ManagerUpdatesInterval = streamingSettings.ManagerUpdatesInterval;
+                MaxResourcesPerUpdate = streamingSettings.MaxResourcesPerUpdate;
+                ResourceLiveTimeout = streamingSettings.ResourceLiveTimeout;
+                StreamingEnabled = streamingSettings.Enabled;
+            }
+        }
+
+        /// <inheritdoc />
         protected override void Destroy()
         {
             isDisposing = true;
