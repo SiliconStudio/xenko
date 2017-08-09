@@ -134,7 +134,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (ParentTexture == null && GraphicsDevice != null)
             {
-                GraphicsDevice.TextureMemory -= (Depth * DepthStride) / (float)0x100000;
+                GraphicsDevice.RegisterTextureMemoryUsage(-SizeInBytes);
             }
 
             InitializeFromImpl();
@@ -388,7 +388,7 @@ namespace SiliconStudio.Xenko.Graphics
                     }
                 }
 
-                GraphicsDevice.TextureMemory += (Depth * DepthStride) / (float)0x100000;
+                GraphicsDevice.RegisterTextureMemoryUsage(SizeInBytes);
             }
         }
 
@@ -411,7 +411,7 @@ namespace SiliconStudio.Xenko.Graphics
                     else
                         GL.DeleteTextures(1, ref TextureId);
 
-                    GraphicsDevice.TextureMemory -= (Depth * DepthStride) / (float)0x100000;
+                GraphicsDevice.RegisterTextureMemoryUsage(-SizeInBytes);
                 }
 
                 if (stencilId != 0)

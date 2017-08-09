@@ -255,7 +255,7 @@ namespace SiliconStudio.Xenko.Profiling
                     profilersStringBuilder.AppendFormat("PAGE {0} OF {1}", CurrentResultPage, numberOfPages);
 
                 gpuInfoStringBuilder.Clear();
-                gpuInfoStringBuilder.AppendFormat("Drawn triangles={0}, Draw calls={1}, Buffer memory={2:0.0}MB, Texture memory={3:0.0}MB", trianglesCount, drawCallsCount, GraphicsDevice.BuffersMemory, GraphicsDevice.TextureMemory);
+                gpuInfoStringBuilder.AppendFormat("Drawn triangles={0}, Draw calls={1}, Buffer memory={2:0.0}MB, Texture memory={3:0.0}MB", trianglesCount, drawCallsCount, GraphicsDevice.BuffersMemory / 0x100000, GraphicsDevice.TextureMemory / 0x100000);
 
                 gpuGeneralInfoStringBuilder.Clear();
                 gpuGeneralInfoStringBuilder.AppendFormat("Device={0}, Platform={1}, Profile={2}, Resolution={3}", GraphicsDevice.Adapter.Description, GraphicsDevice.Platform, GraphicsDevice.ShaderProfile, renderTargetSize);

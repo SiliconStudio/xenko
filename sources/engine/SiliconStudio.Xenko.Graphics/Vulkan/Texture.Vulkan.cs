@@ -444,7 +444,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (ParentTexture == null && GraphicsDevice != null)
             {
-                GraphicsDevice.TextureMemory -= (Depth * DepthStride) / (float)0x100000;
+                GraphicsDevice.RegisterTextureMemoryUsage(-SizeInBytes);
             }
 
             InitializeFromImpl();

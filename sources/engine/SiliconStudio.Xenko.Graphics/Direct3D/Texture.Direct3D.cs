@@ -148,7 +148,7 @@ namespace SiliconStudio.Xenko.Graphics
                         break;
                 }
 
-                GraphicsDevice.TextureMemory += (Depth*DepthStride) / (float)0x100000;
+                GraphicsDevice.RegisterTextureMemoryUsage(SizeInBytes);
             }
 
             NativeShaderResourceView = GetShaderResourceView(ViewType, ArraySlice, MipLevel);
@@ -166,7 +166,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
             else if(GraphicsDevice != null)
             {
-                GraphicsDevice.TextureMemory -= (Depth*DepthStride) / (float)0x100000;
+                GraphicsDevice.RegisterTextureMemoryUsage(-SizeInBytes);
             }
 
             ReleaseComObject(ref renderTargetView);
@@ -189,7 +189,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (ParentTexture == null && GraphicsDevice != null)
             {
-                GraphicsDevice.TextureMemory -= (Depth * DepthStride)/(float)0x100000;
+                GraphicsDevice.RegisterTextureMemoryUsage(-SizeInBytes);
             }
 
             InitializeFromImpl();
