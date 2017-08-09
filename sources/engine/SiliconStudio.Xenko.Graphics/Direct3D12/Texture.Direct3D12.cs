@@ -185,7 +185,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                 // TODO D3D12 move that to a global allocator in bigger committed resources
                 NativeDeviceChild = GraphicsDevice.NativeDevice.CreateCommittedResource(new HeapProperties(heapType), HeapFlags.None, nativeDescription, currentResourceState, clearValue);
-                GraphicsDevice.TextureMemory += (Depth*DepthStride) / (float)0x100000;
+                GraphicsDevice.RegisterTextureMemoryUsage(SizeInBytes);
 
                 if (hasInitData)
                 {
@@ -256,7 +256,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
             else if(GraphicsDevice != null)
             {
-                GraphicsDevice.TextureMemory -= (Depth*DepthStride) / (float)0x100000;
+                GraphicsDevice.RegisterTextureMemoryUsage(-SizeInBytes);
             }
 
             base.OnDestroyed();
@@ -276,7 +276,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (ParentTexture == null && GraphicsDevice != null)
             {
-                GraphicsDevice.TextureMemory -= (Depth * DepthStride)/(float)0x100000;
+                GraphicsDevice.RegisterTextureMemoryUsage(-SizeInBytes);
             }
 
             InitializeFromImpl();

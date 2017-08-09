@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
@@ -43,7 +44,17 @@ namespace SiliconStudio.Xenko.Graphics
         private ColorSpace colorSpace;
 
         public uint FrameTriangleCount, FrameDrawCalls;
-        public float BuffersMemory, TextureMemory;
+        private long bufferMemory, textureMemory;
+
+        /// <summary>
+        /// Gets the GPU memory currently allocated to buffers in bytes.
+        /// </summary>
+        public long BuffersMemory => Interlocked.Read(ref bufferMemory);
+
+        /// <summary>
+        /// Gets the GPU memory currently allocated to texture in bytes.
+        /// </summary>
+        public long TextureMemory => Interlocked.Read(ref textureMemory);
 
         /// <summary>
         /// Gets the type of the platform that graphics device is using.
@@ -293,6 +304,16 @@ namespace SiliconStudio.Xenko.Graphics
                 }
                 return (T)localValue;
             }
+        }
+
+        internal void RegisterTextureMemoryUsage(long memoryChange)
+        {
+            Interlocked.Add(ref textureMemory, memoryChange);
+        }
+
+        internal void RegisterBufferMemoryUsage(long memoryChange)
+        {
+            Interlocked.Add(ref bufferMemory, memoryChange);
         }
     }
 }

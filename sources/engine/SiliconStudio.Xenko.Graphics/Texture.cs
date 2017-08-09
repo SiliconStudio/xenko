@@ -355,14 +355,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// Gets the size of this texture.
         /// </summary>
         /// <value>The size.</value>
-        public Size3 Size
-        {
-            get
-            {
-                return new Size3(ViewWidth, ViewHeight, ViewDepth);
-            }
-        }
-
+        public Size3 Size =>new Size3(ViewWidth, ViewHeight, ViewDepth);
+        
         /// <summary>
         /// When texture streaming is activated, the size of the texture when loaded at full quality.
         /// </summary>
@@ -373,27 +367,14 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
-        /// The width stride in bytes (number of bytes per row).
-        /// </summary>
-        internal int RowStride { get; private set; }
-
-        /// <summary>
-        /// The depth stride in bytes (number of bytes per depth slice).
-        /// </summary>
-        internal int DepthStride { get; private set; }
-
-        /// <summary>
         /// The underlying parent texture (if this is a view).
         /// </summary>
         internal Texture ParentTexture { get; private set; }
 
         /// <summary>
-        /// Returns the memory allocated by the texture in KB.
+        /// Returns the total memory allocated by the texture in bytes.
         /// </summary>
-        internal int AllocatedMemory
-        {
-            get { return ArraySize * mipmapDescriptions?.Sum(desc => desc.MipmapSize) / 1024 ?? 0; }
-        }
+        internal int SizeInBytes { get; private set; }
 
         private MipMapDescription[] mipmapDescriptions;
 
@@ -451,9 +432,8 @@ namespace SiliconStudio.Xenko.Graphics
             textureDescription = description;
             textureViewDescription = viewDescription;
             IsBlockCompressed = description.Format.IsCompressed();
-            RowStride = ComputeRowPitch(0);
-            DepthStride = RowStride * this.Height;
             mipmapDescriptions = Image.CalculateMipMapDescription(description);
+            SizeInBytes = ArraySize * mipmapDescriptions?.Sum(desc => desc.MipmapSize) ?? 0;
 
             ViewWidth = Math.Max(1, Width >> MipLevel);
             ViewHeight = Math.Max(1, Height >> MipLevel);
@@ -499,7 +479,7 @@ namespace SiliconStudio.Xenko.Graphics
             textureDescription = new TextureDescription();
             textureViewDescription = new TextureViewDescription();
             ViewWidth = ViewHeight = ViewDepth = 0;
-            RowStride = DepthStride = 0;
+            SizeInBytes = 0;
             mipmapDescriptions = null;
         }
 
@@ -1199,14 +1179,10 @@ namespace SiliconStudio.Xenko.Graphics
             ViewDepth = other.ViewDepth;
             other.ViewDepth = temp;
             //
-            temp = RowStride;
-            RowStride = other.RowStride;
-            other.RowStride = temp;
+            temp = SizeInBytes;
+            SizeInBytes= other.SizeInBytes;
+            other.SizeInBytes = temp;
             //
-            temp = DepthStride;
-            DepthStride = other.DepthStride;
-            other.DepthStride = temp;
-
             SwapInternal(other);
         }
 
