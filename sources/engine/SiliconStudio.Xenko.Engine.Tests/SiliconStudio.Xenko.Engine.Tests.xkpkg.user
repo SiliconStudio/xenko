@@ -57,6 +57,7 @@ Settings:
                 - Transform
             VisibleNavigationGroups: []
             LightProbeWireframe: false
+            LightProbeBounces: 1
             SceneLoaded: false
     Templates/ModelFromFile/DefaultSkeleton: 00000000-0000-0000-0000-000000000000
     Templates/ModelFromFile/ImportMaterials: true

@@ -8,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.11.1.2
+            Version: 2.0.0.2
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -53,6 +53,7 @@ ExplicitFolders: []
 Bundles: []
 TemplateFolders: []
 RootAssets:
+    - 4d5503ec-11ee-43ce-9e1a-296202319167:GraphicsCompositor
     - 538255f3-de32-465e-b749-c73978ccd75e:Font
     - 7f74ef46-cba9-4feb-b94a-1d1d056f4d4c:ProceduralModel
     - 9d573a79-80ff-46c3-bb45-dbfec2ac9766:Teapot

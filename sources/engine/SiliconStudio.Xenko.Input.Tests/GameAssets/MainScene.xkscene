@@ -1,13 +1,13 @@
 !SceneAsset
 Id: ae4ecc1b-0b47-4c9d-ac8e-7f9720913084
-SerializedVersion: {Xenko: 1.10.0-beta03}
+SerializedVersion: {Xenko: 2.1.0.1}
 Tags: []
 ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
-    RootPartIds:
-        - 6d2b02df-329f-4e05-b299-69f96d39c763
-        - ef9460fd-2e7a-41dc-9743-f9ec1174bb7f
+    RootParts:
+        - ref!! 6d2b02df-329f-4e05-b299-69f96d39c763
+        - ref!! ef9460fd-2e7a-41dc-9743-f9ec1174bb7f
     Parts:
         -   Entity:
                 Id: 6d2b02df-329f-4e05-b299-69f96d39c763
@@ -23,7 +23,7 @@ Hierarchy:
                         Id: 995c77b7-9e89-4025-8af5-2ed3914b0e21
                         Name: null
                         Projection: Perspective
-                        Slot: {Index: 0}
+                        Slot: 49eb9b6d-cf35-4f82-bea9-03374be379e2
         -   Entity:
                 Id: ef9460fd-2e7a-41dc-9743-f9ec1174bb7f
                 Name: Ambient light
