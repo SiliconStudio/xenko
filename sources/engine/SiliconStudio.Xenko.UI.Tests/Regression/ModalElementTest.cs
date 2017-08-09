@@ -1,5 +1,7 @@
 // Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
+
+using System.Linq;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
@@ -18,7 +20,7 @@ using SiliconStudio.Xenko.UI.Panels;
 namespace SiliconStudio.Xenko.UI.Tests.Regression
 {
     /// <summary>
-    /// Class for rendering tests on the <see cref="ModalElement"/> 
+    /// Class for rendering tests on the <see cref="ModalElement"/>
     /// </summary>
     public class ModalElementTest : UITestGameBase
     {
@@ -46,7 +48,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             // Also draw a texture during the clear renderer
             // TODO: Use a custom compositor as soon as we have visual scripting?
-            var forwardRenderer = (ForwardRenderer)((SceneCameraRenderer)SceneSystem.GraphicsCompositor.Game).Child;
+            var topChildRenderer = ((SceneCameraRenderer)SceneSystem.GraphicsCompositor.Game).Child;
+            var forwardRenderer = (topChildRenderer as SceneRendererCollection)?.Children.OfType<ForwardRenderer>().FirstOrDefault() ?? (ForwardRenderer)topChildRenderer;
             forwardRenderer.Clear = new ClearAndDrawTextureRenderer { Color = forwardRenderer.Clear.Color, Texture = sprites["GameScreen"].Texture };
 
             var lifeBar = new ImageElement { Source = SpriteFromSheet.Create(sprites, "Logo"), HorizontalAlignment = HorizontalAlignment.Center };
@@ -107,7 +110,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             uniformGrid.Children.Add(modal2);
             uniformGrid.Children.Add(lifeBar);
             uniformGrid.Children.Add(quitGameButton);
-            
+
             UIComponent.Page = new Engine.UIPage { RootElement = uniformGrid };
         }
 
@@ -203,7 +206,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 game.Run();
         }
 
-        class ClearAndDrawTextureRenderer : ClearRenderer
+        private class ClearAndDrawTextureRenderer : ClearRenderer
         {
             public Texture Texture { get; set; }
 
