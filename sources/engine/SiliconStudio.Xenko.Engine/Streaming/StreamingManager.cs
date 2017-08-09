@@ -328,11 +328,11 @@ namespace SiliconStudio.Xenko.Streaming
 
         internal void RegisterResource(StreamableResource resource)
         {
-            Debug.Assert(resource != null && isDisposing == false);
+            Debug.Assert(resource != null && isDisposing == false, $"resource[{resource}] != null && isDisposing[{isDisposing }] == false");
 
             lock (resources)
             {
-                Debug.Assert(!resources.Contains(resource));
+                Debug.Assert(!resources.Contains(resource), "!resources.Contains(resource)");
 
                 resources.Add(resource);
                 resourcesLookup.Add(resource.Resource, resource);
@@ -344,11 +344,11 @@ namespace SiliconStudio.Xenko.Streaming
             if (isDisposing)
                 return;
 
-            Debug.Assert(resource != null);
+            Debug.Assert(resource != null, "resource != null");
 
             lock (resources)
             {
-                Debug.Assert(resources.Contains(resource));
+                Debug.Assert(resources.Contains(resource), "resources.Contains(resource)");
 
                 resources.Remove(resource);
                 resourcesLookup.Remove(resource.Resource);
@@ -411,7 +411,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// <inheritdoc />
         void ITexturesStreamingProvider.UnregisterTexture(Texture obj)
         {
-            Debug.Assert(obj != null);
+            Debug.Assert(obj != null, "obj != null");
 
             lock (resources)
             {
@@ -504,7 +504,7 @@ namespace SiliconStudio.Xenko.Streaming
 
         private void Update(StreamableResource resource, ref DateTime now)
         {
-            Debug.Assert(resource != null && resource.CanBeUpdated);
+            Debug.Assert(resource != null && resource.CanBeUpdated, $"resource[{resource}] != null && resource.CanBeUpdated[{resource?.CanBeUpdated}]");
 
             var options = resource.StreamingOptions ?? StreamingOptions.Default;
             var isUnderBudget = AllocatedMemory < TargetedMemoryBudget;
@@ -529,7 +529,7 @@ namespace SiliconStudio.Xenko.Streaming
             var currentResidency = resource.CurrentResidency;
             var allocatedResidency = resource.AllocatedResidency;
             var targetResidency = resource.CalculateTargetResidency(targetQuality);
-            Debug.Assert(allocatedResidency >= currentResidency && allocatedResidency >= 0);
+            Debug.Assert(allocatedResidency >= currentResidency && allocatedResidency >= 0, $"allocatedResidency[{allocatedResidency}] >= currentResidency[{currentResidency }] && allocatedResidency[{allocatedResidency }] >= 0");
 
             // Update target residency smoothing
             // TODO: use move quality samples and use max or avg value - make that input it smooth - or use PID
