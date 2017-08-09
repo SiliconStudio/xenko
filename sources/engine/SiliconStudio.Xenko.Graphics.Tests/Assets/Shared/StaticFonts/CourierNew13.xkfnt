@@ -1,6 +1,6 @@
 !SpriteFont
 Id: 90b99454-a7b4-4b88-8d42-638acc73e34b
-SerializedVersion: {Xenko: 1.7.0-beta04}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 FontSource: !SystemFontProvider
     FontName: Courier New

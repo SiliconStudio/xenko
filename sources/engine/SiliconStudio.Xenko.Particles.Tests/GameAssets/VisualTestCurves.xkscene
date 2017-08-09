@@ -1,16 +1,16 @@
 !SceneAsset
 Id: d8bf8c60-f185-4383-8c94-94b468749609
-SerializedVersion: {Xenko: 1.10.0-beta03}
+SerializedVersion: {Xenko: 2.1.0.1}
 Tags: []
 ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
-    RootPartIds:
-        - 6d2b02df-329f-4e05-b299-69f96d39c763
-        - ef9460fd-2e7a-41dc-9743-f9ec1174bb7f
-        - 841cb444-0d1f-4a8b-be76-9dd89d4e7e11
-        - 7c16fc9e-560e-413c-a234-85b4f93e94d8
-        - f025ffd3-a813-44d1-9973-c349e870e298
+    RootParts:
+        - ref!! 6d2b02df-329f-4e05-b299-69f96d39c763
+        - ref!! ef9460fd-2e7a-41dc-9743-f9ec1174bb7f
+        - ref!! 841cb444-0d1f-4a8b-be76-9dd89d4e7e11
+        - ref!! 7c16fc9e-560e-413c-a234-85b4f93e94d8
+        - ref!! f025ffd3-a813-44d1-9973-c349e870e298
     Parts:
         -   Entity:
                 Id: 6d2b02df-329f-4e05-b299-69f96d39c763
@@ -26,7 +26,7 @@ Hierarchy:
                         Id: 4f95637b-669c-48eb-84a0-2069cf38ca06
                         Name: null
                         Projection: Perspective
-                        Slot: {Index: 0}
+                        Slot: ab554a52-308f-4126-8bfa-83512d479eba
         -   Entity:
                 Id: 7c16fc9e-560e-413c-a234-85b4f93e94d8
                 Name: UpdaterCurves
@@ -78,10 +78,10 @@ Hierarchy:
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
-                                            DisplayParticlePosition: false
                                             VelocityMin: {X: 7.0, Y: 0.0, Z: 0.0}
                                             VelocityMax: {X: 7.0, Y: 0.0, Z: 0.0}
                                     Updaters:
@@ -93,9 +93,9 @@ Hierarchy:
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
+                                            DisplayParticlePosition: false
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
-                                            DisplayParticlePosition: false
                                             DisplayParticleScaleUniform: false
                                             SamplerMain: !ComputeCurveSamplerColor4
                                                 Curve: !ComputeAnimationCurveColor4
@@ -130,9 +130,9 @@ Hierarchy:
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
+                                            DisplayParticlePosition: false
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
-                                            DisplayParticlePosition: false
                                             DisplayParticleScaleUniform: false
                                             SamplerMain: !ComputeCurveSamplerFloat
                                                 Curve: !ComputeAnimationCurveFloat
@@ -290,10 +290,10 @@ Hierarchy:
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
+                                            DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: true
-                                            DisplayParticlePosition: false
                                             VelocityMin: {X: 7.0, Y: 0.0, Z: 0.0}
                                             VelocityMax: {X: 7.0, Y: 0.0, Z: 0.0}
                                     Updaters:
@@ -305,9 +305,9 @@ Hierarchy:
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
+                                            DisplayParticlePosition: false
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
-                                            DisplayParticlePosition: false
                                             DisplayParticleScaleUniform: false
                                             SamplerMain: !ComputeCurveSamplerColor4
                                                 Curve: !ComputeAnimationCurveColor4
@@ -342,9 +342,9 @@ Hierarchy:
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
+                                            DisplayParticlePosition: false
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
-                                            DisplayParticlePosition: false
                                             DisplayParticleScaleUniform: false
                                             SamplerMain: !ComputeCurveSamplerFloat
                                                 Curve: !ComputeAnimationCurveFloat

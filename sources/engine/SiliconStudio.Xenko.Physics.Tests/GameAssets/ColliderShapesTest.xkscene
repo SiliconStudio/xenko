@@ -1,20 +1,20 @@
 !SceneAsset
 Id: b98408a0-2b2d-4783-a8c2-11b0fe5bbdcc
-SerializedVersion: {Xenko: 1.10.0-beta03}
+SerializedVersion: {Xenko: 2.1.0.1}
 Tags: []
 ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
-    RootPartIds:
-        - b63607c5-4c6e-4fd4-9e4a-ba60d660589c
-        - 1422aa32-b7b5-482b-bdc4-921be3b92738
-        - c5fe55a9-6670-41dd-9999-804dfa2a0cdc
-        - 57320b81-0aad-4ce7-b6f1-011fa0b091b9
-        - 12a4098e-05bb-43e7-8b0a-84f28fe30872
-        - f46c24eb-162e-4467-b9b1-615941a7bd8a
-        - 826467d9-cb15-4466-84fd-0c75a093f962
-        - 1d6fd84b-6278-4ffb-91a8-1e0f190b9520
-        - 5ab2a389-d417-400e-8b00-d657aa0bafea
+    RootParts:
+        - ref!! b63607c5-4c6e-4fd4-9e4a-ba60d660589c
+        - ref!! 1422aa32-b7b5-482b-bdc4-921be3b92738
+        - ref!! c5fe55a9-6670-41dd-9999-804dfa2a0cdc
+        - ref!! 57320b81-0aad-4ce7-b6f1-011fa0b091b9
+        - ref!! 12a4098e-05bb-43e7-8b0a-84f28fe30872
+        - ref!! f46c24eb-162e-4467-b9b1-615941a7bd8a
+        - ref!! 826467d9-cb15-4466-84fd-0c75a093f962
+        - ref!! 1d6fd84b-6278-4ffb-91a8-1e0f190b9520
+        - ref!! 5ab2a389-d417-400e-8b00-d657aa0bafea
     Parts:
         -   Entity:
                 Id: 12a4098e-05bb-43e7-8b0a-84f28fe30872
@@ -228,7 +228,7 @@ Hierarchy:
                         Id: f297981e-e60e-439f-a984-3267ed6e3803
                         Name: null
                         Projection: Perspective
-                        Slot: {Index: 0}
+                        Slot: bdd308f1-d60d-4a59-b0e5-c63d138382bd
         -   Entity:
                 Id: c1a8af8f-661a-4df7-b845-809f3df57b0b
                 Name: Capsule

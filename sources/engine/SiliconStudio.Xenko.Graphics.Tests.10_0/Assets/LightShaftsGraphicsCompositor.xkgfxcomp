@@ -120,7 +120,7 @@ SharedRenderers:
         Id: d11b9fda-bb32-4081-a148-52a154a4498a
         Clear:
             Id: 4bc4b2ca-027e-4e4a-94cb-2912709bef5f
-            Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
+            Color*: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
         LightProbes: true
         OpaqueRenderStage: ref!! 6751fbbc-bc12-4f3a-9668-b70720253276
         TransparentRenderStage: ref!! 52b21c00-6aee-4222-858c-bacc94f148d6
@@ -143,6 +143,9 @@ SharedRenderers:
             Enabled: false
         LocalReflections:
             Enabled: false
+            ResolvePassResolution: Full
+            DebugMode: None
+            DepthResolution: Half
         DepthOfField:
             Enabled: false
             DOFAreas: {X: 0.5, Y: 6.0, Z: 50.0, W: 200.0}
@@ -175,6 +178,7 @@ Game: !SiliconStudio.Xenko.Rendering.Compositing.SceneCameraRenderer,SiliconStud
     Id: 76fe87cf-f574-4ad6-85b8-e9a9586be0e2
     Camera: ref!! 5007a214-1b4c-4034-91b0-dda159890896
     Child*: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! d11b9fda-bb32-4081-a148-52a154a4498a
+    RenderMask: All
 SingleView*: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! d11b9fda-bb32-4081-a148-52a154a4498a
 Editor: !SiliconStudio.Xenko.Rendering.Compositing.ForwardRenderer,SiliconStudio.Xenko.Engine ref!! d11b9fda-bb32-4081-a148-52a154a4498a
 BlockPositions: {}

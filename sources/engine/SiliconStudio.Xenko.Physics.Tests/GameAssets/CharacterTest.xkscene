@@ -1,18 +1,18 @@
 !SceneAsset
 Id: c2b9bd24-3e83-4fff-b963-79f9ff5430ac
-SerializedVersion: {Xenko: 1.10.0-beta03}
+SerializedVersion: {Xenko: 2.1.0.1}
 Tags: []
 ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
-    RootPartIds:
-        - 1dca85fc-8e93-4d68-9e82-4440251e3bf9
-        - de1fcd6c-d440-474c-adda-b004e2f06c20
-        - b44b9503-5fec-4dff-8928-51b5d00451e3
-        - 3f0980df-17d0-4826-bb0d-91d31e918e5a
-        - 8d84eb37-962e-48ce-ba89-893683430a07
-        - 323319d0-dcba-4464-a0c0-5858d65845c2
-        - a4088c0f-ef54-402a-ae01-6d972f3f425e
+    RootParts:
+        - ref!! 1dca85fc-8e93-4d68-9e82-4440251e3bf9
+        - ref!! de1fcd6c-d440-474c-adda-b004e2f06c20
+        - ref!! b44b9503-5fec-4dff-8928-51b5d00451e3
+        - ref!! 3f0980df-17d0-4826-bb0d-91d31e918e5a
+        - ref!! 8d84eb37-962e-48ce-ba89-893683430a07
+        - ref!! 323319d0-dcba-4464-a0c0-5858d65845c2
+        - ref!! a4088c0f-ef54-402a-ae01-6d972f3f425e
     Parts:
         -   Entity:
                 Id: 1dca85fc-8e93-4d68-9e82-4440251e3bf9
@@ -28,7 +28,7 @@ Hierarchy:
                         Id: 38cef2b7-8947-421c-8962-842432719def
                         Name: null
                         Projection: Perspective
-                        Slot: {Index: 0}
+                        Slot: bdd308f1-d60d-4a59-b0e5-c63d138382bd
         -   Entity:
                 Id: 323319d0-dcba-4464-a0c0-5858d65845c2
                 Name: Ground
