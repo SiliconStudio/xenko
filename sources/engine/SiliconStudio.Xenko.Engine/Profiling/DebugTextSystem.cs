@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
-using System;
+
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -9,20 +9,19 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Profiling
 {
-    public class DebugConsoleSystem : GameSystemBase
+    public class DebugTextSystem : GameSystemBase
     {
         internal struct DebugOverlayMessage
         {
             public string Message;
-            public Vector2 Position;
+            public Int2 Position;
             public Color4 TextColor;
-            public SpriteFont TextFont;
         }
-
-        private SpriteBatch spriteBatch;
+        
+        private FastTextRenderer fastTextRenderer;
         private readonly Queue<DebugOverlayMessage> overlayMessages = new Queue<DebugOverlayMessage>();
 
-        public DebugConsoleSystem(IServiceRegistry registry) : base(registry)
+        public DebugTextSystem(IServiceRegistry registry) : base(registry)
         {
             Visible = true;
 
@@ -35,9 +34,9 @@ namespace SiliconStudio.Xenko.Profiling
         /// </summary>
         /// <param name="message"></param>
         /// <param name="position"></param>
-        public void Print(string message, Vector2 position)
+        public void Print(string message, Int2 position)
         {
-            Print(message, position, TextColor, null);
+            Print(message, position, TextColor);
         }
 
         /// <summary>
@@ -46,21 +45,9 @@ namespace SiliconStudio.Xenko.Profiling
         /// <param name="message"></param>
         /// <param name="position"></param>
         /// <param name="color"></param>
-        public void Print(string message, Vector2 position, Color4 color)
+        public void Print(string message, Int2 position, Color4 color)
         {
-            Print(message, position, color, null);
-        }
-
-        /// <summary>
-        /// Print a custom overlay message
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="position"></param>
-        /// <param name="color"></param>
-        /// <param name="font"></param>
-        public void Print(string message, Vector2 position, Color4 color, SpriteFont font)
-        {
-            var msg = new DebugOverlayMessage { Message = message, Position = position, TextColor = color, TextFont = font };
+            var msg = new DebugOverlayMessage { Message = message, Position = position, TextColor = color };
             overlayMessages.Enqueue(msg);
             //drop one old message if the tail size has been reached
             if (overlayMessages.Count > TailSize)
@@ -73,11 +60,6 @@ namespace SiliconStudio.Xenko.Profiling
         /// Sets or gets the color to use when drawing the profiling system fonts.
         /// </summary>
         public Color4 TextColor { get; set; } = Color.LightGreen;
-
-        /// <summary>
-        /// Sets or gets the font to use when drawing the profiling system text.
-        /// </summary>
-        public SpriteFont Font { get; set; }
 
         /// <summary>
         /// Sets or gets the size of the messages queue, older messages will be discarded if the size is greater.
@@ -96,36 +78,36 @@ namespace SiliconStudio.Xenko.Profiling
                 return;
             }
 
-            //TODO, this is not so nice
-            if (spriteBatch == null)
+            if (fastTextRenderer == null)
             {
-                spriteBatch = new SpriteBatch(Game.GraphicsDevice);
+                fastTextRenderer = new FastTextRenderer
+                {
+                    DebugSpriteFont = Content.Load<Texture>("XenkoDebugSpriteFont"),
+                    TextColor = TextColor
+                }.Initialize(Game.GraphicsContext);
             }
 
-            //TODO, this is not so nice
-            if (Font == null)
-            {
-                try
-                {
-                    Font = Content.Load<SpriteFont>("XenkoDefaultFont");
-                }
-                catch (Exception)
-                {
-                    Visible = false;
-                    return;
-                }
-            }
+            if (overlayMessages.Count == 0)
+                return;
 
             // TODO GRAPHICS REFACTOR where to get command list from?
             Game.GraphicsContext.CommandList.SetRenderTargetAndViewport(null, Game.GraphicsDevice.Presenter.BackBuffer);
-            spriteBatch.Begin(Game.GraphicsContext, depthStencilState: DepthStencilStates.None);
 
+            var currentColor = overlayMessages.Peek().TextColor;
+            fastTextRenderer.Begin(Game.GraphicsContext);
             foreach (var msg in overlayMessages)
             {
-                spriteBatch.DrawString(msg.TextFont ?? Font, msg.Message, msg.Position, msg.TextColor);
-            }
+                if (msg.TextColor != currentColor)
+                {
+                    currentColor = msg.TextColor;
+                    fastTextRenderer.End(Game.GraphicsContext);
+                    fastTextRenderer.TextColor = currentColor;
+                    fastTextRenderer.Begin(Game.GraphicsContext);
+                }
 
-            spriteBatch.End();
+                fastTextRenderer.DrawString(Game.GraphicsContext, msg.Message, msg.Position.X, msg.Position.Y);
+            }
+            fastTextRenderer.End(Game.GraphicsContext);
         }
     }
 }
