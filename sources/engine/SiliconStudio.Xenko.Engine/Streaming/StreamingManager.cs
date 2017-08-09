@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Streaming
         private bool isDisposing;
         private int frameIndex;
         private bool streamingEnabled = true;
-        private int currentlyAllocatedMemory; // in KB
+        private long currentlyAllocatedMemory; // in bytes
 #if USE_TEST_MANUAL_QUALITY
         private int testQuality = 100;
 #endif
@@ -59,6 +59,16 @@ namespace SiliconStudio.Xenko.Streaming
         /// The targeted memory budget of the streaming system in MB. If the memory allocated by streaming system is under this budget it will not try to unload not visible resources.
         /// </summary>
         public int TargetedMemoryBudget = 512;
+
+        /// <summary>
+        /// Gets the memory currently allocated by streamable resources in MB.
+        /// </summary>
+        public float AllocatedMemory => AllocatedMemoryBytes / (float)0x100000;
+
+        /// <summary>
+        /// Gets the extact memory amount allocated by streamable resources in bytes.
+        /// </summary>
+        public long AllocatedMemoryBytes => Interlocked.Read(ref currentlyAllocatedMemory);
 
         /// <summary>
         /// Gets the content streaming service.
@@ -289,8 +299,8 @@ namespace SiliconStudio.Xenko.Streaming
         /// <summary>
         /// Notify the streaming manager of the change memory used by the resources.
         /// </summary>
-        /// <param name="memoryUsedChange">The change of memory used in MB. This value can be positive of negative.</param>
-        public void RegisterMemoryUsage(int memoryUsedChange)
+        /// <param name="memoryUsedChange">The change of memory used in bytes. This value can be positive of negative.</param>
+        public void RegisterMemoryUsage(long memoryUsedChange)
         {
             Interlocked.Add(ref currentlyAllocatedMemory, memoryUsedChange);
         }
@@ -497,7 +507,7 @@ namespace SiliconStudio.Xenko.Streaming
             Debug.Assert(resource != null && resource.CanBeUpdated);
 
             var options = resource.StreamingOptions ?? StreamingOptions.Default;
-            var isUnderBudget = currentlyAllocatedMemory / 1024 < TargetedMemoryBudget;
+            var isUnderBudget = AllocatedMemory < TargetedMemoryBudget;
 
             // Calculate target quality for that asset
             StreamingQuality targetQuality = StreamingQuality.Mininum;
