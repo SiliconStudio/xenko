@@ -281,7 +281,7 @@ namespace SiliconStudio.Xenko.Streaming
             // Cache data
             var mipsChange = residency - CurrentResidency;
             var mipsCount = residency;
-            Debug.Assert(mipsChange != 0);
+            Debug.Assert(mipsChange != 0, $"mipsChange[{mipsChange}] != 0");
 
             if (residency == 0)
             {
