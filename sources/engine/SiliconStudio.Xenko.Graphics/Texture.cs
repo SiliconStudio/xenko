@@ -366,6 +366,11 @@ namespace SiliconStudio.Xenko.Graphics
             internal set => fullQualitySize = value;
         }
 
+        /// <summary> 
+        /// The width stride in bytes (number of bytes per row).
+        /// </summary>
+        internal int RowStride { get; private set; }
+
         /// <summary>
         /// The underlying parent texture (if this is a view).
         /// </summary>
@@ -432,6 +437,7 @@ namespace SiliconStudio.Xenko.Graphics
             textureDescription = description;
             textureViewDescription = viewDescription;
             IsBlockCompressed = description.Format.IsCompressed();
+            RowStride = ComputeRowPitch(0);
             mipmapDescriptions = Image.CalculateMipMapDescription(description);
             SizeInBytes = ArraySize * mipmapDescriptions?.Sum(desc => desc.MipmapSize) ?? 0;
 
