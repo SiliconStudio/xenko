@@ -32,7 +32,6 @@ namespace SiliconStudio.Xenko.Streaming
         private int lastUpdateResourcesIndex;
         private bool isDisposing;
         private int frameIndex;
-        private bool streamingEnabled = true;
         private long currentlyAllocatedMemory; // in bytes
 #if USE_TEST_MANUAL_QUALITY
         private int testQuality = 100;
@@ -81,28 +80,6 @@ namespace SiliconStudio.Xenko.Streaming
         public ICollection<StreamableResource> Resources => resources;
 
         /// <summary>
-        /// Gets or sets a value indicating whether resource streaming should be disabled.
-        /// </summary>
-        public bool StreamingEnabled
-        {
-            get => streamingEnabled;
-            set
-            {
-                streamingEnabled = value;
-                if (!streamingEnabled)
-                {
-                    lock (resources)
-                    {
-                        activeStreaming.ForEach(stream=>stream.StopStreaming());
-                        FlushSync();
-
-                        resources.ForEach(FullyLoadResource);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="StreamingManager"/> class.
         /// </summary>
         /// <param name="services">The servicies registry.</param>
@@ -118,6 +95,9 @@ namespace SiliconStudio.Xenko.Streaming
 
             ContentStreaming = new ContentStreamingService();
             (Game as Game)?.Script.AddTask(Update);
+
+            Enabled = true;
+            EnabledChanged += OnEnabledChanged;
         }
 
         /// <inheritdoc />
@@ -130,7 +110,7 @@ namespace SiliconStudio.Xenko.Streaming
                 ManagerUpdatesInterval = streamingSettings.ManagerUpdatesInterval;
                 MaxResourcesPerUpdate = streamingSettings.MaxResourcesPerUpdate;
                 ResourceLiveTimeout = streamingSettings.ResourceLiveTimeout;
-                StreamingEnabled = streamingSettings.Enabled;
+                Enabled = streamingSettings.Enabled;
                 TargetedMemoryBudget = streamingSettings.TargetedMemoryBudget;
             }
         }
@@ -378,7 +358,7 @@ namespace SiliconStudio.Xenko.Streaming
             resource.Init(storage, ref imageDescription);
 
             // Check if cannot use streaming
-            if (!StreamingEnabled)
+            if (!Enabled)
             {
                 FullyLoadResource(resource);
             }
@@ -457,7 +437,7 @@ namespace SiliconStudio.Xenko.Streaming
                 // Update resources
                 lock (resources)
                 {
-                    if (StreamingEnabled)
+                    if (Enabled)
                     {
                         // Perform synchronization
                         FlushSync();
@@ -583,6 +563,20 @@ namespace SiliconStudio.Xenko.Streaming
                 resource.FlushSync();
                 activeStreaming.RemoveAt(i);
                 i--;
+            }
+        }
+
+        private void OnEnabledChanged(object sender, EventArgs e)
+        {
+            if (!Enabled)
+            {
+                lock (resources)
+                {
+                    activeStreaming.ForEach(stream => stream.StopStreaming());
+                    FlushSync();
+
+                    resources.ForEach(FullyLoadResource);
+                }
             }
         }
     }

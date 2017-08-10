@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             base.Initialize();
 
             // Disable streaming
-            Streaming.StreamingEnabled = false;
+            Streaming.Enabled = false;
 
             // Enable profiling
             //Profiler.EnableAll();

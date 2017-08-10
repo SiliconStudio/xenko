@@ -15,10 +15,13 @@ namespace SiliconStudio.Xenko.Streaming
     [Display("Streaming")]
     public sealed class StreamingSettings : Configuration
     {
-        /// <inheritdoc cref="StreamingManager.StreamingEnabled"/>
+        /// <summary>
+        /// Gets or sets a value indicating whether resource streaming should be disabled.
+        /// </summary>
         /// <userdoc>
         /// Enable the streaming of resources. If disabled all the other settings are ignored.
         /// </userdoc>
+        /// <seealso cref="Games.GameSystemBase.Enabled"/>
         [DataMember]
         [DefaultValue(true)]
         public bool Enabled { get; set; } = true;
@@ -27,6 +30,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// <userdoc>
         /// The interval between updates of the streaming manager.
         /// </userdoc>
+        /// <seealso cref="StreamingManager.ManagerUpdatesInterval"/>
         [DataMember]
         [DataMemberRange(0.001, 3)]
         public TimeSpan ManagerUpdatesInterval { get; set; } = TimeSpan.FromMilliseconds(33);
@@ -35,6 +39,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// <userdoc>
         /// The maximum number of resources updated per streaming manager tick. Used to balance performance/streaming speed.
         /// </userdoc>
+        /// <seealso cref="StreamingManager.MaxResourcesPerUpdate"/>
         [DataMember]
         [DataMemberRange(1, 0)]
         [DefaultValue(8)]
@@ -44,6 +49,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// <userdoc>
         /// Resources that aren't used for a while are downscaled in quality.
         /// </userdoc>
+        /// <seealso cref="StreamingManager.ResourceLiveTimeout"/>
         [DataMember]
         [DataMemberRange(0, 3)]
         public TimeSpan ResourceLiveTimeout { get; set; } = TimeSpan.FromSeconds(8);
@@ -52,6 +58,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// <userdoc>
         /// The targeted memory budget of the streaming system in MB. If the memory allocated by the streaming system is under this budget, it will not try to unload resources that are not visible.
         /// </userdoc>
+        /// <seealso cref="StreamingManager.TargetedMemoryBudget"/>
         [DataMember]
         [DataMemberRange(0, 0)]
         [DefaultValue(512)]
