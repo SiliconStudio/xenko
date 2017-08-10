@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Commands;
@@ -14,11 +13,11 @@ using SiliconStudio.Presentation.ViewModel;
 namespace SiliconStudio.Presentation.Quantum.ViewModels
 {
     /// <summary>
-    /// A class that wraps an instance of <see cref="INodePresenterCommand"/> into an <see cref="ICommand"/> instance.
+    /// A class that wraps an instance of <see cref="INodePresenterCommand"/> into an <see cref="ICommandBase"/> instance.
     /// </summary>
     public class NodePresenterCommandWrapper : CommandBase
     {
-        private readonly IReadOnlyCollection<INodePresenter> presenters;
+        [NotNull] private readonly IReadOnlyCollection<INodePresenter> presenters;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NodePresenterCommandWrapper"/> class.
@@ -29,25 +28,26 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         public NodePresenterCommandWrapper([NotNull] IViewModelServiceProvider serviceProvider, [NotNull] IReadOnlyCollection<INodePresenter> presenters, [NotNull] INodePresenterCommand command)
             : base(serviceProvider)
         {
-            if (presenters == null) throw new ArgumentNullException(nameof(presenters));
-            if (command == null) throw new ArgumentNullException(nameof(command));
-            this.presenters = presenters;
-            Command = command;
+            this.presenters = presenters ?? throw new ArgumentNullException(nameof(presenters));
+            Command = command ?? throw new ArgumentNullException(nameof(command));
         }
 
         /// <summary>
         /// The name of the action executed by this command.
         /// </summary>
+        [NotNull]
         public string ActionName => $"Execute {Name}";
 
         /// <summary>
         /// The name of this command.
         /// </summary>
+        [NotNull]
         public string Name => Command.Name;
-        
+
         /// <summary>
         /// The command wrapped by this instance.
         /// </summary>
+        [NotNull]
         public INodePresenterCommand Command { get; }
 
         /// <inheritdoc/>

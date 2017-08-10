@@ -25,7 +25,7 @@ namespace SiliconStudio.Presentation.ViewModel
         }
 
         /// <inheritdoc/>
-        public bool IsDirty { get { return isDirty; } private set { SetValueUncancellable(ref isDirty, value); OnDirtyFlagSet(); } }
+        public bool IsDirty { get => isDirty; private set => SetValueUncancellable(ref isDirty, value, OnDirtyFlagSet); }
 
         /// <inheritdoc/>
         public override IEnumerable<IDirtiable> Dirtiables => this.Yield();
