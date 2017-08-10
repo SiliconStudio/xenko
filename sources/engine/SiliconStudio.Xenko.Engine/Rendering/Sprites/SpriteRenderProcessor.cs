@@ -55,9 +55,9 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                     else
                     {
                         halfBoxSize = new Vector3(
-                            worldMatrix.M11 * halfSpriteSize.X + worldMatrix.M21 * halfSpriteSize.Y,
-                            worldMatrix.M12 * halfSpriteSize.X + worldMatrix.M22 * halfSpriteSize.Y,
-                            worldMatrix.M13 * halfSpriteSize.X + worldMatrix.M23 * halfSpriteSize.Y);
+                            Math.Abs(worldMatrix.M11 * halfSpriteSize.X + worldMatrix.M21 * halfSpriteSize.Y),
+                            Math.Abs(worldMatrix.M12 * halfSpriteSize.X + worldMatrix.M22 * halfSpriteSize.Y),
+                            Math.Abs(worldMatrix.M13 * halfSpriteSize.X + worldMatrix.M23 * halfSpriteSize.Y));
 
                     }
                     renderSprite.BoundingBox = new BoundingBoxExt(boxOffset - halfBoxSize, boxOffset + halfBoxSize);
