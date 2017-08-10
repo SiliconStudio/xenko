@@ -308,13 +308,16 @@ namespace SiliconStudio.Xenko.Streaming
         private void SetResourceStreamingOptions(StreamingTexture resource, StreamingOptions options, bool combineOptions)
         {
             var alreadyHasOptions = resource.StreamingOptions.HasValue;
-            resource.StreamingOptions = combineOptions && alreadyHasOptions? options.CombineWith(resource.StreamingOptions.Value) : options;
-            if (options.LoadImmediately)
+            var newOptions = combineOptions && alreadyHasOptions? options.CombineWith(resource.StreamingOptions.Value) : options;
+
+            lock (resources)
             {
-                lock (resources)
+                resource.StreamingOptions = newOptions;
+
+                if (newOptions.LoadImmediately)
                 {
                     // ensure that the resource is not currently streaming
-                    if (resource.IsTaskActive)
+                    if (!resource.CanBeUpdated)
                     {
                         resource.StopStreaming();
                         FlushSync();

@@ -132,7 +132,7 @@ namespace SiliconStudio.Xenko.Streaming
         [NotNull]
         internal Task StreamAsyncInternal(int residency)
         {
-            Debug.Assert(CanBeUpdated && residency <= MaxResidency, $"CanBeUpdated[{CanBeUpdated}] && residency[{residency}] <= MaxResidency[{MaxResidency}]");
+            Debug.Assert(CanBeUpdated && residency <= MaxResidency, $"CanBeUpdated[{CanBeUpdated}] && residency[{residency}] <= MaxResidency[{MaxResidency}] -- Resouce={Resource}");
 
             CancellationToken = new CancellationTokenSource();
             return streamingTask = StreamAsync(residency);
