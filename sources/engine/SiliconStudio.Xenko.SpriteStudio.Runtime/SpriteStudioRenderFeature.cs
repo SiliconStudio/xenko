@@ -60,12 +60,16 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
         public override void Prepare(RenderDrawContext context)
         {
             base.Prepare(context);
-            
+
             // Register resources usage
             foreach (var renderObject in RenderObjects)
             {
                 var renderSpriteStudio = (RenderSpriteStudio)renderObject;
-                foreach (var sprite in renderSpriteStudio.SpriteStudioComponent.Sheet.Sprites)
+                var sprites = renderSpriteStudio.SpriteStudioComponent.Sheet.Sprites;
+                if (sprites == null)
+                    continue;
+
+                foreach (var sprite in sprites)
                     Context.StreamingManager?.StreamResources(sprite.Texture);
             }
         }
