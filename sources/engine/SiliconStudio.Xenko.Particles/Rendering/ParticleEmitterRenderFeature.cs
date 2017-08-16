@@ -165,9 +165,6 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 var materialInfo = (ParticleMaterialInfo)renderParticleEmitter.ParticleMaterialInfo;
                 var colorShade = renderParticleEmitter.RenderParticleSystem.ParticleSystemComponent.Color.ToColorSpace(context.GraphicsDevice.ColorSpace);
                 materialInfo?.Material.Parameters.Set(ParticleBaseKeys.ColorScale, colorShade);
-
-                // Register resources usage
-                Context.StreamingManager?.StreamResources(renderParticleEmitter.ParticleEmitter.Material.Parameters);
             }
 
             // Calculate the total vertex buffer size required
@@ -296,6 +293,13 @@ namespace SiliconStudio.Xenko.Particles.Rendering
         public override unsafe void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
             var commandList = context.CommandList;
+
+            // register all texture usage
+            foreach (var renderObject in RenderObjects)
+            {
+                var renderParticleEmitter = (RenderParticleEmitter)renderObject;
+                Context.StreamingManager?.StreamResources(renderParticleEmitter.ParticleEmitter.Material.Parameters);
+            }
 
             // Per view - this code was moved here from Prepare(...) so that we can apply the correct Viewport
             {
