@@ -25,7 +25,16 @@ namespace SiliconStudio.Presentation.ViewModel
         }
 
         /// <inheritdoc/>
-        public bool IsDirty { get => isDirty; private set => SetValueUncancellable(ref isDirty, value, OnDirtyFlagSet); }
+        public bool IsDirty
+        {
+            get => isDirty;
+            private set
+            {
+                SetValueUncancellable(ref isDirty, value);
+                // Note: we always call this method even if the value didn't change as some processes migth depend on it.
+                OnDirtyFlagSet();
+            }
+        }
 
         /// <inheritdoc/>
         public override IEnumerable<IDirtiable> Dirtiables => this.Yield();
