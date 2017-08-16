@@ -178,7 +178,17 @@ namespace SiliconStudio.Xenko.Streaming
             {
                 CancellationToken.Cancel();
                 if (!streamingTask.IsCompleted)
-                    streamingTask.Wait();
+                {
+                    try
+                    {
+                        streamingTask.Wait();
+                    }
+                    catch (AggregateException exp)
+                    {
+                        if (exp.InnerExceptions.Count != 1 || !(exp.InnerExceptions[0] is TaskCanceledException))
+                            throw;
+                    }
+                }
             }
             streamingTask = null;
         }
