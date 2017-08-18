@@ -115,7 +115,7 @@ namespace SiliconStudio.Xenko.PackageInstall
         private static void CheckVisualStudioAndBuildTools()
         {
             // Check if there is any VS2017 installed with necessary workloads
-            var matchingVisualStudioInstallation = VisualStudioVersions.AvailableVisualStudioVersions.FirstOrDefault(x => NecessaryVS2017Workloads.All(workload => x.PackageVersions.ContainsKey(workload)));
+            var matchingVisualStudioInstallation = VisualStudioVersions.AvailableVisualStudioInstances.FirstOrDefault(x => NecessaryVS2017Workloads.All(workload => x.PackageVersions.ContainsKey(workload)));
             if (AllowVisualStudioOnly && matchingVisualStudioInstallation != null)
             {
                 if (!matchingVisualStudioInstallation.Complete)
@@ -124,7 +124,7 @@ namespace SiliconStudio.Xenko.PackageInstall
             else
             {
                 // Check if there is actually a VS2017+ installed
-                var existingVisualStudio2017Install = VisualStudioVersions.AvailableVisualStudioVersions.FirstOrDefault(x => x.PackageVersions.ContainsKey("Microsoft.VisualStudio.Component.CoreEditor"));
+                var existingVisualStudio2017Install = VisualStudioVersions.AvailableVisualStudioInstances.FirstOrDefault(x => x.PackageVersions.ContainsKey("Microsoft.VisualStudio.Component.CoreEditor"));
                 var vsInstallerPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Microsoft Visual Studio\Installer\vs_installer.exe");
                 if (AllowVisualStudioOnly && existingVisualStudio2017Install != null && File.Exists(vsInstallerPath))
                 {
