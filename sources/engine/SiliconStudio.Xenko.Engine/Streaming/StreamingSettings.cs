@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Streaming
 
         /// <inheritdoc cref="StreamingManager.ManagerUpdatesInterval"/>
         /// <userdoc>
-        /// How frequently Xenko updates the streaming. Smaller intervals mean the streaming system reacts faster, but uses more CPU and causes more memory fluctuations.
+        /// How frequently Xenko updates the streaming. Smaller intervals mean the streaming system reacts faster, but use more CPU and cause more memory fluctuations.
         /// </userdoc>
         /// <seealso cref="StreamingManager.ManagerUpdatesInterval"/>
         [DataMember]
