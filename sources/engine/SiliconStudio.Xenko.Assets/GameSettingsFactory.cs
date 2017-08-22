@@ -35,13 +35,13 @@ namespace SiliconStudio.Xenko.Assets
             asset.PlatformFilters.Add("^Mali\\-T6");
             asset.PlatformFilters.Add("^Mali\\-T7");
 
-            asset.GetOrCreate<RenderingSettings>();
-            asset.GetOrCreate<EditorSettings>();
-            asset.GetOrCreate<TextureSettings>();
-            asset.GetOrCreate<PhysicsSettings>();
             asset.GetOrCreate<AudioEngineSettings>();
+            asset.GetOrCreate<EditorSettings>();
             asset.GetOrCreate<NavigationSettings>();
+            asset.GetOrCreate<PhysicsSettings>();
+            asset.GetOrCreate<RenderingSettings>();
             asset.GetOrCreate<StreamingSettings>();
+            asset.GetOrCreate<TextureSettings>();
 
             return asset;
         }
