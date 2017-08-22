@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Assets
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
     [AssetContentType(typeof(GameSettings))]
     [Display(10000, "Game settings")]
-    [CategoryOrder(1550, "Splash screen")]
+    [CategoryOrder(4050, "Splash screen")]
     [NonIdentifiableCollectionItems]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.6.1-alpha01")]
@@ -67,14 +67,14 @@ namespace SiliconStudio.Xenko.Assets
         /// The image (eg company logo) displayed as the splash screen
         /// </userdoc>
         [Display("Texture", "Splash screen")]
-        [DataMember(1600)]
+        [DataMember(5000)]
         public Texture SplashScreenTexture { get; set; }
 
         /// <userdoc>
         /// The color the splash screen fades in on top of
         /// </userdoc>
         [Display("Color", "Splash screen")]
-        [DataMember(1700)]
+        [DataMember(5050)]
         public Color SplashScreenColor { get; set; } = Color.Black;
 
         [DataMember(2000)]
