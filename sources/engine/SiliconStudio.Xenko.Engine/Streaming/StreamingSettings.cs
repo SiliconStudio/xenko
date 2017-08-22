@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Streaming
         /// Gets or sets a value indicating whether resource streaming should be disabled.
         /// </summary>
         /// <userdoc>
-        /// Enable the streaming of resources. If disabled all the other settings are ignored.
+        /// Enable streaming
         /// </userdoc>
         /// <seealso cref="Games.GameSystemBase.Enabled"/>
         [DataMember]
@@ -28,38 +28,42 @@ namespace SiliconStudio.Xenko.Streaming
 
         /// <inheritdoc cref="StreamingManager.ManagerUpdatesInterval"/>
         /// <userdoc>
-        /// The interval between updates of the streaming manager.
+        /// How frequently Xenko updates the streaming. Smaller intervals mean the streaming system reacts faster, but uses more CPU and causes more memory fluctuations.
         /// </userdoc>
         /// <seealso cref="StreamingManager.ManagerUpdatesInterval"/>
         [DataMember]
+        [Display("Update interval")]
         [DataMemberRange(0.001, 3)]
         public TimeSpan ManagerUpdatesInterval { get; set; } = TimeSpan.FromMilliseconds(33);
 
         /// <inheritdoc cref="StreamingManager.MaxResourcesPerUpdate"/>
         /// <userdoc>
-        /// The maximum number of resources updated per streaming manager tick. Used to balance performance/streaming speed.
+        /// The maximum number of textures loaded or unloaded per streaming update. Higher numbers reduce pop-in but might slow down the framerate.
         /// </userdoc>
         /// <seealso cref="StreamingManager.MaxResourcesPerUpdate"/>
         [DataMember]
+        [Display("Max resources per update")]
         [DataMemberRange(1, 0)]
         [DefaultValue(8)]
         public int MaxResourcesPerUpdate { get; set; } = 8;
 
         /// <inheritdoc cref="StreamingManager.ResourceLiveTimeout"/>
         /// <userdoc>
-        /// Resources that aren't used for a while are downscaled in quality.
+        /// How long resources stay loaded after they're no longer used (when the memory budget is exceeded)
         /// </userdoc>
         /// <seealso cref="StreamingManager.ResourceLiveTimeout"/>
         [DataMember]
+        [Display("Resource timeout (ms)")]
         [DataMemberRange(0, 3)]
         public TimeSpan ResourceLiveTimeout { get; set; } = TimeSpan.FromSeconds(8);
 
         /// <inheritdoc cref="StreamingManager.TargetedMemoryBudget"/>
         /// <userdoc>
-        /// The targeted memory budget of the streaming system in MB. If the memory allocated by the streaming system is under this budget, it will not try to unload resources that are not visible.
+        /// When the memory used by streaming exceeds this budget, Xenko unloads unused textures. You can increase this to keep more textures loaded when you have memory to spare, and vice versa.
         /// </userdoc>
         /// <seealso cref="StreamingManager.TargetedMemoryBudget"/>
         [DataMember]
+        [Display("Memory budget (in MB)")]
         [DataMemberRange(0, 0)]
         [DefaultValue(512)]
         public int TargetedMemoryBudget { get; set; } = 512;
