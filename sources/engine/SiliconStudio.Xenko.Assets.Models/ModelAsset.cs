@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     [DataContract("Model")]
     [AssetDescription(FileExtension, AllowArchetype = true)]
     [AssetContentType(typeof(Model))]
-    [Display(1900, "Model")]
+    [Display((int)AssetDisplayPriority.Models + 80, "Model")]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.5.0-alpha02")]
     [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha02", "2.0.0.0", typeof(EmptyAssetUpgrader))]

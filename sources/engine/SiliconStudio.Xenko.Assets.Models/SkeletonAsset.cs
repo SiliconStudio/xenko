@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     [DataContract("Skeleton")]
     [AssetDescription(FileExtension, AllowArchetype = false)]
     [AssetContentType(typeof(Skeleton))]
-    [Display(1800, "Skeleton", "A skeleton (node hierarchy)")]
+    [Display((int)AssetDisplayPriority.Models, "Skeleton", "A skeleton (node hierarchy)")]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.7.8-beta")]
     [AssetUpgrader(XenkoConfig.PackageName, "1.7.8-beta", "2.0.0.0", typeof(EmptyAssetUpgrader))]
