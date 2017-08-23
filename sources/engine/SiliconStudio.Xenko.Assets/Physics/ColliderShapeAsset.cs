@@ -2,18 +2,13 @@
 // See LICENSE.md for full license information.
 
 using SiliconStudio.Assets;
-using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Physics;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Assets.Physics
 {
@@ -26,8 +21,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
 #else
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
 #endif
-    [Display("Collider shape")]
-    public class ColliderShapeAsset : Asset
+    public partial class ColliderShapeAsset : Asset
     {
         private const string CurrentVersion = "2.0.0.0";
 

@@ -13,14 +13,13 @@ namespace SiliconStudio.Xenko.Assets.Audio
     [DataContract("Sound")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Sound))]
-    [Display(1200, "Sound")]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "0.0.0")]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "2.0.0.0", typeof(EmptyAssetUpgrader))]
 #else
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
 #endif
-    public class SoundAsset : AssetWithSource
+    public partial class SoundAsset : AssetWithSource
     {
         private const string CurrentVersion = "2.0.0.0";
 

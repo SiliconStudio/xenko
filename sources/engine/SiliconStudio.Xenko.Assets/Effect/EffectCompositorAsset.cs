@@ -10,8 +10,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
     /// </summary>
     [DataContract("EffectCompositorAsset")]
     [AssetDescription(FileExtension, AlwaysMarkAsRoot = true, AllowArchetype = false)]
-    [Display(950, "Effect compositor")]
-    public sealed class EffectCompositorAsset : ProjectSourceCodeWithFileGeneratorAsset
+    public sealed partial class EffectCompositorAsset : ProjectSourceCodeWithFileGeneratorAsset
     {
         /// <summary>
         /// The default file extension used by the <see cref="EffectCompositorAsset"/>.

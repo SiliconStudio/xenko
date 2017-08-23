@@ -6,9 +6,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using SiliconStudio.Assets;
-using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Xenko.Shaders.Parser;
 using SiliconStudio.Xenko.Shaders.Parser.Mixins;
 
@@ -19,8 +17,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
     /// </summary>
     [DataContract("EffectShader")]
     [AssetDescription(FileExtension, AlwaysMarkAsRoot = true, AllowArchetype = false)]
-    [Display(920, "Effect shader")]
-    public sealed class EffectShaderAsset : ProjectSourceCodeWithFileGeneratorAsset
+    public sealed partial class EffectShaderAsset : ProjectSourceCodeWithFileGeneratorAsset
     {
         /// <summary>
         /// The default file extension used by the <see cref="EffectShaderAsset"/>.

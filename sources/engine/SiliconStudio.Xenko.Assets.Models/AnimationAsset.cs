@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Assets.Models
     [DataContract("Animation")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(AnimationClip))]
-    [Display(1805, "Animation")]
+    [Display((int)AssetDisplayPriority.Models + 20, "Animation")]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.10.0-alpha01")]
     [AssetUpgrader(XenkoConfig.PackageName, "1.10.0-alpha01", "2.0.0.0", typeof(EmptyAssetUpgrader))]
