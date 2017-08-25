@@ -382,6 +382,13 @@ namespace SiliconStudio.Xenko.Engine
         {
         }
 
+        /// <inheritdoc />
+        protected override TComponent GenerateComponentData(Entity entity, TComponent component)
+        {
+            return component;
+        }
+
+        /// <inheritdoc />
         protected override bool IsAssociatedDataValid(Entity entity, TComponent component, TComponent associatedData)
         {
             return component == associatedData;

@@ -2,10 +2,7 @@
 // See LICENSE.md for full license information.
 
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
-using SiliconStudio.Core;
-using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
@@ -23,7 +20,7 @@ namespace SiliconStudio.Xenko.Audio
     /// the processor set the <see cref="AudioEmitter"/> reference of the <see cref="AudioSystem"/> to null 
     /// but do not remove the <see cref="AudioListenerComponent"/> from its collection.
     /// </remarks>
-    public class AudioListenerProcessor : EntityProcessor<AudioListenerComponent, AudioListenerComponent>
+    public class AudioListenerProcessor : EntityProcessor<AudioListenerComponent>
     {
         /// <summary>
         /// Reference to the <see cref="AudioSystem"/> of the game instance.
@@ -36,16 +33,6 @@ namespace SiliconStudio.Xenko.Audio
         public AudioListenerProcessor()
             : base(typeof(AudioListenerComponent))
         {
-        }
-
-        protected override AudioListenerComponent GenerateComponentData(Entity entity, AudioListenerComponent component)
-        {
-            return component;
-        }
-
-        protected override bool IsAssociatedDataValid(Entity entity, AudioListenerComponent component, AudioListenerComponent associatedData)
-        {
-            return component == associatedData;
         }
 
         protected internal override void OnSystemAdd()

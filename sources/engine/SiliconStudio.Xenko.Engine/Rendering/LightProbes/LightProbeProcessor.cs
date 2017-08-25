@@ -90,10 +90,5 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
             needPositionUpdate = true;
             base.OnEntityComponentRemoved(entity, component, data);
         }
-
-        protected override LightProbeComponent GenerateComponentData(Entity entity, LightProbeComponent component)
-        {
-            return component;
-        }
     }
 }
