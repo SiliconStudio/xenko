@@ -13,16 +13,25 @@ namespace SiliconStudio.Xenko.Navigation.Processors
         public event CollectionChangedEventHandler ColliderAdded;
         public event CollectionChangedEventHandler ColliderRemoved;
 
+        /// <inheritdoc />
         protected override StaticColliderData GenerateComponentData(Entity entity, StaticColliderComponent component)
         {
             return new StaticColliderData { Component = component };
         }
 
+        /// <inheritdoc />
+        protected override bool IsAssociatedDataValid(Entity entity, StaticColliderComponent component, StaticColliderData associatedData)
+        {
+            return component == associatedData.Component;
+        }
+
+        /// <inheritdoc />
         protected override void OnEntityComponentAdding(Entity entity, StaticColliderComponent component, StaticColliderData data)
         {
             ColliderAdded?.Invoke(component, data);
         }
 
+        /// <inheritdoc />
         protected override void OnEntityComponentRemoved(Entity entity, StaticColliderComponent component, StaticColliderData data)
         {
             ColliderRemoved?.Invoke(component, data);

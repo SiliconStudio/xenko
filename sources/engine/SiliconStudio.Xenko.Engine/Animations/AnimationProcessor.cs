@@ -2,10 +2,7 @@
 // See LICENSE.md for full license information.
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Engine;
@@ -27,15 +24,12 @@ namespace SiliconStudio.Xenko.Animations
             return new AssociatedData
             {
                 AnimationComponent = component,
-                ModelComponent = entity.Get<ModelComponent>()
             };
         }
 
         protected override bool IsAssociatedDataValid(Entity entity, AnimationComponent component, AssociatedData associatedData)
         {
-            return
-                component == associatedData.AnimationComponent &&
-                entity.Get<ModelComponent>() == associatedData.ModelComponent;
+            return component == associatedData.AnimationComponent;
         }
 
         protected override void OnEntityComponentAdding(Entity entity, AnimationComponent component, AssociatedData data)
@@ -98,7 +92,7 @@ namespace SiliconStudio.Xenko.Animations
                             case AnimationRepeatMode.LoopInfinite:
                                 playingAnimation.CurrentTime = playingAnimation.Clip.Duration == TimeSpan.Zero
                                     ? TimeSpan.Zero
-                                    : TimeSpan.FromTicks((playingAnimation.CurrentTime.Ticks + playingAnimation.Clip.Duration.Ticks 
+                                    : TimeSpan.FromTicks((playingAnimation.CurrentTime.Ticks + playingAnimation.Clip.Duration.Ticks
                                         + (long)(time.Elapsed.Ticks * (double)playingAnimation.TimeFactor)) % playingAnimation.Clip.Duration.Ticks);
                                 break;
                             default:
@@ -191,7 +185,7 @@ namespace SiliconStudio.Xenko.Animations
                 }
 
                 animationOperations.Clear();
-                
+
             }, animationOperations => animationOperationPool.Release(animationOperations));
         }
 
@@ -203,7 +197,6 @@ namespace SiliconStudio.Xenko.Animations
         public class AssociatedData
         {
             public AnimationUpdater AnimationUpdater;
-            public ModelComponent ModelComponent;
             public AnimationComponent AnimationComponent;
             public AnimationClipResult AnimationClipResult;
         }

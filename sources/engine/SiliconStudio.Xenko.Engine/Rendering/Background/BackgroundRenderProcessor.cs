@@ -22,10 +22,12 @@ namespace SiliconStudio.Xenko.Rendering.Background
         /// <value>The active background.</value>
         public RenderBackground ActiveBackground { get; private set; }
 
+        /// <inheritdoc />
         protected internal override void OnSystemAdd()
         {
         }
 
+        /// <inheritdoc />
         protected internal override void OnSystemRemove()
         {
             if (ActiveBackground != null)
@@ -35,11 +37,19 @@ namespace SiliconStudio.Xenko.Rendering.Background
             }
         }
 
+        /// <inheritdoc />
         protected override RenderBackground GenerateComponentData(Entity entity, BackgroundComponent component)
         {
             return new RenderBackground { RenderGroup = component.RenderGroup };
         }
 
+        /// <inheritdoc />
+        protected override bool IsAssociatedDataValid(Entity entity, BackgroundComponent component, RenderBackground associatedData)
+        {
+            return component.RenderGroup == associatedData.RenderGroup;
+        }
+
+        /// <inheritdoc />
         public override void Draw(RenderContext context)
         {
             var previousBackground = ActiveBackground;

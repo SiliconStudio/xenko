@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
         protected override bool IsAssociatedDataValid(Entity entity, UIComponent component, RenderUIElement associatedData)
         {
             return
-                entity.Get<UIComponent>() == component &&
+                component == associatedData.UIComponent &&
                 entity.Transform == associatedData.TransformComponent;
         }
     }
