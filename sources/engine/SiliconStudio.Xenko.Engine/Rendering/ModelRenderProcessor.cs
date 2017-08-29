@@ -26,6 +26,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
         }
 
+        /// <inheritdoc />
         protected internal override void OnSystemAdd()
         {
             var graphicsDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
@@ -40,14 +41,19 @@ namespace SiliconStudio.Xenko.Rendering
             });
         }
 
+        /// <inheritdoc />
         protected override RenderModel GenerateComponentData(Entity entity, ModelComponent component)
         {
-            var modelComponent = entity.Get<ModelComponent>();
-            var renderModel = new RenderModel(modelComponent);
-
-            return renderModel;
+            return new RenderModel(component);
         }
 
+        /// <inheritdoc />
+        protected override bool IsAssociatedDataValid(Entity entity, ModelComponent component, RenderModel associatedData)
+        {
+            return component == associatedData.ModelComponent;
+        }
+
+        /// <inheritdoc />
         protected override void OnEntityComponentRemoved(Entity entity, ModelComponent component, RenderModel renderModel)
         {
             // Remove old meshes
@@ -61,6 +67,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
+        /// <inheritdoc />
         public override void Draw(RenderContext context)
         {
             // Note: we are rebuilding RenderMeshes every frame

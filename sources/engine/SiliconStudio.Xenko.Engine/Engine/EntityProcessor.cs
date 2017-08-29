@@ -315,7 +315,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="component"></param>
         /// <param name="associatedData">The associated data.</param>
         /// <returns>True if the change in associated data requires the entity to be readded, false otherwise.</returns>
-        protected virtual bool IsAssociatedDataValid([NotNull] Entity entity, [NotNull] TComponent component, TData associatedData)
+        protected virtual bool IsAssociatedDataValid([NotNull] Entity entity, [NotNull] TComponent component, [NotNull] TData associatedData)
         {
             return GenerateComponentData(entity, component).Equals(associatedData);
         }
