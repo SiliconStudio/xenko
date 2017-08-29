@@ -32,7 +32,7 @@ namespace SiliconStudio.Core
     /// </summary>
     public class ServiceRegistry : IServiceRegistry
     {
-        public static PropertyKey<IServiceRegistry> ServiceRegistryKey = new PropertyKey<IServiceRegistry>(nameof(ServiceRegistryKey), typeof(IServiceRegistry));
+        public static readonly PropertyKey<IServiceRegistry> ServiceRegistryKey = new PropertyKey<IServiceRegistry>(nameof(ServiceRegistryKey), typeof(IServiceRegistry));
 
         private readonly Dictionary<Type, object> registeredService = new Dictionary<Type, object>();
 
@@ -57,7 +57,7 @@ namespace SiliconStudio.Core
         }
 
         /// <inheritdoc />
-        public void AddService<T>([NotNull] T service)
+        public void AddService<T>(T service)
             where T : class
         {
             if (service == null) throw new ArgumentNullException(nameof(service));

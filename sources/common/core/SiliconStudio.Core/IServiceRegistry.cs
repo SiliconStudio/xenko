@@ -47,7 +47,7 @@ namespace SiliconStudio.Core
         /// <param name="service">The service to add.</param>
         /// <exception cref="ArgumentNullException">Service cannot be null</exception>
         /// <exception cref="ArgumentException">Service is already registered with this type</exception>
-        void AddService<T>(T service) where T : class;
+        void AddService<T>([NotNull] T service) where T : class;
 
         /// <summary>
         /// Gets the service object of the specified type.
