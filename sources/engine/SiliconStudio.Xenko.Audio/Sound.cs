@@ -90,7 +90,7 @@ namespace SiliconStudio.Xenko.Audio
 
             CheckNotDisposed();
 
-            var newInstance = new SoundInstance(this, listener, forceLoadInMemory, useHrtf) { Name = Name + " - Instance " + intancesCreationCount };
+            var newInstance = new SoundInstance(this, listener, forceLoadInMemory, useHrtf, directionalFactor, environment) { Name = Name + " - Instance " + intancesCreationCount };
 
             RegisterInstance(newInstance);
 
