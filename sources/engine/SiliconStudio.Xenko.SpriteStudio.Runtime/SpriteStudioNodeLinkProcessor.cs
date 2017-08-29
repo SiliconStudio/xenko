@@ -6,17 +6,12 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 {
-    public class SpriteStudioNodeLinkProcessor : EntityProcessor<SpriteStudioNodeLinkComponent, SpriteStudioNodeLinkComponent>
+    public class SpriteStudioNodeLinkProcessor : EntityProcessor<SpriteStudioNodeLinkComponent>
     {
         public SpriteStudioNodeLinkProcessor()
             : base(typeof(TransformComponent))
         {
             Order = 551;
-        }
-
-        protected override SpriteStudioNodeLinkComponent GenerateComponentData(Entity entity, SpriteStudioNodeLinkComponent component)
-        {
-            return component;
         }
 
         protected override void OnEntityComponentRemoved(Entity entity, SpriteStudioNodeLinkComponent component, SpriteStudioNodeLinkComponent data)

@@ -118,8 +118,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
         {
             if (component.Slot.AttachedCompositor != null)
                 DetachCameraFromSlot(component);
-
-            base.OnEntityComponentRemoved(entity, component, data);
         }
 
         private void OnCameraSlotsChanged(object sender, ref FastTrackingCollectionChangedEventArgs e)

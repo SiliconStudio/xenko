@@ -28,8 +28,6 @@ namespace SiliconStudio.Xenko.Rendering
 
         protected internal override void OnSystemAdd()
         {
-            base.OnSystemAdd();
-
             var graphicsDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
 
             fallbackMaterial = Material.New(graphicsDevice, new MaterialDescriptor
@@ -65,8 +63,6 @@ namespace SiliconStudio.Xenko.Rendering
 
         public override void Draw(RenderContext context)
         {
-            base.Draw(context);
-
             // Note: we are rebuilding RenderMeshes every frame
             // TODO: check if it wouldn't be better to add/remove directly in CheckMeshes()?
             //foreach (var entity in ComponentDatas)

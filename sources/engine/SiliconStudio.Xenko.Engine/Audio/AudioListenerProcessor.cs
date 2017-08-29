@@ -37,22 +37,16 @@ namespace SiliconStudio.Xenko.Audio
 
         protected internal override void OnSystemAdd()
         {
-            base.OnSystemAdd();
-
             audioSystem = Services.GetService<AudioSystem>();
         }
 
         protected internal override void OnSystemRemove()
         {
-            base.OnSystemRemove();
-
             audioSystem.Listeners.Clear();
         }
 
         protected override void OnEntityComponentAdding(Entity entity, AudioListenerComponent component, AudioListenerComponent data)
         {
-            base.OnEntityComponentAdding(entity, component, data);
-
             component.Listener = new AudioListener(audioSystem.AudioEngine);
 
             audioSystem.Listeners.Add(component, component.Listener);
@@ -60,8 +54,6 @@ namespace SiliconStudio.Xenko.Audio
 
         protected override void OnEntityComponentRemoved(Entity entity, AudioListenerComponent component, AudioListenerComponent data)
         {
-            base.OnEntityComponentRemoved(entity, component, data);
-
             audioSystem.Listeners.Remove(component);
 
             component.Listener.Dispose();
@@ -69,8 +61,6 @@ namespace SiliconStudio.Xenko.Audio
 
         public override void Draw(RenderContext context)
         {
-            base.Draw(context);
-
             foreach (var listenerData in ComponentDatas.Values)
             {
                 if(!listenerData.Enabled)  // skip all updates if the listener is not used.

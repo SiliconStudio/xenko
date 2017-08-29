@@ -21,8 +21,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
 
         public override void Update(GameTime time)
         {
-            base.Update(time);
-
             activeLightShafts.Clear();
             foreach (var pair in ComponentDatas)
             {
