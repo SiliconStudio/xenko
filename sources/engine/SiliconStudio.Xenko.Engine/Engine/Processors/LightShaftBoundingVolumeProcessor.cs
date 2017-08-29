@@ -9,15 +9,13 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Engine.Processors
 {
-    public class LightShaftBoundingVolumeProcessor : EntityProcessor<LightShaftBoundingVolumeComponent, LightShaftBoundingVolumeComponent>
+    public class LightShaftBoundingVolumeProcessor : EntityProcessor<LightShaftBoundingVolumeComponent>
     {
         private Dictionary<LightShaftComponent, List<Data>> volumesPerLightShaft = new Dictionary<LightShaftComponent, List<Data>>();
         private bool isDirty;
 
         public override void Update(GameTime time)
         {
-            base.Update(time);
-
             if (isDirty)
             {
                 UpdateVolumesPerLightShaft();
@@ -33,14 +31,8 @@ namespace SiliconStudio.Xenko.Engine.Processors
             return data;
         }
 
-        protected override LightShaftBoundingVolumeComponent GenerateComponentData(Entity entity, LightShaftBoundingVolumeComponent component)
-        {
-            return component;
-        }
-
         protected override void OnEntityComponentAdding(Entity entity, LightShaftBoundingVolumeComponent component, LightShaftBoundingVolumeComponent data)
         {
-            base.OnEntityComponentAdding(entity, component, data);
             component.LightShaftChanged += ComponentOnLightShaftChanged;
             component.ModelChanged += ComponentOnModelChanged;
             component.EnabledChanged += ComponentOnEnabledChanged;
@@ -49,7 +41,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
 
         protected override void OnEntityComponentRemoved(Entity entity, LightShaftBoundingVolumeComponent component, LightShaftBoundingVolumeComponent data)
         {
-            base.OnEntityComponentRemoved(entity, component, data);
             component.LightShaftChanged -= ComponentOnLightShaftChanged;
             component.ModelChanged -= ComponentOnModelChanged;
             component.EnabledChanged -= ComponentOnEnabledChanged;
@@ -79,7 +70,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             {
                 if (!pair.Key.Enabled)
                     continue;
-                
+
                 var lightShaft = pair.Key.LightShaft;
                 if (lightShaft == null)
                     continue;

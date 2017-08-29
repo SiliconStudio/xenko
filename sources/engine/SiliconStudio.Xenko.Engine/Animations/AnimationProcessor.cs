@@ -40,15 +40,11 @@ namespace SiliconStudio.Xenko.Animations
 
         protected override void OnEntityComponentAdding(Entity entity, AnimationComponent component, AssociatedData data)
         {
-            base.OnEntityComponentAdding(entity, component, data);
-
             data.AnimationUpdater = new AnimationUpdater();
         }
 
         protected override void OnEntityComponentRemoved(Entity entity, AnimationComponent component, AssociatedData data)
         {
-            base.OnEntityComponentRemoved(entity, component, data);
-
             // Return AnimationClipEvaluators to pool
             foreach (var playingAnimation in data.AnimationComponent.PlayingAnimations)
             {

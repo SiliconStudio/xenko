@@ -20,14 +20,12 @@ namespace SiliconStudio.Xenko.Navigation.Processors
 
         protected override void OnEntityComponentAdding(Entity entity, StaticColliderComponent component, StaticColliderData data)
         {
-            base.OnEntityComponentAdding(entity, component, data);
             ColliderAdded?.Invoke(component, data);
         }
 
         protected override void OnEntityComponentRemoved(Entity entity, StaticColliderComponent component, StaticColliderData data)
         {
             ColliderRemoved?.Invoke(component, data);
-            base.OnEntityComponentRemoved(entity, component, data);
         }
     }
 }
