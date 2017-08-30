@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 using System;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 
@@ -29,6 +30,12 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         public ISceneRenderer Child { get; set; }
 
         public RenderGroupMask RenderMask { get; set; } = RenderGroupMask.All;
+
+        [DataMemberIgnore]
+        public Logger Logger = GlobalLogger.GetLogger(nameof(SceneCameraRenderer));
+
+        private bool cameraSlotResolutionFailed;
+        private bool cameraResolutionFailed;
 
         protected override void CollectCore(RenderContext context)
         {
@@ -70,8 +77,19 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         /// </summary>
         protected virtual CameraComponent ResolveCamera(RenderContext renderContext)
         {
+            if(Camera == null && !cameraSlotResolutionFailed)
+                Logger.Warning($"{nameof(SceneCameraRenderer)} [{Id}] has no camera set. Make sure to set camera to the renderer via the Graphic Compositor Editor.");
+
+            cameraSlotResolutionFailed = Camera == null;
+            if (cameraSlotResolutionFailed)
+                return null;
+
             var camera = Camera?.Camera;
-            if (camera == null) throw new InvalidOperationException($"A {nameof(SceneCameraRenderer)} in use has no camera assigned to its [{nameof(CameraComponent.Slot)}]. Make sure a camera is enabled and assigned to the [{nameof(CameraComponent.Slot)}].");
+            if (camera == null && !cameraResolutionFailed)
+                    Logger.Warning($"{nameof(SceneCameraRenderer)} [{Id}] has no camera assigned to its {nameof(CameraComponent.Slot)}[{Camera.Name}]. Make sure a camera is enabled and assigned to the corresponding {nameof(CameraComponent.Slot)}.");
+
+            cameraResolutionFailed = camera == null;
+
             return camera;
         }
 
