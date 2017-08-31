@@ -12,11 +12,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
         {
         }
 
-        protected override ModelNodeLinkComponent GenerateComponentData(Entity entity, ModelNodeLinkComponent component)
-        {
-            return component;
-        }
-        
         protected override void OnEntityComponentAdding(Entity entity, ModelNodeLinkComponent component, ModelNodeLinkComponent data)
         {
             //populate the valid property
@@ -37,10 +32,10 @@ namespace SiliconStudio.Xenko.Engine.Processors
         public override void Draw(RenderContext context)
         {
             foreach (var item in ComponentDatas)
-            {           
-                var entity = item.Key.Entity;              
+            {
+                var entity = item.Key.Entity;
                 var transformComponent = entity.Transform;
-                
+
                 if (item.Value.IsValid)
                 {
                     var modelNodeLink = item.Value;

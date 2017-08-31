@@ -63,8 +63,6 @@ namespace SiliconStudio.Xenko.Audio
 
         protected internal override void OnSystemAdd()
         {
-            base.OnSystemAdd();
-
             audioSystem = Services.GetSafeServiceAs<AudioSystem>();
 
             audioSystem.Listeners.CollectionChanged += OnListenerCollectionChanged;
@@ -88,8 +86,6 @@ namespace SiliconStudio.Xenko.Audio
 
         protected internal override void OnSystemRemove()
         {
-            base.OnSystemRemove();
-
             // Destroy all the SoundInstance created by the processor before closing.
             foreach (var soundInstance in ComponentDatas.Values.SelectMany(x => x.AudioEmitterComponent.SoundToController.Values))
                 soundInstance.DestroyAllSoundInstances();
@@ -99,8 +95,6 @@ namespace SiliconStudio.Xenko.Audio
 
         protected override void OnEntityComponentAdding(Entity entity, AudioEmitterComponent component, AssociatedData data)
         {
-            base.OnEntityComponentAdding(entity, component, data);
-
             // initialize the AudioEmitter first position
             data.TransformComponent.UpdateWorldMatrix(); // ensure the worldMatrix is correct
             data.AudioEmitter = new AudioEmitter { Position = data.TransformComponent.WorldMatrix.TranslationVector }; // valid position is needed at first Update loop to compute velocity.
@@ -227,8 +221,6 @@ namespace SiliconStudio.Xenko.Audio
 
         protected override void OnEntityComponentRemoved(Entity entity, AudioEmitterComponent component, AssociatedData data)
         {
-            base.OnEntityComponentRemoved(entity, component, data);
-
             component.DetachFromProcessor();
 
             // dispose and delete all SoundInstances associated to the EmitterComponent.

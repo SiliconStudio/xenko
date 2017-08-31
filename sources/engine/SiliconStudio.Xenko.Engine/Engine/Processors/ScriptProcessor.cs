@@ -17,17 +17,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
             Order = -100000;
         }
 
-        /// <inheritdoc/>
-        protected override ScriptComponent GenerateComponentData(Entity entity, ScriptComponent component)
-        {
-            return component;
-        }
-
-        protected override bool IsAssociatedDataValid(Entity entity, ScriptComponent component, ScriptComponent associatedData)
-        {
-            return component == associatedData;
-        }
-
         protected internal override void OnSystemAdd()
         {
             scriptSystem = Services.GetService<ScriptSystem>();

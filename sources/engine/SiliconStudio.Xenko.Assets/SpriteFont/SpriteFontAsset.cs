@@ -14,7 +14,6 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [DataContract("SpriteFont")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Graphics.SpriteFont))]
-    [Display(1400, "Sprite font")]
     [CategoryOrder(10, "Font")]
     [CategoryOrder(30, "Rendering")]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
@@ -23,7 +22,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 #else
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
 #endif
-    public class SpriteFontAsset : Asset
+    public partial class SpriteFontAsset : Asset
     {
         private const string CurrentVersion = "2.0.0.0";
 

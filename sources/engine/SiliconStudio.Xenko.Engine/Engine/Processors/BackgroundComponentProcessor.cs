@@ -22,11 +22,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
             Backgrounds = new List<BackgroundComponent>();
         }
 
-        protected override BackgroundComponent GenerateComponentData(Entity entity, BackgroundComponent component)
-        {
-            return component;
-        }
-
         public override void Draw(RenderContext gameTime)
         {
             Backgrounds.Clear();

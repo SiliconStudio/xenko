@@ -26,20 +26,14 @@ namespace SiliconStudio.Xenko.Engine.Processors
         /// The list of the components that are not special roots.
         /// </summary>
         /// <remarks>This field is instantiated here to avoid reallocation at each frames</remarks>
-        private readonly FastCollection<TransformComponent> notSpecialRootComponents = new FastCollection<TransformComponent>(); 
+        private readonly FastCollection<TransformComponent> notSpecialRootComponents = new FastCollection<TransformComponent>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TransformProcessor" /> class.
         /// </summary>
         public TransformProcessor()
         {
-            Order = -200;            
-        }
-
-        /// <inheritdoc/>
-        protected override TransformComponent GenerateComponentData(Entity entity, TransformComponent component)
-        {
-            return component;
+            Order = -200;
         }
 
         /// <inheritdoc/>
