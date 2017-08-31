@@ -97,8 +97,6 @@ namespace SiliconStudio.Xenko.Audio
 
         public override void Update(GameTime gameTime)
         {
-            base.Update(gameTime);
-
             AudioEngine.Update();
         }
 

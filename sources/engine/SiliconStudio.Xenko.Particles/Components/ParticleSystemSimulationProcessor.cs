@@ -94,8 +94,6 @@ namespace SiliconStudio.Xenko.Particles.Components
         /// <inheritdoc />
         public override void Draw(RenderContext context)
         {
-            base.Draw(context);
-
             float deltaTime = (float) context.Time.Elapsed.TotalSeconds;
 
             ParticleSystems.Clear();

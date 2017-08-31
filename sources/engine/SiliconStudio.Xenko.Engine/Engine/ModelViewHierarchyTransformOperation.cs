@@ -5,20 +5,21 @@ using System;
 namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
-    /// Updates <see cref="ModelComponent.Skeleton"/>.
+    /// Updates <see cref="Engine.ModelComponent.Skeleton"/>.
     /// </summary>
     public class ModelViewHierarchyTransformOperation : TransformOperation
     {
-        private readonly ModelComponent modelComponent;
+        public readonly ModelComponent ModelComponent;
+
         public ModelViewHierarchyTransformOperation(ModelComponent modelComponent)
         {
-            this.modelComponent = modelComponent;
+            ModelComponent = modelComponent;
         }
 
         /// <inheritdoc/>
         public override void Process(TransformComponent transformComponent)
         {
-            modelComponent.Update(transformComponent);
+            ModelComponent.Update(transformComponent);
         }
     }
 }

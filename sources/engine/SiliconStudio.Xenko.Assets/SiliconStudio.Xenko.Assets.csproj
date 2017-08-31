@@ -307,6 +307,7 @@
     <Compile Include="..\..\common\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AllAssets.Display.cs" />
     <Compile Include="AssetCompilerContextExtensions.cs" />
     <Compile Include="Audio\SoundFactories.cs" />
     <Compile Include="Audio\RawSoundAssetImporter.cs" />

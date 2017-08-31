@@ -12,11 +12,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
         {
         }
 
-        protected override UIElementLinkComponent GenerateComponentData(Entity entity, UIElementLinkComponent component)
-        {
-            return component;
-        }
-
         protected override void OnEntityComponentRemoved(Entity entity, UIElementLinkComponent component, UIElementLinkComponent data)
         {
             // Reset TransformLink

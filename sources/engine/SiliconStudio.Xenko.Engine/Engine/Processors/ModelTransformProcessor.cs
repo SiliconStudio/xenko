@@ -3,11 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using SiliconStudio.Core;
-using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Engine.Processors
 {
@@ -26,18 +21,21 @@ namespace SiliconStudio.Xenko.Engine.Processors
 
         protected override ModelTransformationInfo GenerateComponentData(Entity entity, ModelComponent component)
         {
-            return new ModelTransformationInfo();
+            return new ModelTransformationInfo
+            {
+                TransformOperation = new ModelViewHierarchyTransformOperation(component),
+            };
         }
 
         protected override bool IsAssociatedDataValid(Entity entity, ModelComponent component, ModelTransformationInfo associatedData)
         {
-            return entity.Get<ModelComponent>() == component;
+            return component == associatedData.TransformOperation.ModelComponent;
         }
 
         protected override void OnEntityComponentAdding(Entity entity, ModelComponent component, ModelTransformationInfo data)
         {
             // Register model view hierarchy update
-            entity.Transform.PostOperations.Add(data.TransformOperation = new ModelViewHierarchyTransformOperation(component));
+            entity.Transform.PostOperations.Add(data.TransformOperation);
         }
 
         protected override void OnEntityComponentRemoved(Entity entity, ModelComponent component, ModelTransformationInfo data)
@@ -45,7 +43,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             // Unregister model view hierarchy update
             entity.Transform.PostOperations.Remove(data.TransformOperation);
         }
-        
+
         public class ModelTransformationInfo
         {
             public ModelViewHierarchyTransformOperation TransformOperation;
