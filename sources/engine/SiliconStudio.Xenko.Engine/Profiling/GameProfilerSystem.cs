@@ -17,10 +17,10 @@ namespace SiliconStudio.Xenko.Profiling
 {
     public enum GameProfilingSorting
     {
-        [Display("Total Time")]
+        [Display("Total time")]
         ByTime,
 
-        [Display("Key Name")]
+        [Display("Key")]
         ByName
     }
 
@@ -29,10 +29,10 @@ namespace SiliconStudio.Xenko.Profiling
         [Display("FPS")]
         Fps,
 
-        [Display("CPU Profiling Events")]
+        [Display("CPU profiling events")]
         CpuEvents,
 
-        [Display("GPU Profiling Events")]
+        [Display("GPU profiling events")]
         GpuEvents,
     }
 
@@ -110,8 +110,8 @@ namespace SiliconStudio.Xenko.Profiling
 
             gcProfiler = new GcProfiling();        
 
-            gcMemoryStringBase =      "Allocated Memory> Total: {0:0.00}[MB] Peak: {1:0.00}[MB] Last allocations: {2:0.00}[KB]";
-            gcCollectionsStringBase = "Garbage Collections> Gen0: {0}, Gen1: {1}, Gen2: {2}"; 
+            gcMemoryStringBase =      "Allocated memory> Total: {0:0.00}MB Peak: {1:0.00}MB Allocations: {2:0.00}KB";
+            gcCollectionsStringBase = "Garbage collections> Gen0: {0}, Gen1: {1}, Gen2: {2}"; 
         }
 
         private readonly Stopwatch dumpTiming = Stopwatch.StartNew();
