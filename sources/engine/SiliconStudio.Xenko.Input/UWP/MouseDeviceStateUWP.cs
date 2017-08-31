@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Input
         {
             if (pointerPoint.PointerDevice.PointerDeviceType == PointerDeviceType.Mouse)
             {
-                var newPosition = new Vector2((float)pointerPoint.Position.X, (float)pointerPoint.Position.Y) * PointerState.InverseSurfaceSize;
+                var newPosition = new Vector2((float)pointerPoint.Position.X, (float)pointerPoint.Position.Y);
                 HandleMove(newPosition);
             }
         }

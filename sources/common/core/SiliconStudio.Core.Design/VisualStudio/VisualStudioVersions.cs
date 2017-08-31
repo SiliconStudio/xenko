@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using Microsoft.VisualStudio.Setup.Configuration;
@@ -12,19 +13,69 @@ namespace SiliconStudio.Core.VisualStudio
 {
     public class IDEInfo
     {
-        public override string ToString() => DisplayName;
-        public string DisplayName { get; internal set; }
-        public string DevenvPath { get; internal set; }
-        public string InstallationPath { get; internal set; }
+        public IDEInfo(string version, string displayName, string installationPath, bool complete = true)
+        {
+            if (version == null) throw new ArgumentNullException(nameof(version));
 
-        public VSIXInstallerVersion VsixInstallerVersion { get; internal set; }
+            Complete = complete;
+            DisplayName = displayName ?? throw new ArgumentNullException(nameof(displayName));
+            Version = new Version(version);
+            InstallationPath = installationPath ?? throw new ArgumentNullException(nameof(installationPath));
+        }
+
+        public bool Complete { get; }
+
+        public string DisplayName { get; }
+
+        public Version Version { get; }
+
+        /// <summary>
+        /// The path to the build tools of this IDE, or <c>null</c>.
+        /// </summary>
+        public string BuildToolsPath { get; internal set; }
+
+        /// <summary>
+        /// The path to the development environment executable of this IDE, or <c>null</c>.
+        /// </summary>
+        public string DevenvPath { get; internal set; }
+
+        /// <summary>
+        /// The root installation path of this IDE.
+        /// </summary>
+        /// <remarks>
+        /// Can be empty but not <c>null</c>.
+        /// </remarks>
+        public string InstallationPath { get; }
+
+        /// <summary>
+        /// The path to the VSIX installer of this IDE, or <c>null</c>.
+        /// </summary>
         public string VsixInstallerPath { get; internal set; }
 
-        public bool Complete { get; internal set; } = true;
+        public VSIXInstallerVersion VsixInstallerVersion { get; internal set; }
 
-        public Dictionary<string, string> PackageVersions { get; internal set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> PackageVersions { get; } = new Dictionary<string, string>();
+
+        /// <summary>
+        /// <c>true</c> if this IDE has integrated build tools; otherwise, <c>false</c>.
+        /// </summary>
+        public bool HasBuildTools => !string.IsNullOrEmpty(BuildToolsPath);
+
+        /// <summary>
+        /// <c>true</c> if this IDE has a development environment; otherwise, <c>false</c>.
+        /// </summary>
+        public bool HasDevenv => !string.IsNullOrEmpty(DevenvPath);
+
+        /// <summary>
+        /// <c>true</c> if this IDE has a VSIX installer; otherwise, <c>false</c>.
+        /// </summary>
+        public bool HasVsixInstaller => !string.IsNullOrEmpty(VsixInstallerPath) && VsixInstallerVersion != VSIXInstallerVersion.None;
+
+        /// <inheritdoc />
+        public override string ToString() => DisplayName;
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("ReSharper", "InconsistentNaming")]
     public enum VSIXInstallerVersion
     {
         None,
@@ -34,23 +85,23 @@ namespace SiliconStudio.Core.VisualStudio
 
     public static class VisualStudioVersions
     {
+        // ReSharper disable once InconsistentNaming
         private const int REGDB_E_CLASSNOTREG = unchecked((int)0x80040154);
-        private static List<IDEInfo> ideInfos;
+        private static readonly Lazy<List<IDEInfo>> IDEInfos = new Lazy<List<IDEInfo>>(BuildIDEInfos);
 
-        public static IDEInfo DefaultIDE = new IDEInfo { DisplayName = "Default IDE", DevenvPath = null };
+        public static IDEInfo DefaultIDE = new IDEInfo("0.0", "Default IDE", string.Empty);
 
-        private static void BuildIDEInfos()
+        public static IEnumerable<IDEInfo> AvailableVisualStudioInstances => IDEInfos.Value.Where(x => x.HasDevenv);
+
+        public static IEnumerable<IDEInfo> AvailableBuildTools => IDEInfos.Value.Where(x => x.HasBuildTools);
+
+        private static List<IDEInfo> BuildIDEInfos()
         {
-            if (ideInfos != null)
-                return;
-
-            ideInfos = new List<IDEInfo>();
-
-            ideInfos.Add(DefaultIDE);
+            var ideInfos = new List<IDEInfo>();
 
             // Visual Studio 14.0 (2015)
             var localMachine32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
-            using (var subkey = localMachine32.OpenSubKey(string.Format(@"SOFTWARE\Microsoft\{0}\{1}", "VisualStudio", "14.0")))
+            using (var subkey = localMachine32.OpenSubKey($@"SOFTWARE\Microsoft\{"VisualStudio"}\{"14.0"}"))
             {
                 var path = (string)subkey?.GetValue("InstallDir");
 
@@ -61,7 +112,7 @@ namespace SiliconStudio.Core.VisualStudio
                     if (!File.Exists(vsixInstallerPath))
                         vsixInstallerPath = null;
 
-                    ideInfos.Add(new IDEInfo { DisplayName = "Visual Studio 2015", DevenvPath = vs14InstallPath, VsixInstallerVersion = VSIXInstallerVersion.VS2015, VsixInstallerPath = vsixInstallerPath });
+                    ideInfos.Add(new IDEInfo("14.0", "Visual Studio 2015", path) { DevenvPath = vs14InstallPath, VsixInstallerVersion = VSIXInstallerVersion.VS2015, VsixInstallerPath = vsixInstallerPath });
                 }
             }
 
@@ -73,11 +124,10 @@ namespace SiliconStudio.Core.VisualStudio
                 var instances = configuration.EnumAllInstances();
                 instances.Reset();
                 var inst = new ISetupInstance[1];
-                int pceltFetched;
 
                 while (true)
                 {
-                    instances.Next(1, inst, out pceltFetched);
+                    instances.Next(1, inst, out int pceltFetched);
                     if (pceltFetched <= 0)
                         break;
 
@@ -87,59 +137,58 @@ namespace SiliconStudio.Core.VisualStudio
                         if (inst2 == null)
                             continue;
 
-                        var idePath = Path.Combine(inst2.GetInstallationPath(), "Common7\\IDE");
-                        var path = Path.Combine(idePath, "devenv.exe");
-                        if (File.Exists(path))
+                        var installationPath = inst2.GetInstallationPath();
+                        var buildToolsPath = Path.Combine(installationPath, "MSBuild", "15.0", "Bin");
+                        if (!Directory.Exists(buildToolsPath))
+                            buildToolsPath = null;
+                        var idePath = Path.Combine(installationPath, "Common7", "IDE");
+                        var devenvPath = Path.Combine(idePath, "devenv.exe");
+                        if (!File.Exists(devenvPath))
+                            devenvPath = null;
+                        var vsixInstallerPath = Path.Combine(idePath, "VSIXInstaller.exe");
+                        if (!File.Exists(vsixInstallerPath))
+                            vsixInstallerPath = null;
+
+                        var displayName = inst2.GetDisplayName();
+                        // Try to append nickname (if any)
+                        try
                         {
-                            var vsixInstallerPath = Path.Combine(idePath, "VSIXInstaller.exe");
-                            if (!File.Exists(vsixInstallerPath))
-                                vsixInstallerPath = null;
-
-                            var displayName = inst2.GetDisplayName();
-
-                            // Try to append nickname (if any)
-                            try
-                            {
-                                var nickname = inst2.GetProperties().GetValue("nickname") as string;
-                                if (!string.IsNullOrEmpty(nickname))
-                                    displayName = $"{displayName} ({nickname})";
-                            }
-                            catch (COMException)
-                            {
-                            }
-
-                            var ideInfo = new IDEInfo { DisplayName = displayName, Complete = inst2.IsComplete(), InstallationPath = inst2.GetInstallationPath(), DevenvPath = path, VsixInstallerVersion = VSIXInstallerVersion.VS2017AndFutureVersions, VsixInstallerPath = vsixInstallerPath };
-
-                            // Fill packages
-                            foreach (var package in inst2.GetPackages())
-                            {
-                                ideInfo.PackageVersions[package.GetId()] = package.GetVersion();
-                            }
-
-                            ideInfos.Add(ideInfo);
+                            var nickname = inst2.GetProperties().GetValue("nickname") as string;
+                            if (!string.IsNullOrEmpty(nickname))
+                                displayName = $"{displayName} ({nickname})";
                         }
+                        catch (COMException)
+                        {
+                        }
+
+                        var ideInfo = new IDEInfo(inst2.GetInstallationVersion(), displayName, installationPath, inst2.IsComplete())
+                        {
+                            BuildToolsPath = buildToolsPath,
+                            DevenvPath = devenvPath,
+                            VsixInstallerVersion = VSIXInstallerVersion.VS2017AndFutureVersions,
+                            VsixInstallerPath = vsixInstallerPath
+                        };
+
+                        // Fill packages
+                        foreach (var package in inst2.GetPackages())
+                        {
+                            ideInfo.PackageVersions[package.GetId()] = package.GetVersion();
+                        }
+
+                        ideInfos.Add(ideInfo);
                     }
                     catch (Exception)
                     {
                         // Something might have happened inside Visual Studio Setup code (had FileNotFoundException in GetInstallationPath() for example)
                         // Let's ignore this instance
                     }
-                } 
+                }
             }
             catch (COMException comException) when (comException.HResult == REGDB_E_CLASSNOTREG)
             {
                 // COM is not registered. Assuming no instances are installed.
             }
-        }
-
-        public static IEnumerable<IDEInfo> AvailableVisualStudioVersions
-        {
-            get
-            {
-                BuildIDEInfos();
-
-                return ideInfos;
-            }
+            return ideInfos;
         }
     }
 }
