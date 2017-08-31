@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System.ComponentModel;
 using SiliconStudio.Xenko.Engine;
@@ -10,8 +10,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         public RenderStage ShadowMapRenderStage { get; set; }
         public string EffectName { get; set; }
 
-        [DefaultValue(RenderGroupMask.Group0)]
-        public RenderGroupMask RenderGroup { get; set; } = RenderGroupMask.Group0;
+        [DefaultValue(RenderGroupMask.All)]
+        public RenderGroupMask RenderGroup { get; set; } = RenderGroupMask.All;
 
         public override void Process(RenderObject renderObject)
         {
