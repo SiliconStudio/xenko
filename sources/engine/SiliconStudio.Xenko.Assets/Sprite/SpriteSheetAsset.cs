@@ -25,7 +25,6 @@ namespace SiliconStudio.Xenko.Assets.Sprite
     [CategoryOrder(150, "Sprites")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(SpriteSheet))]
-    [Display(1600, "Sprite sheet")]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.5.0-alpha01")]
     [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha01", "1.10.0-alpha01", typeof(SpriteSheetSRGBUpgrader))]
@@ -33,7 +32,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
 #else
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
 #endif
-    public class SpriteSheetAsset : Asset
+    public partial class SpriteSheetAsset : Asset
     {
         private const string CurrentVersion = "2.0.0.0";
 
@@ -41,7 +40,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         /// The default file extension used by the <see cref="SpriteSheetAsset"/>.
         /// </summary>
         public const string FileExtension = ".xksheet";
-        
+
         /// <summary>
         /// Gets or sets the type of the current sheet
         /// </summary>

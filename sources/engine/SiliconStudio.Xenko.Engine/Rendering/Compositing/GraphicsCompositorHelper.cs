@@ -1,4 +1,4 @@
-// Copyright (c) 2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using SiliconStudio.Core.Mathematics;
@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         /// <summary>
         /// Creates a typical graphics compositor programatically. It can render meshes, sprites and backgrounds.
         /// </summary>
-        public static GraphicsCompositor CreateDefault(bool enablePostEffects, string modelEffectName = "XenkoForwardShadingEffect", CameraComponent camera = null, Color4? clearColor = null, GraphicsProfile graphicsProfile = GraphicsProfile.Level_10_0)
+        public static GraphicsCompositor CreateDefault(bool enablePostEffects, string modelEffectName = "XenkoForwardShadingEffect", CameraComponent camera = null, Color4? clearColor = null, GraphicsProfile graphicsProfile = GraphicsProfile.Level_10_0, RenderGroupMask groupMask = RenderGroupMask.All)
         {
             var opaqueRenderStage = new RenderStage("Opaque", "Main") { SortMode = new StateChangeSortMode() };
             var transparentRenderStage = new RenderStage("Transparent", "Main") { SortMode = new BackToFrontSortMode() };
@@ -138,21 +138,25 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                                 EffectName = modelEffectName,
                                 OpaqueRenderStage = opaqueRenderStage,
                                 TransparentRenderStage = transparentRenderStage,
+                                RenderGroup = groupMask
                             },
                             new ShadowMapRenderStageSelector
                             {
                                 EffectName = modelEffectName + ".ShadowMapCaster",
                                 ShadowMapRenderStage = shadowCasterRenderStage,
+                                RenderGroup = groupMask
                             },
                             new ShadowMapRenderStageSelector
                             {
                                 EffectName = modelEffectName + ".ShadowMapCasterParaboloid",
                                 ShadowMapRenderStage = shadowCasterParaboloidRenderStage,
+                                RenderGroup = groupMask
                             },
                             new ShadowMapRenderStageSelector
                             {
                                 EffectName = modelEffectName + ".ShadowMapCasterCubeMap",
                                 ShadowMapRenderStage = shadowCasterCubeMapRenderStage,
+                                RenderGroup = groupMask
                             },
                         },
                         PipelineProcessors =
@@ -172,6 +176,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                                 EffectName = "Test",
                                 OpaqueRenderStage = opaqueRenderStage,
                                 TransparentRenderStage = transparentRenderStage,
+                                RenderGroup = groupMask
                             }
                         },
                     },
@@ -183,6 +188,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                             {
                                 RenderStage = opaqueRenderStage,
                                 EffectName = "Test",
+                                RenderGroup = groupMask
                             }
                         },
                     },

@@ -18,14 +18,13 @@ namespace SiliconStudio.Xenko.Assets.Materials
     [DataContract("MaterialAsset")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Material))]
-    [Display(1150, "Material")]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.4.0-beta")]
     [AssetUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "2.0.0.0", typeof(EmptyAssetUpgrader))]
 #else
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
 #endif
-    public sealed class MaterialAsset : Asset, IMaterialDescriptor
+    public sealed partial class MaterialAsset : Asset, IMaterialDescriptor
     {
         private const string CurrentVersion = "2.0.0.0";
 

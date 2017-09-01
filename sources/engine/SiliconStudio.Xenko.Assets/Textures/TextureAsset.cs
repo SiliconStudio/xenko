@@ -18,7 +18,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [DataContract("Texture")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Texture))]
-    [Display(1055, "Texture")]
     [CategoryOrder(10, "Size")]
     [CategoryOrder(20, "Format")]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
@@ -29,7 +28,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
 #else
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
 #endif
-    public sealed class TextureAsset : AssetWithSource
+    public sealed partial class TextureAsset : AssetWithSource
     {
         private const string CurrentVersion = "2.0.0.0";
 

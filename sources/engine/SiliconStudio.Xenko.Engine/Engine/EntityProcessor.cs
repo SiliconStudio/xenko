@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Games;
@@ -46,14 +47,13 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="additionalTypes">The additional types required by this processor.</param>
         /// <exception cref="System.ArgumentNullException">If parameteters are null</exception>
         /// <exception cref="System.ArgumentException">If a type does not inherit from EntityComponent</exception>
-        protected EntityProcessor(Type mainComponentType, Type[] additionalTypes)
+        protected EntityProcessor([NotNull] Type mainComponentType, [NotNull] Type[] additionalTypes)
         {
             if (mainComponentType == null) throw new ArgumentNullException(nameof(mainComponentType));
             if (additionalTypes == null) throw new ArgumentNullException(nameof(additionalTypes));
 
             MainComponentType = mainComponentType;
             mainTypeInfo = MainComponentType.GetTypeInfo();
-            Enabled = true;
 
             RequiredTypes = new TypeInfo[additionalTypes.Length];
 
@@ -81,7 +81,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="EntityProcessor"/> is enabled.
         /// </summary>
-        public bool Enabled { get; set; }
+        public bool Enabled { get; set; } = true;
 
         /// <summary>
         /// Gets the primary component type handled by this processor
@@ -307,14 +307,15 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="entity">The entity.</param>
         /// <param name="component"></param>
         /// <returns>The associated data.</returns>
-        protected abstract TData GenerateComponentData(Entity entity, TComponent component);
+        [NotNull]
+        protected abstract TData GenerateComponentData([NotNull] Entity entity, [NotNull] TComponent component);
 
         /// <summary>Checks if the current associated data is valid, or if readding the entity is required.</summary>
         /// <param name="entity">The entity.</param>
         /// <param name="component"></param>
         /// <param name="associatedData">The associated data.</param>
         /// <returns>True if the change in associated data requires the entity to be readded, false otherwise.</returns>
-        protected virtual bool IsAssociatedDataValid(Entity entity, TComponent component, TData associatedData)
+        protected virtual bool IsAssociatedDataValid([NotNull] Entity entity, [NotNull] TComponent component, [NotNull] TData associatedData)
         {
             return GenerateComponentData(entity, component).Equals(associatedData);
         }
@@ -382,6 +383,13 @@ namespace SiliconStudio.Xenko.Engine
         {
         }
 
+        /// <inheritdoc />
+        protected override TComponent GenerateComponentData(Entity entity, TComponent component)
+        {
+            return component;
+        }
+
+        /// <inheritdoc />
         protected override bool IsAssociatedDataValid(Entity entity, TComponent component, TComponent associatedData)
         {
             return component == associatedData;

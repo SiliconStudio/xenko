@@ -30,7 +30,6 @@ namespace SiliconStudio.Xenko.Assets.Rendering
     }
 
     [DataContract("GraphicsCompositorAsset")]
-    [Display(8000, "Graphics compositor")]
     [AssetContentType(typeof(GraphicsCompositor))]
     [AssetDescription(FileExtension)]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
@@ -41,7 +40,7 @@ namespace SiliconStudio.Xenko.Assets.Rendering
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
 #endif
     [AssetUpgrader(XenkoConfig.PackageName, "2.0.0.0", "2.1.0.2", typeof(FXAAEffectDefaultQualityUpgrader))]
-    public class GraphicsCompositorAsset : Asset
+    public partial class GraphicsCompositorAsset : Asset
     {
         private const string CurrentVersion = "2.1.0.2";
 

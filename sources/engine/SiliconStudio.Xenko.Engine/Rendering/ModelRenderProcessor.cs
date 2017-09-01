@@ -25,10 +25,9 @@ namespace SiliconStudio.Xenko.Rendering
         {
         }
 
+        /// <inheritdoc />
         protected internal override void OnSystemAdd()
         {
-            base.OnSystemAdd();
-
             var graphicsDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
 
             fallbackMaterial = Material.New(graphicsDevice, new MaterialDescriptor
@@ -41,14 +40,19 @@ namespace SiliconStudio.Xenko.Rendering
             });
         }
 
+        /// <inheritdoc />
         protected override RenderModel GenerateComponentData(Entity entity, ModelComponent component)
         {
-            var modelComponent = entity.Get<ModelComponent>();
-            var renderModel = new RenderModel(modelComponent);
-
-            return renderModel;
+            return new RenderModel(component);
         }
 
+        /// <inheritdoc />
+        protected override bool IsAssociatedDataValid(Entity entity, ModelComponent component, RenderModel associatedData)
+        {
+            return component == associatedData.ModelComponent;
+        }
+
+        /// <inheritdoc />
         protected override void OnEntityComponentRemoved(Entity entity, ModelComponent component, RenderModel renderModel)
         {
             // Remove old meshes
@@ -62,10 +66,9 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
+        /// <inheritdoc />
         public override void Draw(RenderContext context)
         {
-            base.Draw(context);
-
             // Note: we are rebuilding RenderMeshes every frame
             // TODO: check if it wouldn't be better to add/remove directly in CheckMeshes()?
             //foreach (var entity in ComponentDatas)
