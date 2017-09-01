@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
@@ -70,8 +70,8 @@ namespace SiliconStudio.Xenko.Profiling
 
         private Color4 textColor = Color.LightGreen;
 
-        private PresentInterval userPresentInterval = PresentInterval.Default;  
-        
+        private PresentInterval userPresentInterval = PresentInterval.Default;
+
         private int lastFrame = -1;
 
         private float viewportHeight = 1000;
@@ -108,10 +108,10 @@ namespace SiliconStudio.Xenko.Profiling
         {
             DrawOrder = 0xffffff;
 
-            gcProfiler = new GcProfiling();        
+            gcProfiler = new GcProfiling();
 
-            gcMemoryStringBase =      "Allocated Memory> Total: {0:0.00}[MB] Peak: {1:0.00}[MB] Last allocations: {2:0.00}[KB]";
-            gcCollectionsStringBase = "Garbage Collections> Gen0: {0}, Gen1: {1}, Gen2: {2}"; 
+            gcMemoryStringBase =      "Allocated memory> Total: {0:0.00}MB Peak: {1:0.00}MB Allocations: {2:0.00}KB";
+            gcCollectionsStringBase = "Garbage collections> Gen0: {0}, Gen1: {1}, Gen2: {2}";
         }
 
         private readonly Stopwatch dumpTiming = Stopwatch.StartNew();
@@ -123,7 +123,7 @@ namespace SiliconStudio.Xenko.Profiling
         {
             if (dumpTiming.ElapsedMilliseconds < RefreshTime || FilteringMode == GameProfilingResults.GpuEvents)
                 return;
-            
+
             dumpTiming.Restart();
 
             if(stringBuilderTask != null && !stringBuilderTask.IsCompleted) return;
@@ -146,15 +146,17 @@ namespace SiliconStudio.Xenko.Profiling
             var newDraw = Game.DrawTime.FrameCount;
             var elapsedFrames = newDraw - lastFrame;
             lastFrame = newDraw;
-            
+
             // Get events from the profiler ( this will also clean up the profiler )
             var events = Profiler.GetEvents(FilteringMode == GameProfilingResults.CpuEvents? ProfilingEventType.CpuProfilingEvent : ProfilingEventType.GpuProfilingEvent);
 
             if(FilteringMode != GameProfilingResults.Fps)
-            { 
+            {
                 var containsMarks = false;
                 var tickFrequency = FilteringMode == GameProfilingResults.GpuEvents ? GraphicsDevice.TimestampFrequency : Stopwatch.Frequency;
 
+                const float kb = 1 << 10;
+                const float mb = 1 << 20;
                 //update strings that need update
                 foreach (var e in events)
                 {
@@ -162,7 +164,7 @@ namespace SiliconStudio.Xenko.Profiling
                     if (e.Key == GcProfiling.GcMemoryKey && e.Custom0.HasValue && e.Custom1.HasValue && e.Custom2.HasValue)
                     {
                         gcMemoryStringBuilder.Clear();
-                        gcMemoryStringBuilder.AppendFormat(gcMemoryStringBase, e.Custom0.Value.LongValue/(float)0x100000, e.Custom2.Value.LongValue/(float)0x100000, e.Custom1.Value.LongValue/1024f);
+                        gcMemoryStringBuilder.AppendFormat(gcMemoryStringBase, e.Custom0.Value.LongValue/mb, e.Custom2.Value.LongValue/mb, e.Custom1.Value.LongValue/kb);
                         continue;
                     }
 
@@ -230,7 +232,7 @@ namespace SiliconStudio.Xenko.Profiling
                     profilingResults.Add(profilingResult.Value);
                 }
                 profilingResultsDictionary.Clear();
-            
+
                 if (SortingMode == GameProfilingSorting.ByTime)
                 {
                     profilingResults.Sort((x1, x2) => Math.Sign(x2.AccumulatedTime - x1.AccumulatedTime));
@@ -242,12 +244,12 @@ namespace SiliconStudio.Xenko.Profiling
                     profilingResults.Sort((x1, x2) => string.Compare(x1.Event.Value.Key.Name, x2.Event.Value.Key.Name, StringComparison.Ordinal));
                     // ReSharper restore PossibleInvalidOperationException
                 }
-            
+
                 var availableDisplayHeight = viewportHeight - 2 * TextRowHeight - 3 * TopRowHeight;
                 var elementsPerPage = (int)Math.Floor(availableDisplayHeight / TextRowHeight);
                 numberOfPages = (uint) Math.Ceiling(profilingResults.Count / (float) elementsPerPage);
                 CurrentResultPage = Math.Min(CurrentResultPage, numberOfPages);
-            
+
                 profilersStringBuilder.AppendFormat("TOTAL     | AVG/CALL  | MIN/CALL  | MAX/CALL  | CALLS | ");
                 if (containsMarks)
                     profilersStringBuilder.AppendFormat("MARKS | ");
@@ -263,7 +265,7 @@ namespace SiliconStudio.Xenko.Profiling
                     profilersStringBuilder.AppendFormat("PAGE {0} OF {1}", CurrentResultPage, numberOfPages);
 
                 gpuInfoStringBuilder.Clear();
-                gpuInfoStringBuilder.AppendFormat("Drawn triangles: {0:0.0}k, Draw calls: {1}, Buffer memory: {2:0.00}[MB], Texture memory: {3:0.00}[MB]", trianglesCount/1000f, drawCallsCount, GraphicsDevice.BuffersMemory, GraphicsDevice.TextureMemory);
+                gpuInfoStringBuilder.AppendFormat("Drawn triangles: {0:0.0}k, Draw calls: {1}, Buffer memory: {2:0.00}[MB], Texture memory: {3:0.00}[MB]", trianglesCount/1000f, drawCallsCount, GraphicsDevice.BuffersMemory/mb, GraphicsDevice.TextureMemory/mb);
 
                 gpuGeneralInfoStringBuilder.Clear();
                 gpuGeneralInfoStringBuilder.AppendFormat("Device: {0}, Platform: {1}, Profile: {2}, Resolution: {3}", GraphicsDevice.Adapter.Description, GraphicsDevice.Platform, GraphicsDevice.ShaderProfile, renderTargetSize);
@@ -450,7 +452,7 @@ namespace SiliconStudio.Xenko.Profiling
                     {
                         Profiler.Enable(profilingKey);
                     }
-                }              
+                }
             }
 
             gcProfiler.Enable();

@@ -497,7 +497,7 @@ namespace SiliconStudio.Xenko.Streaming
             if (isUnderBudget || resource.LastTimeUsed > 0 || options.KeepLoaded)
             {
                 var lastUsageTimespan = new TimeSpan((frameIndex - resource.LastTimeUsed) * ManagerUpdatesInterval.Ticks);
-                if (isUnderBudget || lastUsageTimespan < ResourceLiveTimeout || options.KeepLoaded)
+                if (isUnderBudget || lastUsageTimespan <= ResourceLiveTimeout || options.KeepLoaded)
                 {
                     targetQuality = StreamingQuality.Maximum;
 #if USE_TEST_MANUAL_QUALITY
