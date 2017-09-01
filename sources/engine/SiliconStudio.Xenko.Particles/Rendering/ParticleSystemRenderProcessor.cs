@@ -84,8 +84,6 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
         public override void Draw(RenderContext context)
         {
-            base.Draw(context);
-
             foreach (var componentData in ComponentDatas)
             {
                 var renderSystem = componentData.Value;

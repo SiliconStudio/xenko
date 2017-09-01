@@ -28,7 +28,6 @@ namespace SiliconStudio.Xenko.Assets
     [AssetDescription(FileExtension, AlwaysMarkAsRoot = true, AllowArchetype = false)]
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
     [AssetContentType(typeof(GameSettings))]
-    [Display(10000, "Game settings")]
     [CategoryOrder(4050, "Splash screen")]
     [NonIdentifiableCollectionItems]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
@@ -40,7 +39,7 @@ namespace SiliconStudio.Xenko.Assets
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
 #endif
     [AssetUpgrader(XenkoConfig.PackageName, "2.0.0.0", "2.1.0.3", typeof(UpgradeAddStreamingSettings))]
-    public class GameSettingsAsset : Asset
+    public partial class GameSettingsAsset : Asset
     {
         private const string CurrentVersion = "2.1.0.3";
 

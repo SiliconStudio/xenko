@@ -21,6 +21,7 @@ namespace SiliconStudio.Xenko.Rendering.Background
         
 
         /// <inheritdoc />
+        /// <inheritdoc />
         protected internal override void OnSystemRemove()
         {
             if (ActiveBackground != null)
@@ -32,11 +33,19 @@ namespace SiliconStudio.Xenko.Rendering.Background
             base.OnSystemRemove();
         }
 
+        /// <inheritdoc />
         protected override RenderBackground GenerateComponentData(Entity entity, BackgroundComponent component)
         {
             return new RenderBackground { RenderGroup = component.RenderGroup };
         }
 
+        /// <inheritdoc />
+        protected override bool IsAssociatedDataValid(Entity entity, BackgroundComponent component, RenderBackground associatedData)
+        {
+            return component.RenderGroup == associatedData.RenderGroup;
+        }
+
+        /// <inheritdoc />
         public override void Draw(RenderContext context)
         {
             var previousBackground = ActiveBackground;

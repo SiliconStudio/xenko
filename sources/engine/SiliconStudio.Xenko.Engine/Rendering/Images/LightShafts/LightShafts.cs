@@ -281,7 +281,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             Draw(drawContext);
         }
 
-        private void UpdateRenderData(RenderDrawContext context, LightShaftRenderData data, LightShaftProcessor.Data lightShaft, LightShadowMapTexture shadowMapTexture)
+        private void UpdateRenderData(RenderDrawContext context, LightShaftRenderData data, LightShaftProcessor.AssociatedData lightShaft, LightShadowMapTexture shadowMapTexture)
         {
             if (lightShaft.Light is LightPoint)
             {
@@ -315,7 +315,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             data.ShaderGroup = data.GroupRenderer.CreateLightShaderGroup(context, shadowGroup);
         }
 
-        private void SetupLight(RenderDrawContext context, LightShaftProcessor.Data lightShaft, LightShadowMapTexture shadowMapTexture, ParameterCollection lightParameterCollection)
+        private void SetupLight(RenderDrawContext context, LightShaftProcessor.AssociatedData lightShaft, LightShadowMapTexture shadowMapTexture, ParameterCollection lightParameterCollection)
         {
             BoundingBoxExt box = new BoundingBoxExt(new Vector3(-float.MaxValue), new Vector3(float.MaxValue)); // TODO
 
@@ -356,7 +356,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             data.UsageCounter = usageCounter;
         }
 
-        private void DrawLightShaft(RenderDrawContext context, LightShaftProcessor.Data lightShaft)
+        private void DrawLightShaft(RenderDrawContext context, LightShaftProcessor.AssociatedData lightShaft)
         {
             lightShaftsEffectShader.Parameters.Set(LightShaftsShaderKeys.DensityFactor, lightShaft.DensityFactor);
 

@@ -25,11 +25,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
             Order = -10;
         }
 
-        protected override CameraComponent GenerateComponentData(Entity entity, CameraComponent component)
-        {
-            return component;
-        }
-
         public override void Draw(RenderContext context)
         {
             var graphicsCompositor = Services.GetService<SceneSystem>()?.GraphicsCompositor;
@@ -123,8 +118,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
         {
             if (component.Slot.AttachedCompositor != null)
                 DetachCameraFromSlot(component);
-
-            base.OnEntityComponentRemoved(entity, component, data);
         }
 
         private void OnCameraSlotsChanged(object sender, ref FastTrackingCollectionChangedEventArgs e)

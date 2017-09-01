@@ -3,14 +3,13 @@
 
 using System;
 using System.Collections.Generic;
-
-using SiliconStudio.Core.IO;
+using System.Linq;
 
 namespace SiliconStudio.Assets
 {
-    public class RawAssetImporter : AssetImporterBase
+    public sealed class RawAssetImporter : RawAssetImporterBase<RawAsset>
     {
-        private static readonly Guid Uid = new Guid("6F86EC95-C1CA-41E1-8ADC-1449BB5CE3BE");
+        private static readonly Guid Uid = new Guid("6f86ec95-c1ca-41e1-8adc-1449bb5ce3be");
 
         public RawAssetImporter()
         {
@@ -18,28 +17,21 @@ namespace SiliconStudio.Assets
             Order = int.MaxValue;
         }
 
+        /// <inheritdoc />
         public override Guid Id => Uid;
 
+        /// <inheritdoc />
         public override string Description => "Generic importer for raw assets";
 
+        /// <inheritdoc />
+        public override string SupportedFileExtensions => "*.*";
+
+        /// <inheritdoc />
         public override bool IsSupportingFile(string filePath)
         {
             // Always return true
             return true;
         }
 
-        public override IEnumerable<Type> RootAssetTypes { get { yield return typeof(RawAsset); } }
-
-        public override string SupportedFileExtensions => "*.*";
-
-        public override IEnumerable<AssetItem> Import(UFile rawAssetPath, AssetImporterParameters importParameters)
-        {
-            var asset = new RawAsset { Source = rawAssetPath };
-
-            // Creates the url to the raw asset
-            var rawAssetUrl = new UFile(rawAssetPath.GetFileNameWithoutExtension());
-
-            yield return new AssetItem(rawAssetUrl, asset);
-        }
     }
 }

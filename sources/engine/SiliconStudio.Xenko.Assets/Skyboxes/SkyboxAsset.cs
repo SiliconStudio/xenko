@@ -21,7 +21,6 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
     [DataContract("SkyboxAsset")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Skybox))]
-    [Display(1000, "Skybox")]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [AssetUpgrader(XenkoConfig.PackageName, "0", "1.11.1.1", typeof(RemoveSkyboxUsage))]
@@ -29,7 +28,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
 #else
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
 #endif
-    public sealed class SkyboxAsset : Asset
+    public sealed partial class SkyboxAsset : Asset
     {
         private const string CurrentVersion = "2.0.0.0";
 

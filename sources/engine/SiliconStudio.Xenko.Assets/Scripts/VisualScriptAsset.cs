@@ -9,17 +9,15 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Xenko.Assets.Scripts
 {
     [DataContract("VisualScriptAsset")]
-    [Display(85, "Visual Script")]
     [AssetDescription(FileExtension)]
-    public class VisualScriptAsset : AssetComposite, IProjectFileGeneratorAsset
+    public partial class VisualScriptAsset : AssetComposite, IProjectFileGeneratorAsset
     {
         /// <summary>
-        /// The default file extension used by the <see cref=VisualScriptAsset"/>.
+        /// The default file extension used by the <see cref="VisualScriptAsset"/>.
         /// </summary>
         public const string FileExtension = ".xkvs";
 

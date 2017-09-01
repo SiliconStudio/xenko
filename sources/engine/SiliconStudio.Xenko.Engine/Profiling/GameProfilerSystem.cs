@@ -17,10 +17,10 @@ namespace SiliconStudio.Xenko.Profiling
 {
     public enum GameProfilingSorting
     {
-        [Display("Total Time")]
+        [Display("Total time")]
         ByTime,
 
-        [Display("Key Name")]
+        [Display("Key")]
         ByName
     }
 
@@ -29,10 +29,10 @@ namespace SiliconStudio.Xenko.Profiling
         [Display("FPS")]
         Fps,
 
-        [Display("CPU Profiling Events")]
+        [Display("CPU profiling events")]
         CpuEvents,
 
-        [Display("GPU Profiling Events")]
+        [Display("GPU profiling events")]
         GpuEvents,
     }
 

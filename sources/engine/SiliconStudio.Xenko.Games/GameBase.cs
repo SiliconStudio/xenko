@@ -27,6 +27,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Games.Time;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Games
@@ -298,7 +299,8 @@ namespace SiliconStudio.Xenko.Games
         /// Gets the service container.
         /// </summary>
         /// <value>The service container.</value>
-        public ServiceRegistry Services { get; private set; }
+        [NotNull]
+        public ServiceRegistry Services { get; }
 
         /// <summary>
         /// Gets or sets the target elapsed time.
@@ -330,7 +332,7 @@ namespace SiliconStudio.Xenko.Games
         public string FullPlatformName => gamePlatform.FullName;
 
         public GameState State { get; set; }
-        
+
         #endregion
 
         internal EventHandler<GameUnhandledExceptionEventArgs> UnhandledExceptionInternal
@@ -555,7 +557,7 @@ namespace SiliconStudio.Xenko.Games
                 if (IsFixedTimeStep)
                 {
                     // If the rounded TargetElapsedTime is equivalent to current ElapsedAdjustedTime
-                    // then make ElapsedAdjustedTime = TargetElapsedTime. We take the same internal rules as XNA 
+                    // then make ElapsedAdjustedTime = TargetElapsedTime. We take the same internal rules as XNA
                     if (Math.Abs(elapsedAdjustedTime.Ticks - TargetElapsedTime.Ticks) < (TargetElapsedTime.Ticks >> 6))
                     {
                         elapsedAdjustedTime = TargetElapsedTime;
@@ -573,7 +575,7 @@ namespace SiliconStudio.Xenko.Games
                     {
                         updateCount = (int)(accumulatedElapsedGameTime.Ticks / TargetElapsedTime.Ticks);
                     }
-                    
+
                     if (IsDrawDesynchronized)
                     {
                         drawLag = accumulatedElapsedGameTime.Ticks%TargetElapsedTime.Ticks;
@@ -613,7 +615,7 @@ namespace SiliconStudio.Xenko.Games
                 bool beginDrawSuccessful = false;
                 try
                 {
-                    
+
                     beginDrawSuccessful = BeginDraw();
 
                     // Reset the time of the next frame
