@@ -2,7 +2,6 @@
 // See LICENSE.md for full license information.
 using System;
 using System.Runtime.InteropServices;
-using System.Text;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
@@ -11,10 +10,9 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public class ImageHelper
     {
-        private static DataSerializer<ImageDescription> imageDescriptionSerializer = SerializerSelector.Default.GetSerializer<ImageDescription>();
-        private const string MagicCodeString = "TKTX";
-        private static readonly FourCC MagicCode = "TKTX";
-
+        internal static DataSerializer<ImageDescription> ImageDescriptionSerializer = SerializerSelector.Default.GetSerializer<ImageDescription>();
+        internal static readonly FourCC MagicCode = "TKTX";
+        
         public static unsafe Image LoadFromMemory(IntPtr pSource, int size, bool makeACopy, GCHandle? handle)
         {
             var stream = new BinarySerializationReader(new NativeMemoryStream((byte*)pSource, size));
@@ -26,7 +24,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Read header
             var imageDescription = new ImageDescription();
-            imageDescriptionSerializer.Serialize(ref imageDescription, ArchiveMode.Deserialize, stream);
+            ImageDescriptionSerializer.Serialize(ref imageDescription, ArchiveMode.Deserialize, stream);
 
             if (makeACopy)
             {
@@ -56,7 +54,7 @@ namespace SiliconStudio.Xenko.Graphics
             stream.Write(MagicCode);
 
             // Write image header
-            imageDescriptionSerializer.Serialize(ref description, ArchiveMode.Serialize, stream);
+            ImageDescriptionSerializer.Serialize(ref description, ArchiveMode.Serialize, stream);
 
             // Write total size
             int totalSize = 0;

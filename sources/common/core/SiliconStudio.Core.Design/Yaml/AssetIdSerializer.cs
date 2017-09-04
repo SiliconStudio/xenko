@@ -2,7 +2,7 @@
 // See LICENSE.md for full license information.
 using System;
 using SiliconStudio.Assets;
-using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 
@@ -19,13 +19,15 @@ namespace SiliconStudio.Core.Yaml
             return type == typeof(AssetId);
         }
 
-        public override object ConvertFrom(ref ObjectContext context, Scalar fromScalar)
+        [NotNull]
+        public override object ConvertFrom(ref ObjectContext context, [NotNull] Scalar fromScalar)
         {
             AssetId assetId;
             AssetId.TryParse(fromScalar.Value, out assetId);
             return assetId;
         }
 
+        [NotNull]
         public override string ConvertTo(ref ObjectContext objectContext)
         {
             return ((AssetId)objectContext.Instance).ToString();

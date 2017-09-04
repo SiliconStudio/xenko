@@ -56,4 +56,5 @@ Settings:
                 - Transform
             VisibleNavigationGroups: []
             LightProbeWireframe: false
+            LightProbeBounces: 1
             SceneLoaded: false

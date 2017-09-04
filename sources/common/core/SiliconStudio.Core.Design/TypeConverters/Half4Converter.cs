@@ -50,13 +50,13 @@ using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
 using System.Globalization;
 using System.Reflection;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Core.TypeConverters
 {
     /// <summary>
-    ///   Provides a type converter to convert <see cref = "T:SharpDX.Half4" /> objects to and from various 
+    ///   Provides a type converter to convert <see cref = "T:SharpDX.Half4" /> objects to and from various
     ///   other representations.
     /// </summary>
     public class Half4Converter : ExpandableObjectConverter
@@ -150,7 +150,7 @@ namespace SiliconStudio.Core.TypeConverters
         {
             if (destinationType == null)
             {
-                throw new ArgumentNullException("destinationType");
+                throw new ArgumentNullException(nameof(destinationType));
             }
             if (culture == null)
             {
@@ -185,11 +185,12 @@ namespace SiliconStudio.Core.TypeConverters
         /// <param name = "context">A <see cref = "T:System.ComponentModel.ITypeDescriptorContext" /> that provides a format context.</param>
         /// <param name = "propertyValues">An <see cref = "T:System.Collections.IDictionary" /> of new property values.</param>
         /// <returns>An <see cref = "T:System.Object" /> representing the given <see cref = "T:System.Collections.IDictionary" />, or <c>null</c> if the object cannot be created.</returns>
+        [NotNull]
         public override object CreateInstance(ITypeDescriptorContext context, IDictionary propertyValues)
         {
             if (propertyValues == null)
             {
-                throw new ArgumentNullException("propertyValues");
+                throw new ArgumentNullException(nameof(propertyValues));
             }
             return new Half4((Half) propertyValues["X"], (Half) propertyValues["Y"], (Half) propertyValues["Z"], (Half) propertyValues["W"]);
         }

@@ -9,3 +9,4 @@ Type: !ColorTextureType
     UseSRgbSampling: false
     ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
     Alpha: None
+IsStreamable: false

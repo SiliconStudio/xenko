@@ -20,6 +20,7 @@ using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Profiling;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Sprites;
+using SiliconStudio.Xenko.Streaming;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -67,6 +68,7 @@ namespace SiliconStudio.Xenko.Engine
             SpriteAnimation = Services.GetSafeServiceAs<SpriteAnimationSystem>();
             GameProfiler = Services.GetSafeServiceAs<GameProfilingSystem>();
             DebugText = Services.GetSafeServiceAs<DebugTextSystem>();
+            Streaming = Services.GetSafeServiceAs<StreamingManager>();
         }
 
         /// <summary>
@@ -126,6 +128,13 @@ namespace SiliconStudio.Xenko.Engine
 
         [DataMemberIgnore]
         public DebugTextSystem DebugText { get; private set; }
+
+        /// <summary>
+        /// Gets the streaming system.
+        /// </summary>
+        /// <value>The streaming system.</value>
+        [DataMemberIgnore]
+        public StreamingManager Streaming { get; private set; }
 
         [DataMemberIgnore]
         protected Logger Log

@@ -100,6 +100,7 @@ RootAssets:
     - 8c44b810-9571-448b-b94a-0143a2c89c5f:MaterialTests/Features/MaterialNormalMapCompressed
     - 8d12b376-ef2b-4361-b331-2ba87b9e4dc2:MaterialTests/BinaryOperators/MaterialBinaryOperatorAdd
     - 993de46b-987f-4acc-b5a2-e36661550afc:MaterialTests/Base/MaterialDiffuseFloat4
+    - a4115d3c-2413-4865-9972-0b01a90266d1:GraphicsCompositor
     - a60c5fe7-6934-455f-bf6a-bd7abe1453d1:uv
     - b28a1ecd-27ee-4c41-a760-681230198dd6:MaterialTests/Layers/MaterialLayerAAA
     - b47e4609-0125-41bd-a26e-0fdf9184327e:MainScene

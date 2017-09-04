@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             {
                 // save the texture   TODO support for multi-texture
                 using (var stream = File.OpenWrite(textureFileName))
-                    staticFont.Textures[0].GetSerializationData().Save(stream, imageType);
+                    staticFont.Textures[0].GetSerializationData().Image.Save(stream, imageType);
             }
 
             var precompiledAsset = new PrecompiledSpriteFontAsset
@@ -88,7 +88,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             {
                 // save the texture   TODO support for multi-texture
                 using (var stream = File.OpenWrite(textureFileName))
-                    scalableFont.Textures[0].GetSerializationData().Save(stream, imageType);
+                    scalableFont.Textures[0].GetSerializationData().Image.Save(stream, imageType);
             }
 
             var precompiledAsset = new PrecompiledSpriteFontAsset

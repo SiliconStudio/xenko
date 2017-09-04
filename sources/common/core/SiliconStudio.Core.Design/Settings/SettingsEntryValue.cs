@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Events;
@@ -20,7 +21,7 @@ namespace SiliconStudio.Core.Settings
         /// <param name="profile">The profile this <see cref="SettingsEntryValue"/>belongs to.</param>
         /// <param name="name">The name associated to this <see cref="SettingsEntryValue"/>.</param>
         /// <param name="value">The value to associate to this <see cref="SettingsEntryValue"/>.</param>
-        internal SettingsEntryValue(SettingsProfile profile, UFile name, object value)
+        internal SettingsEntryValue([NotNull] SettingsProfile profile, [NotNull] UFile name, object value)
             : base(profile, name)
         {
             Value = value;
@@ -28,6 +29,7 @@ namespace SiliconStudio.Core.Settings
         }
 
         /// <inheritdoc/>
+        [NotNull]
         internal override List<ParsingEvent> GetSerializableValue(SettingsKey key)
         {
             // Value might have been kept as a parsing event list (if key didn't exist)

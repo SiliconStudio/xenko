@@ -8,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.11.1.2
+            Version: 2.0.0.2
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -76,3 +76,4 @@ RootAssets:
     - d9ce7b4e-ac45-4e2f-a2df-aaf3d17a8de8:EffectToneAE
     - de6d53ce-5ee6-4269-af43-09efc2a9569e:EffectFishLamp
     - e8e56ef6-5725-4ef4-8d21-d88b53c6eb92:MusicToneA
+    - f75ac34b-39fa-4db9-8734-e5bace3680ca:GraphicsCompositor

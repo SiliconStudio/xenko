@@ -73,6 +73,48 @@ namespace SiliconStudio.Xenko.Graphics
             return true;
         }
 
+        internal void SwapInternal(Texture other)
+        {
+            var tmp = DepthPitch;
+            DepthPitch = other.DepthPitch;
+            other.DepthPitch = tmp;
+            //
+            tmp = RowPitch;
+            RowPitch = other.RowPitch;
+            other.RowPitch = tmp;
+            //
+            var tmp2 = IsDepthBuffer;
+            IsDepthBuffer = other.IsDepthBuffer;
+            other.IsDepthBuffer = tmp2;
+            //
+            tmp2 = HasStencil;
+            HasStencil = other.HasStencil;
+            other.HasStencil = tmp2;
+            //
+            tmp2 = IsRenderbuffer;
+            HasStencil = other.IsRenderbuffer;
+            other.IsRenderbuffer = tmp2;
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+            var tmp3 = StagingData;
+            StagingData = other.StagingData;
+            other.StagingData = tmp3;
+#endif
+            //
+            Utilities.Swap(ref BoundSamplerState, ref other.BoundSamplerState);
+            Utilities.Swap(ref PixelBufferFrame, ref other.PixelBufferFrame);
+            Utilities.Swap(ref TextureTotalSize, ref other.TextureTotalSize);
+            Utilities.Swap(ref pixelBufferObjectId, ref other.pixelBufferObjectId);
+            Utilities.Swap(ref stencilId, ref other.stencilId);
+            //
+            Utilities.Swap(ref DiscardNextMap, ref other.DiscardNextMap);
+            Utilities.Swap(ref TextureId, ref other.TextureId);
+            Utilities.Swap(ref TextureTarget, ref other.TextureTarget);
+            Utilities.Swap(ref TextureInternalFormat, ref other.TextureInternalFormat);
+            Utilities.Swap(ref TextureFormat, ref other.TextureFormat);
+            Utilities.Swap(ref TextureType, ref other.TextureType);
+            Utilities.Swap(ref TexturePixelSize, ref other.TexturePixelSize);
+        }
+
         public void Recreate(DataBox[] dataBoxes = null)
         {
             InitializeFromImpl(dataBoxes);
@@ -92,7 +134,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (ParentTexture == null && GraphicsDevice != null)
             {
-                GraphicsDevice.TextureMemory -= (Depth * DepthStride) / (float)0x100000;
+                GraphicsDevice.RegisterTextureMemoryUsage(-SizeInBytes);
             }
 
             InitializeFromImpl();
@@ -346,7 +388,7 @@ namespace SiliconStudio.Xenko.Graphics
                     }
                 }
 
-                GraphicsDevice.TextureMemory += (Depth * DepthStride) / (float)0x100000;
+                GraphicsDevice.RegisterTextureMemoryUsage(SizeInBytes);
             }
         }
 
@@ -369,7 +411,7 @@ namespace SiliconStudio.Xenko.Graphics
                     else
                         GL.DeleteTextures(1, ref TextureId);
 
-                    GraphicsDevice.TextureMemory -= (Depth * DepthStride) / (float)0x100000;
+                GraphicsDevice.RegisterTextureMemoryUsage(-SizeInBytes);
                 }
 
                 if (stencilId != 0)

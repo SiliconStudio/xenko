@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Transactions
 {
@@ -90,6 +91,7 @@ namespace SiliconStudio.Core.Transactions
         /// <remarks>The transaction will be completed when the returned <see cref="ITransaction"/> object is disposed or when <see cref="ITransaction.Complete"/> is called.</remarks>
         /// <param name="flags">The flags to set on the new transaction.</param>
         /// <returns>A transaction object that must be completed in order to add the transaction to the stack.</returns>
+        [NotNull]
         ITransaction CreateTransaction(TransactionFlags flags = TransactionFlags.None);
 
         /// <summary>
@@ -101,13 +103,14 @@ namespace SiliconStudio.Core.Transactions
         /// Retrieves the collection of transactions registered to this stack.
         /// </summary>
         /// <returns>A collection of transactions registered into this stack.</returns>
+        [ItemNotNull, NotNull]
         IEnumerable<IReadOnlyTransaction> RetrieveAllTransactions();
 
         /// <summary>
         /// Pushes an operation to the current transaction.
         /// </summary>
         /// <param name="operation">The operation to push.</param>
-        void PushOperation(Operation operation);
+        void PushOperation([NotNull] Operation operation);
 
         /// <summary>
         /// Rollbacks the latest active transaction of the stack.

@@ -1,11 +1,8 @@
 // Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
-using System;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Rendering.Background
 {
@@ -21,12 +18,9 @@ namespace SiliconStudio.Xenko.Rendering.Background
         /// </summary>
         /// <value>The active background.</value>
         public RenderBackground ActiveBackground { get; private set; }
+        
 
         /// <inheritdoc />
-        protected internal override void OnSystemAdd()
-        {
-        }
-
         /// <inheritdoc />
         protected internal override void OnSystemRemove()
         {
@@ -35,6 +29,8 @@ namespace SiliconStudio.Xenko.Rendering.Background
                 VisibilityGroup.RenderObjects.Remove(ActiveBackground);
                 ActiveBackground = null;
             }
+
+            base.OnSystemRemove();
         }
 
         /// <inheritdoc />

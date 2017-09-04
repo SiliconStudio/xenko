@@ -5,10 +5,11 @@ using System;
 using System.Threading.Tasks;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics.Regression;
 
 namespace SiliconStudio.Xenko.Audio.Tests.Engine
 {
-    class GameClassForTests : Game
+    internal class GameClassForTests : GameTestBase
     {
         protected bool ContentLoaded;
 

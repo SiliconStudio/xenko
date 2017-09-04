@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Transactions;
@@ -41,7 +42,7 @@ namespace SiliconStudio.Core.Settings
         /// Gets the <see cref="SettingsContainer"/> containing this profile.
         /// </summary>
         public SettingsContainer Container { get; internal set; }
-        
+
         /// <summary>
         /// Gets the path of the file in which this profile has been saved.
         /// </summary>
@@ -56,7 +57,7 @@ namespace SiliconStudio.Core.Settings
         /// Raised when the file corresponding to this profile is modified on the disk, and <see cref="MonitorFileModification"/> is <c>true</c>.
         /// </summary>
         public event EventHandler<FileModifiedEventArgs> FileModified;
-        
+
         /// <summary>
         /// Gets the collection of <see cref="SettingsEntry"/> currently existing in this <see cref="SettingsProfile"/>.
         /// </summary>
@@ -80,7 +81,7 @@ namespace SiliconStudio.Core.Settings
         /// </summary>
         /// <param name="key">The settings key to look for.</param>
         /// <returns><c>True</c> if the profile contains the given settings key, <c>False</c> otherwise.</returns>
-        public bool ContainsKey(SettingsKey key)
+        public bool ContainsKey([NotNull] SettingsKey key)
         {
             if (key == null) throw new ArgumentNullException(nameof(key));
             return ContainsKey(key.Name);
@@ -92,7 +93,7 @@ namespace SiliconStudio.Core.Settings
         /// </summary>
         /// <param name="name">The name of the settings key to look for.</param>
         /// <returns><c>True</c> if the profile contains the given settings key, <c>False</c> otherwise.</returns>
-        public bool ContainsKey(UFile name)
+        public bool ContainsKey([NotNull] UFile name)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
             lock (SettingsContainer.SettingsLock)
@@ -106,7 +107,7 @@ namespace SiliconStudio.Core.Settings
         /// </summary>
         /// <param name="key">The settings key to remove.</param>
         /// <returns><c>True</c> if the settings key was removed, <c>false</c> otherwise.</returns>
-        public bool Remove(SettingsKey key)
+        public bool Remove([NotNull] SettingsKey key)
         {
             return Remove(key.Name);
         }
@@ -176,12 +177,12 @@ namespace SiliconStudio.Core.Settings
             }
             IsDiscarding = false;
         }
-        
+
         /// <summary>
         /// Registers an entry that has not been registered before.
         /// </summary>
         /// <param name="entry">The entry to register.</param>
-        internal void RegisterEntry(SettingsEntry entry)
+        internal void RegisterEntry([NotNull] SettingsEntry entry)
         {
             if (entry == null) throw new ArgumentNullException(nameof(entry));
             lock (SettingsContainer.SettingsLock)
@@ -198,7 +199,7 @@ namespace SiliconStudio.Core.Settings
         /// <param name="searchInParent">Indicates whether to search in the parent profile, if the name is not found in this profile.</param>
         /// <param name="createInCurrentProfile">If true, the list will be created in the current profile, from the value of its parent profile.</param>
         /// <returns><c>true</c> if an entry matching the name is found, <c>false</c> otherwise.</returns>
-        internal bool GetValue(UFile name, out object value, bool searchInParent, bool createInCurrentProfile)
+        internal bool GetValue([NotNull] UFile name, out object value, bool searchInParent, bool createInCurrentProfile)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
             SettingsEntry entry = GetEntry(name, searchInParent, createInCurrentProfile);
@@ -216,7 +217,7 @@ namespace SiliconStudio.Core.Settings
         /// </summary>
         /// <param name="name">The name to match.</param>
         /// <param name="value">The value to set.</param>
-        internal void SetValue(UFile name, object value)
+        internal void SetValue([NotNull] UFile name, object value)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
 
@@ -254,7 +255,7 @@ namespace SiliconStudio.Core.Settings
         /// <param name="searchInParent">Indicates whether to search in the parent profile, if the name is not found in this profile.</param>
         /// <param name="createInCurrentProfile"></param>
         /// <returns>An instance of <see cref="SettingsEntry"/> that matches the name, or <c>null</c>.</returns>
-        private SettingsEntry GetEntry(UFile name, bool searchInParent, bool createInCurrentProfile)
+        private SettingsEntry GetEntry([NotNull] UFile name, bool searchInParent, bool createInCurrentProfile)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
 
@@ -275,7 +276,7 @@ namespace SiliconStudio.Core.Settings
 
             return parentProfile != null && searchInParent ? parentProfile.GetEntry(name, true, false) : null;
         }
-        
+
         private void UpdateMonitoring()
         {
             if (fileWatcher != null)

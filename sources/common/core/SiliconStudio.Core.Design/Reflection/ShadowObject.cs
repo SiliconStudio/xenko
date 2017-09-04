@@ -12,7 +12,7 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public class ShadowObject : Dictionary<ShadowObjectPropertyKey, object>
     {
-        // Use a conditional weak table in order to attach properties and to 
+        // Use a conditional weak table in order to attach properties and to
         private static readonly ConditionalWeakTable<object, ShadowObject> Shadows = new ConditionalWeakTable<object, ShadowObject>();
 
         private ShadowObject()
@@ -20,7 +20,7 @@ namespace SiliconStudio.Core.Reflection
         }
 
         /// <summary>
-        /// Gets or sets a boolean to enable or disable shadow object. 
+        /// Gets or sets a boolean to enable or disable shadow object.
         /// </summary>
         /// <remarks>
         /// When disabled, method <see cref="Get"/> or <see cref="GetOrCreate"/>

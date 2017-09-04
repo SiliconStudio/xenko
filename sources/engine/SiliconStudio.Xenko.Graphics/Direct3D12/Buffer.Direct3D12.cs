@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (GraphicsDevice != null)
             {
-                GraphicsDevice.BuffersMemory += SizeInBytes/(float)0x100000;
+                GraphicsDevice.RegisterBufferMemoryUsage(SizeInBytes);
             }
 
             return this;
@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             if (GraphicsDevice != null)
             {
-                GraphicsDevice.BuffersMemory -= SizeInBytes/(float)0x100000;
+                GraphicsDevice.RegisterBufferMemoryUsage(-SizeInBytes);
             }
 
             base.OnDestroyed();

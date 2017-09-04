@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Yaml;
@@ -31,7 +32,7 @@ namespace SiliconStudio.Core.Settings
         /// <param name="name">The name of this settings key. Must be unique amongst the application.</param>
         /// <param name="container">The <see cref="SettingsContainer"/> containing this <see cref="SettingsKey"/>.</param>
         /// <param name="defaultValue">The default value associated to this settings key.</param>
-        protected SettingsKey(UFile name, SettingsContainer container, object defaultValue)
+        protected SettingsKey([NotNull] UFile name, SettingsContainer container, object defaultValue)
         {
             Name = name;
             DisplayName = name;
@@ -46,7 +47,7 @@ namespace SiliconStudio.Core.Settings
         /// <param name="name">The name of this settings key. Must be unique amongst the application.</param>
         /// <param name="container">The <see cref="SettingsContainer"/> containing this <see cref="SettingsKey"/>.</param>
         /// <param name="defaultValueCallback">A function that returns the default value associated to this settings key.</param>
-        protected SettingsKey(UFile name, SettingsContainer container, Func<object> defaultValueCallback)
+        protected SettingsKey([NotNull] UFile name, SettingsContainer container, [NotNull] Func<object> defaultValueCallback)
         {
             Name = name;
             DisplayName = name;
@@ -119,6 +120,7 @@ namespace SiliconStudio.Core.Settings
         /// </summary>
         /// <param name="profile">The profile to resolve.</param>
         /// <returns>The resolved profile.</returns>
+        [NotNull]
         protected SettingsProfile ResolveProfile(SettingsProfile profile = null)
         {
             profile = profile ?? Container.CurrentProfile;
@@ -139,7 +141,7 @@ namespace SiliconStudio.Core.Settings
         /// </summary>
         /// <param name="name">The name of the settings key. Must be unique amongst an application.</param>
         /// <param name="container">The <see cref="SettingsContainer"/> containing this <see cref="SettingsKey"/>.</param>
-        public SettingsKey(UFile name, SettingsContainer container)
+        public SettingsKey([NotNull] UFile name, SettingsContainer container)
             : this(name, container, default(T))
         {
         }
@@ -150,7 +152,7 @@ namespace SiliconStudio.Core.Settings
         /// <param name="name">The name of the settings key. Must be unique amongst an application.</param>
         /// <param name="container">The <see cref="SettingsContainer"/> containing this <see cref="SettingsKey"/>.</param>
         /// <param name="defaultValue">The default value for this settings key.</param>
-        public SettingsKey(UFile name, SettingsContainer container, T defaultValue)
+        public SettingsKey([NotNull] UFile name, SettingsContainer container, T defaultValue)
             : base(name, container, defaultValue)
         {
         }
@@ -161,12 +163,13 @@ namespace SiliconStudio.Core.Settings
         /// <param name="name">The name of this settings key. Must be unique amongst the application.</param>
         /// <param name="container">The <see cref="SettingsContainer"/> containing this <see cref="SettingsKey"/>.</param>
         /// <param name="defaultValueCallback">A function that returns the default value associated to this settings key.</param>
-        public SettingsKey(UFile name, SettingsContainer container, Func<object> defaultValueCallback)
+        public SettingsKey([NotNull] UFile name, SettingsContainer container, [NotNull] Func<object> defaultValueCallback)
             : base(name, container, defaultValueCallback)
         {
         }
 
         /// <inheritdoc/>
+        [NotNull]
         public override Type Type { get { return typeof(T); } }
 
         /// <summary>
@@ -239,7 +242,7 @@ namespace SiliconStudio.Core.Settings
         /// <param name="profile">The profile in which to set the value. Must be a non-null that uses the same <see cref="SettingsContainer"/> that this <see cref="SettingsKey"/>.</param>
         public void SetValue(T value, SettingsProfile profile)
         {
-            if (profile == null) throw new ArgumentNullException("profile");
+            if (profile == null) throw new ArgumentNullException(nameof(profile));
             profile = ResolveProfile(profile);
             profile.SetValue(Name, value);
         }

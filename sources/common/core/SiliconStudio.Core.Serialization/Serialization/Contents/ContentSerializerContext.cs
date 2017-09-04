@@ -38,6 +38,8 @@ namespace SiliconStudio.Core.Serialization.Contents
 
         internal bool LoadContentReferences { get; set; }
 
+        public bool AllowContentStreaming { get; set; }
+
         internal ContentSerializerContext(string url, ArchiveMode mode, ContentManager contentManager)
         {
             Url = url;

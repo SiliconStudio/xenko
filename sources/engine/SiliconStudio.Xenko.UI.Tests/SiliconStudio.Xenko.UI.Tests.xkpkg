@@ -8,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 2.0.0.0
+            Version: 2.0.0.2
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -66,6 +66,7 @@ RootAssets:
     - 6d354d02-2593-4297-b5e0-30208f9ff0f4:BorderButton
     - 81fc0346-d4f8-4717-98af-ef896c15379f:CourierNew12
     - 90569fac-e17d-41a0-9fc0-e7521aa05300:DebugSlider
+    - 991d85cd-5087-4f4c-8cdd-36f48a145bf6:GraphicsCompositor
     - 9b63680d-c02b-4cbd-927e-47c732e84cfb:DumbWhite
     - ad042de6-d40c-4350-b563-651599ab7110:XenkoBackground
     - b28bf403-c197-43c7-8614-c422d702909c:MainScene

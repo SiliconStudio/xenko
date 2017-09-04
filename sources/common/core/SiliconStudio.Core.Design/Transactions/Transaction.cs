@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 using System.Collections.Generic;
 using System.Threading;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Transactions
 {
@@ -23,7 +24,7 @@ namespace SiliconStudio.Core.Transactions
         public Transaction(TransactionStack transactionStack, TransactionFlags flags)
         {
             this.transactionStack = transactionStack;
-            this.Flags = flags;
+            Flags = flags;
             synchronizationContext = SynchronizationContext.Current;
         }
 
@@ -85,7 +86,7 @@ namespace SiliconStudio.Core.Transactions
         /// </summary>
         /// <param name="operation">The operation to push.</param>
         /// <remarks>This method should be invoked by <seealso cref="TransactionStack"/> only.</remarks>
-        internal void PushOperation(Operation operation)
+        internal void PushOperation([NotNull] Operation operation)
         {
             // Disabling synchronization context check: when we await for dispatcher task we always resume in a different SC so it makes it difficult to enforce this rule.
             //if (synchronizationContext != SynchronizationContext.Current)
@@ -101,7 +102,7 @@ namespace SiliconStudio.Core.Transactions
         /// <inheritdoc/>
         protected override void Rollback()
         {
-            for (int i = operations.Count - 1; i >= 0; --i)
+            for (var i = operations.Count - 1; i >= 0; --i)
             {
                 operations[i].Interface.Rollback();
             }

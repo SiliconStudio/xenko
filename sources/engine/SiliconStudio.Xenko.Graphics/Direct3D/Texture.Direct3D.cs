@@ -106,6 +106,25 @@ namespace SiliconStudio.Xenko.Graphics
             return InitializeFromImpl(new Texture2D(srv.Resource.NativePointer), false);
         }
 
+        internal void SwapInternal(Texture other)
+        {
+            var deviceChild = NativeDeviceChild;
+            NativeDeviceChild = other.NativeDeviceChild;
+            other.NativeDeviceChild = deviceChild;
+            //
+            var srv = NativeShaderResourceView;
+            NativeShaderResourceView = other.NativeShaderResourceView;
+            other.NativeShaderResourceView = srv;
+            //
+            var uav = NativeUnorderedAccessView;
+            NativeUnorderedAccessView = other.NativeUnorderedAccessView;
+            other.NativeUnorderedAccessView = uav;
+            //
+            Utilities.Swap(ref renderTargetView, ref other.renderTargetView);
+            Utilities.Swap(ref depthStencilView, ref other.depthStencilView);
+            Utilities.Swap(ref HasStencil, ref other.HasStencil);
+        }
+
         private void InitializeFromImpl(DataBox[] dataBoxes = null)
         {
             if (ParentTexture != null)
@@ -129,7 +148,7 @@ namespace SiliconStudio.Xenko.Graphics
                         break;
                 }
 
-                GraphicsDevice.TextureMemory += (Depth*DepthStride) / (float)0x100000;
+                GraphicsDevice.RegisterTextureMemoryUsage(SizeInBytes);
             }
 
             NativeShaderResourceView = GetShaderResourceView(ViewType, ArraySlice, MipLevel);
@@ -147,7 +166,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
             else if(GraphicsDevice != null)
             {
-                GraphicsDevice.TextureMemory -= (Depth*DepthStride) / (float)0x100000;
+                GraphicsDevice.RegisterTextureMemoryUsage(-SizeInBytes);
             }
 
             ReleaseComObject(ref renderTargetView);
@@ -170,7 +189,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (ParentTexture == null && GraphicsDevice != null)
             {
-                GraphicsDevice.TextureMemory -= (Depth * DepthStride)/(float)0x100000;
+                GraphicsDevice.RegisterTextureMemoryUsage(-SizeInBytes);
             }
 
             InitializeFromImpl();

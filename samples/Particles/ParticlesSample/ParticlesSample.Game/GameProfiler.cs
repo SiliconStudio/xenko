@@ -36,7 +36,7 @@ namespace ParticlesSample
         /// <summary>
         /// Gets or sets the type of the profiling to display: CPU or GPU
         /// </summary>
-        public GameProfilingResults FilteringMode { get; set; } = GameProfilingResults.FpsOnly;
+        public GameProfilingResults FilteringMode { get; set; } = GameProfilingResults.Fps;
 
         /// <summary>
         /// Gets or sets the current profiling result page to display.

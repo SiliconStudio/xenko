@@ -2,6 +2,8 @@
 // See LICENSE.md for full license information.
 
 using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 using SiliconStudio.BuildEngine;
@@ -9,6 +11,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Core.Streaming;
 using SiliconStudio.Xenko.Assets.Sprite;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Data;
@@ -35,7 +38,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
             public bool IsSizeInPercentage;
 
             public bool ShouldCompress;
-
+            
             public AlphaFormat DesiredAlpha;
 
             public TextureHint TextureHint;
@@ -146,7 +149,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// Utility function to check that the texture size is supported on the graphics platform for the provided graphics profile.
         /// </summary>
         /// <param name="parameters">The import parameters</param>
-        /// <param name="textureSizeRequested">The texture size requested.</param>
+        /// <param name="textureSize">The texture size requested.</param>
         /// <param name="logger">The logger.</param>
         /// <returns>true if the texture size is supported</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">graphicsProfile</exception>
@@ -413,10 +416,8 @@ namespace SiliconStudio.Xenko.Assets.Textures
             return outputFormat;
         }
 
-        public static ResultStatus ImportTextureImage(TextureTool textureTool, TexImage texImage, ImportParameters parameters, CancellationToken cancellationToken, Logger logger)
+        public static ResultStatus ImportTextureImageRaw(TextureTool textureTool, TexImage texImage, ImportParameters parameters, CancellationToken cancellationToken, Logger logger)
         {
-            var assetManager = new ContentManager();
-
             // Apply transformations
             textureTool.Decompress(texImage, parameters.IsSRgb);
 
@@ -501,18 +502,91 @@ namespace SiliconStudio.Xenko.Assets.Textures
             if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
                 return ResultStatus.Cancelled;
 
+            return ResultStatus.Successful;
+        }
+
+        public static ResultStatus ImportTextureImage(ContentManager assetManager, TextureTool textureTool, TexImage texImage, ImportParameters parameters, CancellationToken cancellationToken, Logger logger)
+        {
+            // Convert image to the final format
+            var result = ImportTextureImageRaw(textureTool, texImage, parameters, cancellationToken, logger);
+            if (result != ResultStatus.Successful)
+                return result;
+
             // Save the texture
             using (var outputImage = textureTool.ConvertToXenkoImage(texImage))
             {
                 if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
                     return ResultStatus.Cancelled;
 
-                assetManager.Save(parameters.OutputUrl, outputImage.ToSerializableVersion());
+                assetManager.Save(parameters.OutputUrl, outputImage.ToSerializableVersion(), typeof(Texture));
 
                 logger.Verbose($"Compression successful [{parameters.OutputUrl}] to ({outputImage.Description.Width}x{outputImage.Description.Height},{outputImage.Description.Format})");
             }
 
             return ResultStatus.Successful;
+        }
+        
+        public static ResultStatus ImportStreamableTextureImage(ContentManager assetManager, TextureTool textureTool, TexImage texImage, TextureHelper.ImportParameters convertParameters, CancellationToken cancellationToken, ICommandContext commandContext)
+        {
+            // Perform normal texture importing (but don't save it to file now)
+            var importResult = TextureHelper.ImportTextureImageRaw(textureTool, texImage, convertParameters, cancellationToken, commandContext.Logger);
+            if (importResult != ResultStatus.Successful)
+                return importResult;
+
+            // Make sure we don't compress mips data
+            var dataUrl = convertParameters.OutputUrl + "_Data";
+            commandContext.AddTag(new ObjectUrl(UrlType.Content, dataUrl), Builder.DoNotCompressTag);
+
+            using (var outputImage = textureTool.ConvertToXenkoImage(texImage))
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    return ResultStatus.Cancelled;
+
+                // Create texture mips data containers (storage all array slices for every mip in separate chunks)
+                var desc = outputImage.Description;
+                List<byte[]> mipsData = new List<byte[]>(desc.MipLevels);
+                for (int mipIndex = 0; mipIndex < desc.MipLevels; mipIndex++)
+                {
+                    int totalSize = 0;
+                    for (int arrayIndex = 0; arrayIndex < desc.ArraySize; arrayIndex++)
+                    {
+                        var pixelBuffer = outputImage.GetPixelBuffer(arrayIndex, 0, mipIndex);
+                        totalSize += pixelBuffer.BufferStride;
+                    }
+
+                    var buf = new byte[totalSize];
+                    int startIndex = 0;
+                    for (int arrayIndex = 0; arrayIndex < desc.ArraySize; arrayIndex++)
+                    {
+                        var pixelBuffer = outputImage.GetPixelBuffer(arrayIndex, 0, mipIndex);
+                        int size = pixelBuffer.BufferStride;
+
+                        Marshal.Copy(pixelBuffer.DataPointer, buf, startIndex, size);
+                        startIndex += size;
+                    }
+                    mipsData.Add(buf);
+                }
+
+                // Pack mip maps to the storage container
+                ContentStorageHeader storageHeader;
+                ContentStorage.Create(dataUrl, mipsData, out storageHeader);
+
+                if (cancellationToken.IsCancellationRequested)
+                    return ResultStatus.Cancelled;
+
+                // Serialize texture to file
+                var outputTexture = new TextureSerializationData(outputImage, true, storageHeader);
+                assetManager.Save(convertParameters.OutputUrl, outputTexture.ToSerializableVersion(), typeof(Texture));
+
+                commandContext.Logger.Verbose($"Compression successful [{dataUrl}] to ({outputImage.Description.Width}x{outputImage.Description.Height},{outputImage.Description.Format})");
+            }
+
+            return ResultStatus.Successful;
+        }
+
+        public static bool ShouldUseDataContainer(bool isStreamable, TexImage.TextureDimension dimension)
+        {
+            return isStreamable && (dimension == TexImage.TextureDimension.Texture2D || dimension == TexImage.TextureDimension.TextureCube);
         }
 
         private static AlphaFormat ToAlphaFormat(this AlphaLevels alphaLevels)

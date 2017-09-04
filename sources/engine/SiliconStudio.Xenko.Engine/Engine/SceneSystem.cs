@@ -100,7 +100,7 @@ namespace SiliconStudio.Xenko.Engine
 
             if (SplashScreenUrl != null && content.Exists(SplashScreenUrl))
             {
-                splashScreenTexture = content.Load<Texture>(SplashScreenUrl);
+                splashScreenTexture = content.Load<Texture>(SplashScreenUrl, ContentManagerLoaderSettings.StreamingDisabled);
                 splashScreenState = splashScreenTexture != null ? SplashScreenState.Intro : SplashScreenState.Invalid;
                 SplashScreenEnabled = true;
             }

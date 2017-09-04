@@ -51,7 +51,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
 using System.Globalization;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Core.TypeConverters
@@ -67,9 +67,9 @@ namespace SiliconStudio.Core.TypeConverters
         public QuaternionConverter()
         {
             var type = typeof(Quaternion);
-            Properties = new PropertyDescriptorCollection(new PropertyDescriptor[] 
-            { 
-                new FieldPropertyDescriptor(type.GetField(nameof(Quaternion.X))), 
+            Properties = new PropertyDescriptorCollection(new PropertyDescriptor[]
+            {
+                new FieldPropertyDescriptor(type.GetField(nameof(Quaternion.X))),
                 new FieldPropertyDescriptor(type.GetField(nameof(Quaternion.Y))),
                 new FieldPropertyDescriptor(type.GetField(nameof(Quaternion.Z))),
                 new FieldPropertyDescriptor(type.GetField(nameof(Quaternion.W)))
@@ -106,6 +106,7 @@ namespace SiliconStudio.Core.TypeConverters
         }
 
         /// <inheritdoc/>
+        [NotNull]
         public override object CreateInstance(ITypeDescriptorContext context, IDictionary propertyValues)
         {
             if (propertyValues == null) throw new ArgumentNullException(nameof(propertyValues));

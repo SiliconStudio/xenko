@@ -72,7 +72,11 @@ namespace SiliconStudio.Xenko.Graphics
             Texture = texture;
             if (texture != null)
             {
-                Region = new Rectangle(0, 0, texture.ViewWidth, texture.ViewHeight);
+                var isFullTexture = texture.ViewType == ViewType.Full;
+                var fullQualitySize = texture.FullQualitySize;
+                var width = isFullTexture ? fullQualitySize.Width : texture.ViewWidth;
+                var height = isFullTexture ? fullQualitySize.Height : texture.ViewHeight;
+                Region = new Rectangle(0, 0, width, height);
                 Center = new Vector2(Region.Width/2, Region.Height/2);
             }
         }

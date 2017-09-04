@@ -51,7 +51,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
 using System.Globalization;
-
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Core.TypeConverters
@@ -138,6 +138,7 @@ namespace SiliconStudio.Core.TypeConverters
         /// <returns>
         /// An <see cref="T:System.Object"/> representing the given <see cref="T:System.Collections.IDictionary"/>, or null if the object cannot be created. This method always returns null.
         /// </returns>
+        [NotNull]
         public override object CreateInstance(ITypeDescriptorContext context, IDictionary propertyValues)
         {
             if (propertyValues == null) throw new ArgumentNullException(nameof(propertyValues));

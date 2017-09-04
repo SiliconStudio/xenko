@@ -51,6 +51,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
 using System.Globalization;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Core.TypeConverters
@@ -66,27 +67,27 @@ namespace SiliconStudio.Core.TypeConverters
         public MatrixConverter()
         {
             Type type = typeof(Matrix);
-            Properties = new PropertyDescriptorCollection(new PropertyDescriptor[] 
-            { 
-                new FieldPropertyDescriptor(type.GetField(nameof(Matrix.M11))), 
+            Properties = new PropertyDescriptorCollection(new PropertyDescriptor[]
+            {
+                new FieldPropertyDescriptor(type.GetField(nameof(Matrix.M11))),
                 new FieldPropertyDescriptor(type.GetField(nameof(Matrix.M12))),
                 new FieldPropertyDescriptor(type.GetField(nameof(Matrix.M13))),
                 new FieldPropertyDescriptor(type.GetField(nameof(Matrix.M14))),
-                new FieldPropertyDescriptor(type.GetField(nameof(Matrix.M21))), 
+                new FieldPropertyDescriptor(type.GetField(nameof(Matrix.M21))),
                 new FieldPropertyDescriptor(type.GetField(nameof(Matrix.M22))),
                 new FieldPropertyDescriptor(type.GetField(nameof(Matrix.M23))),
                 new FieldPropertyDescriptor(type.GetField(nameof(Matrix.M24))),
-                new FieldPropertyDescriptor(type.GetField(nameof(Matrix.M31))), 
+                new FieldPropertyDescriptor(type.GetField(nameof(Matrix.M31))),
                 new FieldPropertyDescriptor(type.GetField(nameof(Matrix.M32))),
                 new FieldPropertyDescriptor(type.GetField(nameof(Matrix.M33))),
                 new FieldPropertyDescriptor(type.GetField(nameof(Matrix.M34))),
-                new FieldPropertyDescriptor(type.GetField(nameof(Matrix.M41))), 
+                new FieldPropertyDescriptor(type.GetField(nameof(Matrix.M41))),
                 new FieldPropertyDescriptor(type.GetField(nameof(Matrix.M42))),
                 new FieldPropertyDescriptor(type.GetField(nameof(Matrix.M43))),
                 new FieldPropertyDescriptor(type.GetField(nameof(Matrix.M44))),
             });
         }
-        
+
         /// <inheritdoc/>
         public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
         {
@@ -122,6 +123,7 @@ namespace SiliconStudio.Core.TypeConverters
         }
 
         /// <inheritdoc/>
+        [NotNull]
         public override object CreateInstance(ITypeDescriptorContext context, IDictionary propertyValues)
         {
             if (propertyValues == null) throw new ArgumentNullException(nameof(propertyValues));

@@ -6,18 +6,21 @@ using System.Linq;
 using System.Management;
 using System.Text;
 using System.Windows.Forms;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Core.Windows
 {
     public static class AppHelper
     {
+        [NotNull]
         public static string[] GetCommandLineArgs()
         {
             return Environment.GetCommandLineArgs().Skip(1).ToArray();
         }
 
-        public static string BuildErrorMessage(Exception exception, string header = null)
+        [NotNull]
+        public static string BuildErrorMessage([NotNull] Exception exception, string header = null)
         {
             var body = new StringBuilder();
 
@@ -35,7 +38,8 @@ namespace SiliconStudio.Core.Windows
             return body.ToString();
         }
 
-        public static string BuildErrorToClipboard(Exception exception, string header = null)
+        [NotNull]
+        public static string BuildErrorToClipboard([NotNull] Exception exception, string header = null)
         {
             var errorMessage = BuildErrorMessage(exception, header);
             try
@@ -82,7 +86,7 @@ namespace SiliconStudio.Core.Windows
                     writer.AppendLine($"GPU {++i}");
                     foreach (var property in managementObject.Properties)
                     {
-                        writer.AppendLine(string.Format("  {0}: {1}", property.Name, property.Value));
+                        writer.AppendLine($"  {property.Name}: {property.Value}");
                     }
                 }
             }
@@ -92,6 +96,7 @@ namespace SiliconStudio.Core.Windows
             }
         }
 
+        [NotNull]
         public static Dictionary<string, string> GetVideoConfig()
         {
             var result = new Dictionary<string, string>();
@@ -105,7 +110,7 @@ namespace SiliconStudio.Core.Windows
                     foreach (var property in managementObject.Properties)
                     {
                         if(property.Value == null) continue;
-                        
+
                         result.Add($"GPU{deviceId}.{property.Name}", property.Value.ToString());
                     }
                     deviceId++;
@@ -117,6 +122,6 @@ namespace SiliconStudio.Core.Windows
             }
 
             return result;
-        } 
+        }
     }
 }

@@ -51,6 +51,7 @@ using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
 using System.Globalization;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.TypeConverters
 {
@@ -77,7 +78,8 @@ namespace SiliconStudio.Core.TypeConverters
         /// <param name="culture">The culture.</param>
         /// <param name="values">The values.</param>
         /// <returns>A string representing the values</returns>
-        protected static string ConvertFromValues<T>(ITypeDescriptorContext context, CultureInfo culture, T[] values)
+        [NotNull]
+        protected static string ConvertFromValues<T>(ITypeDescriptorContext context, CultureInfo culture, [NotNull] T[] values)
         {
             if (culture == null)
                 culture = CultureInfo.CurrentCulture;
@@ -96,6 +98,7 @@ namespace SiliconStudio.Core.TypeConverters
         /// <param name="culture">The culture.</param>
         /// <param name="strValue">The string value.</param>
         /// <returns>An array of value or null if strValue is not a string.</returns>
+        [CanBeNull]
         protected static T[] ConvertToValues<T>(ITypeDescriptorContext context, CultureInfo culture, object strValue)
         {
             var str = strValue as string;
@@ -110,7 +113,7 @@ namespace SiliconStudio.Core.TypeConverters
 
             return Array.ConvertAll(strings, s => (T)converter.ConvertFromString(context, culture, s));
         }
-        
+
         protected TResult ConvertFromString<TResult, T>(ITypeDescriptorContext context, CultureInfo culture, object strValue) where TResult : new()
         {
             var str = strValue as string;

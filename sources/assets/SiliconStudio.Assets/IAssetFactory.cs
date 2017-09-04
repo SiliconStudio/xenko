@@ -1,6 +1,7 @@
 // Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets
@@ -16,6 +17,7 @@ namespace SiliconStudio.Assets
         /// Retrieve the asset type associated to this factory.
         /// </summary>
         /// <returns>The asset type associated to this factory.</returns>
+        [NotNull]
         Type AssetType { get; }
 
         /// <summary>

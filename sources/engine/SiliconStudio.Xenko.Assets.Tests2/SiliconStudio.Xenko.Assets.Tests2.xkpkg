@@ -8,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.11.1.2
+            Version: 2.0.0.2
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -45,6 +45,7 @@ RootAssets:
     - 231c5969-26ee-4a8c-9d29-6146ee723740:PngMask
     - 2ac8e854-0983-487a-b491-9a66b155ff03:PngColorResultTrue
     - 2c6491c4-701b-4eb7-b9f8-94d22d95b0cf:PngNoAlpha
+    - 2d00caf8-f724-404d-87cd-df814a78b252:GraphicsCompositor
     - 34ac902c-db56-4d4f-bbaa-763c385ee3c7:SheetAutoInterpolated
     - 380fa137-4b95-4dc8-ae41-d0859ea332e0:SheetMaskAlpha
     - 38e24744-5030-49f5-9bd6-63ffaf9f5cdb:SheetExplicitAlphaPacked

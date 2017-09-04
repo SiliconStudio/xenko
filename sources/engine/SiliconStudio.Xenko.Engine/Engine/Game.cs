@@ -22,6 +22,7 @@ using SiliconStudio.Xenko.Profiling;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Fonts;
 using SiliconStudio.Xenko.Rendering.Sprites;
+using SiliconStudio.Xenko.Streaming;
 using SiliconStudio.Xenko.VirtualReality;
 
 namespace SiliconStudio.Xenko.Engine
@@ -84,6 +85,11 @@ namespace SiliconStudio.Xenko.Engine
         /// <value>The effect system.</value>
         public EffectSystem EffectSystem { get; private set; }
 
+        /// <summary>
+        /// Gets the streaming system.
+        /// </summary>
+        /// <value>The streaming system.</value>
+        public StreamingManager Streaming { get; }
 
         /// <summary>
         /// Gets the audio system.
@@ -197,6 +203,8 @@ namespace SiliconStudio.Xenko.Engine
 
             SceneSystem = new SceneSystem(Services);
             Services.AddService(SceneSystem);
+
+            Streaming = new StreamingManager(Services);
 
             Audio = new AudioSystem(Services);
             Services.AddService(Audio);
@@ -368,6 +376,7 @@ namespace SiliconStudio.Xenko.Engine
 
             GameSystems.Add(EffectSystem);
 
+            GameSystems.Add(Streaming);
             GameSystems.Add(SceneSystem);
 
             // Add the Audio System

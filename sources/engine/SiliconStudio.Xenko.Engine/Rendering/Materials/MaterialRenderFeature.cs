@@ -288,12 +288,16 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 var materialInfo = renderMesh.MaterialInfo;
                 var materialParameters = material.Parameters;
 
+                // Register resources usage
+                Context.StreamingManager?.StreamResources(materialParameters);
+
                 if (!UpdateMaterial(RenderSystem, threadContext, materialInfo, perMaterialDescriptorSetSlot.Index, renderNode.RenderEffect, materialParameters))
                     return;
 
                 var descriptorSetPoolOffset = ((RootEffectRenderFeature)RootRenderFeature).ComputeResourceGroupOffset(renderNodeReference);
                 resourceGroupPool[descriptorSetPoolOffset + perMaterialDescriptorSetSlot.Index] = materialInfo.Resources;
             });
+
         }
 
         public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)

@@ -43,6 +43,27 @@ namespace SiliconStudio.Xenko.Graphics
             return true;
         }
 
+        internal void SwapInternal(Texture other)
+        {
+            Utilities.Swap(ref NativeImage, ref other.NativeImage);
+            Utilities.Swap(ref NativeBuffer, ref other.NativeBuffer);
+            Utilities.Swap(ref NativeColorAttachmentView, ref other.NativeColorAttachmentView);
+            Utilities.Swap(ref NativeDepthStencilView, ref other.NativeDepthStencilView);
+            Utilities.Swap(ref NativeImageView, ref other.NativeImageView);
+            Utilities.Swap(ref isNotOwningResources, ref other.isNotOwningResources);
+            Utilities.Swap(ref IsInitialized, ref other.IsInitialized);
+            Utilities.Swap(ref NativeFormat, ref other.NativeFormat);
+            Utilities.Swap(ref HasStencil, ref other.HasStencil);
+            Utilities.Swap(ref NativeLayout, ref other.NativeLayout);
+            Utilities.Swap(ref NativeAccessMask, ref other.NativeAccessMask);
+            Utilities.Swap(ref NativeImageAspect, ref other.NativeImageAspect);
+            //
+            Utilities.Swap(ref NativeMemory, ref other.NativeMemory);
+            Utilities.Swap(ref StagingFenceValue, ref other.StagingFenceValue);
+            Utilities.Swap(ref StagingBuilder, ref other.StagingBuilder);
+            Utilities.Swap(ref NativePipelineStageMask, ref other.NativePipelineStageMask);
+        }
+
         internal Texture InitializeFromPersistent(TextureDescription description, SharpVulkan.Image nativeImage)
         {
             NativeImage = nativeImage;
@@ -423,7 +444,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (ParentTexture == null && GraphicsDevice != null)
             {
-                GraphicsDevice.TextureMemory -= (Depth * DepthStride) / (float)0x100000;
+                GraphicsDevice.RegisterTextureMemoryUsage(-SizeInBytes);
             }
 
             InitializeFromImpl();

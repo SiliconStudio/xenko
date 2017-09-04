@@ -40,6 +40,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                 var textureAsset = new TextureAsset
                 {
                     Id = AssetId.Empty, // CAUTION: It is important to use an empty GUID here, as we don't want the command to be rebuilt (by default, a new asset is creating a new guid)
+                    IsStreamable = false,
                     IsCompressed = false,
                     GenerateMipmaps = true,
                     Type = new ColorTextureType
@@ -75,6 +76,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                 : base(url, asset, assetFinder)
             {
                 this.colorSpace = colorSpace;
+                Version = 2;
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
