@@ -2,10 +2,7 @@
 // See LICENSE.md for full license information.
 
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
-using SiliconStudio.Core;
-using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
@@ -23,7 +20,7 @@ namespace SiliconStudio.Xenko.Audio
     /// the processor set the <see cref="AudioEmitter"/> reference of the <see cref="AudioSystem"/> to null 
     /// but do not remove the <see cref="AudioListenerComponent"/> from its collection.
     /// </remarks>
-    public class AudioListenerProcessor : EntityProcessor<AudioListenerComponent, AudioListenerComponent>
+    public class AudioListenerProcessor : EntityProcessor<AudioListenerComponent>
     {
         /// <summary>
         /// Reference to the <see cref="AudioSystem"/> of the game instance.
@@ -38,34 +35,18 @@ namespace SiliconStudio.Xenko.Audio
         {
         }
 
-        protected override AudioListenerComponent GenerateComponentData(Entity entity, AudioListenerComponent component)
-        {
-            return component;
-        }
-
-        protected override bool IsAssociatedDataValid(Entity entity, AudioListenerComponent component, AudioListenerComponent associatedData)
-        {
-            return component == associatedData;
-        }
-
         protected internal override void OnSystemAdd()
         {
-            base.OnSystemAdd();
-
-            audioSystem = Services.GetServiceAs<AudioSystem>();
+            audioSystem = Services.GetService<AudioSystem>();
         }
 
         protected internal override void OnSystemRemove()
         {
-            base.OnSystemRemove();
-
             audioSystem.Listeners.Clear();
         }
 
         protected override void OnEntityComponentAdding(Entity entity, AudioListenerComponent component, AudioListenerComponent data)
         {
-            base.OnEntityComponentAdding(entity, component, data);
-
             component.Listener = new AudioListener(audioSystem.AudioEngine);
 
             audioSystem.Listeners.Add(component, component.Listener);
@@ -73,8 +54,6 @@ namespace SiliconStudio.Xenko.Audio
 
         protected override void OnEntityComponentRemoved(Entity entity, AudioListenerComponent component, AudioListenerComponent data)
         {
-            base.OnEntityComponentRemoved(entity, component, data);
-
             audioSystem.Listeners.Remove(component);
 
             component.Listener.Dispose();
@@ -82,8 +61,6 @@ namespace SiliconStudio.Xenko.Audio
 
         public override void Draw(RenderContext context)
         {
-            base.Draw(context);
-
             foreach (var listenerData in ComponentDatas.Values)
             {
                 if(!listenerData.Enabled)  // skip all updates if the listener is not used.

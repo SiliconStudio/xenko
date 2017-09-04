@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Navigation;
 using SiliconStudio.Xenko.Physics;
@@ -15,14 +14,13 @@ namespace SiliconStudio.Xenko.Assets.Navigation
     [DataContract("NavigationMeshAsset")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(NavigationMesh))]
-    [Display("Navigation mesh")]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "0.0.0")]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "2.0.0.0", typeof(EmptyAssetUpgrader))]
 #else
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
 #endif
-    public class NavigationMeshAsset : Asset
+    public partial class NavigationMeshAsset : Asset
     {
         private const string CurrentVersion = "2.0.0.0";
 

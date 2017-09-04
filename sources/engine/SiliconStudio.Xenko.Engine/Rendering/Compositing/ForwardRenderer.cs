@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         private readonly FastList<Texture> currentRenderTargetsNonMSAA = new FastList<Texture>();
         private Texture currentDepthStencil;
         private Texture currentDepthStencilNonMSAA;
-        
+
         protected Texture ViewOutputTarget;
         protected Texture ViewDepthStencil;
 
@@ -126,7 +126,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
             var camera = Context.GetCurrentCamera();
 
-            vrSystem = (VRDeviceSystem)Services.GetService(typeof(VRDeviceSystem));
+            vrSystem = Services.GetService<VRDeviceSystem>();
             if (vrSystem != null)
             {
                 if (VRSettings.Enabled)
@@ -136,9 +136,9 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
                     // remove VR API duplicates and keep first desired config only
                     var preferredScalings  = new Dictionary<VRApi, float>();
-                    foreach (var desc in requiredDescs)  
+                    foreach (var desc in requiredDescs)
                     {
-                        if (!preferredScalings.ContainsKey(desc.Api)) 
+                        if (!preferredScalings.ContainsKey(desc.Api))
                             preferredScalings[desc.Api] = desc.ResolutionScale;
                     }
                     vrSystem.PreferredScalings = preferredScalings;
@@ -149,7 +149,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
                     vrSystem.Enabled = true; //careful this will trigger the whole chain of initialization!
                     vrSystem.Visible = true;
-                    
+
                     VRSettings.VRDevice = vrSystem.Device;
 
                     vrSystem.PreviousUseCustomProjectionMatrix = camera.UseCustomProjectionMatrix;
@@ -415,7 +415,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
 
             return result;
         }
-        
+
         protected virtual void ResolveMSAA(RenderDrawContext drawContext, Texture input, Texture output)
         {
             if (MSAAResolver != null && MSAAResolver.Enabled)
@@ -506,7 +506,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 var colorTargetIndex = OpaqueRenderStage?.OutputValidator.Find(typeof(ColorTargetSemantic)) ?? -1;
                 if (colorTargetIndex == -1)
                     return;
-                
+
                 // Resolve MSAA targets
                 var renderTargets = currentRenderTargets;
                 var depthStencil = currentDepthStencil;
@@ -583,7 +583,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                         var vrFullSurface = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(
                                                 TextureDescription.New2D(VRSettings.VRDevice.ActualRenderFrameSize.Width, VRSettings.VRDevice.ActualRenderFrameSize.Height, 1, PixelFormat.R8G8B8A8_UNorm_SRgb,
                                                     TextureFlags.ShaderResource | TextureFlags.RenderTarget)));
-                     
+
                         //draw per eye
                         using (context.SaveViewportAndRestore())
                         using (drawContext.PushRenderTargetsAndRestore())
@@ -694,7 +694,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     resourceGroup.DescriptorSet.SetShaderResourceView(depthLogicalGroup.DescriptorSlotStart, depthStencilSRV);
                 }
             }
-            
+
             context.CommandList.SetRenderTargets(null, context.CommandList.RenderTargetCount, context.CommandList.RenderTargets);
 
             depthStencilROCached = context.Resolver.GetDepthStencilAsRenderTarget(depthStencil, depthStencilROCached);
@@ -719,7 +719,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     currentRenderTargets[index] = outputRenderTarget;
                 }
                 else
-                { 
+                {
                     var description = renderTargets[index];
                     var textureDescription = TextureDescription.New2D(outputRenderTarget.Width, outputRenderTarget.Height, 1, description.Format, TextureFlags.RenderTarget | TextureFlags.ShaderResource, 1, GraphicsResourceUsage.Default, actualMultisampleCount);
                     currentRenderTargets[index] = PushScopedResource(drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(textureDescription));
@@ -769,7 +769,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     TextureDescription.New2D(renderTargetsSize.Width, renderTargetsSize.Height, 1, DepthBufferFormat,
                         TextureFlags.ShaderResource | TextureFlags.DepthStencil)));
             }
-            
+
             PrepareRenderTargets(drawContext, ViewOutputTarget, ViewDepthStencil);
         }
 

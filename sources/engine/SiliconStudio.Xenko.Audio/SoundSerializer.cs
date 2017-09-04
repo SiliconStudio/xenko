@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Audio
             if (mode == ArchiveMode.Deserialize)
             {
                 var services = stream.Context.Tags.Get(ServiceRegistry.ServiceRegistryKey);
-                var audioEngine = services.GetServiceAs<IAudioEngineProvider>()?.AudioEngine;
+                var audioEngine = services.GetService<IAudioEngineProvider>()?.AudioEngine;
 
                 obj.CompressedDataUrl = stream.ReadString();
                 obj.SampleRate = stream.ReadInt32();

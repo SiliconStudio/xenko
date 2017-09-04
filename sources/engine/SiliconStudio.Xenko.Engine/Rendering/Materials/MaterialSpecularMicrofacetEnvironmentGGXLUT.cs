@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// Note: their glossiness-roughness conversion formula is not same as ours, this will need to be recomputed.
     /// </remarks>
     [DataContract("MaterialSpecularMicrofacetEnvironmentGGXLUT")]
-    [Display("GGX+Schlick+ShclickGGX (LUT)")]
+    [Display("GGX+Schlick+SchlickGGX (LUT)")]
     public class MaterialSpecularMicrofacetEnvironmentGGXLUT : IMaterialSpecularMicrofacetEnvironmentFunction
     {
         public ShaderSource Generate(MaterialGeneratorContext context)

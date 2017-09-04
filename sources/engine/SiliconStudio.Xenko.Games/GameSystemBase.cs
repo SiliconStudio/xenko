@@ -25,6 +25,7 @@ using System;
 
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Games
@@ -37,13 +38,10 @@ namespace SiliconStudio.Xenko.Games
     /// </remarks>
     public abstract class GameSystemBase : ComponentBase, IGameSystemBase, IUpdateable, IDrawable, IContentable
     {
-        private readonly IServiceRegistry registry;
         private int drawOrder;
         private bool enabled;
-        private readonly GameBase game;
         private int updateOrder;
         private bool visible;
-        private readonly IContentManager contentManager;
         private IGraphicsDeviceService graphicsDeviceService;
 
         /// <summary>
@@ -53,12 +51,11 @@ namespace SiliconStudio.Xenko.Games
         /// <remarks>
         /// The GameSystem is expecting the following services to be registered: <see cref="IGame"/> and <see cref="IContentManager"/>.
         /// </remarks>
-        protected GameSystemBase(IServiceRegistry registry)
+        protected GameSystemBase([NotNull] IServiceRegistry registry)
         {
-            if (registry == null) throw new ArgumentNullException("registry");
-            this.registry = registry;
-            game = (GameBase)Services.GetServiceAs<IGame>();
-            contentManager = Services.GetServiceAs<IContentManager>();
+            Services = registry ?? throw new ArgumentNullException(nameof(registry));
+            Game = (GameBase)Services.GetService<IGame>();
+            Content = Services.GetService<IContentManager>();
         }
 
         /// <summary>
@@ -66,46 +63,28 @@ namespace SiliconStudio.Xenko.Games
         /// </summary>
         /// <value>The game.</value>
         /// <remarks>This value can be null</remarks>
-        public GameBase Game
-        {
-            get { return game; }
-        }
+        [CanBeNull]
+        public GameBase Game { get; }
 
         /// <summary>
         /// Gets the services registry.
         /// </summary>
         /// <value>The services registry.</value>
-        public IServiceRegistry Services
-        {
-            get
-            {
-                return registry;
-            }
-        }
+        [NotNull]
+        public IServiceRegistry Services { get; }
 
         /// <summary>
         /// Gets the content manager. This value can be null in a mock environment.
         /// </summary>
         /// <value>The content.</value>
-        protected IContentManager Content
-        {
-            get
-            {
-                return contentManager;
-            }
-        }
+        [CanBeNull]
+        protected IContentManager Content { get; }
 
         /// <summary>
         /// Gets the graphics device.
         /// </summary>
         /// <value>The graphics device.</value>
-        protected GraphicsDevice GraphicsDevice
-        {
-            get
-            {
-                return graphicsDeviceService != null ? graphicsDeviceService.GraphicsDevice : null;
-            }
-        }
+        protected GraphicsDevice GraphicsDevice => graphicsDeviceService?.GraphicsDevice;
 
         #region IDrawable Members
 
@@ -128,7 +107,7 @@ namespace SiliconStudio.Xenko.Games
 
         public bool Visible
         {
-            get { return visible; }
+            get => visible;
             set
             {
                 if (visible != value)
@@ -141,7 +120,7 @@ namespace SiliconStudio.Xenko.Games
 
         public int DrawOrder
         {
-            get { return drawOrder; }
+            get => drawOrder;
             set
             {
                 if (drawOrder != value)
@@ -164,7 +143,7 @@ namespace SiliconStudio.Xenko.Games
         {
             if (graphicsDeviceService == null)
             {
-                graphicsDeviceService = (IGraphicsDeviceService)registry.GetService(typeof(IGraphicsDeviceService));
+                graphicsDeviceService = Services.GetService<IGraphicsDeviceService>();
             }
         }
 
@@ -182,7 +161,7 @@ namespace SiliconStudio.Xenko.Games
 
         public bool Enabled
         {
-            get { return enabled; }
+            get => enabled;
             set
             {
                 if (enabled != value)
@@ -195,7 +174,7 @@ namespace SiliconStudio.Xenko.Games
 
         public int UpdateOrder
         {
-            get { return updateOrder; }
+            get => updateOrder;
             set
             {
                 if (updateOrder != value)

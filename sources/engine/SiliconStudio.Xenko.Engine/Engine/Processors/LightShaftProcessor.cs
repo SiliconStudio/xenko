@@ -8,45 +8,51 @@ using SiliconStudio.Xenko.Rendering.Lights;
 
 namespace SiliconStudio.Xenko.Engine.Processors
 {
-    public class LightShaftProcessor : EntityProcessor<LightShaftComponent, LightShaftProcessor.Data>
+    public class LightShaftProcessor : EntityProcessor<LightShaftComponent, LightShaftProcessor.AssociatedData>
     {
-        private List<Data> activeLightShafts = new List<Data>();
+        private readonly List<AssociatedData> activeLightShafts = new List<AssociatedData>();
 
-        public List<Data> LightShafts => activeLightShafts;
+        public List<AssociatedData> LightShafts => activeLightShafts;
 
-        protected override Data GenerateComponentData(Entity entity, LightShaftComponent component)
+        /// <inheritdoc />
+        protected override AssociatedData GenerateComponentData(Entity entity, LightShaftComponent component)
         {
-            return new Data();
+            return new AssociatedData
+            {
+                Component = component,
+                LightComponent = entity.Get<LightComponent>()
+            };
         }
 
+        /// <inheritdoc />
+        protected override bool IsAssociatedDataValid(Entity entity, LightShaftComponent component, AssociatedData associatedData)
+        {
+            return component == associatedData.Component &&
+                   entity.Get<LightComponent>() == associatedData.LightComponent;
+        }
+
+        /// <inheritdoc />
         public override void Update(GameTime time)
         {
-            base.Update(time);
-
             activeLightShafts.Clear();
             foreach (var pair in ComponentDatas)
             {
                 if (!pair.Key.Enabled)
                     continue;
 
-                var entity = pair.Key.Entity;
-                var light = entity.Get<LightComponent>();
-                if (light == null)
-                    continue;
+                var lightShaft = pair.Value;
+                var light = lightShaft.LightComponent;
 
-                var directLight = light.Type as IDirectLight;
+                var directLight = light?.Type as IDirectLight;
                 if (directLight == null)
                     continue;
 
-                var lightShaft = pair.Value;
-                lightShaft.Component = pair.Key;
-                lightShaft.LightComponent = light;
                 lightShaft.Light = directLight;
                 activeLightShafts.Add(lightShaft);
             }
         }
 
-        public class Data
+        public class AssociatedData
         {
             public LightShaftComponent Component;
             public LightComponent LightComponent;

@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         public ResumeManager(IServiceRegistry services)
         {
-            GraphicsDevice = services.GetServiceAs<IGraphicsDeviceService>().GraphicsDevice;
+            GraphicsDevice = services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
         }
 
         public void OnRender()

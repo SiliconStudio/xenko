@@ -2,7 +2,6 @@
 // See LICENSE.md for full license information.
 
 using SiliconStudio.Assets;
-using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Assets.Effect
@@ -12,8 +11,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
     /// </summary>
     [DataContract("EffectLibrary")]
     [AssetDescription(FileExtension, AlwaysMarkAsRoot = true, AllowArchetype = false)]
-    [Display(900, "Effect library")]
-    public sealed class EffectLogAsset : SourceCodeAsset
+    public sealed partial class EffectLogAsset : SourceCodeAsset
     {
         /// <summary>
         /// The default file name used to store effect compile logs.
