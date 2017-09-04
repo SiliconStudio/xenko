@@ -76,7 +76,7 @@ namespace ParticlesSample
                     // update the filtering mode
                     if (Input.IsKeyPressed(Keys.F1))
                     {
-                        FilteringMode = GameProfilingResults.FpsOnly;
+                        FilteringMode = GameProfilingResults.Fps;
                     }
                     else if (Input.IsKeyPressed(Keys.F2))
                     {
