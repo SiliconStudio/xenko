@@ -38,20 +38,15 @@ namespace SiliconStudio.Core.Diagnostics
         protected override void OnLog([NotNull] ILogMessage logMessage)
         {
             // filter logs with lower level
-
-            // Always log when debugger is attached
-            if (!Debugger.IsAttached &&
+            if (!Debugger.IsAttached && // Always log when debugger is attached
                 (logMessage.Type < LogLevel || LogMode == ConsoleLogMode.None
-                || (!(LogMode == ConsoleLogMode.Auto && Platform.IsRunningDebugAssembly) && LogMode != ConsoleLogMode.Always)))
+                || !(LogMode == ConsoleLogMode.Auto && Platform.IsRunningDebugAssembly) && LogMode != ConsoleLogMode.Always))
             {
                 return;
             }
 
             // Make sure the console is opened when the debugger is not attached
-            if (!Debugger.IsAttached)
-            {
-                EnsureConsole();
-            }
+            EnsureConsole();
 
 #if SILICONSTUDIO_PLATFORM_ANDROID
             const string appliName = "Xenko";
@@ -110,10 +105,8 @@ namespace SiliconStudio.Core.Diagnostics
                     break;
             }
 #endif
-
-#if SILICONSTUDIO_PLATFORM_MONO_MOBILE || SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_UNIX
+            
             if (Debugger.IsAttached)
-#endif
             {
                 // Log the actual message
                 Debug.WriteLine(GetDefaultText(logMessage));
@@ -122,22 +115,20 @@ namespace SiliconStudio.Core.Diagnostics
                     Debug.WriteLine(logMessage);
                 }
             }
-#if SILICONSTUDIO_PLATFORM_MONO_MOBILE || SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_UNIX
-            else
+
+#if !SILICONSTUDIO_PLATFORM_UWP
+            // Log the actual message
+            Console.WriteLine(GetDefaultText(logMessage));
+            if (!string.IsNullOrEmpty(exceptionMsg))
             {
-                // Log the actual message
-                Console.WriteLine(GetDefaultText(logMessage));
-                if (!string.IsNullOrEmpty(exceptionMsg))
-                {
-                    Console.WriteLine(exceptionMsg);
-                }
+                Console.WriteLine(exceptionMsg);
             }
 #endif
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_UNIX
 
             // revert console initial color
-            Console.ForegroundColor = (initialColor);
+            Console.ForegroundColor = initialColor;
 #endif
 #endif // !SILICONSTUDIO_PLATFORM_ANDROID
         }
@@ -148,7 +139,7 @@ namespace SiliconStudio.Core.Diagnostics
 
         private void EnsureConsole()
         {
-            if (Debugger.IsAttached || isConsoleActive || !Platform.IsWindowsDesktop)
+            if (isConsoleActive || !Platform.IsWindowsDesktop)
             {
                 return;
             }
