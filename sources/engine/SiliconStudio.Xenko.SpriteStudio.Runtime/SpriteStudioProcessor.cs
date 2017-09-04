@@ -10,13 +10,8 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 {
-    public class SpriteStudioProcessor : EntityProcessor<SpriteStudioComponent, SpriteStudioComponent>
+    public class SpriteStudioProcessor : EntityProcessor<SpriteStudioComponent>
     {
-        protected override SpriteStudioComponent GenerateComponentData(Entity entity, SpriteStudioComponent component)
-        {
-            return component;
-        }
-
         protected override void OnEntityComponentAdding(Entity entity, SpriteStudioComponent component, SpriteStudioComponent data)
         {
             PrepareNodes(data);

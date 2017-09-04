@@ -101,7 +101,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
             foreach (var entity in entities)
                 SceneSystem.SceneInstance.RootScene.Entities.Add(entity);
 
-            cameraScript = new TestCamera(Services.GetServiceAs<SceneSystem>().GraphicsCompositor);
+            cameraScript = new TestCamera(Services.GetSafeServiceAs<SceneSystem>().GraphicsCompositor);
             CameraComponent = cameraScript.Camera;
             Script.Add(cameraScript);
 

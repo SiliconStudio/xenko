@@ -19,10 +19,11 @@ namespace SiliconStudio.Xenko.Navigation.Processors
     /// </summary>
     public class NavigationProcessor : EntityProcessor<NavigationComponent, NavigationProcessor.AssociatedData>
     {
-        private Dictionary<NavigationMesh, NavigationMeshData> loadedNavigationMeshes = new Dictionary<NavigationMesh, NavigationMeshData>();
+        private readonly Dictionary<NavigationMesh, NavigationMeshData> loadedNavigationMeshes = new Dictionary<NavigationMesh, NavigationMeshData>();
         private DynamicNavigationMeshSystem dynamicNavigationMeshSystem;
         private GameSystemCollection gameSystemCollection;
-        
+
+        /// <inheritdoc />
         public override void Update(GameTime time)
         {
             // Update scene offsets for navigation components
@@ -32,15 +33,17 @@ namespace SiliconStudio.Xenko.Navigation.Processors
             }
         }
 
+        /// <inheritdoc />
         protected override void OnSystemAdd()
         {
-            gameSystemCollection = Services.GetServiceAs<IGameSystemCollection>() as GameSystemCollection;
+            gameSystemCollection = Services.GetService<IGameSystemCollection>() as GameSystemCollection;
             if (gameSystemCollection == null)
                 throw new Exception("NavigationProcessor can not access the game systems collection");
 
             gameSystemCollection.CollectionChanged += GameSystemsOnCollectionChanged;
         }
 
+        /// <inheritdoc />
         protected override void OnSystemRemove()
         {
             if (gameSystemCollection != null)
@@ -54,13 +57,22 @@ namespace SiliconStudio.Xenko.Navigation.Processors
             }
         }
 
+        /// <inheritdoc />
         protected override AssociatedData GenerateComponentData(Entity entity, NavigationComponent component)
         {
-            AssociatedData data = new AssociatedData();
-            data.Component = component;
-            return data;
+            return new AssociatedData
+            {
+                Component = component
+            };
         }
 
+        /// <inheritdoc />
+        protected override bool IsAssociatedDataValid(Entity entity, NavigationComponent component, AssociatedData associatedData)
+        {
+            return component == associatedData.Component;
+        }
+
+        /// <inheritdoc />
         protected override void OnEntityComponentAdding(Entity entity, NavigationComponent component, AssociatedData data)
         {
             UpdateNavigationMesh(data);
@@ -69,6 +81,7 @@ namespace SiliconStudio.Xenko.Navigation.Processors
             data.Component.NavigationMeshChanged += ComponentOnNavigationMeshChanged;
         }
 
+        /// <inheritdoc />
         protected override void OnEntityComponentRemoved(Entity entity, NavigationComponent component, AssociatedData data)
         {
             data.Component.NavigationMeshChanged -= ComponentOnNavigationMeshChanged;
@@ -113,7 +126,7 @@ namespace SiliconStudio.Xenko.Navigation.Processors
                                 continue;
                         }
 
-                        // Either add the tile if it is contained in the new navigation mesh or 
+                        // Either add the tile if it is contained in the new navigation mesh or
                         //  try to remove it if it does not
                         if (newTile != null)
                             loadedGroup.RecastNavigationMesh.AddOrReplaceTile(newTile.Data);
@@ -124,8 +137,8 @@ namespace SiliconStudio.Xenko.Navigation.Processors
                     }
                 }
             }
-            
-            // Update loaded navigation meshes for components that are useing it, 
+
+            // Update loaded navigation meshes for components that are useing it,
             //  in case a group was added
             var componentsToUpdate = ComponentDatas.Values.Where(x => x.Component.NavigationMesh == null).ToArray();
             foreach (var component in componentsToUpdate)
@@ -148,7 +161,7 @@ namespace SiliconStudio.Xenko.Navigation.Processors
                 // Load dynamic navigation mesh when no navigation mesh is specified on the component
                 navigationMeshToLoad = dynamicNavigationMeshSystem?.CurrentNavigationMesh;
             }
-            
+
             NavigationMeshGroupData loadedGroup = Load(navigationMeshToLoad, data.Component.GroupId);
             if (data.LoadedGroup != null)
                 Unload(data.LoadedGroup);

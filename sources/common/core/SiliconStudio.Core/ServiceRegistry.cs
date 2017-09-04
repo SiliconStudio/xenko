@@ -25,8 +25,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Core.Annotations;
 
-// THIS NAMESPACE MUST BE USED FOR 4.5 CORE PROFILE
-
 namespace SiliconStudio.Core
 {
     /// <summary>
@@ -34,18 +32,63 @@ namespace SiliconStudio.Core
     /// </summary>
     public class ServiceRegistry : IServiceRegistry
     {
-        public static PropertyKey<IServiceRegistry> ServiceRegistryKey = new PropertyKey<IServiceRegistry>("ServiceRegistryKey", typeof(IServiceRegistry));
+        public static readonly PropertyKey<IServiceRegistry> ServiceRegistryKey = new PropertyKey<IServiceRegistry>(nameof(ServiceRegistryKey), typeof(IServiceRegistry));
 
         private readonly Dictionary<Type, object> registeredService = new Dictionary<Type, object>();
 
-        #region IServiceRegistry Members
+        /// <inheritdoc />
+        public event EventHandler<ServiceEventArgs> ServiceAdded;
 
-        /// <summary>
-        /// Gets the instance service providing a specified service.
-        /// </summary>
-        /// <param name="type">The type of service.</param>
-        /// <returns>The registered instance of this service.</returns>
-        /// <exception cref="System.ArgumentNullException">type</exception>
+        /// <inheritdoc />
+        public event EventHandler<ServiceEventArgs> ServiceRemoved;
+
+        /// <inheritdoc />
+        public T GetService<T>()
+            where T : class
+        {
+            var type = typeof(T);
+            lock (registeredService)
+            {
+                if (registeredService.ContainsKey(type))
+                    return (T)registeredService[type];
+            }
+
+            return null;
+        }
+
+        /// <inheritdoc />
+        public void AddService<T>(T service)
+            where T : class
+        {
+            if (service == null) throw new ArgumentNullException(nameof(service));
+
+            var type = typeof(T);
+            lock (registeredService)
+            {
+                if (registeredService.ContainsKey(type))
+                    throw new ArgumentException("Service is already registered with this type", nameof(type));
+                registeredService.Add(type, service);
+            }
+            OnServiceAdded(new ServiceEventArgs(type, service));
+        }
+
+        /// <inheritdoc />
+        public void RemoveService<T>()
+            where T : class
+        {
+            var type = typeof(T);
+            object oldService;
+            lock (registeredService)
+            {
+                if (registeredService.TryGetValue(type, out oldService))
+                    registeredService.Remove(type);
+            }
+            if (oldService != null)
+                OnServiceRemoved(new ServiceEventArgs(type, oldService));
+        }
+
+        /// <inheritdoc />
+        [Obsolete("Use the type-safe  generic overload instead.")]
         public object GetService([NotNull] Type type)
         {
             if (type == null)
@@ -60,39 +103,30 @@ namespace SiliconStudio.Core
             return null;
         }
 
-        public event EventHandler<ServiceEventArgs> ServiceAdded;
-
-        public event EventHandler<ServiceEventArgs> ServiceRemoved;
-
-        /// <summary>
-        /// Adds a service to this <see cref="ServiceRegistry"/>.
-        /// </summary>
-        /// <param name="type">The type of service to add.</param>
-        /// <param name="provider">The service provider to add.</param>
-        /// <exception cref="System.ArgumentNullException">type;Service type cannot be null</exception>
-        /// <exception cref="System.ArgumentException">Service is already registered;type</exception>
-        public void AddService([NotNull] Type type, [NotNull] object provider)
+        /// <inheritdoc />
+        [Obsolete("Use the type-safe  generic overload instead.")]
+        public void AddService([NotNull] Type type, [NotNull] object service)
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
 
-            if (provider == null)
-                throw new ArgumentNullException(nameof(provider));
+            if (service == null)
+                throw new ArgumentNullException(nameof(service));
 
-            if (!type.GetTypeInfo().IsAssignableFrom(provider.GetType().GetTypeInfo()))
-                throw new ArgumentException($"Service [{provider.GetType().FullName}] must be assignable to [{type.FullName}]");
+            if (!type.GetTypeInfo().IsAssignableFrom(service.GetType().GetTypeInfo()))
+                throw new ArgumentException($"Service [{service.GetType().FullName}] must be assignable to [{type.FullName}]");
 
             lock (registeredService)
             {
                 if (registeredService.ContainsKey(type))
-                    throw new ArgumentException("Service is already registered", nameof(type));
-                registeredService.Add(type, provider);
+                    throw new ArgumentException("Service is already registered with this type", nameof(type));
+                registeredService.Add(type, service);
             }
-            OnServiceAdded(new ServiceEventArgs(type, provider));
+            OnServiceAdded(new ServiceEventArgs(type, service));
         }
 
-        /// <summary>Removes the object providing a specified service.</summary>
-        /// <param name="type">The type of service.</param>
+        /// <inheritdoc />
+        [Obsolete("Use the type-safe  generic overload instead.")]
         public void RemoveService([NotNull] Type type)
         {
             if (type == null)
@@ -107,8 +141,6 @@ namespace SiliconStudio.Core
             if (oldService != null)
                 OnServiceRemoved(new ServiceEventArgs(type, oldService));
         }
-
-        #endregion
 
         private void OnServiceAdded(ServiceEventArgs e)
         {

@@ -71,8 +71,6 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
 
         public override void Draw(RenderContext context)
         {
-            base.Draw(context);
-
             if (needPositionUpdate)
             {
                 UpdateLightProbePositions();
@@ -81,19 +79,12 @@ namespace SiliconStudio.Xenko.Rendering.LightProbes
 
         protected override void OnEntityComponentAdding(Entity entity, LightProbeComponent component, LightProbeComponent data)
         {
-            base.OnEntityComponentAdding(entity, component, data);
             needPositionUpdate = true;
         }
 
         protected override void OnEntityComponentRemoved(Entity entity, LightProbeComponent component, LightProbeComponent data)
         {
             needPositionUpdate = true;
-            base.OnEntityComponentRemoved(entity, component, data);
-        }
-
-        protected override LightProbeComponent GenerateComponentData(Entity entity, LightProbeComponent component)
-        {
-            return component;
         }
     }
 }

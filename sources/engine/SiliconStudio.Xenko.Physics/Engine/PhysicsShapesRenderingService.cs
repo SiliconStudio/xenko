@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Physics.Engine
 
         public override void Initialize()
         {
-            graphicsDevice = Services.GetServiceAs<IGraphicsDeviceService>().GraphicsDevice;
+            graphicsDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
 
             triggerMaterial = PhysicsDebugShapeMaterial.Create(graphicsDevice, Color.AdjustSaturation(Color.Purple, 0.77f), 1);
             staticMaterial = PhysicsDebugShapeMaterial.Create(graphicsDevice, Color.AdjustSaturation(Color.Red, 0.77f), 1);

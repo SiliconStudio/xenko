@@ -12,14 +12,13 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [DataContract("RenderTexture")]
     [AssetDescription(FileExtension)]
     [AssetContentType(typeof(Texture))]
-    [Display(1058, "Render texture")]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "0.0.0")]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "2.0.0.0", typeof(EmptyAssetUpgrader))]
 #else
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
 #endif
-    public sealed class RenderTextureAsset : Asset
+    public sealed partial class RenderTextureAsset : Asset
     {
         private const string CurrentVersion = "2.0.0.0";
 

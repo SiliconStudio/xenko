@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum.Presenters
 {
@@ -17,7 +16,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         bool CanAttach([NotNull] INodePresenter nodePresenter);
 
-        bool CanExecute(IReadOnlyCollection<INodePresenter> nodePresenters, object parameter);
+        bool CanExecute([NotNull] IReadOnlyCollection<INodePresenter> nodePresenters, object parameter);
 
         Task<object> PreExecute([NotNull] IReadOnlyCollection<INodePresenter> nodePresenters, object parameter);
 

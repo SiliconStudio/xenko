@@ -27,6 +27,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Games.Time;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Games
@@ -108,12 +109,12 @@ namespace SiliconStudio.Xenko.Games
 
             // Content manager
             Content = new ContentManager(Services);
-            Services.AddService(typeof(IContentManager), Content);
-            Services.AddService(typeof(ContentManager), Content);
+            Services.AddService<IContentManager>(Content);
+            Services.AddService(Content);
 
             LaunchParameters = new LaunchParameters();
             GameSystems = new GameSystemCollection(Services);
-            Services.AddService(typeof(IGameSystemCollection), GameSystems);
+            Services.AddService<IGameSystemCollection>(GameSystems);
 
             // Create Platform
             gamePlatform = GamePlatform.Create(this);
@@ -123,9 +124,9 @@ namespace SiliconStudio.Xenko.Games
             gamePlatform.WindowCreated += GamePlatformOnWindowCreated;
 
             // Setup registry
-            Services.AddService(typeof(IGame), this);
-            Services.AddService(typeof(IGraphicsDeviceFactory), gamePlatform);
-            Services.AddService(typeof(IGamePlatform), gamePlatform);
+            Services.AddService<IGame>(this);
+            Services.AddService<IGraphicsDeviceFactory>(gamePlatform);
+            Services.AddService<IGamePlatform>(gamePlatform);
 
             IsActive = true;
         }
@@ -298,7 +299,8 @@ namespace SiliconStudio.Xenko.Games
         /// Gets the service container.
         /// </summary>
         /// <value>The service container.</value>
-        public ServiceRegistry Services { get; private set; }
+        [NotNull]
+        public ServiceRegistry Services { get; }
 
         /// <summary>
         /// Gets or sets the target elapsed time.
@@ -330,7 +332,7 @@ namespace SiliconStudio.Xenko.Games
         public string FullPlatformName => gamePlatform.FullName;
 
         public GameState State { get; set; }
-        
+
         #endregion
 
         internal EventHandler<GameUnhandledExceptionEventArgs> UnhandledExceptionInternal
@@ -373,7 +375,7 @@ namespace SiliconStudio.Xenko.Games
                     graphicsDeviceManager.CreateDevice();
 
                     // Gets the graphics device service
-                    graphicsDeviceService = Services.GetService(typeof(IGraphicsDeviceService)) as IGraphicsDeviceService;
+                    graphicsDeviceService = Services.GetService<IGraphicsDeviceService>();
                     if (graphicsDeviceService == null)
                     {
                         throw new InvalidOperationException("No GraphicsDeviceService found");
@@ -436,7 +438,7 @@ namespace SiliconStudio.Xenko.Games
             }
 
             // Gets the graphics device manager
-            graphicsDeviceManager = Services.GetService(typeof(IGraphicsDeviceManager)) as IGraphicsDeviceManager;
+            graphicsDeviceManager = Services.GetService<IGraphicsDeviceManager>();
             if (graphicsDeviceManager == null)
             {
                 throw new InvalidOperationException("No GraphicsDeviceManager found");
@@ -555,7 +557,7 @@ namespace SiliconStudio.Xenko.Games
                 if (IsFixedTimeStep)
                 {
                     // If the rounded TargetElapsedTime is equivalent to current ElapsedAdjustedTime
-                    // then make ElapsedAdjustedTime = TargetElapsedTime. We take the same internal rules as XNA 
+                    // then make ElapsedAdjustedTime = TargetElapsedTime. We take the same internal rules as XNA
                     if (Math.Abs(elapsedAdjustedTime.Ticks - TargetElapsedTime.Ticks) < (TargetElapsedTime.Ticks >> 6))
                     {
                         elapsedAdjustedTime = TargetElapsedTime;
@@ -573,7 +575,7 @@ namespace SiliconStudio.Xenko.Games
                     {
                         updateCount = (int)(accumulatedElapsedGameTime.Ticks / TargetElapsedTime.Ticks);
                     }
-                    
+
                     if (IsDrawDesynchronized)
                     {
                         drawLag = accumulatedElapsedGameTime.Ticks%TargetElapsedTime.Ticks;
@@ -613,7 +615,7 @@ namespace SiliconStudio.Xenko.Games
                 bool beginDrawSuccessful = false;
                 try
                 {
-                    
+
                     beginDrawSuccessful = BeginDraw();
 
                     // Reset the time of the next frame
@@ -703,7 +705,7 @@ namespace SiliconStudio.Xenko.Games
             if (GraphicsContext == null)
             {
                 GraphicsContext = new GraphicsContext(GraphicsDevice);
-                Services.AddService(typeof(GraphicsContext), GraphicsContext);
+                Services.AddService(GraphicsContext);
             }
             else
             {
@@ -979,7 +981,7 @@ namespace SiliconStudio.Xenko.Games
         private void SetupGraphicsDeviceEvents()
         {
             // Find the IGraphicsDeviceSerive.
-            graphicsDeviceService = Services.GetService(typeof(IGraphicsDeviceService)) as IGraphicsDeviceService;
+            graphicsDeviceService = Services.GetService<IGraphicsDeviceService>();
 
             // If there is no graphics device service, don't go further as the whole Game would not work
             if (graphicsDeviceService == null)
