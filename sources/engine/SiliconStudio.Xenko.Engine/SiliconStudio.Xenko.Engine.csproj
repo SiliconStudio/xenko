@@ -132,7 +132,7 @@
     <Compile Include="Engine\StartupScript.cs" />
     <Compile Include="Engine\TransformLink.cs" />
     <Compile Include="Engine\TransformOperation.cs" />
-    <Compile Include="Profiling\DebugConsoleSystem.cs" />
+    <Compile Include="Profiling\DebugTextSystem.cs" />
     <Compile Include="Profiling\GameProfilerSystem.cs" />
     <Compile Include="Profiling\GcProfiling.cs" />
     <Compile Include="Rendering\ActiveRenderStage.cs" />

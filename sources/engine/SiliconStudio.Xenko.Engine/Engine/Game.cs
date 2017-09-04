@@ -106,7 +106,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Gets the game profiler system
         /// </summary>
-        public DebugConsoleSystem DebugConsoleSystem { get; }
+        public DebugTextSystem DebugTextSystem { get; }
 
         /// <summary>
         /// Gets the game profiler system
@@ -217,8 +217,8 @@ namespace SiliconStudio.Xenko.Engine
             SpriteAnimation = new SpriteAnimationSystem(Services);
             Services.AddService(SpriteAnimation);
 
-            DebugConsoleSystem = new DebugConsoleSystem(Services);
-            Services.AddService(DebugConsoleSystem);
+            DebugTextSystem = new DebugTextSystem(Services);
+            Services.AddService(DebugTextSystem);
 
             ProfilingSystem = new GameProfilingSystem(Services);
             Services.AddService(ProfilingSystem);
@@ -362,7 +362,7 @@ namespace SiliconStudio.Xenko.Engine
             //Add the sprite animation System
             GameSystems.Add(SpriteAnimation);
 
-            GameSystems.Add(DebugConsoleSystem);
+            GameSystems.Add(DebugTextSystem);
             GameSystems.Add(ProfilingSystem);
 
             EffectSystem = new EffectSystem(Services);

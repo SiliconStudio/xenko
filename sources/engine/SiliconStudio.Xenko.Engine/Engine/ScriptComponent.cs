@@ -67,6 +67,7 @@ namespace SiliconStudio.Xenko.Engine
             Audio = Services.GetSafeServiceAs<AudioSystem>();
             SpriteAnimation = Services.GetSafeServiceAs<SpriteAnimationSystem>();
             GameProfiler = Services.GetSafeServiceAs<GameProfilingSystem>();
+            DebugText = Services.GetSafeServiceAs<DebugTextSystem>();
             Streaming = Services.GetSafeServiceAs<StreamingManager>();
         }
 
@@ -124,6 +125,9 @@ namespace SiliconStudio.Xenko.Engine
 
         [DataMemberIgnore]
         public EffectSystem EffectSystem { get; private set; }
+
+        [DataMemberIgnore]
+        public DebugTextSystem DebugText { get; private set; }
 
         /// <summary>
         /// Gets the streaming system.
