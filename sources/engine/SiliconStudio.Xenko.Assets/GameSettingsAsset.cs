@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Assets
     [AssetDescription(FileExtension, AlwaysMarkAsRoot = true, AllowArchetype = false)]
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
     [AssetContentType(typeof(GameSettings))]
-    [CategoryOrder(1550, "Splash screen")]
+    [CategoryOrder(4050, "Splash screen")]
     [NonIdentifiableCollectionItems]
 #if SILICONSTUDIO_XENKO_SUPPORT_BETA_UPGRADE
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "1.6.1-alpha01")]
@@ -38,9 +38,10 @@ namespace SiliconStudio.Xenko.Assets
 #else
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion, "2.0.0.0")]
 #endif
+    [AssetUpgrader(XenkoConfig.PackageName, "2.0.0.0", "2.1.0.3", typeof(UpgradeAddStreamingSettings))]
     public partial class GameSettingsAsset : Asset
     {
-        private const string CurrentVersion = "2.0.0.0";
+        private const string CurrentVersion = "2.1.0.3";
 
         /// <summary>
         /// The default file extension used by the <see cref="GameSettingsAsset"/>.
@@ -62,17 +63,17 @@ namespace SiliconStudio.Xenko.Assets
         public GraphicsCompositor GraphicsCompositor { get; set; }
 
         /// <userdoc>
-        /// The image (eg company logo) displayed as the splash screen 
+        /// The image (eg company logo) displayed as the splash screen
         /// </userdoc>
         [Display("Texture", "Splash screen")]
-        [DataMember(1600)]
+        [DataMember(5000)]
         public Texture SplashScreenTexture { get; set; }
 
         /// <userdoc>
         /// The color the splash screen fades in on top of
         /// </userdoc>
         [Display("Color", "Splash screen")]
-        [DataMember(1700)]
+        [DataMember(5050)]
         public Color SplashScreenColor { get; set; } = Color.Black;
 
         [DataMember(2000)]
@@ -223,10 +224,20 @@ namespace SiliconStudio.Xenko.Assets
                 settings.BuildSettings = buildSettings;
 
                 var groups = new DynamicYamlArray(new YamlSequenceNode());
-                
+
                 // Agent settings array
                 settings.Groups = groups;
 
+                asset.Defaults.Add(settings);
+            }
+        }
+
+        private class UpgradeAddStreamingSettings : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
+                OverrideUpgraderHint overrideHint)
+            {
+                dynamic settings = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Streaming.StreamingSettings,SiliconStudio.Xenko.Engine" });
                 asset.Defaults.Add(settings);
             }
         }

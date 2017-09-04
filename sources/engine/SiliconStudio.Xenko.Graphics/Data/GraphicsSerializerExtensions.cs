@@ -54,7 +54,18 @@ namespace SiliconStudio.Xenko.Graphics.Data
         {
             var texture = new Texture();
             texture.SetSerializationData(image);
+            return texture;
+        }
 
+        /// <summary>
+        /// Creates a fake <see cref="Texture"/> that will have the given serialized data version.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
+        public static Texture ToSerializableVersion(this TextureSerializationData data)
+        {
+            var texture = new Texture();
+            texture.SetSerializationData(data);
             return texture;
         }
 
@@ -63,10 +74,10 @@ namespace SiliconStudio.Xenko.Graphics.Data
         /// </summary>
         /// <param name="texture">The texture.</param>
         /// <returns></returns>
-        public static Image GetSerializationData(this Texture texture)
+        public static TextureSerializationData GetSerializationData(this Texture texture)
         {
             var attachedReference = AttachedReferenceManager.GetAttachedReference(texture);
-            return (Image)attachedReference?.Data;
+            return (TextureSerializationData)attachedReference?.Data;
         }
 
         /// <summary>
@@ -76,8 +87,18 @@ namespace SiliconStudio.Xenko.Graphics.Data
         /// <param name="image">The image.</param>
         public static void SetSerializationData(this Texture texture, Image image)
         {
+            texture.SetSerializationData(new TextureSerializationData(image));
+        }
+
+        /// <summary>
+        /// Sets the serialized data version of this <see cref="Texture" />.
+        /// </summary>
+        /// <param name="texture">The texture.</param>
+        /// <param name="data">The data.</param>
+        public static void SetSerializationData(this Texture texture, TextureSerializationData data)
+        {
             var attachedReference = AttachedReferenceManager.GetOrCreateAttachedReference(texture);
-            attachedReference.Data = image;
+            attachedReference.Data = data;
         }
     }
 }

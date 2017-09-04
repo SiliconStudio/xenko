@@ -1,26 +1,26 @@
 !SceneAsset
 Id: ad0d044e-2445-4263-abef-fe8eca15268e
-SerializedVersion: {Xenko: 1.10.0-beta03}
+SerializedVersion: {Xenko: 2.1.0.1}
 Tags: []
 ChildrenIds: []
 Offset: {X: 0.0, Y: 0.0, Z: 0.0}
 Hierarchy:
-    RootPartIds:
-        - bfc8465c-94d4-4105-be9f-deb44d402237
-        - 3520494f-a5e8-4963-8623-fab3d7f0a72d
-        - 411f263b-a71b-4b98-8cb0-4a80b06c56cb
-        - 9f055169-c56d-4b19-babf-10fd9a9af96e
-        - a71ff4b6-8e97-4ec9-9302-84c220560ab8
-        - 953fb4e2-1370-4e6b-b391-d66931d928ad
-        - f3ad54c4-872e-4d4e-ab52-7849a74294dd
-        - 34f86ef3-d3af-4d5e-9dbb-3b8c6e7a856c
-        - f4dc5eb7-d675-467a-9324-f2c0cc39a5bd
-        - 1b154418-a1b6-4171-9b4e-a241b8394f41
-        - 09f121c1-a1eb-4cd1-be9a-e53cc183a6fe
-        - ab26af78-e7a6-4246-8eb5-c3c1cd7c83e9
-        - 90f7c7d0-fb74-46f7-baa3-4e048eebc79c
-        - af09f176-6a85-41bd-966c-569ed15b6e28
-        - 3abd9db2-979e-4f5f-a028-9d34307b68c9
+    RootParts:
+        - ref!! bfc8465c-94d4-4105-be9f-deb44d402237
+        - ref!! 3520494f-a5e8-4963-8623-fab3d7f0a72d
+        - ref!! 411f263b-a71b-4b98-8cb0-4a80b06c56cb
+        - ref!! 9f055169-c56d-4b19-babf-10fd9a9af96e
+        - ref!! a71ff4b6-8e97-4ec9-9302-84c220560ab8
+        - ref!! 953fb4e2-1370-4e6b-b391-d66931d928ad
+        - ref!! f3ad54c4-872e-4d4e-ab52-7849a74294dd
+        - ref!! 34f86ef3-d3af-4d5e-9dbb-3b8c6e7a856c
+        - ref!! f4dc5eb7-d675-467a-9324-f2c0cc39a5bd
+        - ref!! 1b154418-a1b6-4171-9b4e-a241b8394f41
+        - ref!! 09f121c1-a1eb-4cd1-be9a-e53cc183a6fe
+        - ref!! ab26af78-e7a6-4246-8eb5-c3c1cd7c83e9
+        - ref!! 90f7c7d0-fb74-46f7-baa3-4e048eebc79c
+        - ref!! af09f176-6a85-41bd-966c-569ed15b6e28
+        - ref!! 3abd9db2-979e-4f5f-a028-9d34307b68c9
     Parts:
         -   Entity:
                 Id: 09f121c1-a1eb-4cd1-be9a-e53cc183a6fe
@@ -35,7 +35,8 @@ Hierarchy:
                     a9ac668c91bd00b210567d35f9b2a0e0: !SiliconStudio.Xenko.Navigation.NavigationBoundingBoxComponent,SiliconStudio.Xenko.Navigation
                         Id: 0d236985-b94f-4e47-b71a-513cc63fbb1e
                         Size: {X: 2.5, Y: 2.5, Z: 2.5}
-        -   Entity:
+        -   Folder: null
+            Entity:
                 Id: 1b154418-a1b6-4171-9b4e-a241b8394f41
                 Name: B
                 Components:
@@ -73,7 +74,6 @@ Hierarchy:
                         Id: 5c19e611-6400-42e5-a570-55488a7f9e84
                         NavigationMesh: 4c2a6d1a-b9ff-4c90-8f25-c215bb91fbdc:Static
                         GroupId: cccfde63-cea2-4113-8a11-a07cc6d7f36e
-            Folder: null
         -   Entity:
                 Id: 34f86ef3-d3af-4d5e-9dbb-3b8c6e7a856c
                 Name: Camera
@@ -89,7 +89,7 @@ Hierarchy:
                         Name: null
                         Projection: Perspective
                         OrthographicSize: 4.4
-                        Slot: {Index: 0}
+                        Slot: 4ae58204-4085-4921-ae0d-2196ea09e443
         -   Entity:
                 Id: 3520494f-a5e8-4963-8623-fab3d7f0a72d
                 Name: Directional light
@@ -112,7 +112,8 @@ Hierarchy:
                                 PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic {}
                                 BiasParameters: {}
                         Intensity: 3.0
-        -   Entity:
+        -   Folder: null
+            Entity:
                 Id: 3abd9db2-979e-4f5f-a028-9d34307b68c9
                 Name: Obstacle
                 Components:
@@ -141,7 +142,6 @@ Hierarchy:
                                 Size: {X: 1.0, Y: 1.0, Z: 1.0}
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-            Folder: null
         -   Entity:
                 Id: 411f263b-a71b-4b98-8cb0-4a80b06c56cb
                 Name: Ambient light
@@ -157,7 +157,8 @@ Hierarchy:
                         Type: !LightAmbient
                             Color: !ColorRgbProvider
                                 Value: {R: 1.0, G: 1.0, B: 1.0}
-        -   Entity:
+        -   Folder: null
+            Entity:
                 Id: 90f7c7d0-fb74-46f7-baa3-4e048eebc79c
                 Name: Obstacle
                 Components:
@@ -186,8 +187,8 @@ Hierarchy:
                                 Size: {X: 1.0, Y: 1.0, Z: 1.0}
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-            Folder: null
-        -   Entity:
+        -   Folder: Walls
+            Entity:
                 Id: 953fb4e2-1370-4e6b-b391-d66931d928ad
                 Name: Cube
                 Components:
@@ -216,8 +217,8 @@ Hierarchy:
                         Id: 4ae75e0b-fcb3-4b0d-88a6-af94f62364b5
                         Model: 9672dcba-148d-47ab-9af3-9696910c496d:Cube
                         Materials: {}
-            Folder: Walls
-        -   Entity:
+        -   Folder: Walls
+            Entity:
                 Id: 9f055169-c56d-4b19-babf-10fd9a9af96e
                 Name: Cube
                 Components:
@@ -246,8 +247,8 @@ Hierarchy:
                         Id: 433d3476-c31e-43bd-85de-3b9890d207cf
                         Model: 9672dcba-148d-47ab-9af3-9696910c496d:Cube
                         Materials: {}
-            Folder: Walls
-        -   Entity:
+        -   Folder: Walls
+            Entity:
                 Id: a71ff4b6-8e97-4ec9-9302-84c220560ab8
                 Name: Cube
                 Components:
@@ -276,7 +277,6 @@ Hierarchy:
                         Id: 693f851e-8612-47d3-b791-cfacfddcc51e
                         Model: 9672dcba-148d-47ab-9af3-9696910c496d:Cube
                         Materials: {}
-            Folder: Walls
         -   Entity:
                 Id: ab26af78-e7a6-4246-8eb5-c3c1cd7c83e9
                 Name: Obstacle
@@ -306,7 +306,8 @@ Hierarchy:
                                 Size: {X: 1.0, Y: 1.0, Z: 1.0}
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-        -   Entity:
+        -   Folder: null
+            Entity:
                 Id: af09f176-6a85-41bd-966c-569ed15b6e28
                 Name: Obstacle
                 Components:
@@ -335,7 +336,6 @@ Hierarchy:
                                 Size: {X: 1.0, Y: 1.0, Z: 1.0}
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-            Folder: null
         -   Entity:
                 Id: bfc8465c-94d4-4105-be9f-deb44d402237
                 Name: Floor
@@ -363,7 +363,8 @@ Hierarchy:
                             768409bd4922b7825cc4ff1caa5bcd0c: !StaticPlaneColliderShapeDesc
                                 Normal: {X: 0.0, Y: 1.0, Z: 0.0}
                                 Offset: 0.0
-        -   Entity:
+        -   Folder: Walls
+            Entity:
                 Id: f3ad54c4-872e-4d4e-ab52-7849a74294dd
                 Name: Cube
                 Components:
@@ -392,7 +393,6 @@ Hierarchy:
                         Id: 2d35e192-dfb5-4155-ad28-416bfda1f8ca
                         Model: 9672dcba-148d-47ab-9af3-9696910c496d:Cube
                         Materials: {}
-            Folder: Walls
         -   Entity:
                 Id: f4dc5eb7-d675-467a-9324-f2c0cc39a5bd
                 Name: A

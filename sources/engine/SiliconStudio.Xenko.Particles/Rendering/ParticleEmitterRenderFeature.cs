@@ -294,6 +294,13 @@ namespace SiliconStudio.Xenko.Particles.Rendering
         {
             var commandList = context.CommandList;
 
+            // register all texture usage
+            foreach (var renderObject in RenderObjects)
+            {
+                var renderParticleEmitter = (RenderParticleEmitter)renderObject;
+                Context.StreamingManager?.StreamResources(renderParticleEmitter.ParticleEmitter.Material.Parameters);
+            }
+
             // Per view - this code was moved here from Prepare(...) so that we can apply the correct Viewport
             {
                 var view = renderView;

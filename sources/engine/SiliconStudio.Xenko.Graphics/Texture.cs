@@ -24,6 +24,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.ReferenceCounting;
@@ -39,6 +40,7 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     [ReferenceSerializer, DataSerializerGlobal(typeof(ReferenceSerializer<Texture>), Profile = "Content")]
     [ContentSerializer(typeof(TextureContentSerializer))]
+    [ContentSerializer(typeof(TextureImageSerializer))]
     [DebuggerDisplay("Texture {ViewWidth}x{ViewHeight}x{ViewDepth} {Format} ({ViewFlags})")]
     [DataSerializer(typeof(TextureSerializer))]
     public sealed partial class Texture : GraphicsResource
@@ -47,6 +49,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private TextureDescription textureDescription;
         private TextureViewDescription textureViewDescription;
+        private Size3? fullQualitySize;
 
         /// <summary>
         /// Common description for the original texture. See remarks.
@@ -352,28 +355,31 @@ namespace SiliconStudio.Xenko.Graphics
         /// Gets the size of this texture.
         /// </summary>
         /// <value>The size.</value>
-        public Size3 Size
+        public Size3 Size =>new Size3(ViewWidth, ViewHeight, ViewDepth);
+        
+        /// <summary>
+        /// When texture streaming is activated, the size of the texture when loaded at full quality.
+        /// </summary>
+        public Size3 FullQualitySize
         {
-            get
-            {
-                return new Size3(ViewWidth, ViewHeight, ViewDepth);
-            }
+            get => fullQualitySize ?? Size;
+            internal set => fullQualitySize = value;
         }
 
-        /// <summary>
+        /// <summary> 
         /// The width stride in bytes (number of bytes per row).
         /// </summary>
         internal int RowStride { get; private set; }
 
         /// <summary>
-        /// The depth stride in bytes (number of bytes per depth slice).
-        /// </summary>
-        internal int DepthStride { get; private set; }
-
-        /// <summary>
         /// The underlying parent texture (if this is a view).
         /// </summary>
         internal Texture ParentTexture { get; private set; }
+
+        /// <summary>
+        /// Returns the total memory allocated by the texture in bytes.
+        /// </summary>
+        internal int SizeInBytes { get; private set; }
 
         private MipMapDescription[] mipmapDescriptions;
 
@@ -432,8 +438,8 @@ namespace SiliconStudio.Xenko.Graphics
             textureViewDescription = viewDescription;
             IsBlockCompressed = description.Format.IsCompressed();
             RowStride = ComputeRowPitch(0);
-            DepthStride = RowStride * this.Height;
             mipmapDescriptions = Image.CalculateMipMapDescription(description);
+            SizeInBytes = ArraySize * mipmapDescriptions?.Sum(desc => desc.MipmapSize) ?? 0;
 
             ViewWidth = Math.Max(1, Width >> MipLevel);
             ViewHeight = Math.Max(1, Height >> MipLevel);
@@ -467,6 +473,21 @@ namespace SiliconStudio.Xenko.Graphics
             return this;
         }
 
+        /// <summary>
+        /// Releases the texture data.
+        /// </summary>
+        public void ReleaseData()
+        {
+            // Release GPU data
+            OnDestroyed();
+
+            // Clean description
+            textureDescription = new TextureDescription();
+            textureViewDescription = new TextureViewDescription();
+            ViewWidth = ViewHeight = ViewDepth = 0;
+            SizeInBytes = 0;
+            mipmapDescriptions = null;
+        }
 
         /// <summary>
         /// Gets a view on this texture for a particular <see cref="ViewType" />, array index (or zIndex for Texture3D), and mipmap index.
@@ -1139,6 +1160,36 @@ namespace SiliconStudio.Xenko.Graphics
             if (Utilities.SizeOf(textureData) != (slicePitch * depth)) throw new ArgumentException("Invalid size for Image");
 
             return new DataBox(fixedPointer, rowPitch, slicePitch);
+        }
+
+        /// <summary>
+        /// Swaps the texture internal data with the other texture.
+        /// </summary>
+        /// <param name="other">The other texture.</param>
+        internal void Swap(Texture other)
+        {
+            Utilities.Swap(ref textureDescription, ref other.textureDescription);
+            Utilities.Swap(ref textureViewDescription, ref other.textureViewDescription);
+            Utilities.Swap(ref mipmapDescriptions, ref other.mipmapDescriptions);
+            Utilities.Swap(ref fullQualitySize, ref other.fullQualitySize);
+            //
+            var temp = ViewWidth;
+            ViewWidth = other.ViewWidth;
+            other.ViewWidth = temp;
+            //
+            temp = ViewHeight;
+            ViewHeight = other.ViewHeight;
+            other.ViewHeight = temp;
+            //
+            temp = ViewDepth;
+            ViewDepth = other.ViewDepth;
+            other.ViewDepth = temp;
+            //
+            temp = SizeInBytes;
+            SizeInBytes= other.SizeInBytes;
+            other.SizeInBytes = temp;
+            //
+            SwapInternal(other);
         }
 
         internal void GetViewSliceBounds(ViewType viewType, ref int arrayOrDepthIndex, ref int mipIndex, out int arrayOrDepthCount, out int mipCount)

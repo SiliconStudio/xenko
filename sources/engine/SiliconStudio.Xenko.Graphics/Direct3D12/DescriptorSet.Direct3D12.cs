@@ -75,6 +75,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="shaderResourceView">The shader resource view.</param>
         public void SetShaderResourceView(int slot, GraphicsResource shaderResourceView)
         {
+            if (shaderResourceView.NativeShaderResourceView.Ptr == PointerSize.Zero)
+                return;
             Device.NativeDevice.CopyDescriptorsSimple(1, SrvStart + BindingOffsets[slot], shaderResourceView.NativeShaderResourceView, DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView);
         }
 

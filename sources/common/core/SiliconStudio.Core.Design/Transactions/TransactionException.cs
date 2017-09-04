@@ -5,7 +5,7 @@ using System;
 namespace SiliconStudio.Core.Transactions
 {
     /// <summary>
-    /// An exception triggered when an invalid operation related to a transaction stack occurs. 
+    /// An exception triggered when an invalid operation related to a transaction stack occurs.
     /// </summary>
     public class TransactionException : InvalidOperationException
     {

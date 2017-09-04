@@ -8,7 +8,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.11.1.2
+            Version: 2.0.0.2
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -89,6 +89,7 @@ RootAssets:
     - 2615a072-845e-4d15-a19b-aebf612e432c:DynamicFonts/Arial20ClearType
     - 2fba8d24-2510-463f-b5d0-af0ad5b1da80:DynamicFonts/HanSans13
     - 37849a2b-82f1-4e4b-9ef6-680331c5fa87:PrecompiledFonts/TestBitmapFont
+    - 3f2cf820-59a9-4103-a5af-46711013369f:GraphicsCompositor
     - 4c2284c7-4de2-4235-906a-af7158817325:ImageTypes/gifImage
     - 54bf2894-2a2c-477e-be9c-2a88d265e739:DynamicFonts/MicrosoftSansSerif13
     - 5875a604-ea72-4efb-8d1b-dcdbf2f324b5:StaticFonts/Arial18

@@ -52,6 +52,28 @@ namespace SiliconStudio.Xenko.Graphics
             return device.Features.CurrentProfile >= GraphicsProfile.Level_11_0;
         }
 
+        internal void SwapInternal(Texture other)
+        {
+            var deviceChild = NativeDeviceChild;
+            NativeDeviceChild = other.NativeDeviceChild;
+            other.NativeDeviceChild = deviceChild;
+            //
+            var srv = NativeShaderResourceView;
+            NativeShaderResourceView = other.NativeShaderResourceView;
+            other.NativeShaderResourceView = srv;
+            //
+            var uav = NativeUnorderedAccessView;
+            NativeUnorderedAccessView = other.NativeUnorderedAccessView;
+            other.NativeUnorderedAccessView = uav;
+            //
+            Utilities.Swap(ref StagingFenceValue, ref other.StagingFenceValue);
+            Utilities.Swap(ref StagingBuilder, ref other.StagingBuilder);
+            Utilities.Swap(ref NativeResourceState, ref other.NativeResourceState);
+            Utilities.Swap(ref NativeRenderTargetView, ref other.NativeRenderTargetView);
+            Utilities.Swap(ref NativeDepthStencilView, ref other.NativeDepthStencilView);
+            Utilities.Swap(ref HasStencil, ref other.HasStencil);
+        }
+
         /// <summary>
         /// Initializes from a native SharpDX.Texture
         /// </summary>
@@ -163,7 +185,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                 // TODO D3D12 move that to a global allocator in bigger committed resources
                 NativeDeviceChild = GraphicsDevice.NativeDevice.CreateCommittedResource(new HeapProperties(heapType), HeapFlags.None, nativeDescription, currentResourceState, clearValue);
-                GraphicsDevice.TextureMemory += (Depth*DepthStride) / (float)0x100000;
+                GraphicsDevice.RegisterTextureMemoryUsage(SizeInBytes);
 
                 if (hasInitData)
                 {
@@ -234,7 +256,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
             else if(GraphicsDevice != null)
             {
-                GraphicsDevice.TextureMemory -= (Depth*DepthStride) / (float)0x100000;
+                GraphicsDevice.RegisterTextureMemoryUsage(-SizeInBytes);
             }
 
             base.OnDestroyed();
@@ -254,7 +276,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (ParentTexture == null && GraphicsDevice != null)
             {
-                GraphicsDevice.TextureMemory -= (Depth * DepthStride)/(float)0x100000;
+                GraphicsDevice.RegisterTextureMemoryUsage(-SizeInBytes);
             }
 
             InitializeFromImpl();

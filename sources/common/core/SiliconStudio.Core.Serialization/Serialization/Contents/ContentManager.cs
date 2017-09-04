@@ -13,6 +13,7 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Storage;
+using SiliconStudio.Core.Streaming;
 
 namespace SiliconStudio.Core.Serialization.Contents
 {
@@ -26,6 +27,8 @@ namespace SiliconStudio.Core.Serialization.Contents
         public static DatabaseFileProvider FileProvider => GetFileProvider?.Invoke();
 
         public static Func<DatabaseFileProvider> GetFileProvider { get; set; }
+
+        private IServiceRegistry services;
 
         public ContentSerializer Serializer { get; }
 
@@ -48,6 +51,7 @@ namespace SiliconStudio.Core.Serialization.Contents
             Serializer = new ContentSerializer();
             if (services != null)
             {
+				this.services = services;
                 Serializer.SerializerContextTags.Set(ServiceRegistry.ServiceRegistryKey, services);
             }
         }
@@ -57,12 +61,13 @@ namespace SiliconStudio.Core.Serialization.Contents
         /// </summary>
         /// <param name="url">The URL.</param>
         /// <param name="asset">The asset.</param>
+        /// <param name="storageType">The custom storage type to use. Use null as default.</param>
         /// <exception cref="System.ArgumentNullException">
         /// url
         /// or
         /// asset
         /// </exception>
-        public void Save(string url, object asset)
+        public void Save(string url, object asset, Type storageType = null)
         {
             if (url == null) throw new ArgumentNullException(nameof(url));
             if (asset == null) throw new ArgumentNullException(nameof(asset));
@@ -71,7 +76,7 @@ namespace SiliconStudio.Core.Serialization.Contents
             {
                 using (var profile = Profiler.Begin(ContentProfilingKeys.ContentSave))
                 {
-                    SerializeObject(url, asset, true);
+                    SerializeObject(url, asset, true, storageType);
                 }
             }
         }
@@ -459,6 +464,13 @@ namespace SiliconStudio.Core.Serialization.Contents
                     IncrementReference(reference, isRoot);
                 }
 
+                // Check if need to fully stream resource
+                if (!settings.AllowContentStreaming)
+                {
+                    var streamingManager = services.GetService<IStreamingManager>();
+                    streamingManager?.FullyLoadResource(reference.Object);
+                }
+
                 return reference.Object;
             }
 
@@ -495,7 +507,11 @@ namespace SiliconStudio.Core.Serialization.Contents
                     var serializer = Serializer.GetSerializer(headerObjType, objType);
                     if (serializer == null)
                         throw new InvalidOperationException($"Content serializer for {headerObjType}/{objType} could not be found.");
-                    contentSerializerContext = new ContentSerializerContext(url, ArchiveMode.Deserialize, this) { LoadContentReferences = settings.LoadContentReferences };
+                    contentSerializerContext = new ContentSerializerContext(url, ArchiveMode.Deserialize, this)
+                    {
+                        LoadContentReferences = settings.LoadContentReferences,
+                        AllowContentStreaming = settings.AllowContentStreaming
+                    };
 
                     // Read chunk references
                     if (chunkHeader != null && chunkHeader.OffsetToReferences != -1)
@@ -560,28 +576,30 @@ namespace SiliconStudio.Core.Serialization.Contents
             public readonly string Url;
             public readonly object Object;
             public readonly bool PublicReference;
+            public readonly Type StorageType;
 
-            public SerializeOperation(string url, object obj, bool publicReference)
+            public SerializeOperation(string url, object obj, bool publicReference, Type storageType = null)
             {
                 Url = url;
                 Object = obj;
                 PublicReference = publicReference;
+                StorageType = storageType;
             }
         }
 
-        private void SerializeObject(string url, object obj, bool publicReference)
+        private void SerializeObject(string url, object obj, bool publicReference, Type storageType)
         {
             var serializeOperations = new Queue<SerializeOperation>();
-            serializeOperations.Enqueue(new SerializeOperation(url, obj, publicReference));
+            serializeOperations.Enqueue(new SerializeOperation(url, obj, publicReference, storageType));
 
             while (serializeOperations.Count > 0)
             {
                 var serializeOperation = serializeOperations.Dequeue();
-                SerializeObject(serializeOperations, serializeOperation.Url, serializeOperation.Object, serializeOperation.PublicReference);
+                SerializeObject(serializeOperations, serializeOperation.Url, serializeOperation.Object, serializeOperation.PublicReference, serializeOperation.StorageType);
             }
         }
 
-        private void SerializeObject(Queue<SerializeOperation> serializeOperations, string url, object obj, bool publicReference)
+        private void SerializeObject(Queue<SerializeOperation> serializeOperations, string url, object obj, bool publicReference, Type storageType = null)
         {
             // Don't create context in case we don't want to serialize referenced objects
             //if (!SerializeReferencedObjects && obj != RootObject)
@@ -592,7 +610,7 @@ namespace SiliconStudio.Core.Serialization.Contents
             if (LoadedAssetReferences.ContainsKey(obj))
                 return;
 
-            var serializer = Serializer.GetSerializer(null, obj.GetType());
+            var serializer = Serializer.GetSerializer(storageType, obj.GetType());
             if (serializer == null)
                 throw new InvalidOperationException($"Content serializer for {obj.GetType()} could not be found.");
 

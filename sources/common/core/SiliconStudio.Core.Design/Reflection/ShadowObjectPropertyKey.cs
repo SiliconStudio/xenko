@@ -1,6 +1,7 @@
 // Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.Reflection
 {
@@ -17,7 +18,7 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <param name="item1">The first part of this key. Cannot be null</param>
         /// <param name="copyValueOnClone">Indicate whether this shadow object property should be copied when the host object is cloned.</param>
-        public ShadowObjectPropertyKey(object item1, bool copyValueOnClone) : this()
+        public ShadowObjectPropertyKey([NotNull] object item1, bool copyValueOnClone) : this()
         {
             if (item1 == null) throw new ArgumentNullException(nameof(item1));
             Item1 = item1;
@@ -30,7 +31,7 @@ namespace SiliconStudio.Core.Reflection
         /// <param name="item1">The first part of this key. Cannot be null</param>
         /// <param name="item2">The second part of this key. Can be null</param>
         /// <param name="copyValueOnClone">Indicate whether this shadow object property should be copied when the host object is cloned.</param>
-        public ShadowObjectPropertyKey(object item1, object item2, bool copyValueOnClone)
+        public ShadowObjectPropertyKey([NotNull] object item1, object item2, bool copyValueOnClone)
         {
             if (item1 == null) throw new ArgumentNullException(nameof(item1));
             Item1 = item1;
@@ -68,7 +69,7 @@ namespace SiliconStudio.Core.Reflection
         {
             unchecked
             {
-                return ((Item1 != null ? Item1.GetHashCode() : 0) * 397) ^ (Item2 != null ? Item2.GetHashCode() : 0);
+                return ((Item1?.GetHashCode() ?? 0) * 397) ^ (Item2?.GetHashCode() ?? 0);
             }
         }
 

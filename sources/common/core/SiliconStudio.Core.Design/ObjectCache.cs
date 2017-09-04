@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core
 {
@@ -65,7 +66,8 @@ namespace SiliconStudio.Core
         /// </summary>
         /// <param name="key">The key of the item to look for.</param>
         /// <returns>The object corresponding to the given key if it's available in the cache, <c>Null</c> otherwise.</returns>
-        public TValue TryGet(TKey key)
+        [CanBeNull]
+        public TValue TryGet([NotNull] TKey key)
         {
             lock (objectLock)
             {
@@ -91,7 +93,7 @@ namespace SiliconStudio.Core
         /// </summary>
         /// <param name="key">The key of the object.</param>
         /// <param name="value">The object to cache.</param>
-        public void Cache(TKey key, TValue value)
+        public void Cache([NotNull] TKey key, TValue value)
         {
             lock (objectLock)
             {
@@ -99,7 +101,7 @@ namespace SiliconStudio.Core
                 ShrinkCache(1);
                 // Add the object to the cache
                 cache.Add(key, value);
-                // Make an access on it to set it as the most recently accessed object. 
+                // Make an access on it to set it as the most recently accessed object.
                 TryGet(key);
             }
         }

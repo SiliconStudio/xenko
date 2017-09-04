@@ -2,9 +2,9 @@
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
@@ -14,7 +14,8 @@ namespace SiliconStudio.Core.Settings
     [YamlSerializerFactory(SettingsProfileSerializer.YamlProfile)]
     internal class SettingsDictionarySerializer : DictionarySerializer
     {
-        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
+        [CanBeNull]
+        public override IYamlSerializable TryCreate(SerializerContext context, [NotNull] ITypeDescriptor typeDescriptor)
         {
             var type = typeDescriptor.Type;
             return type == typeof(SettingsDictionary) ? this : null;

@@ -4,3 +4,4 @@ SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Source: ../../../Resources/Textures/normalmapLower.png
 Type: !NormalMapTextureType {}
+IsStreamable: false

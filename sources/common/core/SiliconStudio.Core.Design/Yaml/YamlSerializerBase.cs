@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Yaml
@@ -43,7 +44,7 @@ namespace SiliconStudio.Core.Yaml
         {
         }
 
-        private void AssemblyRegistered(object sender, AssemblyRegisteredEventArgs e)
+        private void AssemblyRegistered(object sender, [NotNull] AssemblyRegisteredEventArgs e)
         {
             // Process only our own assemblies
             if (!e.Categories.Contains(AssemblyCommonCategories.Engine))
@@ -58,7 +59,7 @@ namespace SiliconStudio.Core.Yaml
             }
         }
 
-        private void AssemblyUnregistered(object sender, AssemblyRegisteredEventArgs e)
+        private void AssemblyUnregistered(object sender, [NotNull] AssemblyRegisteredEventArgs e)
         {
             // Process only our own assemblies
             if (!e.Categories.Contains(AssemblyCommonCategories.Engine))

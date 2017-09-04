@@ -5,9 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Streaming;
 using ComponentBase = SiliconStudio.Core.ComponentBase;
 using IServiceRegistry = SiliconStudio.Core.IServiceRegistry;
 
@@ -36,6 +38,7 @@ namespace SiliconStudio.Xenko.Rendering
             Effects = services.GetSafeServiceAs<EffectSystem>();
             GraphicsDevice = services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
             Allocator = services.GetSafeServiceAs<GraphicsContext>().Allocator ?? new GraphicsResourceAllocator(GraphicsDevice).DisposeBy(GraphicsDevice);
+            StreamingManager = services.GetService<StreamingManager>();
 
             threadContext = new ThreadLocal<RenderDrawContext>(() =>
             {
@@ -110,6 +113,12 @@ namespace SiliconStudio.Xenko.Rendering
         /// The current render view.
         /// </summary>
         public RenderView RenderView { get; set; }
+
+        /// <summary>
+        /// The streaming manager.
+        /// </summary>
+        [CanBeNull]
+        public StreamingManager StreamingManager { get; set; }
 
         protected override void Destroy()
         {

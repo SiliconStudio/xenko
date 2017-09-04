@@ -1,24 +1,24 @@
-﻿#region License
+#region License
 
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under MIT License. See LICENSE.md for details.
 //
 // SLNTools
-// Copyright (c) 2009 
+// Copyright (c) 2009
 // by Christian Warren
 //
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated 
-// documentation files (the "Software"), to deal in the Software without restriction, including without limitation 
-// the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+// documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
 // to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in all copies or substantial portions
 // of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
-// TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
-// THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
-// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+// TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+// THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+// CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
 #endregion
@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.VisualStudio
 {
@@ -38,7 +39,7 @@ namespace SiliconStudio.Core.VisualStudio
         {
         }
 
-        public SolutionWriter(Stream writer)
+        public SolutionWriter([NotNull] Stream writer)
         {
             this.writer = new StreamWriter(writer, Encoding.UTF8);
         }
@@ -57,7 +58,7 @@ namespace SiliconStudio.Core.VisualStudio
             writer.Flush();
         }
 
-        public void WriteSolutionFile(Solution solution)
+        public void WriteSolutionFile([NotNull] Solution solution)
         {
             lock (writer)
             {
@@ -67,22 +68,22 @@ namespace SiliconStudio.Core.VisualStudio
             }
         }
 
-        private void WriteGlobal(Solution solution)
+        private void WriteGlobal([NotNull] Solution solution)
         {
             writer.WriteLine("Global");
             WriteGlobalSections(solution);
             writer.WriteLine("EndGlobal");
         }
 
-        private void WriteGlobalSections(Solution solution)
+        private void WriteGlobalSections([NotNull] Solution solution)
         {
-            foreach (Section globalSection in solution.GlobalSections)
+            foreach (var globalSection in solution.GlobalSections)
             {
                 var propertyLines = new List<PropertyItem>(globalSection.Properties);
                 switch (globalSection.Name)
                 {
                     case "NestedProjects":
-                        foreach (Project project in solution.Projects)
+                        foreach (var project in solution.Projects)
                         {
                             if (project.ParentGuid != Guid.Empty)
                             {
@@ -92,13 +93,13 @@ namespace SiliconStudio.Core.VisualStudio
                         break;
 
                     case "ProjectConfigurationPlatforms":
-                        foreach (Project project in solution.Projects)
+                        foreach (var project in solution.Projects)
                         {
-                            foreach (PropertyItem propertyLine in project.PlatformProperties)
+                            foreach (var propertyLine in project.PlatformProperties)
                             {
                                 propertyLines.Add(
                                     new PropertyItem(
-                                        string.Format("{0}.{1}", project.Guid.ToString("B").ToUpperInvariant(), propertyLine.Name),
+                                        $"{project.Guid.ToString("B").ToUpperInvariant()}.{propertyLine.Name}",
                                         propertyLine.Value));
                             }
                         }
@@ -107,16 +108,16 @@ namespace SiliconStudio.Core.VisualStudio
                     default:
                         if (globalSection.Name.EndsWith("Control", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            int index = 1;
-                            foreach (Project project in solution.Projects)
+                            var index = 1;
+                            foreach (var project in solution.Projects)
                             {
                                 if (project.VersionControlProperties.Count > 0)
                                 {
-                                    foreach (PropertyItem propertyLine in project.VersionControlProperties)
+                                    foreach (var propertyLine in project.VersionControlProperties)
                                     {
                                         propertyLines.Add(
                                             new PropertyItem(
-                                                string.Format("{0}{1}", propertyLine.Name, index),
+                                                $"{propertyLine.Name}{index}",
                                                 propertyLine.Value));
                                     }
                                     index++;
@@ -132,7 +133,7 @@ namespace SiliconStudio.Core.VisualStudio
             }
         }
 
-        private void WriteHeader(Solution solution)
+        private void WriteHeader([NotNull] Solution solution)
         {
             // If the header doesn't start with an empty line, add one
  	        // (The first line of sln files saved as UTF-8 with BOM must be blank, otherwise Visual Studio Version Selector will not detect VS version correctly.)
@@ -141,27 +142,27 @@ namespace SiliconStudio.Core.VisualStudio
  	            writer.WriteLine();
  	        }
 
-            foreach (string line in solution.Headers)
+            foreach (var line in solution.Headers)
             {
                 writer.WriteLine(line);
             }
 
-            foreach (PropertyItem propertyLine in solution.Properties)
+            foreach (var propertyLine in solution.Properties)
             {
                 writer.WriteLine("{0} = {1}", propertyLine.Name, propertyLine.Value);
             }
         }
 
-        private void WriteProjects(Solution solution)
+        private void WriteProjects([NotNull] Solution solution)
         {
-            foreach (Project project in solution.Projects)
+            foreach (var project in solution.Projects)
             {
                 writer.WriteLine("Project(\"{0}\") = \"{1}\", \"{2}\", \"{3}\"",
                     project.TypeGuid.ToString("B").ToUpperInvariant(),
                     project.Name,
                     project.RelativePath,
                     project.Guid.ToString("B").ToUpperInvariant());
-                foreach (Section projectSection in project.Sections)
+                foreach (var projectSection in project.Sections)
                 {
                     WriteSection(projectSection, projectSection.Properties);
                 }
@@ -169,10 +170,10 @@ namespace SiliconStudio.Core.VisualStudio
             }
         }
 
-        private void WriteSection(Section section, IEnumerable<PropertyItem> propertyLines)
+        private void WriteSection([NotNull] Section section, [NotNull] IEnumerable<PropertyItem> propertyLines)
         {
             writer.WriteLine("\t{0}({1}) = {2}", section.SectionType, section.Name, section.Step);
-            foreach (PropertyItem propertyLine in propertyLines)
+            foreach (var propertyLine in propertyLines)
             {
                 writer.WriteLine("\t\t{0} = {1}", propertyLine.Name, propertyLine.Value);
             }

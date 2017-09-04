@@ -1,9 +1,11 @@
 !GameSettingsAsset
 Id: ff5448d9-1102-418e-980e-a7f15a491e0c
-SerializedVersion: {Xenko: 1.11.0}
+SerializedVersion: {Xenko: 2.1.0.3}
 Tags: []
 DefaultScene: 03c79b44-52a8-4ca4-8a0c-771cad0a3f64:DynamicBarrierTest
 GraphicsCompositor: 3de395a8-4b68-4605-80fc-5185ff5cc872:GraphicsCompositor
+SplashScreenTexture: null
+SplashScreenColor: {R: 0, G: 0, B: 0, A: 255}
 Defaults:
     - !SiliconStudio.Xenko.Graphics.RenderingSettings,SiliconStudio.Xenko.Graphics
         DefaultBackBufferWidth: 800
@@ -41,16 +43,20 @@ Defaults:
                 Name: Small
                 AgentSettings:
                     Height: 0.2
-                    Radius: 0.1
                     MaxClimb: 0.25
                     MaxSlope: {Radians: 0.7853982}
+                    Radius: 0.1
             -   Id: cccfde63-cea2-4113-8a11-a07cc6d7f36e
                 Name: Large
                 AgentSettings:
                     Height: 0.4
-                    Radius: 0.2
                     MaxClimb: 0.25
                     MaxSlope: {Radians: 0.7853982}
+                    Radius: 0.2
+    - !SiliconStudio.Xenko.Streaming.StreamingSettings,SiliconStudio.Xenko.Engine
+        Enabled: false
+        ManagerUpdatesInterval: 0:00:00:00.0330000
+        ResourceLiveTimeout: 0:00:00:08.0000000
 Overrides: []
 PlatformFilters:
     - PowerVR SGX 54[0-9]

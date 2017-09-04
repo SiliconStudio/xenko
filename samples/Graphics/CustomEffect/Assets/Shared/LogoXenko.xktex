@@ -8,3 +8,4 @@ Type: !ColorTextureType
     Alpha: Explicit
     PremultiplyAlpha: false
 GenerateMipmaps: false
+IsStreamable: false

@@ -87,7 +87,7 @@ namespace SiliconStudio.Core.IO
         public string FullPath { get; }
 
         /// <summary>
-        /// Gets a value indicating whether this instance has a <see cref="Drive"/> != null.
+        /// Gets a value indicating whether this instance has a <see cref="GetDrive"/> != null.
         /// </summary>
         /// <value><c>true</c> if this instance has drive; otherwise, <c>false</c>.</value>
         public bool HasDrive => DriveSpan.IsValid;
@@ -136,6 +136,7 @@ namespace SiliconStudio.Core.IO
         /// Gets the drive (contains the ':' if any), can be null.
         /// </summary>
         /// <returns>The drive.</returns>
+        [CanBeNull]
         public string GetDrive()
         {
             return DriveSpan.IsValid ? FullPath.Substring(DriveSpan) : null;
@@ -145,6 +146,7 @@ namespace SiliconStudio.Core.IO
         /// Gets the directory. Can be null. It won't contain the drive if one is specified.
         /// </summary>
         /// <returns>The directory.</returns>
+        [CanBeNull]
         [Obsolete("This method is obsolete. Use GetFullDirectory")]
         public string GetDirectory()
         {
@@ -155,19 +157,13 @@ namespace SiliconStudio.Core.IO
                 {
                     return FullPath.Substring(DirectorySpan);
                 }
-                else
-                {
-                    return FullPath.Substring(DirectorySpan.Start, DirectorySpan.Length - 1);
-                }
+                return FullPath.Substring(DirectorySpan.Start, DirectorySpan.Length - 1);
             }
-            else if (DriveSpan.IsValid & (NameSpan.IsValid || ExtensionSpan.IsValid))
+            if (DriveSpan.IsValid & (NameSpan.IsValid || ExtensionSpan.IsValid))
             {
                 return "/";
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         /// <summary>
@@ -197,6 +193,7 @@ namespace SiliconStudio.Core.IO
         /// the directories and the filename (including its extension).
         /// </summary>
         /// <returns>An IEnumerable of all the components of this instance.</returns>
+        [NotNull]
         public IReadOnlyCollection<string> GetComponents()
         {
             var list = new List<string>(FullPath.Count(pathItem => pathItem == DirectorySeparatorChar) + 1);
@@ -269,7 +266,7 @@ namespace SiliconStudio.Core.IO
             return hashCode;
         }
 
-        private static int ComputeStringHashCodeCaseInsensitive(string text)
+        private static int ComputeStringHashCodeCaseInsensitive([NotNull] string text)
         {
             return text.Aggregate(0, (current, t) => (current*397) ^ char.ToLowerInvariant(t));
         }
@@ -292,6 +289,7 @@ namespace SiliconStudio.Core.IO
         /// Converts this path to a Windows path (/ replaced by \)
         /// </summary>
         /// <returns>A string representation of this path in windows form.</returns>
+        [NotNull]
         public string ToWindowsPath()
         {
             return FullPath.Replace('/', '\\');
@@ -347,7 +345,7 @@ namespace SiliconStudio.Core.IO
         /// </summary>
         /// <param name="anchorDirectory">The anchor directory.</param>
         /// <returns>A relative path of this instance to the anchor directory.</returns>
-        public UPath MakeRelative(UDirectory anchorDirectory)
+        public UPath MakeRelative([NotNull] UDirectory anchorDirectory)
         {
             if (anchorDirectory == null) throw new ArgumentNullException(nameof(anchorDirectory));
 
@@ -433,6 +431,7 @@ namespace SiliconStudio.Core.IO
         /// </summary>
         /// <param name="url">The URL.</param>
         /// <returns>The result of the conversion.</returns>
+        [CanBeNull]
         public static implicit operator string(UPath url)
         {
             return url?.FullPath;
@@ -467,6 +466,7 @@ namespace SiliconStudio.Core.IO
         /// <returns>A normalized path.</returns>
         /// <exception cref="System.ArgumentException">If path is invalid</exception>
         /// <remarks>Unlike <see cref="System.IO.Path" /> , this doesn't make a path absolute to the actual file system.</remarks>
+        [NotNull]
         public static string Normalize(string pathToNormalize)
         {
             string error;
@@ -485,6 +485,7 @@ namespace SiliconStudio.Core.IO
         /// <param name="error">The error or null if no errors.</param>
         /// <returns>A normalized path or null if there is an error.</returns>
         /// <remarks>Unlike <see cref="System.IO.Path" /> , this doesn't make a path absolute to the actual file system.</remarks>
+        [CanBeNull]
         public static StringBuilder Normalize(string pathToNormalize, out string error)
         {
             StringSpan drive;
@@ -515,6 +516,7 @@ namespace SiliconStudio.Core.IO
         /// <param name="error">The error or null if no errors.</param>
         /// <returns>A normalized path or null if there is an error.</returns>
         /// <remarks>Unlike <see cref="System.IO.Path" /> , this doesn't make a path absolute to the actual file system.</remarks>
+        [CanBeNull]
         public static unsafe StringBuilder Normalize(string pathToNormalize, out StringSpan drive, out StringSpan directoryOrFileName, out StringSpan fileName, out string error)
         {
             drive = new StringSpan();
@@ -605,7 +607,7 @@ namespace SiliconStudio.Core.IO
                         error = @"Path must contain a separator '/' or '\' after the volume separator ':'";
                         return null;
                     }
-                    else if ((state == NormalizationState.StartComponent) || (state == NormalizationState.DirectorySeparator))
+                    if ((state == NormalizationState.StartComponent) || (state == NormalizationState.DirectorySeparator))
                     {
                         // We are starting a new component. Check if previous one is either '..' or '.', in which case
                         // we can simplify
@@ -768,6 +770,7 @@ namespace SiliconStudio.Core.IO
             }
         }
 
+        [NotNull]
         private static string Decode(string pathToNormalize, bool isPathDirectory, out StringSpan drive, out StringSpan directory, out StringSpan fileName, out StringSpan fileExtension)
         {
             drive = new StringSpan();

@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
 
             // load the skybox texture from the asset.
             var reference = AttachedReferenceManager.GetAttachedReference(cubemap);
-            var skyboxTexture = context.Content.Load<Texture>(BuildTextureForSkyboxGenerationLocation(reference.Url));
+            var skyboxTexture = context.Content.Load<Texture>(BuildTextureForSkyboxGenerationLocation(reference.Url), ContentManagerLoaderSettings.StreamingDisabled);
             if (skyboxTexture.Dimension != TextureDimension.TextureCube)
             {
                 result.Error("SkyboxGenerator: The texture used as skybox should be a Cubemap.");

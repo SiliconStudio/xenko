@@ -2,13 +2,15 @@
 // See LICENSE.md for full license information.
 
 using System.Text;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Core.Yaml
 {
     public static class PropertyKeyNameResolver
     {
-        public static string ComputePropertyKeyName(ITagTypeResolver tagResolver, PropertyKey propertyKey)
+        [NotNull]
+        public static string ComputePropertyKeyName([NotNull] ITagTypeResolver tagResolver, [NotNull] PropertyKey propertyKey)
         {
             var className = tagResolver.TagFromType(propertyKey.OwnerType);
             var sb = new StringBuilder(className.Length + 1 + propertyKey.Name.Length);

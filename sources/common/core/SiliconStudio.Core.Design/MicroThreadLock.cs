@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.MicroThreading;
 
 namespace SiliconStudio.Core
@@ -35,7 +36,7 @@ namespace SiliconStudio.Core
         public async Task<ISyncLockable> ReserveSyncLock()
         {
             if (isDisposed) throw new ObjectDisposedException(nameof(MicroThreadLock));
-            
+
             // If we already acquired the lock in this thread, we're just re-entering
             if (currentSyncLockThread == Thread.CurrentThread.ManagedThreadId)
             {
@@ -58,6 +59,7 @@ namespace SiliconStudio.Core
         /// </summary>
         /// <returns>A task that completes when the lock is acquired.</returns>
         /// <remarks>This way of acquiring the lock is only valid when in a <see cref="MicroThread"/>.</remarks>
+        [ItemNotNull]
         public async Task<IDisposable> LockAsync()
         {
             if (Scheduler.CurrentMicroThread == null) throw new InvalidOperationException($"Aynchronous lock can only be acquired from a micro-thread. Use {nameof(ReserveSyncLock)}.");
@@ -207,6 +209,7 @@ namespace SiliconStudio.Core
                 MicroThreadLock.currentSyncLock = null;
             }
 
+            [NotNull]
             public IDisposable Lock()
             {
                 if (!locked)

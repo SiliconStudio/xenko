@@ -3,6 +3,7 @@
 
 using System;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 
@@ -29,7 +30,7 @@ namespace SiliconStudio.Core.Yaml
             return false;
         }
 
-        public override object ConvertFrom(ref ObjectContext objectContext, Scalar fromScalar)
+        public override object ConvertFrom(ref ObjectContext objectContext, [NotNull] Scalar fromScalar)
         {
             var lastDot = fromScalar.Value.LastIndexOf('.');
             if (lastDot == -1)
@@ -54,7 +55,7 @@ namespace SiliconStudio.Core.Yaml
             return propertyField.GetValue(null);
         }
 
-        protected override void WriteScalar(ref ObjectContext objectContext, ScalarEventInfo scalar)
+        protected override void WriteScalar(ref ObjectContext objectContext, [NotNull] ScalarEventInfo scalar)
         {
             // TODO: if ParameterKey is written to an object, It will not serialized a tag
             scalar.Tag = null;
@@ -62,6 +63,7 @@ namespace SiliconStudio.Core.Yaml
             base.WriteScalar(ref objectContext, scalar);
         }
 
+        [NotNull]
         public override string ConvertTo(ref ObjectContext objectContext)
         {
             var propertyKey = (PropertyKey)objectContext.Instance;
@@ -69,6 +71,6 @@ namespace SiliconStudio.Core.Yaml
             return PropertyKeyNameResolver.ComputePropertyKeyName(objectContext.SerializerContext, propertyKey);
         }
 
-        
+
     }
 }

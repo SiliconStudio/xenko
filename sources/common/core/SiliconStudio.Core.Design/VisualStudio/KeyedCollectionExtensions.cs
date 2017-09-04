@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Core.VisualStudio
 {
@@ -14,7 +15,7 @@ namespace SiliconStudio.Core.VisualStudio
         /// <typeparam name="TValue">The type of the value.</typeparam>
         /// <param name="collection">The collection to add the value to.</param>
         /// <param name="items">The items to add to the collection.</param>
-        public static void AddRange<TKey, TValue>(this KeyedCollection<TKey, TValue> collection, IEnumerable<TValue> items)
+        public static void AddRange<TKey, TValue>([NotNull] this KeyedCollection<TKey, TValue> collection, IEnumerable<TValue> items)
         {
             if (items != null)
             {

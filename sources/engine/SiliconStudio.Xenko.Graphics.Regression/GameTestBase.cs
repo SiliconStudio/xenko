@@ -67,9 +67,6 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             Services.AddService<IGraphicsDeviceManager>(GraphicsDeviceManager);
             Services.AddService<IGraphicsDeviceService>(GraphicsDeviceManager);
 
-            // Enable profiling
-            //Profiler.EnableAll();
-            
             CurrentVersion = 0;
             StopOnFrameCount = -1;
             AutoLoadDefaultSettings = false;
@@ -82,15 +79,27 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             // get build number
-            int buildNumber;
-            if (ImageTester.ImageTestResultConnection.BuildNumber <= 0 && int.TryParse(Environment.GetEnvironmentVariable("XENKO_BUILD_NUMBER"), out buildNumber))
+            if (ImageTester.ImageTestResultConnection.BuildNumber <= 0 && int.TryParse(Environment.GetEnvironmentVariable("XENKO_BUILD_NUMBER"), out int buildNumber))
                 ImageTester.ImageTestResultConnection.BuildNumber = buildNumber;
 
             // get branch name
             if (string.IsNullOrEmpty(ImageTester.ImageTestResultConnection.BranchName))
                 ImageTester.ImageTestResultConnection.BranchName = Environment.GetEnvironmentVariable("XENKO_BRANCH_NAME") ?? "";
 #endif
+        }
 
+        /// <inheritdoc />
+        protected override void Initialize()
+        {
+            base.Initialize();
+
+            // Disable streaming
+            Streaming.Enabled = false;
+
+            // Enable profiling
+            //Profiler.EnableAll();
+
+            // Disable splash screen
             SceneSystem.SplashScreenEnabled = false;
         }
 

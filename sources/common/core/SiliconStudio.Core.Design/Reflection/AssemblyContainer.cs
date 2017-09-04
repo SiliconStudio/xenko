@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 
@@ -13,10 +14,10 @@ namespace SiliconStudio.Core.Reflection
 {
     public class LoadedAssembly
     {
-        public string Path { get; private set; }
-        public Assembly Assembly { get; private set; }
+        public string Path { get; }
+        public Assembly Assembly { get; }
 
-        public LoadedAssembly(string path, Assembly assembly)
+        public LoadedAssembly([NotNull] string path, [NotNull] Assembly assembly)
         {
             Path = path;
             Assembly = assembly;
@@ -24,6 +25,7 @@ namespace SiliconStudio.Core.Reflection
     }
     public class AssemblyContainer
     {
+        [ItemNotNull, NotNull]
         private readonly List<LoadedAssembly> loadedAssemblies = new List<LoadedAssembly>();
         private readonly Dictionary<string, LoadedAssembly> loadedAssembliesByName = new Dictionary<string, LoadedAssembly>(StringComparer.InvariantCultureIgnoreCase);
         private static readonly string[] KnownAssemblyExtensions = { ".dll", ".exe" };
@@ -52,6 +54,7 @@ namespace SiliconStudio.Core.Reflection
         /// <value>
         /// The loaded assemblies.
         /// </value>
+        [ItemNotNull, NotNull]
         public IList<LoadedAssembly> LoadedAssemblies
         {
             get
@@ -63,9 +66,10 @@ namespace SiliconStudio.Core.Reflection
             }
         }
 
-        public Assembly LoadAssemblyFromPath(string assemblyFullPath, ILogger outputLog = null, List<string> lookupDirectoryList = null)
+        [CanBeNull]
+        public Assembly LoadAssemblyFromPath([NotNull] string assemblyFullPath, ILogger outputLog = null, List<string> lookupDirectoryList = null)
         {
-            if (assemblyFullPath == null) throw new ArgumentNullException("assemblyFullPath");
+            if (assemblyFullPath == null) throw new ArgumentNullException(nameof(assemblyFullPath));
 
             log = new LoggerResult();
 
@@ -103,7 +107,7 @@ namespace SiliconStudio.Core.Reflection
             }
         }
 
-        public bool UnloadAssembly(Assembly assembly)
+        public bool UnloadAssembly([NotNull] Assembly assembly)
         {
             lock (loadedAssemblies)
             {
@@ -117,9 +121,10 @@ namespace SiliconStudio.Core.Reflection
             }
         }
 
-        private Assembly LoadAssemblyByName(string assemblyName)
+        [CanBeNull]
+        private Assembly LoadAssemblyByName([NotNull] string assemblyName)
         {
-            if (assemblyName == null) throw new ArgumentNullException("assemblyName");
+            if (assemblyName == null) throw new ArgumentNullException(nameof(assemblyName));
 
             var assemblyPartialPathList = new List<string>();
             assemblyPartialPathList.AddRange(KnownAssemblyExtensions.Select(knownExtension => assemblyName + knownExtension));
@@ -138,9 +143,10 @@ namespace SiliconStudio.Core.Reflection
             return null;
         }
 
-        private Assembly LoadAssemblyFromPathInternal(string assemblyFullPath)
+        [CanBeNull]
+        private Assembly LoadAssemblyFromPathInternal([NotNull] string assemblyFullPath)
         {
-            if (assemblyFullPath == null) throw new ArgumentNullException("assemblyFullPath");
+            if (assemblyFullPath == null) throw new ArgumentNullException(nameof(assemblyFullPath));
 
             assemblyFullPath = Path.GetFullPath(assemblyFullPath);
 
@@ -219,7 +225,8 @@ namespace SiliconStudio.Core.Reflection
             return null;
         }
 
-        static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        [CanBeNull]
+        private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
             // If it is handled by current thread, then we can handle it here.
             var container = loadingInstance;

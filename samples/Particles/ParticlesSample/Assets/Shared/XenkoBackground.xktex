@@ -7,3 +7,4 @@ IsCompressed: false
 Type: !ColorTextureType
     ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 GenerateMipmaps: false
+IsStreamable: false

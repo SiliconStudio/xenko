@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </summary>
         /// <value>The width.</value>
         /// <userdoc>
-        /// The width of the texture in-game. Depending on the value of the IsSizeInPercentage property, the value might represent either percent (%) or actual pixel.
+        /// The width of the texture in-game. The value is a percentage or the actual pixel size depending on whether Use percentages is enabled.
         /// </userdoc>
         [DataMember(20)]
         [DefaultValue(100.0f)]
@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </summary>
         /// <value>The height.</value>
         /// <userdoc>
-        /// The height of the texture in-game. Depending on the value of the IsSizeInPercentage property, the value might represent either percent (%) or actual pixel.
+        /// The height of the texture in-game. The value is a percentage or the actual pixel size depending on whether Use percentages is enabled.
         /// </userdoc>
         [DataMember(30)]
         [DefaultValue(100.0f)]
@@ -73,18 +73,18 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// the size is in absolute pixels.
         /// </remarks>
         /// <userdoc>
-        /// If checked, the values of the Width and Height properties will represent percent (%). Otherwise they would represent actual pixel.
+        /// Use percentages for width and height instead of actual pixel size
         /// </userdoc>
         [DataMember(40)]
         [DefaultValue(true)]
-        [Display(null, "Size")]
+        [Display("Use percentages", "Size")]
         public bool IsSizeInPercentage { get; set; } = true;
 
         /// <summary>
-        /// If Compressed, the final texture will be compressed to an appropriate format based on the target platform. The final texture size must be a multiple of 4.
+        /// Compress the final texture to a format based on the target platform and usage. The final texture must be a multiple of 4
         /// </summary>
         /// <userdoc>
-        /// If Compressed, the final texture will be compressed to an appropriate format based on the target platform. The final texture size must be a multiple of 4.
+        /// Compress the final texture to a format based on the target platform and usage. The final texture must be a multiple of 4.
         /// </userdoc>
         [DataMember(50)]
         [DefaultValue(true)]
@@ -96,20 +96,31 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </summary>
         /// <value><c>true</c> if mipmaps are generated; otherwise, <c>false</c>.</value>
         /// <userdoc>
-        /// If checked, Mipmaps will be pre-generated for this texture.
+        /// Generate mipmaps for the texture
         /// </userdoc>
         [DataMember(70)]
         [DefaultValue(true)]
-        [Display(null, "Format")]
+        [Display("Generate mipmaps", "Format")]
         public bool GenerateMipmaps { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to stream texture.
+        /// </summary>
+        /// <value><c>true</c> if strema texture; otherwise, <c>false</c>.</value>
+        /// <userdoc>
+        /// Stream the texture dynamically at runtime. This improves performance and loading times. Not recommended for important textures you always want to be loaded, such as splash screens
+        /// </userdoc>
+        [DataMember(80)]
+        [DefaultValue(true)]
+        [Display("Stream")]
+        public bool IsStreamable { get; set; } = true;
 
         /// <summary>
         /// The description of the data contained in the texture. See remarks.
         /// </summary>
         /// <remarks>This description helps the texture compressor to select the appropriate format based on the HW Level and 
         /// platform.</remarks>
-        /// <userdoc>A hint to indicate the usage/type of texture. This hint helps the texture compressor to select the 
-        /// appropriate format based on the HW Level and platform.</userdoc>
+        /// <userdoc>Select Color for textures you want to display as images, Normal map for normal maps, and Greyscale to provide values for other things (eg specular maps, metalness maps, roughness maps)</userdoc>
         [DataMember(60)]
         [NotNull]
         [Display(null, "Format", Expand = ExpandRule.Always)]

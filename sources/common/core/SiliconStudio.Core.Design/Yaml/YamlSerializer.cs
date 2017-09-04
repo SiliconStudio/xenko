@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 using System;
 using System.IO;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
@@ -18,11 +19,11 @@ namespace SiliconStudio.Core.Yaml
 
         public static YamlSerializer Default { get; set; } = new YamlSerializer();
 
-        public T Load<T>(string filePath, ILogger log = null)
+        public T Load<T>([NotNull] string filePath, ILogger log = null)
         {
+            if (filePath == null) throw new ArgumentNullException(nameof(filePath));
             using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                if (filePath == null) throw new ArgumentNullException(nameof(filePath));
                 return (T)Default.Deserialize(stream);
             }
         }
@@ -50,11 +51,13 @@ namespace SiliconStudio.Core.Yaml
             }
         }
 
+        [NotNull]
         protected virtual ISerializerFactorySelector CreateSelector()
         {
             return new ProfileSerializerFactorySelector(YamlSerializerFactoryAttribute.Default);
         }
 
+        [NotNull]
         protected Serializer GetYamlSerializer()
         {
             // Cache serializer to improve performance
@@ -62,7 +65,8 @@ namespace SiliconStudio.Core.Yaml
             return localSerializer;
         }
 
-        private Serializer CreateSerializer(ref Serializer localSerializer)
+        [NotNull]
+        private Serializer CreateSerializer([NotNull] ref Serializer localSerializer)
         {
             // Early exit if already initialized
             if (localSerializer != null)

@@ -1,6 +1,6 @@
 !Texture
 Id: 5148de80-108a-4849-aef6-e9eea98ceffd
-SerializedVersion: {Xenko: 1.11.1.2}
+SerializedVersion: {Xenko: 2.0.0.0}
 Tags: []
 Source: ../../../data/tests/SmallDdsMaskBC3.dds
 Type: !ColorTextureType

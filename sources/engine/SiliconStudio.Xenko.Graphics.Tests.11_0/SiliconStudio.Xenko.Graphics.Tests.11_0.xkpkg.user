@@ -38,6 +38,7 @@ Settings:
                 - Transform
             VisibleNavigationGroups: []
             LightProbeWireframe: false
+            LightProbeBounces: 1
             SceneLoaded: false
         20fb28bd-ee38-4cce-81f7-155a9f85314a:
             CamPosition: {X: 4.0, Y: 4.0, Z: 4.0}
@@ -69,4 +70,5 @@ Settings:
                 - Transform
             VisibleNavigationGroups: []
             LightProbeWireframe: false
+            LightProbeBounces: 1
             SceneLoaded: false

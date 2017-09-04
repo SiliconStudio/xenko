@@ -123,6 +123,18 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         public bool GenerateMipmaps { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to stream texture.
+        /// </summary>
+        /// <value><c>true</c> if strema texture; otherwise, <c>false</c>.</value>
+        /// <userdoc>
+        /// Stream the texture dynamically at runtime. This improves performance and loading times. Not recommended for important textures you always want to be loaded, such as splash screens
+        /// </userdoc>
+        [DataMember(65)]
+        [DefaultValue(false)]
+        [Display("Stream")]
+        public bool IsStreamable { get; set; } = false;
+
+        /// <summary>
         /// Gets or sets a value indicating whether to convert the texture in pre-multiply alpha.
         /// </summary>
         /// <value><c>true</c> to convert the texture in pre-multiply alpha.; otherwise, <c>false</c>.</value>
