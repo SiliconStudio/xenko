@@ -154,7 +154,7 @@ namespace SiliconStudio.Quantum
         /// <param name="memberNode">The member node to evaluate.</param>
         /// <returns>True if the target of the member node should be visited, false otherwise.</returns>
         /// <remarks>This method is invoked only when the given <see cref="IMemberNode"/> contains a target node.</remarks>
-        protected virtual bool ShouldVisitMemberTarget([NotNull] IMemberNode memberNode)
+        protected internal virtual bool ShouldVisitMemberTarget([NotNull] IMemberNode memberNode)
         {
             if (memberNode == null) throw new ArgumentNullException(nameof(memberNode));
             return !visitedNodes.Contains(memberNode.Target);
@@ -167,7 +167,7 @@ namespace SiliconStudio.Quantum
         /// <param name="index">The index of the item to evaluate.</param>
         /// <returns>True if the node of the item corresponding to the given index in the collection contained in the given node should be visited, false otherwise.</returns>
         /// <remarks>This method is invoked only when the given <see cref="IObjectNode"/> contains a collection with items being references.</remarks>
-        protected virtual bool ShouldVisitTargetItem([NotNull] IObjectNode collectionNode, Index index)
+        protected internal virtual bool ShouldVisitTargetItem([NotNull] IObjectNode collectionNode, Index index)
         {
             if (collectionNode == null) throw new ArgumentNullException(nameof(collectionNode));
             var target = collectionNode.IndexedTarget(index);

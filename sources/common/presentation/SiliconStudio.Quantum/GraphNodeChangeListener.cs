@@ -189,7 +189,7 @@ namespace SiliconStudio.Quantum
                             addedNode = reference.TargetNode;
                         }
 
-                        if (addedNode != null)
+                        if (addedNode != null && visitor.ShouldVisitTargetItem(objectNode, index))
                         {
                             var path = new GraphNodePath(e.Node);
                             path.PushIndex(index);

@@ -75,12 +75,12 @@ namespace SiliconStudio.Quantum
                 base.VisitReference(referencer, reference);
             }
 
-            protected override bool ShouldVisitMemberTarget(IMemberNode memberNode)
+            protected internal override bool ShouldVisitMemberTarget(IMemberNode memberNode)
             {
                 return linker.ShouldVisitMemberTarget(memberNode) && base.ShouldVisitMemberTarget(memberNode);
             }
 
-            protected override bool ShouldVisitTargetItem(IObjectNode collectionNode, Index index)
+            protected internal override bool ShouldVisitTargetItem(IObjectNode collectionNode, Index index)
             {
                 return linker.ShouldVisitTargetItem(collectionNode, index) && base.ShouldVisitTargetItem(collectionNode, index);
             }
