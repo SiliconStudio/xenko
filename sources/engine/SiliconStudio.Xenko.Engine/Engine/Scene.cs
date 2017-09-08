@@ -12,8 +12,6 @@ using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Engine
 {
-    public class ChildSceneComponent { }
-
     /// <summary>
     /// A scene.
     /// </summary>
