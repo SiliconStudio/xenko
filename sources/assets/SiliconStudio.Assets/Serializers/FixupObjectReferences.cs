@@ -53,8 +53,7 @@ namespace SiliconStudio.Assets.Serializers
             foreach (var objectReference in objectReferences)
             {
                 var path = objectReference.Key.ToMemberPath(root);
-                IIdentifiable target;
-                if (!referenceTargets.TryGetValue(objectReference.Value, out target))
+                if (!referenceTargets.TryGetValue(objectReference.Value, out IIdentifiable target))
                 {
                     logger?.Warning($"Unable to resolve target object [{objectReference.Value}] of reference [{objectReference.Key}]");
                     if (clearMissingReferences)
