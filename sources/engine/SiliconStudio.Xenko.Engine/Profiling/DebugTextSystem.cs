@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System.Collections.Generic;
@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Profiling
 
         public DebugTextSystem(IServiceRegistry registry) : base(registry)
         {
-            Visible = true;
+            Visible = Platform.IsRunningDebugAssembly;
 
             DrawOrder = 0xffffff;
             UpdateOrder = -100100; //before script
