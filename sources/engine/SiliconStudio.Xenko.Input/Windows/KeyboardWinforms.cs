@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
@@ -24,9 +24,12 @@ namespace SiliconStudio.Xenko.Input
         private bool textInputEnabled;
         private Win32Native.WndProc wndProcDelegate;
 
+        private InputSourceWinforms winformSource;
+
         public KeyboardWinforms(InputSourceWinforms source, Control uiControl)
         {
             Source = source;
+            winformSource = source;
             this.uiControl = uiControl;
 
             richTextBox = new RichTextBox
@@ -124,6 +127,7 @@ namespace SiliconStudio.Xenko.Input
 
                 case Win32Native.WM_KEYDOWN:
                 case Win32Native.WM_SYSKEYDOWN:
+                    winformSource.HandleKeyDown(wParam, lParam);
                     if (richTextBox.TextLength == 0)
                     {
                         var virtualKey = (System.Windows.Forms.Keys)wParam.ToInt64();
@@ -141,6 +145,7 @@ namespace SiliconStudio.Xenko.Input
 
                 case Win32Native.WM_KEYUP:
                 case Win32Native.WM_SYSKEYUP:
+                    winformSource.HandleKeyUp(wParam, lParam);
                     break;
 
                 case Win32Native.WM_IME_COMPOSITION:
