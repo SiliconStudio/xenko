@@ -40,37 +40,36 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         private void ActivateEditTextImpl()
         {
-            var pane = Windows.UI.ViewManagement.InputPane.GetForCurrentView();
-            if (pane.TryShow())
-            {
-                var game = GetGame();
-                if (game == null)
-                    throw new ArgumentException("Provided services need to contain a provider for the IGame interface.");
+            // try to show the virtual keyboard if no hardward keyboard available
+            Windows.UI.ViewManagement.InputPane.GetForCurrentView().TryShow();
+            
+            var game = GetGame();
+            if (game == null)
+                throw new ArgumentException("Provided services need to contain a provider for the IGame interface.");
 
-                // Detach previous EditText (if any)
-                if (activeEditText != null)
-                    activeEditText.IsSelectionActive = false;
-                activeEditText = this;
+            // Detach previous EditText (if any)
+            if (activeEditText != null)
+                activeEditText.IsSelectionActive = false;
+            activeEditText = this;
 
-                // Handle only GameContextUWPXaml for now
-                // TODO: Implement EditText for GameContextUWPCoreWindow
-                gameContext = game.Context as GameContextUWPXaml;
-                if (gameContext == null)
-                    return;
+            // Handle only GameContextUWPXaml for now
+            // TODO: Implement EditText for GameContextUWPCoreWindow
+            gameContext = game.Context as GameContextUWPXaml;
+            if (gameContext == null)
+                return;
 
-                var swapChainPanel = gameContext.Control;
+            var swapChainPanel = gameContext.Control;
 
-                // Make sure it doesn't have a parent (another text box being edited)
-                editText = gameContext.EditTextBox;
-                editText.Text = text;
-                swapChainPanel.Children.Add(new Windows.UI.Xaml.Controls.StackPanel { Children = { editText } });
+            // Make sure it doesn't have a parent (another text box being edited)
+            editText = gameContext.EditTextBox;
+            editText.Text = text;
+            swapChainPanel.Children.Add(new Windows.UI.Xaml.Controls.StackPanel { Children = { editText } });
 
-                editText.TextChanged += EditText_TextChanged;
-                editText.KeyDown += EditText_KeyDown;
+            editText.TextChanged += EditText_TextChanged;
+            editText.KeyDown += EditText_KeyDown;
 
-                // Focus
-                editText.Focus(Windows.UI.Xaml.FocusState.Programmatic);
-            }
+            // Focus
+            editText.Focus(Windows.UI.Xaml.FocusState.Programmatic);
         }
 
         private void EditText_KeyDown(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
