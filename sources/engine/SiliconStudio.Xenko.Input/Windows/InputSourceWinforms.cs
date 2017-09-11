@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2016-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
@@ -102,25 +102,34 @@ namespace SiliconStudio.Xenko.Input
             mouse?.ForceReleaseButtons();
         }
 
+        internal void HandleKeyDown(IntPtr wParam, IntPtr lParam)
+        {
+            var virtualKey = (WinFormsKeys)wParam.ToInt64();
+            virtualKey = GetCorrectExtendedKey(virtualKey, lParam.ToInt64());
+            keyboard?.HandleKeyDown(virtualKey);
+            heldKeys.Add(virtualKey);
+        }
+
+        internal void HandleKeyUp(IntPtr wParam, IntPtr lParam)
+        {
+            var virtualKey = (WinFormsKeys)wParam.ToInt64();
+            virtualKey = GetCorrectExtendedKey(virtualKey, lParam.ToInt64());
+            heldKeys.Remove(virtualKey);
+            keyboard?.HandleKeyUp(virtualKey);
+        }
+
         private IntPtr WndProc(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam)
         {
-            WinFormsKeys virtualKey;
             switch (msg)
             {
                 case Win32Native.WM_KEYDOWN:
                 case Win32Native.WM_SYSKEYDOWN:
-                    virtualKey = (WinFormsKeys)wParam.ToInt64();
-                    virtualKey = GetCorrectExtendedKey(virtualKey, lParam.ToInt64());
-                    keyboard?.HandleKeyDown(virtualKey);
-                    heldKeys.Add(virtualKey);
+                    HandleKeyDown(wParam, lParam);
                     break;
 
                 case Win32Native.WM_KEYUP:
                 case Win32Native.WM_SYSKEYUP:
-                    virtualKey = (WinFormsKeys)wParam.ToInt64();
-                    virtualKey = GetCorrectExtendedKey(virtualKey, lParam.ToInt64());
-                    heldKeys.Remove(virtualKey);
-                    keyboard?.HandleKeyUp(virtualKey);
+                    HandleKeyUp(wParam, lParam);
                     break;
 
                 case Win32Native.WM_DEVICECHANGE:
