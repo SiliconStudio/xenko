@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -863,7 +863,6 @@ namespace SiliconStudio.Xenko.UI.Controls
         {
             base.OnTouchDown(args);
 
-            IsSelectionActive = !IsReadOnly;
             IsTouchedDown = true;
 
             OnTouchDownImpl(args);
@@ -873,6 +872,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         {
             base.OnTouchUp(args);
 
+            IsSelectionActive = !IsReadOnly;
             IsTouchedDown = false;
         }
 
