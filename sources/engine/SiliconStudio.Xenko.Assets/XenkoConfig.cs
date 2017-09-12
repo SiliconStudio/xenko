@@ -85,7 +85,11 @@ namespace SiliconStudio.Xenko.Assets
             {
                 Name = PlatformType.UWP.ToString(),
                 Type = PlatformType.UWP,
-                Templates = { new SolutionPlatformTemplate("ProjectExecutable.UWP/CoreWindow/ProjectExecutable.UWP.ttproj", "Core Window"), new SolutionPlatformTemplate("ProjectExecutable.UWP/Xaml/ProjectExecutable.UWP.ttproj", "Xaml") },
+                Templates =
+                {
+                    //new SolutionPlatformTemplate("ProjectExecutable.UWP/CoreWindow/ProjectExecutable.UWP.ttproj", "Core Window"),
+                    new SolutionPlatformTemplate("ProjectExecutable.UWP/Xaml/ProjectExecutable.UWP.ttproj", "Xaml")
+                },
                 IsAvailable = IsFileInProgramFilesx86Exist(UniversalWindowsPlatformRuntimeBuild),
                 UseWithExecutables = false,
                 IncludeInSolution = false,
