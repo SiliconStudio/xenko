@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 using System.Collections;
 using System.Collections.Generic;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Rendering.Compositing
 {
@@ -10,6 +11,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     /// </summary>
     public partial class SceneRendererCollection : SceneRendererBase, IEnumerable<ISceneRenderer>
     {
+        [Display(Expand = ExpandRule.Always)]
         public List<ISceneRenderer> Children { get; } = new List<ISceneRenderer>();
 
         protected override void CollectCore(RenderContext context)

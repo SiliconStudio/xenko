@@ -85,7 +85,7 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         /// <userdoc>
         /// The renderer used by the game at runtime. It requires a properly set camera from the scene, found in the Cameras list.
         /// </userdoc>
-        [Display("Game renderer")]
+        [Display("Game renderer", Expand = ExpandRule.Always)]
         public ISceneRenderer Game { get; set; }
 
         /// <summary>
