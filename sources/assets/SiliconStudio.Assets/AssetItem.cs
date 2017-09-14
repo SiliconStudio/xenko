@@ -211,10 +211,7 @@ namespace SiliconStudio.Assets
         /// </remarks>
         public bool IsDirty
         {
-            get
-            {
-                return isDirty;
-            }
+            get => isDirty;
             set
             {
                 if (value && !isDirty)
@@ -230,6 +227,8 @@ namespace SiliconStudio.Assets
                 Package?.OnAssetDirtyChanged(this, oldValue, value);
             }
         }
+
+        public bool IsDeleted { get; set; }
 
         public override string ToString()
         {
