@@ -609,6 +609,15 @@ namespace SiliconStudio.Assets.Quantum
 
         private void UpdateAssetPartBases()
         {
+            // Unregister deleted base assets
+            var deletedBaseParts = basePartAssets.Keys.Where(g => g.AssetItem.IsDeleted).ToList();
+            foreach (var basePartAsset in deletedBaseParts)
+            {
+                basePartAsset.PartAdded -= PartAddedInBaseAsset;
+                basePartAsset.PartRemoved -= PartRemovedInBaseAsset;
+                basePartAssets.Remove(basePartAsset);
+            }
+
             // We need to subscribe to event of new base assets, but we don't want to unregister from previous one, in case the user is moving (remove + add)
             // the single part of a base. In this case we wouldn't have any part linking to the base once it has been removed.
             var newBasePartAsset = new HashSet<AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart>>();
