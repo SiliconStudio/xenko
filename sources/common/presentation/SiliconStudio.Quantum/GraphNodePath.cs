@@ -323,7 +323,7 @@ namespace SiliconStudio.Quantum
         /// Retrieve the parent path.
         /// </summary>
         /// <returns>A new <see cref="GraphNodePath"/> instance representing the parent path.</returns>
-        [Pure]
+        [Pure, CanBeNull]
         public GraphNodePath GetParent()
         {
             if (IsEmpty)

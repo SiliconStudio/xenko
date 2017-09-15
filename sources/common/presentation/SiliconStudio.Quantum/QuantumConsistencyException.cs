@@ -1,6 +1,7 @@
 // Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Quantum
 {
@@ -57,17 +58,17 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Gets a string representing the expected result.
         /// </summary>
-        public string Expected { get; private set; }
+        public string Expected { get; }
 
         /// <summary>
         /// Gets a string representing the observed result.
         /// </summary>
-        public string Observed { get; private set; }
+        public string Observed { get; }
 
         /// <summary>
         /// Gets the <see cref="IGraphNode"/> that triggered this exception.
         /// </summary>
-        public IGraphNode Node { get; private set; }
+        public IGraphNode Node { get; }
 
         ///// <inheritdoc/>
         //public override string ToString()
@@ -75,6 +76,7 @@ namespace SiliconStudio.Quantum
         //    return GetMessage(Expected, Observed);
         //}
 
+        [NotNull]
         private static string Format(string message, string argument)
         {
             try
@@ -88,20 +90,23 @@ namespace SiliconStudio.Quantum
 
         }
 
+        [NotNull]
         private static string Format(string message)
         {
             return message ?? "(NullMessage)";
 
         }
 
+        [NotNull]
         private static string GetMessage(string expected, string observed)
         {
-            return string.Format("Quantum consistency exception. Expected: {0} - Observed: {1}", Format(expected), Format(observed));
+            return $"Quantum consistency exception. Expected: {Format(expected)} - Observed: {Format(observed)}";
         }
 
+        [NotNull]
         private static string GetMessage(string expected, string expectedArg, string observed, string observedArg)
         {
-            return string.Format("Quantum consistency exception. Expected: {0} - Observed: {1}", Format(expected, expectedArg), Format(observed, observedArg));
+            return $"Quantum consistency exception. Expected: {Format(expected, expectedArg)} - Observed: {Format(observed, observedArg)}";
         }
     }
 }

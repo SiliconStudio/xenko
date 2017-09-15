@@ -20,7 +20,7 @@ namespace SiliconStudio.Quantum
         private readonly HybridDictionary<string, IMemberNode> childrenMap = new HybridDictionary<string, IMemberNode>();
         private object value;
 
-        public ObjectNode([NotNull] INodeBuilder nodeBuilder, object value, Guid guid, ITypeDescriptor descriptor, IReference reference)
+        public ObjectNode([NotNull] INodeBuilder nodeBuilder, object value, Guid guid, [NotNull] ITypeDescriptor descriptor, IReference reference)
             : base(nodeBuilder.SafeArgument(nameof(nodeBuilder)).NodeContainer, guid, descriptor)
         {
             if (reference is ObjectReference)
@@ -31,7 +31,7 @@ namespace SiliconStudio.Quantum
 
         /// <inheritdoc/>
         [NotNull]
-        public IMemberNode this[string name] => childrenMap[name];
+        public IMemberNode this[[NotNull] string name] => childrenMap[name];
 
         /// <inheritdoc/>
         public IReadOnlyCollection<IMemberNode> Members => (IReadOnlyCollection<IMemberNode>)childrenMap.Values;

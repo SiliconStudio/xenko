@@ -66,8 +66,7 @@ namespace SiliconStudio.Quantum
 
         public static IEnumerable<Index> GetIndices([NotNull] IGraphNode node)
         {
-            var collectionDescriptor = node.Descriptor as CollectionDescriptor;
-            if (collectionDescriptor != null)
+            if (node.Descriptor is CollectionDescriptor collectionDescriptor)
             {
                 return Enumerable.Range(0, collectionDescriptor.GetCollectionCount(node.Retrieve())).Select(x => new Index(x));
             }

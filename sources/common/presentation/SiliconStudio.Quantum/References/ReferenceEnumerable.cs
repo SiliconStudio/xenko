@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Reflection;
 
@@ -16,7 +17,7 @@ namespace SiliconStudio.Quantum.References
     {
         private HybridDictionary<Index, ObjectReference> items;
 
-        internal ReferenceEnumerable(IEnumerable enumerable, Type enumerableType)
+        internal ReferenceEnumerable(IEnumerable enumerable, [NotNull] Type enumerableType)
         {
             Reference.CheckReferenceCreationSafeGuard();
             ObjectValue = enumerable;
@@ -152,12 +153,6 @@ namespace SiliconStudio.Quantum.References
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ObjectReference> Enumerate()
-        {
-            return this;
-        }
-
-        /// <inheritdoc/>
         public IEnumerator<ObjectReference> GetEnumerator()
         {
             return new ReferenceEnumerator(this);
@@ -223,7 +218,7 @@ namespace SiliconStudio.Quantum.References
             return text;
         }
 
-        private static Index GetKey(object keyValuePair)
+        private static Index GetKey([NotNull] object keyValuePair)
         {
             var type = keyValuePair.GetType();
             if (!type.IsGenericType || type.GetGenericTypeDefinition() != typeof(KeyValuePair<,>)) throw new ArgumentException("The given object is not a KeyValuePair.");
@@ -231,7 +226,7 @@ namespace SiliconStudio.Quantum.References
             return new Index(keyProperty.GetValue(keyValuePair));
         }
 
-        private static object GetValue(object keyValuePair)
+        private static object GetValue([NotNull] object keyValuePair)
         {
             var type = keyValuePair.GetType();
             if (!type.IsGenericType || type.GetGenericTypeDefinition() != typeof(KeyValuePair<,>)) throw new ArgumentException("The given object is not a KeyValuePair.");
@@ -247,7 +242,7 @@ namespace SiliconStudio.Quantum.References
             private readonly IEnumerator<Index> indexEnumerator;
             private ReferenceEnumerable obj;
 
-            public ReferenceEnumerator(ReferenceEnumerable obj)
+            public ReferenceEnumerator([NotNull] ReferenceEnumerable obj)
             {
                 this.obj = obj;
                 indexEnumerator = obj.Indices.GetEnumerator();

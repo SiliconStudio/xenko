@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
@@ -19,6 +20,7 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Gets the collection of members of this node.
         /// </summary>
+        [NotNull]
         IReadOnlyCollection<IMemberNode> Members { get; }
 
         ReferenceEnumerable ItemReferences { get; }
@@ -31,7 +33,7 @@ namespace SiliconStudio.Quantum
         bool IsEnumerable { get; }
 
         /// <summary>
-        /// Gets the target of this node corresponding to the given index, if this node contains a sequence of references to some other nodes. 
+        /// Gets the target of this node corresponding to the given index, if this node contains a sequence of references to some other nodes.
         /// </summary>
         /// <exception cref="InvalidOperationException">The node does not contain a sequence of references to some other nodes.</exception>
         /// <exception cref="ArgumentException">The index is empty.</exception>

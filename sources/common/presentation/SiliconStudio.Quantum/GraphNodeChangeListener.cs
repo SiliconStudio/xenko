@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -128,7 +128,7 @@ namespace SiliconStudio.Quantum
             visitor.Visit(rootNode);
         }
 
-        private void ContentPrepareChange(object sender, INodeChangeEventArgs e)
+        private void ContentPrepareChange(object sender, [NotNull] INodeChangeEventArgs e)
         {
             var node = e.Node;
             var visitor = CreateVisitor();
@@ -156,7 +156,7 @@ namespace SiliconStudio.Quantum
             }
         }
 
-        private void ContentFinalizeChange(object sender, INodeChangeEventArgs e)
+        private void ContentFinalizeChange(object sender, [NotNull] INodeChangeEventArgs e)
         {
             var visitor = CreateVisitor();
             visitor.Visiting += (node, path) => RegisterNode(node);

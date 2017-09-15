@@ -129,7 +129,7 @@ namespace SiliconStudio.Quantum
         /// <param name="targetNode">The node from the target hierarchy. Can be null.</param>
         /// <exception cref="ArgumentNullException">The source node is null.</exception>
         /// <remarks>The default implementation will simply invoke <see cref="LinkAction"/>.</remarks>
-        protected virtual void LinkNodes(IGraphNode sourceNode, IGraphNode targetNode)
+        protected virtual void LinkNodes([NotNull] IGraphNode sourceNode, IGraphNode targetNode)
         {
             if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
             LinkAction?.Invoke(sourceNode, targetNode);
@@ -144,10 +144,10 @@ namespace SiliconStudio.Quantum
         /// The default implementation looks for node with the same names and or the same types of reference.
         /// This method can return null if there is no matching node in the target hierarchy.
         /// </remarks>
-        protected virtual IGraphNode FindTarget(IGraphNode sourceNode)
+        [CanBeNull]
+        protected virtual IGraphNode FindTarget([NotNull] IGraphNode sourceNode)
         {
-            IGraphNode targetNode;
-            return visitor.VisitedLinks.TryGetValue(sourceNode, out targetNode) ? targetNode : null;
+            return visitor.VisitedLinks.TryGetValue(sourceNode, out IGraphNode targetNode) ? targetNode : null;
         }
 
         /// <summary>
@@ -164,6 +164,7 @@ namespace SiliconStudio.Quantum
         /// The default implementation returns a reference in the target node that matches the index of the source reference, if available.
         /// </remarks>
         // TODO: turn back protected!
+        [CanBeNull]
         public virtual ObjectReference FindTargetReference(IGraphNode sourceNode, IGraphNode targetNode, ObjectReference sourceReference)
         {
             if (sourceNode is IMemberNode)
