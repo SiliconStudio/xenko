@@ -7,6 +7,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Quantum.ViewModels
 {
@@ -14,12 +15,13 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
     {
         private readonly NodeViewModel node;
 
-        public NodeViewModelDynamicMetaObject(Expression parameter, NodeViewModel node)
+        public NodeViewModelDynamicMetaObject([NotNull] Expression parameter, NodeViewModel node)
             : base(parameter, BindingRestrictions.Empty, node)
         {
             this.node = node;
         }
 
+        [NotNull]
         public override DynamicMetaObject BindGetMember(GetMemberBinder binder)
         {
             var self = Expression.Convert(Expression, LimitType);
@@ -59,7 +61,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             return getMember;
         }
 
-        public override System.Collections.Generic.IEnumerable<string> GetDynamicMemberNames()
+        public override IEnumerable<string> GetDynamicMemberNames()
         {
             return node.Children.Select(x => x.Name).Concat(node.Commands.Select(x => x.Name)).Concat(node.AssociatedData.Select(x => x.Key));
         }

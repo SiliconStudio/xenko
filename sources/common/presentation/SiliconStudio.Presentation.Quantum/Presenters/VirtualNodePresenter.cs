@@ -16,7 +16,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         private readonly List<Attribute> memberAttributes = new List<Attribute>();
         private bool updatingValue;
 
-        public VirtualNodePresenter([NotNull] INodePresenterFactoryInternal factory, IPropertyProviderViewModel propertyProvider, [NotNull] INodePresenter parent, string name, Type type, int? order, [NotNull] Func<object> getter, Action<object> setter)
+        public VirtualNodePresenter([NotNull] INodePresenterFactoryInternal factory, IPropertyProviderViewModel propertyProvider, [NotNull] INodePresenter parent, string name, [NotNull] Type type, int? order, [NotNull] Func<object> getter, Action<object> setter)
             : base(factory, propertyProvider, parent)
         {
             this.getter = getter;
@@ -140,12 +140,12 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             return AssociatedNode;
         }
 
-        private void AssociatedNodeChanging(object sender, INodeChangeEventArgs e)
+        private void AssociatedNodeChanging(object sender, [NotNull] INodeChangeEventArgs e)
         {
             RaiseNodeChanging(e.NewValue, e.ChangeType, (e as ItemChangeEventArgs)?.Index ?? Index.Empty);
         }
 
-        private void AssociatedNodeChanged(object sender, INodeChangeEventArgs e)
+        private void AssociatedNodeChanged(object sender, [NotNull] INodeChangeEventArgs e)
         {
             RaiseNodeChanged(e.OldValue, e.ChangeType, (e as ItemChangeEventArgs)?.Index ?? Index.Empty);
         }

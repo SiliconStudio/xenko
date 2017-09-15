@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Presentation.Quantum.Presenters
 {
@@ -19,6 +20,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             return true;
         }
 
+        [NotNull]
         public virtual Task<object> PreExecute(IReadOnlyCollection<INodePresenter> nodePresenters, object parameter)
         {
             return Task.FromResult<object>(null);
@@ -26,6 +28,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public abstract Task Execute(INodePresenter nodePresenter, object parameter, object preExecuteResult);
 
+        [NotNull]
         public virtual Task PostExecute(IReadOnlyCollection<INodePresenter> nodePresenters, object parameter)
         {
             return Task.CompletedTask;

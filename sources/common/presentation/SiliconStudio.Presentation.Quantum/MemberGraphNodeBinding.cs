@@ -1,6 +1,7 @@
 // Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Services;
 using SiliconStudio.Quantum;
 
@@ -16,10 +17,10 @@ namespace SiliconStudio.Presentation.Quantum
     {
         protected IMemberNode Node;
 
-        public MemberGraphNodeBinding(IMemberNode node, string propertyName, PropertyChangeDelegate propertyChanging, PropertyChangeDelegate propertyChanged, Func<TTargetType, TContentType> converter, IUndoRedoService actionService, bool notifyChangesOnly = true) 
+        public MemberGraphNodeBinding([NotNull] IMemberNode node, string propertyName, PropertyChangeDelegate propertyChanging, PropertyChangeDelegate propertyChanged, [NotNull] Func<TTargetType, TContentType> converter, IUndoRedoService actionService, bool notifyChangesOnly = true)
             : base(propertyName, propertyChanging, propertyChanged, converter, actionService, notifyChangesOnly)
         {
-            this.Node = node;
+            Node = node;
             node.ValueChanged += ValueChanged;
             node.ValueChanging += ValueChanging;
         }
@@ -65,7 +66,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="propertyChanged">The delegate to invoke when the node content has changed.</param>
         /// <param name="actionService"></param>
         /// <param name="notifyChangesOnly">If <c>True</c>, delegates will be invoked only if the content of the node has actually changed. Otherwise, they will be invoked every time the node is updated, even if the new value is equal to the previous one.</param>
-        public MemberGraphNodeBinding(IMemberNode node, string propertyName, PropertyChangeDelegate propertyChanging, PropertyChangeDelegate propertyChanged, IUndoRedoService actionService, bool notifyChangesOnly = true)
+        public MemberGraphNodeBinding([NotNull] IMemberNode node, string propertyName, PropertyChangeDelegate propertyChanging, PropertyChangeDelegate propertyChanged, IUndoRedoService actionService, bool notifyChangesOnly = true)
             : base(node, propertyName, propertyChanging, propertyChanged, x => x, actionService, notifyChangesOnly)
         {
         }
@@ -74,6 +75,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets or sets the current node value.
         /// </summary>
         /// <remarks>The setter of this property will invoke the delegates passed to the constructor of this instance if the new value is different from the previous one.</remarks>
-        public TContentType Value { get { return GetNodeValue(); } set { SetNodeValue(value); } }
+        public TContentType Value { get => GetNodeValue(); set => SetNodeValue(value); }
     }
 }

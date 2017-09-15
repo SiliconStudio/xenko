@@ -13,6 +13,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
     public abstract class SyncNodePresenterCommandBase : NodePresenterCommandBase
     {
         /// <inheritdoc/>
+        [NotNull]
         public sealed override Task Execute(INodePresenter nodePresenter, object parameter, object preExecuteResult)
         {
             ExecuteSync(nodePresenter, parameter, preExecuteResult);

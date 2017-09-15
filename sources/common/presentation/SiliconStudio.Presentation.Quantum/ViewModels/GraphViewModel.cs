@@ -88,7 +88,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// Gets the root node of this <see cref="GraphViewModel"/>.
         /// </summary>
         public NodeViewModel RootNode { get { return rootNode; } set { SetValue(ref rootNode, value); } }
-                
+
         /// <summary>
         /// Gets the <see cref="GraphViewModelService"/> associated to this view model.
         /// </summary>

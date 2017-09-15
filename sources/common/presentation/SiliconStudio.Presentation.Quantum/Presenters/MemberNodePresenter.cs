@@ -20,8 +20,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         {
             if (factory == null) throw new ArgumentNullException(nameof(factory));
             if (parent == null) throw new ArgumentNullException(nameof(parent));
-            if (member == null) throw new ArgumentNullException(nameof(member));
-            Member = member;
+            Member = member ?? throw new ArgumentNullException(nameof(member));
             Name = member.Name;
             CombineKey = Name;
             DisplayName = Name;
@@ -60,6 +59,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public override Index Index => Index.Empty;
 
+        [NotNull]
         public override ITypeDescriptor Descriptor => Member.Descriptor;
 
         public override object Value => Member.Retrieve();

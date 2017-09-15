@@ -165,7 +165,7 @@ namespace SiliconStudio.Quantum
         /// </remarks>
         // TODO: turn back protected!
         [CanBeNull]
-        public virtual ObjectReference FindTargetReference(IGraphNode sourceNode, IGraphNode targetNode, ObjectReference sourceReference)
+        public virtual ObjectReference FindTargetReference(IGraphNode sourceNode, IGraphNode targetNode, [NotNull] ObjectReference sourceReference)
         {
             if (sourceNode is IMemberNode)
                 return (targetNode as IMemberNode)?.TargetReference;
