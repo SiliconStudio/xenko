@@ -1,8 +1,9 @@
-﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Assets.Quantum
@@ -14,7 +15,7 @@ namespace SiliconStudio.Assets.Quantum
         private static readonly Dictionary<Type, AssetPropertyGraphDefinition> NodeGraphDefinitions = new Dictionary<Type, AssetPropertyGraphDefinition>();
         private static readonly Dictionary<Type, Type> GenericNodeGraphDefinitionTypes = new Dictionary<Type, Type>();
 
-        public static void RegisterAssembly(Assembly assembly)
+        public static void RegisterAssembly([NotNull] Assembly assembly)
         {
             foreach (var type in assembly.GetTypes())
             {
@@ -61,14 +62,14 @@ namespace SiliconStudio.Assets.Quantum
             }
         }
 
-        public static AssetPropertyGraph ConstructPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
+        [NotNull]
+        public static AssetPropertyGraph ConstructPropertyGraph(AssetPropertyGraphContainer container, [NotNull] AssetItem assetItem, ILogger logger)
         {
             var assetType = assetItem.Asset.GetType();
             while (assetType != null)
             {
-                Type propertyGraphType;
                 var typeToTest = assetType.IsGenericType ? assetType.GetGenericTypeDefinition() : assetType;
-                if (NodeGraphTypes.TryGetValue(typeToTest, out propertyGraphType))
+                if (NodeGraphTypes.TryGetValue(typeToTest, out Type propertyGraphType))
                 {
                     return (AssetPropertyGraph)Activator.CreateInstance(propertyGraphType, container, assetItem, logger);
                 }

@@ -40,7 +40,7 @@ namespace SiliconStudio.Assets.Quantum
         /// </summary>
         private readonly HashSet<IGraphNode> registeredChildParts = new HashSet<IGraphNode>();
 
-        protected AssetCompositeHierarchyPropertyGraph(AssetPropertyGraphContainer container, AssetItem assetItem, ILogger logger)
+        protected AssetCompositeHierarchyPropertyGraph([NotNull] AssetPropertyGraphContainer container, [NotNull] AssetItem assetItem, ILogger logger)
             : base(container, assetItem, logger)
         {
             HierarchyNode = RootNode[nameof(AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>.Hierarchy)].Target;
@@ -67,6 +67,7 @@ namespace SiliconStudio.Assets.Quantum
         /// <summary>
         /// Gets the name of the property targeting the part in the <see cref="TAssetPartDesign"/> type.
         /// </summary>
+        [NotNull]
         protected virtual string PartName => nameof(IAssetPartDesign<TAssetPart>.Part);
 
         /// <summary>
@@ -112,6 +113,7 @@ namespace SiliconStudio.Assets.Quantum
         /// </summary>
         /// <param name="baseAssetPropertyGraph">The property graph of the base asset for which to return instance ids.</param>
         /// <returns>A collection of instances ids corresponding to instances of parts of the given base asset.</returns>
+        [NotNull]
         public IReadOnlyCollection<Guid> GetInstanceIds([NotNull] AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart> baseAssetPropertyGraph)
         {
             if (baseAssetPropertyGraph == null) throw new ArgumentNullException(nameof(baseAssetPropertyGraph));
@@ -173,7 +175,7 @@ namespace SiliconStudio.Assets.Quantum
         /// Otherwise, it updates the collection containing the list of children from the parent of this part.
         /// </summary>
         /// <param name="partDesign">The part to remove from this asset.</param>
-        public void RemovePartFromAsset(TAssetPartDesign partDesign)
+        public void RemovePartFromAsset([NotNull] TAssetPartDesign partDesign)
         {
             if (!Asset.Hierarchy.RootParts.Contains(partDesign.Part))
             {
@@ -232,16 +234,14 @@ namespace SiliconStudio.Assets.Quantum
         }
 
         /// <inheritdoc/>
-        public override IGraphNode FindTarget(IGraphNode sourceNode, IGraphNode target)
+        public override IGraphNode FindTarget([NotNull] IGraphNode sourceNode, IGraphNode target)
         {
             // TODO: try to generalize what the overrides of this implementation are doing.
             // Connect the parts to their base if any.
-            var part = sourceNode.Retrieve() as TAssetPart;
-            if (part != null && sourceNode is IObjectNode)
+            if (sourceNode.Retrieve() is TAssetPart part && sourceNode is IObjectNode)
             {
-                TAssetPartDesign partDesign;
                 // The part might be being moved and could possibly be currently not into the Parts collection.
-                if (Asset.Hierarchy.Parts.TryGetValue(part.Id, out partDesign) && partDesign.Base != null)
+                if (Asset.Hierarchy.Parts.TryGetValue(part.Id, out TAssetPartDesign partDesign) && partDesign.Base != null)
                 {
                     var baseAssetGraph = Container.TryGetGraph(partDesign.Base.BasePartAsset.Id);
                     // Base asset might have been deleted
@@ -249,8 +249,7 @@ namespace SiliconStudio.Assets.Quantum
                         return base.FindTarget(sourceNode, target);
 
                     // Part might have been deleted in base asset
-                    TAssetPartDesign basePart;
-                    ((AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)baseAssetGraph.RootNode.Retrieve()).Hierarchy.Parts.TryGetValue(partDesign.Base.BasePartId, out basePart);
+                    ((AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)baseAssetGraph.RootNode.Retrieve()).Hierarchy.Parts.TryGetValue(partDesign.Base.BasePartId, out TAssetPartDesign basePart);
                     return basePart != null ? Container.NodeContainer.GetOrCreateNode(basePart.Part) : base.FindTarget(sourceNode, target);
                 }
             }
@@ -625,13 +624,14 @@ namespace SiliconStudio.Assets.Quantum
             // We want to enumerate parts that are actually "reachable", so we don't use Hierarchy.Parts for iteration - we iterate from the root parts instead.
             // We use Hierarchy.Parts at the end just to retrieve the part design from the actual part.
             var currentParts = Asset.Hierarchy.RootParts.DepthFirst(x => Asset.EnumerateChildParts(x, false)).Select(x => Asset.Hierarchy.Parts[x.Id]);
-            foreach (var part in currentParts.Where(x => x.Base != null))
+            foreach (var part in currentParts)
             {
-                var baseAssetGraph = Container.TryGetGraph(part.Base.BasePartAsset.Id) as AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart>;
-                if (baseAssetGraph != null)
+                if (part.Base == null)
+                    continue;
+
+                if (Container.TryGetGraph(part.Base.BasePartAsset.Id) is AssetCompositeHierarchyPropertyGraph<TAssetPartDesign, TAssetPart> baseAssetGraph)
                 {
-                    HashSet<Guid> instanceIds;
-                    if (!basePartAssets.TryGetValue(baseAssetGraph, out instanceIds))
+                    if (!basePartAssets.TryGetValue(baseAssetGraph, out HashSet<Guid> instanceIds))
                     {
                         instanceIds = new HashSet<Guid>();
                         basePartAssets.Add(baseAssetGraph, instanceIds);
@@ -644,8 +644,7 @@ namespace SiliconStudio.Assets.Quantum
                 baseInstanceMapping[Tuple.Create(part.Base.BasePartId, part.Base.InstanceId)] = part;
 
                 // Update common ancestors
-                Guid ancestorId;
-                if (!instancesCommonAncestors.TryGetValue(part.Base.InstanceId, out ancestorId))
+                if (!instancesCommonAncestors.TryGetValue(part.Base.InstanceId, out Guid ancestorId))
                 {
                     instancesCommonAncestors[part.Base.InstanceId] = Asset.GetParent(part.Part)?.Id ?? Guid.Empty;
                 }
@@ -742,7 +741,7 @@ namespace SiliconStudio.Assets.Quantum
             UpdatingPropertyFromBase = false;
         }
 
-        private void InsertPartInPartsCollection(AssetPartCollection<TAssetPartDesign, TAssetPart> newPartCollection, TAssetPartDesign rootPart)
+        private void InsertPartInPartsCollection(AssetPartCollection<TAssetPartDesign, TAssetPart> newPartCollection, [NotNull] TAssetPartDesign rootPart)
         {
             var node = HierarchyNode[nameof(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>.Parts)].Target;
             node.Add(rootPart, new Index(rootPart.Part.Id));

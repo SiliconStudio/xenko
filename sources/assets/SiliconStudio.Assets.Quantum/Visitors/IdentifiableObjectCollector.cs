@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
@@ -20,7 +20,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         /// Initializes a new instance of the <see cref="IdentifiableObjectCollector"/> class.
         /// </summary>
         /// <param name="propertyGraphDefinition">The <see cref="AssetPropertyGraphDefinition"/> used to analyze object references.</param>
-        private IdentifiableObjectCollector(AssetPropertyGraphDefinition propertyGraphDefinition)
+        private IdentifiableObjectCollector([NotNull] AssetPropertyGraphDefinition propertyGraphDefinition)
             : base(propertyGraphDefinition)
         {
         }

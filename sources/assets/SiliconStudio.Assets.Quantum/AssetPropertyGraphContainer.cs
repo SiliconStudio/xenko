@@ -12,15 +12,17 @@ namespace SiliconStudio.Assets.Quantum
     {
         private readonly Dictionary<AssetId, AssetPropertyGraph> registeredGraphs = new Dictionary<AssetId, AssetPropertyGraph>();
 
-        public AssetPropertyGraphContainer(AssetNodeContainer nodeContainer)
+        public AssetPropertyGraphContainer([NotNull] AssetNodeContainer nodeContainer)
         {
-            NodeContainer = nodeContainer;
+            NodeContainer = nodeContainer ?? throw new ArgumentNullException(nameof(nodeContainer));
         }
 
+        [NotNull]
         public AssetNodeContainer NodeContainer { get; }
 
         public bool PropagateChangesFromBase { get; set; } = true;
 
+        [CanBeNull]
         public AssetPropertyGraph InitializeAsset([NotNull] AssetItem assetItem, ILogger logger)
         {
             // SourceCodeAssets have no property
@@ -32,14 +34,16 @@ namespace SiliconStudio.Assets.Quantum
             return graph;
         }
 
+        [CanBeNull]
         public AssetPropertyGraph TryGetGraph(AssetId assetId)
         {
             registeredGraphs.TryGetValue(assetId, out var graph);
             return graph;
         }
 
-        public void RegisterGraph(AssetPropertyGraph graph)
+        public void RegisterGraph([NotNull] AssetPropertyGraph graph)
         {
+            if (graph == null) throw new ArgumentNullException(nameof(graph));
             registeredGraphs.Add(graph.Id, graph);
         }
 

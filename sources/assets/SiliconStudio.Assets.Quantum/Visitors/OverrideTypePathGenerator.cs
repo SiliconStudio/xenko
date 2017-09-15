@@ -28,7 +28,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         }
 
         /// <inheritdoc/>
-        protected override void VisitObjectNode(IAssetObjectNode objectNode, int inNonIdentifiableType)
+        protected override void VisitObjectNode([NotNull] IAssetObjectNode objectNode, int inNonIdentifiableType)
         {
             foreach (var index in objectNode.GetOverriddenItemIndices())
             {

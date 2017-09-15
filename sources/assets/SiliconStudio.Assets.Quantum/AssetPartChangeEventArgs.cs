@@ -1,6 +1,7 @@
 // Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Assets.Quantum
 {
@@ -14,7 +15,7 @@ namespace SiliconStudio.Assets.Quantum
         /// </summary>
         /// <param name="assetItem">The asset that was modified.</param>
         /// <param name="partId">The id of the part that has been added or removed.</param> 
-        public AssetPartChangeEventArgs(AssetItem assetItem, Guid partId)
+        public AssetPartChangeEventArgs([NotNull] AssetItem assetItem, Guid partId)
         {
             if (!(assetItem.Asset is AssetComposite))
                 throw new ArgumentException($@"The given assetItem does not hold an {nameof(AssetComposite)}.", nameof(assetItem));
@@ -30,6 +31,7 @@ namespace SiliconStudio.Assets.Quantum
         /// <summary>
         /// Gets the asset that was modified.
         /// </summary>
+        [NotNull]
         public AssetComposite Asset => (AssetComposite)AssetItem.Asset;
 
         /// <summary>

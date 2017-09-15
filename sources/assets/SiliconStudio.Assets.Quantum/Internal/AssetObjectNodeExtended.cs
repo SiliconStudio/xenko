@@ -38,15 +38,15 @@ namespace SiliconStudio.Assets.Quantum.Internal
 
         internal bool ResettingOverride { get; set; }
 
-        public void SetContent(string key, IGraphNode node)
+        public void SetContent([NotNull] string key, IGraphNode node)
         {
             contents[key] = node;
         }
 
-        public IGraphNode GetContent(string key)
+        [CanBeNull]
+        public IGraphNode GetContent([NotNull] string key)
         {
-            IGraphNode node;
-            contents.TryGetValue(key, out node);
+            contents.TryGetValue(key, out IGraphNode node);
             return node;
         }
 
@@ -390,7 +390,7 @@ namespace SiliconStudio.Assets.Quantum.Internal
             }
         }
 
-        private static void SetOverride(OverrideType overrideType, ItemId id, Dictionary<ItemId, OverrideType> dictionary)
+        private static void SetOverride(OverrideType overrideType, ItemId id, [NotNull] Dictionary<ItemId, OverrideType> dictionary)
         {
             if (overrideType == OverrideType.Base)
             {
@@ -402,10 +402,9 @@ namespace SiliconStudio.Assets.Quantum.Internal
             }
         }
 
-        public void SetPropertyGraph(AssetPropertyGraph assetPropertyGraph)
+        public void SetPropertyGraph([NotNull] AssetPropertyGraph assetPropertyGraph)
         {
-            if (assetPropertyGraph == null) throw new ArgumentNullException(nameof(assetPropertyGraph));
-            PropertyGraph = assetPropertyGraph;
+            PropertyGraph = assetPropertyGraph ?? throw new ArgumentNullException(nameof(assetPropertyGraph));
         }
 
         public void SetBaseContent(IGraphNode baseNode)

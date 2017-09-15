@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -16,7 +16,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         /// Initializes a new instance of hte <see cref="IdentifiableObjectVisitorBase"/> class.
         /// </summary>
         /// <param name="propertyGraphDefinition">The <see cref="AssetPropertyGraphDefinition"/> used to analyze object references.</param>
-        protected IdentifiableObjectVisitorBase(AssetPropertyGraphDefinition propertyGraphDefinition)
+        protected IdentifiableObjectVisitorBase([NotNull] AssetPropertyGraphDefinition propertyGraphDefinition)
             : base(propertyGraphDefinition)
         {
         }
@@ -50,7 +50,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         /// <param name="index">The index at which the identifiable instance is referenced.</param>
         protected abstract void ProcessIdentifiableItems([NotNull] IIdentifiable identifiable, IObjectNode collection, Index index);
 
-        private void CheckAndProcessIdentifiableMember(IMemberNode member)
+        private void CheckAndProcessIdentifiableMember([NotNull] IMemberNode member)
         {
             var identifiable = member.Retrieve() as IIdentifiable;
             if (identifiable == null)
@@ -59,7 +59,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
             ProcessIdentifiableMembers(identifiable, member);
         }
 
-        private void CheckAndProcessIdentifiableItem(IObjectNode collection, Index index)
+        private void CheckAndProcessIdentifiableItem([NotNull] IObjectNode collection, Index index)
         {
             var identifiable = collection.Retrieve(index) as IIdentifiable;
             if (identifiable == null)

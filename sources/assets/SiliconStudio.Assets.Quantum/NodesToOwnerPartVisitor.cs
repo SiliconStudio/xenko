@@ -1,6 +1,7 @@
-﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using SiliconStudio.Assets.Quantum.Visitors;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Assets.Quantum
@@ -17,7 +18,7 @@ namespace SiliconStudio.Assets.Quantum
 
         private readonly IAssetObjectNode ownerPartNode;
 
-        public NodesToOwnerPartVisitor(AssetPropertyGraphDefinition propertyGraphDefinition, INodeContainer nodeContainer, object ownerPart)
+        public NodesToOwnerPartVisitor([NotNull] AssetPropertyGraphDefinition propertyGraphDefinition, [NotNull] INodeContainer nodeContainer, object ownerPart)
             : base(propertyGraphDefinition)
         {
             ownerPartNode = (IAssetObjectNode)nodeContainer.GetOrCreateNode(ownerPart);
