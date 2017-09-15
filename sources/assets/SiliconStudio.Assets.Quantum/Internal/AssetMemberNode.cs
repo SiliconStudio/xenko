@@ -17,7 +17,7 @@ namespace SiliconStudio.Assets.Quantum.Internal
 
         private OverrideType contentOverride;
 
-        public AssetMemberNode(INodeBuilder nodeBuilder, Guid guid, IObjectNode parent, IMemberDescriptor memberDescriptor, IReference reference)
+        public AssetMemberNode([NotNull] INodeBuilder nodeBuilder, Guid guid, [NotNull] IObjectNode parent, [NotNull] IMemberDescriptor memberDescriptor, IReference reference)
             : base(nodeBuilder, guid, parent, memberDescriptor, reference)
         {
             ValueChanged += ContentChanged;
@@ -35,23 +35,24 @@ namespace SiliconStudio.Assets.Quantum.Internal
 
         public event EventHandler<EventArgs> OverrideChanged;
 
-        public AssetPropertyGraph PropertyGraph { get { return propertyGraph; } internal set { if (value == null) throw new ArgumentNullException(nameof(value)); propertyGraph = value; } }
+        public AssetPropertyGraph PropertyGraph { get => propertyGraph; internal set => propertyGraph = value ?? throw new ArgumentNullException(nameof(value)); }
 
         public IGraphNode BaseNode { get; private set; }
 
         public new IAssetObjectNode Parent => (IAssetObjectNode)base.Parent;
 
+        [CanBeNull]
         public new IAssetObjectNode Target => (IAssetObjectNode)base.Target;
 
-        public void SetContent(string key, IGraphNode node)
+        public void SetContent([NotNull] string key, IGraphNode node)
         {
             contents[key] = node;
         }
 
-        public IGraphNode GetContent(string key)
+        [CanBeNull]
+        public IGraphNode GetContent([NotNull] string key)
         {
-            IGraphNode node;
-            contents.TryGetValue(key, out node);
+            contents.TryGetValue(key, out IGraphNode node);
             return node;
         }
 
@@ -71,7 +72,7 @@ namespace SiliconStudio.Assets.Quantum.Internal
             PropertyGraph.ResetAllOverridesRecursively(this, Index.Empty);
         }
 
-        private void ContentChanged(object sender, MemberNodeChangeEventArgs e)
+        private void ContentChanged(object sender, [NotNull] MemberNodeChangeEventArgs e)
         {
             // Make sure that we have item ids everywhere we're supposed to.
             AssetCollectionItemIdHelper.GenerateMissingItemIds(e.Member.Retrieve());

@@ -18,8 +18,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         {
             if (factory == null) throw new ArgumentNullException(nameof(factory));
             if (parent == null) throw new ArgumentNullException(nameof(parent));
-            if (container == null) throw new ArgumentNullException(nameof(container));
-            Container = container;
+            Container = container ?? throw new ArgumentNullException(nameof(container));
             Descriptor = TypeDescriptorFactory.Default.Find(container.Descriptor.GetInnerCollectionType());
             OwnerCollection = parent;
             Type = (container.Descriptor as CollectionDescriptor)?.ElementType ?? (container.Descriptor as DictionaryDescriptor)?.ValueType;
@@ -117,13 +116,13 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             return new NodeAccessor(Container, Index);
         }
 
-        private void OnItemChanging(object sender, ItemChangeEventArgs e)
+        private void OnItemChanging(object sender, [NotNull] ItemChangeEventArgs e)
         {
             if (IsValidChange(e))
                 RaiseValueChanging(e.NewValue);
         }
 
-        private void OnItemChanged(object sender, ItemChangeEventArgs e)
+        private void OnItemChanged(object sender, [NotNull] ItemChangeEventArgs e)
         {
             if (IsValidChange(e))
             {

@@ -2,6 +2,7 @@
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.References;
@@ -25,7 +26,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         /// </summary>
         /// <param name="root">The root node to visit to collect assets.</param>
         /// <returns>A collection containing all assets found by visiting the given root.</returns>
-        public static IReadOnlyDictionary<GraphNodePath, Asset> Collect(IObjectNode root)
+        public static IReadOnlyDictionary<GraphNodePath, Asset> Collect([NotNull] IObjectNode root)
         {
             var visitor = new AssetCollector();
             visitor.Visit(root);

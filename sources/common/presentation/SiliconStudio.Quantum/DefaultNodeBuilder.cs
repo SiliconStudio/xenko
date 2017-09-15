@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.References;
 
@@ -29,7 +30,7 @@ namespace SiliconStudio.Quantum
 
         /// <inheritdoc/>
         public NodeContainer NodeContainer { get; }
-        
+
         /// <inheritdoc/>
         public INodeFactory NodeFactory { get; set; } = new DefaultNodeFactory();
 
@@ -45,7 +46,7 @@ namespace SiliconStudio.Quantum
             base.Reset();
         }
 
-        public void RegisterPrimitiveType(Type type)
+        public void RegisterPrimitiveType([NotNull] Type type)
         {
             if (type.IsPrimitive || type.IsEnum || primitiveTypes.Contains(type))
                 return;
@@ -53,7 +54,7 @@ namespace SiliconStudio.Quantum
             primitiveTypes.Add(type);
         }
 
-        public void UnregisterPrimitiveType(Type type)
+        public void UnregisterPrimitiveType([NotNull] Type type)
         {
             if (type.IsPrimitive || type.IsEnum || InternalPrimitiveTypes.Contains(type))
                 throw new InvalidOperationException("The given type cannot be unregistered from the list of primitive types");
@@ -74,7 +75,7 @@ namespace SiliconStudio.Quantum
         }
 
         /// <inheritdoc/>
-        public IObjectNode Build(object obj, Guid guid)
+        public IObjectNode Build([NotNull] object obj, Guid guid)
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
             Reset();
@@ -168,13 +169,14 @@ namespace SiliconStudio.Quantum
             content.Seal();
         }
 
+        [CanBeNull]
         public IReference CreateReferenceForNode(Type type, object value, bool isMember)
         {
             if (isMember)
             {
                 return !IsPrimitiveType(type) ? Reference.CreateReference(value, type, Index.Empty, true) : null;
             }
-            
+
             var descriptor = TypeDescriptorFactory.Find(value?.GetType());
             if (descriptor is CollectionDescriptor || descriptor is DictionaryDescriptor)
             {
@@ -205,6 +207,7 @@ namespace SiliconStudio.Quantum
             return typeof(ICollection).IsAssignableFrom(type);
         }
 
+        [CanBeNull]
         private static Type GetElementValueType(ITypeDescriptor descriptor)
         {
             var dictionaryDescriptor = descriptor as DictionaryDescriptor;

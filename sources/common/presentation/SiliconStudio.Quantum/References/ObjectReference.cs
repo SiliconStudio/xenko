@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Quantum.References
 {
@@ -21,7 +22,7 @@ namespace SiliconStudio.Quantum.References
         /// <param name="objectValue">A data object to reference. Can be null.</param>
         /// <param name="objectType">The type of data object to reference.</param>
         /// <param name="index">The index of this reference in its parent reference, if it is a <see cref="ReferenceEnumerable"/>.</param>
-        internal ObjectReference(object objectValue, Type objectType, Index index)
+        internal ObjectReference(object objectValue, [NotNull] Type objectType, Index index)
         {
             Reference.CheckReferenceCreationSafeGuard();
             if (objectType == null) throw new ArgumentNullException(nameof(objectType));
@@ -60,7 +61,7 @@ namespace SiliconStudio.Quantum.References
             Refresh(ownerNode, nodeContainer, Index.Empty);
         }
 
-        internal void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer, Index index)
+        internal void Refresh([NotNull] IGraphNode ownerNode, NodeContainer nodeContainer, Index index)
         {
             var objectValue = ownerNode.Retrieve(index);
 
@@ -90,12 +91,6 @@ namespace SiliconStudio.Quantum.References
         }
 
         /// <inheritdoc/>
-        public IEnumerable<ObjectReference> Enumerate()
-        {
-            yield return this;
-        }
-
-        /// <inheritdoc/>
         public bool Equals(IReference other)
         {
             var otherReference = other as ObjectReference;
@@ -116,7 +111,8 @@ namespace SiliconStudio.Quantum.References
         /// </summary>
         /// <param name="objectValue">The value for which to set the target node.</param>
         /// <param name="nodeContainer">The <see cref="NodeContainer"/> used to retrieve or create the target node.</param>
-        internal IGraphNode SetTarget(object objectValue, NodeContainer nodeContainer)
+        [CanBeNull]
+        internal IGraphNode SetTarget(object objectValue, [NotNull] NodeContainer nodeContainer)
         {
             if (nodeContainer == null) throw new ArgumentNullException(nameof(nodeContainer));
             var targetNode = nodeContainer.GetOrCreateNodeInternal(objectValue);
@@ -128,6 +124,7 @@ namespace SiliconStudio.Quantum.References
         /// Set the <see cref="TargetNode"/> and <see cref="TargetGuid"/> of the targeted object by retrieving it from or creating it to the given <see cref="NodeContainer"/>.
         /// </summary>
         /// <param name="targetNode">The <see cref="NodeContainer"/> used to retrieve or create the target node.</param>
+        [CanBeNull]
         internal IObjectNode SetTarget(IObjectNode targetNode)
         {
             if (targetNode != null)

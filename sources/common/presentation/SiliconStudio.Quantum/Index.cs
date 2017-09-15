@@ -1,6 +1,7 @@
 // Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Quantum
 {
@@ -86,7 +87,7 @@ namespace SiliconStudio.Quantum
             return Value?.GetHashCode() ?? 0;
         }
 
-        int IComparable.CompareTo(object obj)
+        int IComparable.CompareTo([NotNull] object obj)
         {
             if (obj == null || obj.GetType() != GetType())
                 throw new ArgumentException(@"obj is not the same type as this instance.", nameof(obj));

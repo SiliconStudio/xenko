@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Quantum
 {
@@ -64,7 +65,7 @@ namespace SiliconStudio.Quantum
         /// Refresh all references contained in the given node, creating new nodes for newly referenced objects.
         /// </summary>
         /// <param name="node">The node to update</param>
-        internal void UpdateReferences(IGraphNode node)
+        internal void UpdateReferences([NotNull] IGraphNode node)
         {
             lock (lockObject)
             {
@@ -111,6 +112,7 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="rootObject">The data object.</param>
         /// <returns>The <see cref="IGraphNode"/> associated to the given object.</returns>
+        [CanBeNull]
         internal IObjectNode GetOrCreateNodeInternal(object rootObject)
         {
             if (rootObject == null)
@@ -146,7 +148,7 @@ namespace SiliconStudio.Quantum
         /// Refresh all references contained in the given node, creating new nodes for newly referenced objects.
         /// </summary>
         /// <param name="node">The node to update</param>
-        private void UpdateReferencesInternal(IGraphNode node)
+        private void UpdateReferencesInternal([NotNull] IGraphNode node)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
 
@@ -178,10 +180,10 @@ namespace SiliconStudio.Quantum
             }
         }
 
+        [NotNull]
         private INodeBuilder CreateDefaultNodeBuilder()
         {
-            var nodeBuilder = new DefaultNodeBuilder(this);
-            return nodeBuilder;
+            return new DefaultNodeBuilder(this);
         }
     }
 }

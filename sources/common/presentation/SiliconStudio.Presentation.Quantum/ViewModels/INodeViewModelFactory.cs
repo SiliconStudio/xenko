@@ -9,8 +9,9 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
 {
     public interface INodeViewModelFactory
     {
+        [NotNull]
         NodeViewModel CreateGraph([NotNull] GraphViewModel owner, [NotNull] Type rootType, [NotNull] IEnumerable<INodePresenter> rootNodes);
 
-        void GenerateChildren(GraphViewModel owner, NodeViewModel parent, List<INodePresenter> nodePresenters);
+        void GenerateChildren([NotNull] GraphViewModel owner, NodeViewModel parent, [NotNull] List<INodePresenter> nodePresenters);
     }
 }

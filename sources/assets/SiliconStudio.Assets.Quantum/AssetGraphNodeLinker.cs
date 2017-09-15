@@ -1,7 +1,8 @@
-﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Assets.Quantum
@@ -15,12 +16,12 @@ namespace SiliconStudio.Assets.Quantum
             this.propertyGraphDefinition = propertyGraphDefinition;
         }
 
-        protected override bool ShouldVisitMemberTarget(IMemberNode member)
+        protected override bool ShouldVisitMemberTarget([NotNull] IMemberNode member)
         {
             return !propertyGraphDefinition.IsMemberTargetObjectReference(member, member.Retrieve()) && base.ShouldVisitMemberTarget(member);
         }
 
-        protected override bool ShouldVisitTargetItem(IObjectNode collectionNode, Index index)
+        protected override bool ShouldVisitTargetItem([NotNull] IObjectNode collectionNode, Index index)
         {
             return !propertyGraphDefinition.IsTargetItemObjectReference(collectionNode, index, collectionNode.Retrieve(index)) && base.ShouldVisitTargetItem(collectionNode, index);
         }

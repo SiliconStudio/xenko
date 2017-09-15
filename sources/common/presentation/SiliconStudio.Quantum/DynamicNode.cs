@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Quantum
@@ -24,6 +25,7 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="node">The node to use to create the dynamic node.</param>
         /// <returns>A <see cref="DynamicNode"/> representing the given node.</returns>
+        [NotNull]
         public static dynamic FromNode(IGraphNode node)
         {
             if (node is MemberNode)
@@ -37,7 +39,7 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="node">The node from which to retrieve the graph node.</param>
         /// <returns>A <see cref="IGraphNode"/> associated to the given node.</returns>
-        public static IGraphNode GetNode(DynamicNode node)
+        public static IGraphNode GetNode([NotNull] DynamicNode node)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
             return node.Node;
@@ -113,6 +115,9 @@ namespace SiliconStudio.Quantum
         public override bool TrySetMember(SetMemberBinder binder, object value)
         {
             var memberNode = GetTargetMemberNode(binder.Name);
+            if (memberNode == null)
+                return false;
+
             try
             {
                 // TODO: "changing" notifications will still be sent even if the update fails (but not the "changed") - we should detect preemptively if we can update (implements a bool TryUpdate?)
@@ -126,7 +131,7 @@ namespace SiliconStudio.Quantum
         }
 
         /// <inheritdoc/>
-        public override bool TryConvert(ConvertBinder binder, out object result)
+        public override bool TryConvert([NotNull] ConvertBinder binder, out object result)
         {
             var value = RetrieveValue();
             if (value == null && !binder.Type.IsValueType)
@@ -162,6 +167,7 @@ namespace SiliconStudio.Quantum
             return indices.Cast<object>().Select(x => thisNode[x]).GetEnumerator();
         }
 
+        [CanBeNull]
         protected IMemberNode GetTargetMemberNode(string memberName)
         {
             var targetNode = GetTargetNode();
@@ -171,9 +177,10 @@ namespace SiliconStudio.Quantum
 
         protected abstract object RetrieveValue();
 
+        [CanBeNull]
         protected abstract IObjectNode GetTargetNode();
 
-        protected static bool IsIndexExisting(IGraphNode node, Index index)
+        protected static bool IsIndexExisting([NotNull] IGraphNode node, Index index)
         {
             if (node.IsReference)
             {
@@ -200,7 +207,7 @@ namespace SiliconStudio.Quantum
             return false;
         }
 
-        protected static bool IsIndexValid(IGraphNode node, Index index)
+        protected static bool IsIndexValid([NotNull] IGraphNode node, Index index)
         {
             if (node.IsReference)
             {
@@ -220,7 +227,7 @@ namespace SiliconStudio.Quantum
             return false;
         }
 
-        protected static bool UpdateCollection(IObjectNode node, object value, Index index)
+        protected static bool UpdateCollection([NotNull] IObjectNode node, object value, Index index)
         {
             if (IsIndexExisting(node, index))
             {

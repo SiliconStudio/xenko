@@ -24,9 +24,10 @@ namespace SiliconStudio.Quantum
         ObjectReference TargetReference { get; }
 
         /// <summary>
-        /// Gets the target of this node, if this node contains a reference to another node. 
+        /// Gets the target of this node, if this node contains a reference to another node.
         /// </summary>
         /// <exception cref="InvalidOperationException">The node does not contain a reference to another node.</exception>
+        [CanBeNull]
         IObjectNode Target { get; }
 
         /// <summary>

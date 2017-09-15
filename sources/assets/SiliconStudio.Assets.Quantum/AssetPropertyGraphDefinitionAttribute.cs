@@ -7,7 +7,7 @@ namespace SiliconStudio.Assets.Quantum
     [BaseTypeRequired(typeof(AssetPropertyGraphDefinition))]
     public class AssetPropertyGraphDefinitionAttribute : Attribute
     {
-        public AssetPropertyGraphDefinitionAttribute(Type assetType)
+        public AssetPropertyGraphDefinitionAttribute([NotNull] Type assetType)
         {
             if (assetType == null) throw new ArgumentNullException(nameof(assetType));
             if (!typeof(Asset).IsAssignableFrom(assetType)) throw new ArgumentException($"The given type must be assignable to the {nameof(Asset)} type.");

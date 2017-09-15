@@ -4,6 +4,7 @@ using System;
 using SiliconStudio.Assets.Quantum.Internal;
 using SiliconStudio.Assets.Yaml;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets.Quantum.Visitors
@@ -35,7 +36,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         public Func<Guid, bool> ShouldOutputReference { get; set; }
 
         /// <inheritdoc/>
-        protected override void VisitMemberNode(IAssetMemberNode memberNode, int inNonIdentifiableType)
+        protected override void VisitMemberNode([NotNull] IAssetMemberNode memberNode, int inNonIdentifiableType)
         {
             var value = memberNode.Retrieve();
             if (propertyGraphDefinition.IsMemberTargetObjectReference(memberNode, value))
@@ -54,7 +55,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         }
 
         /// <inheritdoc/>
-        protected override void VisitObjectNode(IAssetObjectNode objectNode, int inNonIdentifiableType)
+        protected override void VisitObjectNode([NotNull] IAssetObjectNode objectNode, int inNonIdentifiableType)
         {
             if (!objectNode.IsReference)
                 return;

@@ -13,7 +13,7 @@ namespace SiliconStudio.Assets.Quantum.Internal
     {
         private AssetObjectNodeExtended ex;
 
-        public AssetObjectNode([NotNull] INodeBuilder nodeBuilder, object value, Guid guid, ITypeDescriptor descriptor, IReference reference)
+        public AssetObjectNode([NotNull] INodeBuilder nodeBuilder, object value, Guid guid, [NotNull] ITypeDescriptor descriptor, IReference reference)
             : base(nodeBuilder, value, guid, descriptor, reference)
         {
             ex = new AssetObjectNodeExtended(this);
@@ -24,15 +24,16 @@ namespace SiliconStudio.Assets.Quantum.Internal
 
         public IGraphNode BaseNode => ex.BaseNode;
 
-        public new IAssetMemberNode this[string name] => (IAssetMemberNode)base[name];
+        public new IAssetMemberNode this[[NotNull] string name] => (IAssetMemberNode)base[name];
 
         public event EventHandler<EventArgs> OverrideChanging;
 
         public event EventHandler<EventArgs> OverrideChanged;
 
-        public void SetContent(string key, IGraphNode node) => ex.SetContent(key, node);
+        public void SetContent([NotNull] string key, IGraphNode node) => ex.SetContent(key, node);
 
-        public IGraphNode GetContent(string key) => ex.GetContent(key);
+        [CanBeNull]
+        public IGraphNode GetContent([NotNull] string key) => ex.GetContent(key);
 
         public void ResetOverrideRecursively() => ex.ResetOverrideRecursively(Index.Empty);
 

@@ -17,10 +17,8 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         {
             this.nodeBuilder = nodeBuilder;
             if (nodeBuilder == null) throw new ArgumentNullException(nameof(nodeBuilder));
-            if (availableCommands == null) throw new ArgumentNullException(nameof(availableCommands));
-            if (availableUpdaters == null) throw new ArgumentNullException(nameof(availableUpdaters));
-            AvailableCommands = availableCommands;
-            AvailableUpdaters = availableUpdaters;
+            AvailableCommands = availableCommands ?? throw new ArgumentNullException(nameof(availableCommands));
+            AvailableUpdaters = availableUpdaters ?? throw new ArgumentNullException(nameof(availableUpdaters));
         }
 
         public IReadOnlyCollection<INodePresenterCommand> AvailableCommands { get; }
@@ -57,7 +55,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             FinalizeTree(parentPresenter.Root);
         }
 
-        private void GenerateChildren(IInitializingNodePresenter parentPresenter, IObjectNode objectNode, IPropertyProviderViewModel propertyProvider)
+        private void GenerateChildren([NotNull] IInitializingNodePresenter parentPresenter, [NotNull] IObjectNode objectNode, IPropertyProviderViewModel propertyProvider)
         {
             if (parentPresenter == null) throw new ArgumentNullException(nameof(parentPresenter));
             if (objectNode == null) throw new ArgumentNullException(nameof(objectNode));
@@ -105,7 +103,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             return new ItemNodePresenter(this, propertyProvider, containerPresenter, containerNode, index);
         }
 
-        private void CreateMembers(IPropertyProviderViewModel propertyProvider, IInitializingNodePresenter parentPresenter, IObjectNode objectNode)
+        private void CreateMembers(IPropertyProviderViewModel propertyProvider, IInitializingNodePresenter parentPresenter, [NotNull] IObjectNode objectNode)
         {
             foreach (var member in objectNode.Members)
             {
@@ -122,7 +120,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             }
         }
 
-        private void CreateItems(IPropertyProviderViewModel propertyProvider, IInitializingNodePresenter parentPresenter, IObjectNode objectNode)
+        private void CreateItems(IPropertyProviderViewModel propertyProvider, IInitializingNodePresenter parentPresenter, [NotNull] IObjectNode objectNode)
         {
             if (objectNode.IsEnumerable)
             {

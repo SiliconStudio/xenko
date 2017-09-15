@@ -37,33 +37,43 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         public INodePresenter this[string childName] => TryGetChild(childName) ?? throw new KeyNotFoundException($"Key {childName} not found in {nameof(INodePresenter)}");
 
-        public INodePresenter Root => Parent?.Root ?? Parent ?? this;
+        public INodePresenter Root => Parent?.Root ?? this;
 
         public INodePresenter Parent { get; private set; }
 
         public IReadOnlyList<INodePresenter> Children => children;
 
         public string DisplayName { get; set; }
+
         public string Name { get; protected set; }
 
         public List<INodePresenterCommand> Commands { get; } = new List<INodePresenterCommand>();
+
         public abstract Type Type { get; }
+
         public abstract bool IsEnumerable { get; }
 
         public bool IsVisible { get; set; } = true;
+
         public bool IsReadOnly { get; set; }
+
         public int? Order { get; set; }
 
         public abstract Index Index { get; }
+
         public abstract ITypeDescriptor Descriptor { get; }
+
         public abstract object Value { get; }
+
         public string CombineKey { get; set; }
+
         public PropertyContainerClass AttachedProperties { get; } = new PropertyContainerClass();
 
         public event EventHandler<ValueChangingEventArgs> ValueChanging;
 
         public event EventHandler<ValueChangedEventArgs> ValueChanged;
 
+        [CanBeNull]
         protected abstract IObjectNode ParentingNode { get; }
 
         public abstract void UpdateValue(object newValue);
@@ -107,7 +117,6 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             }
         }
 
-        [CanBeNull]
         public INodePresenter TryGetChild(string childName)
         {
             return children.FirstOrDefault(x => string.Equals(x.Name, childName, StringComparison.Ordinal));
@@ -117,7 +126,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
 
-            dependencies = dependencies ?? new HashSet<INodePresenter>();        
+            dependencies = dependencies ?? new HashSet<INodePresenter>();
             if (dependencies.Add(node))
             {
                 node.ValueChanged += DependencyChanged;

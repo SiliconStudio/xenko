@@ -211,7 +211,7 @@ namespace SiliconStudio.Assets.Quantum
             ReconcileWithBase(RootNode);
         }
 
-        private void ReconcileWithBase(IAssetNode rootNode, Dictionary<IGraphNode, Index> nodesToReset = null)
+        private void ReconcileWithBase([NotNull] IAssetNode rootNode, Dictionary<IGraphNode, Index> nodesToReset = null)
         {
             // Two passes: first pass will reconcile almost everything, but skip object reference.
             // The reason is that the target of the reference might not exist yet (might need to be reconcilied)
@@ -230,7 +230,7 @@ namespace SiliconStudio.Assets.Quantum
         /// </summary>
         /// <param name="rootNode">The node for which to reset overrides.</param>
         /// <param name="indexToReset">The index of the override to reset in this node, if relevant.</param>
-        internal void ResetAllOverridesRecursively(IAssetNode rootNode, Index indexToReset)
+        internal void ResetAllOverridesRecursively([NotNull] IAssetNode rootNode, Index indexToReset)
         {
             if (rootNode is IAssetMemberNode && indexToReset != Index.Empty) throw new ArgumentException(@"The index must be empty when invoking this method on a member node.", nameof(indexToReset));
 
@@ -287,6 +287,7 @@ namespace SiliconStudio.Assets.Quantum
         /// Creates an instance of <see cref="GraphVisitorBase"/> that is suited to reconcile properties with the base.
         /// </summary>
         /// <returns>A new instance of <see cref="GraphVisitorBase"/> for reconciliation.</returns>
+        [NotNull]
         public virtual GraphVisitorBase CreateReconcilierVisitor()
         {
             return new AssetGraphVisitorBase(Definition);
@@ -297,7 +298,7 @@ namespace SiliconStudio.Assets.Quantum
             return target;
         }
 
-        public void PrepareForSave(ILogger logger, AssetItem assetItem)
+        public void PrepareForSave(ILogger logger, [NotNull] AssetItem assetItem)
         {
             if (assetItem.Asset != Asset) throw new ArgumentException($@"The given {nameof(Assets.AssetItem)} does not match the asset associated with this instance", nameof(assetItem));
             AssetCollectionItemIdHelper.GenerateMissingItemIds(assetItem.Asset);

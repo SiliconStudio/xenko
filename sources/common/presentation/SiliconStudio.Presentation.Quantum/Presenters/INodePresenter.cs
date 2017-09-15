@@ -11,14 +11,17 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 {
     public interface INodePresenter : IDisposable
     {
+        [NotNull]
         INodePresenter this[string childName] { get; }
 
         string DisplayName { get; set; }
 
         string Name { get; }
 
+        [NotNull]
         INodePresenter Root { get; }
 
+        [CanBeNull]
         INodePresenter Parent { get; }
 
         IReadOnlyList<INodePresenter> Children { get; }
@@ -27,6 +30,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
 
         PropertyContainerClass AttachedProperties { get; }
 
+        [NotNull]
         Type Type { get; }
 
         bool IsEnumerable { get; }

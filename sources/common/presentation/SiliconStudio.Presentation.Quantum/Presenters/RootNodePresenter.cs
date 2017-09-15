@@ -16,8 +16,7 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
             : base(factory, propertyProvider, null)
         {
             if (factory == null) throw new ArgumentNullException(nameof(factory));
-            if (rootNode == null) throw new ArgumentNullException(nameof(rootNode));
-            RootNode = rootNode;
+            RootNode = rootNode ?? throw new ArgumentNullException(nameof(rootNode));
             Name = "Root";
             DisplayName = string.Empty;
 
@@ -33,9 +32,14 @@ namespace SiliconStudio.Presentation.Quantum.Presenters
         }
 
         public override Type Type => RootNode.Type;
+
         public override Index Index => Index.Empty;
+
         public override bool IsEnumerable => RootNode.IsEnumerable;
+
+        [NotNull]
         public override ITypeDescriptor Descriptor => RootNode.Descriptor;
+
         public override object Value => RootNode.Retrieve();
 
         protected override IObjectNode ParentingNode => RootNode;

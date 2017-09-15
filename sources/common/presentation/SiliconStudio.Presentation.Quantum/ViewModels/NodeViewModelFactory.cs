@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Presentation.Quantum.Presenters;
 
 namespace SiliconStudio.Presentation.Quantum.ViewModels
@@ -48,7 +49,8 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             }
         }
 
-        protected virtual NodeViewModel CreateNodeViewModel(GraphViewModel owner, NodeViewModel parent, Type nodeType, List<INodePresenter> nodePresenters, bool isRootNode = false)
+        [NotNull]
+        protected virtual NodeViewModel CreateNodeViewModel([NotNull] GraphViewModel owner, NodeViewModel parent, Type nodeType, [NotNull] List<INodePresenter> nodePresenters, bool isRootNode = false)
         {
             // TODO: properly compute the name
             var viewModel = new NodeViewModel(owner, parent, nodePresenters.First().Name, nodeType, nodePresenters);
@@ -60,7 +62,8 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             return viewModel;
         }
 
-        protected virtual IEnumerable<List<INodePresenter>> CombineChildren(List<INodePresenter> nodePresenters)
+        [NotNull]
+        protected virtual IEnumerable<List<INodePresenter>> CombineChildren([NotNull] List<INodePresenter> nodePresenters)
         {
             var dictionary = new Dictionary<string, List<INodePresenter>>();
             foreach (var nodePresenter in nodePresenters)
@@ -80,7 +83,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             return dictionary.Values.Where(x => x.Count == nodePresenters.Count);
         }
 
-        private static bool ShouldConstructViewModel(List<INodePresenter> nodePresenters)
+        private static bool ShouldConstructViewModel([NotNull] List<INodePresenter> nodePresenters)
         {
             foreach (var nodePresenter in nodePresenters)
             {

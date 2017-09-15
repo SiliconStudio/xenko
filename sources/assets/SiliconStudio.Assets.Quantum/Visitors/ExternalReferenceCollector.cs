@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.Collections.Generic;
@@ -19,7 +19,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         private readonly HashSet<IIdentifiable> externalReferences = new HashSet<IIdentifiable>();
         private readonly Dictionary<IIdentifiable, List<NodeAccessor>> externalReferenceAccessors = new Dictionary<IIdentifiable, List<NodeAccessor>>();
 
-        private ExternalReferenceCollector(AssetPropertyGraphDefinition propertyGraphDefinition)
+        private ExternalReferenceCollector([NotNull] AssetPropertyGraphDefinition propertyGraphDefinition)
             : base(propertyGraphDefinition)
         {
             this.propertyGraphDefinition = propertyGraphDefinition;
@@ -31,7 +31,8 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         /// <param name="propertyGraphDefinition">The property graph definition to use to analyze the graph.</param>
         /// <param name="root">The root node to analyze.</param>
         /// <returns>A set containing all external references to identifiable objects.</returns>
-        public static HashSet<IIdentifiable> GetExternalReferences(AssetPropertyGraphDefinition propertyGraphDefinition, IGraphNode root)
+        [NotNull]
+        public static HashSet<IIdentifiable> GetExternalReferences([NotNull] AssetPropertyGraphDefinition propertyGraphDefinition, [NotNull] IGraphNode root)
         {
             var visitor = new ExternalReferenceCollector(propertyGraphDefinition);
             visitor.Visit(root);
@@ -46,7 +47,7 @@ namespace SiliconStudio.Assets.Quantum.Visitors
         /// <param name="propertyGraphDefinition">The property graph definition to use to analyze the graph.</param>
         /// <param name="root">The root node to analyze.</param>
         /// <returns>A set containing all external references to identifiable objects.</returns>
-        public static Dictionary<IIdentifiable, List<NodeAccessor>> GetExternalReferenceAccessors(AssetPropertyGraphDefinition propertyGraphDefinition, IGraphNode root)
+        public static Dictionary<IIdentifiable, List<NodeAccessor>> GetExternalReferenceAccessors([NotNull] AssetPropertyGraphDefinition propertyGraphDefinition, [NotNull] IGraphNode root)
         {
             var visitor = new ExternalReferenceCollector(propertyGraphDefinition);
             visitor.Visit(root);

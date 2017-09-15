@@ -54,7 +54,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             typeof(NodeViewModel).GetProperties().Select(x => x.Name).ForEach(x => ReservedNames.Add(x));
         }
 
-        protected internal NodeViewModel(GraphViewModel ownerViewModel, NodeViewModel parent, string baseName, Type nodeType, List<INodePresenter> nodePresenters)
+        protected internal NodeViewModel([NotNull] GraphViewModel ownerViewModel, NodeViewModel parent, [NotNull] string baseName, Type nodeType, [NotNull] List<INodePresenter> nodePresenters)
             : base(ownerViewModel.ServiceProvider)
         {
             owner = ownerViewModel;
@@ -98,7 +98,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// <summary>
         /// Gets or sets the name used to display the node to the user.
         /// </summary>
-        public string DisplayName { get { return displayName; } set { SetValue(ref displayName, value); } }
+        public string DisplayName { get => displayName; set => SetValue(ref displayName, value); }
 
         /// <summary>
         /// Gets the display path of this node. The path is constructed from the <see cref="DisplayName"/> of all nodes from the root to this one, separated by periods.
@@ -108,7 +108,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// <summary>
         /// Gets or sets the value of the nodes represented by this view model.
         /// </summary>
-        public object NodeValue { get { return GetNodeValue(); } set { SetNodeValue(ConvertValue(value)); } }
+        public object NodeValue { get => GetNodeValue(); set => SetNodeValue(ConvertValue(value)); }
 
         /// <summary>
         /// Gets the expected type of <see cref="NodeValue"/>.
@@ -123,17 +123,26 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// <summary>
         /// Gets the root of this node.
         /// </summary>
-        public NodeViewModel Root { get { NodeViewModel root = this; while (root.Parent != null) root = root.Parent; return root; } }
+        [NotNull]
+        public NodeViewModel Root {
+            get
+            {
+                var root = this;
+                while (root.Parent != null)
+                    root = root.Parent;
+                return root;
+            }
+        }
 
         /// <summary>
         /// Gets whether this node should be displayed in the view.
         /// </summary>
-        public bool IsVisible { get { return isVisible; } private set { SetValue(ref isVisible, value); } }
+        public bool IsVisible { get => isVisible; private set => SetValue(ref isVisible, value); }
 
         /// <summary>
         /// Gets whether this node can be modified in the view.
         /// </summary>
-        public bool IsReadOnly { get { return isReadOnly; } private set { SetValue(ref isReadOnly, value); } }
+        public bool IsReadOnly { get => isReadOnly; private set => SetValue(ref isReadOnly, value); }
 
         /// <summary>
         /// Gets the list of children nodes.
@@ -158,6 +167,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// <summary>
         /// Gets the member info (if any).
         /// </summary>
+        [CanBeNull]
         [Obsolete]
         public MemberInfo MemberInfo => null;
 
@@ -181,7 +191,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         public int VisibleChildrenCount => Children.Count(x => x.IsVisible);
 
         // TODO: generalize usage in the templates
-        public bool IsHighlighted { get { return isHighlighted; } set { SetValue(ref isHighlighted, value); } }
+        public bool IsHighlighted { get => isHighlighted; set => SetValue(ref isHighlighted, value); }
 
         public IReadOnlyCollection<INodePresenter> NodePresenters => nodePresenters;
 
@@ -251,6 +261,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// </summary>
         /// <param name="name">The name of the <see cref="SiliconStudio.Presentation.Quantum.ViewModels.NodeViewModel"/> to look for.</param>
         /// <returns>The corresponding child node, or <c>null</c> if no child with the given name exists.</returns>
+        [CanBeNull]
         public NodeViewModel GetChild(string name)
         {
             name = EscapeName(name);
@@ -262,6 +273,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// </summary>
         /// <param name="name">The name of the command to look for.</param>
         /// <returns>The corresponding command, or <c>null</c> if no command with the given name exists.</returns>
+        [CanBeNull]
         public ICommandBase GetCommand(string name)
         {
             name = EscapeName(name);
@@ -314,7 +326,7 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         }
 
         [NotNull]
-        protected virtual NodePresenterCommandWrapper ConstructCommandWrapper(INodePresenterCommand command)
+        protected virtual NodePresenterCommandWrapper ConstructCommandWrapper([NotNull] INodePresenterCommand command)
         {
             return new NodePresenterCommandWrapper(ServiceProvider, nodePresenters, command);
         }
@@ -603,13 +615,14 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
         /// <param name="name">The name to escape.</param>
         /// <returns>The escaped name.</returns>
         /// <remarks>Names are escaped using a trailing underscore character.</remarks>
+        [NotNull]
         public static string EscapeName(string name)
         {
             var escaped = !IsReserved(name) ? name : name + "_";
             return escaped.Replace(".", "-");
         }
 
-        private static int CompareChildren(NodeViewModel a, NodeViewModel b)
+        private static int CompareChildren([NotNull] NodeViewModel a, [NotNull] NodeViewModel b)
         {
             // Order has the best priority for comparison, if set.
             if ((a.Order ?? 0) != (b.Order ?? 0))
@@ -633,7 +646,8 @@ namespace SiliconStudio.Presentation.Quantum.ViewModels
             return a.Order == null ? 1 : -1;
         }
 
-        private static object DefaultCombineAttachedProperty(IEnumerable<object> arg)
+        [CanBeNull]
+        private static object DefaultCombineAttachedProperty([NotNull] IEnumerable<object> arg)
         {
             object result = null;
             bool isFirst = true;
