@@ -80,7 +80,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <userdoc>The vertical field of view (in degrees)</userdoc>
         [DataMember(5)]
         [DefaultValue(DefaultVerticalFieldOfView)]
-        [Display("Field Of View")]
+        [Display("Field of view")]
         [DataMemberRange(1.0, 179.0, 1.0, 10.0, 0)]
         public float VerticalFieldOfView { get; set; }
 
@@ -93,7 +93,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <userdoc>The height of the orthographic projection (the orthographic width is automatically calculated based on the target ratio)</userdoc>
         [DataMember(10)]
         [DefaultValue(DefaultOrthographicSize)]
-        [Display("Orthographic Size")]
+        [Display("Orthographic size")]
         public float OrthographicSize { get; set; }
 
         /// <summary>
@@ -122,10 +122,10 @@ namespace SiliconStudio.Xenko.Engine
         /// Gets or sets a value indicating whether to use a custom <see cref="AspectRatio"/>. Default is <c>false</c>, meaning that the aspect ratio is calculated from the ratio of the current viewport when rendering.
         /// </summary>
         /// <value>The use custom aspect ratio.</value>
-        /// <userdoc>If selected, use a custom aspect ratio you specify. Otherwise, automatically adjust the aspect ratio to the render target ratio</userdoc>
+        /// <userdoc>Use a custom aspect ratio you specify. Otherwise, automatically adjust the aspect ratio to the render target ratio.</userdoc>
         [DataMember(35)]
         [DefaultValue(false)]
-        [Display("Custom Aspect Ratio")]
+        [Display("Custom aspect ratio")]
         public bool UseCustomAspectRatio { get; set; }
 
         /// <summary>

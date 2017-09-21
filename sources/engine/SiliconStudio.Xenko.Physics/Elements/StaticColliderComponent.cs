@@ -6,7 +6,7 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Xenko.Physics
 {
     [DataContract("StaticColliderComponent")]
-    [Display("Static Collider")]
+    [Display("Static collider")]
     public sealed class StaticColliderComponent : PhysicsTriggerComponentBase
     {
         protected override void OnAttach()

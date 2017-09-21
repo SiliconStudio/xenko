@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         /// <summary>
         /// Gets or sets a value indicating whether to generate texture atlas
         /// </summary>
-        /// <userdoc>If checked, the sprites of the sheet are packed into atlas textures</userdoc>
+        /// <userdoc>Pack the sprites into atlas textures</userdoc>
         [DataMember(0)]
         [DefaultValue(true)]
         public bool Enabled { get; set; }
@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         /// <summary>
         /// Gets or sets MaxRects rectangles placement algorithm
         /// </summary>
-        /// <userdoc>The algorithm used to pack the sprites into atlas.</userdoc>
+        /// <userdoc>The algorithm used to pack the sprites into atlas</userdoc>
         [DataMemberIgnore] // hide this for the moment.
         [DefaultValue(TexturePackingMethod.Best)]
         public TexturePackingMethod PackingAlgorithm { get; set; }
@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         /// <summary>
         /// Gets or sets the use of Multipack atlas mode which allows more than one texture atlas to fit all given textures
         /// </summary>
-        /// <userdoc>Allow the packer to generate several atlas textures if all the sprites cannot fit into one single atlas.</userdoc>
+        /// <userdoc>If the sprites don't fit into a single atlas, generate several atlas textures</userdoc>
         [DataMember(20)]
         [DefaultValue(true)]
         public bool AllowMultipacking { get; set; }

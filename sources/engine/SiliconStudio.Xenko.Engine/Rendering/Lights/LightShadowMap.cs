@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// Gets or sets a value indicating whether this <see cref="LightShadowMap"/> is enabled.
         /// </summary>
         /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
-        /// <userdoc>If checked, display the shadow of the engendered by the light.</userdoc>
+        /// <userdoc>Display the shadow of the engendered by the light</userdoc>
         [DataMember(10)]
         [DefaultValue(false)]
         public bool Enabled { get; set; }
@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// Gets or sets a value indicating whether this <see cref="LightShadowMap"/> is debug.
         /// </summary>
         /// <value><c>true</c> if debug; otherwise, <c>false</c>.</value>
-        /// <userdoc>If checked, render the shadow map in debug mode.</userdoc>
+        /// <userdoc>Render the shadow map in debug mode</userdoc>
         [DataMember(200)]
         [DefaultValue(false)]
         public bool Debug { get; set; }

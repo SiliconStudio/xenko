@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets a value indicating whether to use the alpha component of the emissive map as main alpha color for the material.
         /// </summary>
         /// <value><c>true</c> if [use alpha]; otherwise, <c>false</c>.</value>
-        /// <userdoc>If checked, use the alpha component of the emissive map as main alpha color for the material. Otherwise, ignore it and use the diffuse alpha color.</userdoc>
+        /// <userdoc>Use the emissive map alpha component as main alpha color for the material. Otherwise, use the diffuse alpha color.</userdoc>
         [DataMember(30)]
         [DefaultValue(false)]
         public bool UseAlpha { get; set; }

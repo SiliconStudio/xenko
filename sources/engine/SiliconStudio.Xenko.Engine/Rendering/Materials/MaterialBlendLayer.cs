@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets a value indicating whether this <see cref="MaterialBlendLayer"/> is enabled.
         /// </summary>
         /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
-        /// <userdoc>If checked, the layer in taken into account. Otherwise it is ignored.</userdoc>
+        /// <userdoc>Take the layer into account; otherwise ignore it</userdoc>
         [DefaultValue(true)]
         [DataMember(10)]
         public bool Enabled { get; set; }
@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets the name of this blend layer.
         /// </summary>
         /// <value>The name.</value>
-        /// <userdoc>The name of the material layer.</userdoc>
+        /// <userdoc>The name of the material layer</userdoc>
         [DefaultValue(null)]
         [DataMember(20)]
         public string Name { get; set; }

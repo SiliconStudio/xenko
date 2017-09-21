@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// Common material attributes.
     /// </summary>
     [DataContract("MaterialAttributes")]
-    [Display("Material Attributes")]
+    [Display("Material attributes")]
     [CategoryOrder(5, "Geometry")]
     [CategoryOrder(10, "Shading")]
     [CategoryOrder(15, "Misc")]
@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets the tessellation.
         /// </summary>
         /// <value>The tessellation.</value>
-        /// <userdoc>The tessellation method to use for this material. Tessellation consists into subdividing model poligons in order to increase the realism.</userdoc>
+        /// <userdoc>The method used for tessellation (subdividing model poligons to increase realism)</userdoc>
         [Display("Tessellation", "Geometry")]
         [DefaultValue(null)]
         [DataMember(10)]
@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets the displacement.
         /// </summary>
         /// <value>The displacement.</value>
-        /// <userdoc>The displacement method to use for this material. Displacement consists into atering model original vertex position by adding some offsets.</userdoc>
+        /// <userdoc>The method used for displacement (altering vertex positions by adding offsets)</userdoc>
         [Display("Displacement", "Geometry")]
         [DefaultValue(null)]
         [DataMember(20)]
@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets the surface.
         /// </summary>
         /// <value>The surface.</value>
-        /// <userdoc>The method to use to alter macro-surface aspect of this material. A classic example consists in perturbing the normals of the model.</userdoc>
+        /// <userdoc>The method used to alter macrosurface aspects (eg perturbing the normals of the model)</userdoc>
         [Display("Surface", "Geometry")]
         [DefaultValue(null)]
         [DataMember(30)]
@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets the micro surface.
         /// </summary>
         /// <value>The micro surface.</value>
-        /// <userdoc>The method to use to alter micro-surface aspect of this material.</userdoc>
+        /// <userdoc>The method used to alter the material microsurface</userdoc>
         [Display("MicroSurface", "Geometry", Expand = ExpandRule.Once)]
         [DefaultValue(null)]
         [DataMember(40)]
@@ -80,8 +80,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets the diffuse.
         /// </summary>
         /// <value>The diffuse.</value>
-        /// <userdoc>The method to use to determine the diffuse color of the material. 
-        /// The diffuse color of an object corresponds to the essential (pure) color of the object without any reflections.</userdoc>
+        /// <userdoc>The method used to determine the diffuse color of the material. 
+        /// The diffuse color is the essential (pure) color of the object without reflections.</userdoc>
         [Display("Diffuse", "Shading", Expand = ExpandRule.Once)]
         [DefaultValue(null)]
         [DataMember(50)]
@@ -91,7 +91,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets the diffuse model.
         /// </summary>
         /// <value>The diffuse model.</value>
-        /// <userdoc>The shading model to use to render the material diffuse color.</userdoc>
+        /// <userdoc>The shading model used to render the diffuse color.</userdoc>
         [Display("Diffuse Model", "Shading")]
         [DefaultValue(null)]
         [DataMember(60)]
@@ -101,8 +101,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets the specular.
         /// </summary>
         /// <value>The specular.</value>
-        /// <userdoc>The method to use to determine the specular color of the material. 
-        /// The specular color of an object corresponds to the color produced by the reflection of a white light on the object.</userdoc>
+        /// <userdoc>The method used to determine the specular color. 
+        /// This is the color produced by the reflection of a white light on the object.</userdoc>
         [Display("Specular", "Shading", Expand = ExpandRule.Once)]
         [DefaultValue(null)]
         [DataMember(70)]
@@ -112,8 +112,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets the specular model.
         /// </summary>
         /// <value>The specular model.</value>
-        /// <userdoc>The shading model to use to render the material specular color.</userdoc>
-        [Display("Specular Model", "Shading", Expand = ExpandRule.Once)]
+        /// <userdoc>The shading model used to render the material specular color</userdoc>
+        [Display("Specular model", "Shading", Expand = ExpandRule.Once)]
         [DefaultValue(null)]
         [DataMember(80)]
         public IMaterialSpecularModelFeature SpecularModel { get; set; }
@@ -122,8 +122,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets the occlusion.
         /// </summary>
         /// <value>The occlusion.</value>
-        /// <userdoc>The occlusion method to use for this material. 
-        /// Occlusions consists in modulating the ambient and direct lighting of the material to simulate shadows or cavity artifacts.</userdoc>
+        /// <userdoc>The occlusion method. Occlusions modulate the ambient and direct lighting of the material to simulate shadows or cavity artifacts.
+        /// </userdoc>
         [Display("Occlusion", "Misc")]
         [DefaultValue(null)]
         [DataMember(90)]
@@ -133,8 +133,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets the emissive.
         /// </summary>
         /// <value>The emissive.</value>
-        /// <userdoc>The method to use to determine the emissive color of the material.
-        /// The emissive color of an object is the color emitted by the object.</userdoc>
+        /// <userdoc>The method used to determine the emissive color (the color emitted by the object)
+        /// </userdoc>
         [Display("Emissive", "Shading")]
         [DefaultValue(null)]
         [DataMember(100)]
@@ -144,7 +144,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets the transparency.
         /// </summary>
         /// <value>The transparency.</value>
-        /// <userdoc>The method to use to determine the transparency of the material.</userdoc>
+        /// <userdoc>The method used to determine the transparency</userdoc>
         [Display("Transparency", "Misc")]
         [DefaultValue(null)]
         [DataMember(110)]
@@ -154,7 +154,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets the overrides.
         /// </summary>
         /// <value>The overrides.</value>
-        /// <userdoc>Can be used to override some of the properties of the current material.</userdoc>
+        /// <userdoc>Override properties of the current material</userdoc>
         [Display("Overrides", "Misc")]
         [DataMember(120)]
         public MaterialOverrides Overrides { get; private set; }
@@ -162,7 +162,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <summary>
         /// Gets or sets the cull mode used for the material.
         /// </summary>
-        /// <userdoc>Specifies if some faces of the model should be culled depending on their orientation.</userdoc>
+        /// <userdoc>Cull some faces of the model depending on orientation</userdoc>
         [Display("Cull Mode", "Misc")]
         [DataMember(130)]
         [DefaultValue(CullMode.Back)]
@@ -171,7 +171,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// <summary>
         /// Gets or sets the clear coat shading features for the material.
         /// </summary>
-        /// <userdoc>Specifies if the material should use Clear coat shading.</userdoc>
+        /// <userdoc>Use clear-coat shading to simulate vehicle paint</userdoc>
         [Display("Clear Coat", "Misc")]
         [DefaultValue(null)]
         [DataMember(140)]

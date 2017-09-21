@@ -25,6 +25,7 @@ namespace SiliconStudio.Xenko.Engine
         /// The render group for this component.
         /// </summary>
         [DataMember(10)]
+        [Display("Render group")]
         [DefaultValue(RenderGroup.Group0)]
         public RenderGroup RenderGroup { get; set; }
 

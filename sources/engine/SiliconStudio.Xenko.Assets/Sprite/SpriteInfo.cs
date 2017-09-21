@@ -79,7 +79,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         /// Gets or sets the value indicating position provided to <see cref="Center"/> is from the middle of the sprite region or from the left/top corner.
         /// </summary>
         /// <userdoc>
-        /// If checked, the value in 'Center' represents the offset of the sprite center from the middle of the sprite.
+        /// If enabled, the value in Center represents the offset of the sprite center from the middle of the sprite
         /// </userdoc>
         [DataMember(50)]
         [DefaultValue(true)]

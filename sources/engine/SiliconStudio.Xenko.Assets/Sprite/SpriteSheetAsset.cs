@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         /// The type of the sprite sheet.
         /// </userdoc>
         [DataMember(10)]
-        [Display("Sheet Type", category: "Parameters")]
+        [Display("Sheet type", category: "Parameters")]
         public SpriteSheetType Type { get; set; }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         /// The color that should be made transparent in all images of the group.
         /// </userdoc>
         [DataMember(20)]
-        [Display(category: "Parameters")]
+        [Display("Color key color", category: "Parameters")]
         public Color ColorKeyColor { get; set; } = new Color(255, 0, 255);
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         /// </summary>
         /// <value><c>true</c> to enable color key; otherwise, <c>false</c>.</value>
         /// <userdoc>
-        /// If checked, the color specified by 'ColorKeyColor' is made transparent in all images of the group during the asset build.
+        /// Make the color specified in "Color key color" transparent in all images of the group during the asset build
         /// </userdoc>
         [DataMember(30)]
         [DefaultValue(false)]
@@ -78,11 +78,11 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         /// If Compressed, the final texture will be compressed to an appropriate format based on the target platform. The final texture size must be a multiple of 4.
         /// </summary>
         /// <userdoc>
-        /// If Compressed, the final texture will be compressed to an appropriate format based on the target platform. The final texture size must be a multiple of 4.
+        /// Compress the texture to a format based on the target platform. The final texture size will be a multiple of 4.
         /// </userdoc>
         [DataMember(40)]
         [DefaultValue(true)]
-        [Display("Compressed", "Parameters")]
+        [Display("Compress", "Parameters")]
         public bool IsCompressed { get; set; } = true;
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         /// </summary>
         /// <value><c>true</c> if [generate mipmaps]; otherwise, <c>false</c>.</value>
         /// <userdoc>
-        /// If checked, mipmaps are generated for all the images of the group.
+        /// Generate mipmaps for all images in the group
         /// </userdoc>
         [DataMember(60)]
         [DefaultValue(false)]
@@ -139,8 +139,8 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         /// </summary>
         /// <value><c>true</c> to convert the texture in pre-multiply alpha.; otherwise, <c>false</c>.</value>
         /// <userdoc>
-        /// If checked, pre-multiply all color components of the images by their alpha-component.
-        /// Use this when elements are rendered with standard blending (and not transitive blending).
+        /// Pre-multiply all color components of the images by their alpha-component.
+        /// Use this when elements are rendered with standard blending (not transitive blending).
         /// </userdoc>
         [DataMember(70)]
         [DefaultValue(true)]
@@ -151,7 +151,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         /// Gets or sets the sprites of the sheet.
         /// </summary>
         /// <userdoc>
-        /// The parameters used to pack the sprites into atlas.
+        /// The parameters used to pack the sprites into atlases
         /// </userdoc>
         [NotNull]
         [DataMember(100)]
@@ -162,7 +162,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         /// Gets or sets the sprites of the sheet.
         /// </summary>
         /// <userdoc>
-        /// The list of sprites composing the sheet.
+        /// The list of sprites in the sheet
         /// </userdoc>
         [DataMember(150)]
         [Category]

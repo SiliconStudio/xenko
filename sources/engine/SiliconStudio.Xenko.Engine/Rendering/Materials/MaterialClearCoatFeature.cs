@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// </summary>
         /// <value>The transition distance.</value>
         /// <userdoc>
-        /// The distance (in meters) at which the base paint layer transitions to the metal flake layer
+        /// The distance (in world units) at which the base paint layer transitions to the metal flake layer
         /// </userdoc>
         [DataMember(100)]
         [Display("Layer transition distance")]
@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets a value indicating whether the <see cref="BasePaintGlossinessMap"/> is invert.
         /// </summary>
         /// <value><c>true</c> if invert; otherwise, <c>false</c>.</value>
-        /// <userdoc>Inverts the glossiness value (eg a value of 1.0 produces zero glossiness instead of maximum). This effectively turns the glossiness attribute into a roughness attribute found in other game engines.
+        /// <userdoc>Inverts the glossiness value (eg a value of 1.0 produces zero glossiness instead of maximum). This effectively turns the glossiness attribute into a roughness attribute
         /// </userdoc>
         [DataMember(130)]
         [Display("Invert glossiness", "Base paint")]
@@ -104,7 +104,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets a value indicating whether this <see cref="MetalFlakesGlossinessMap"/> is invert.
         /// </summary>
         /// <value><c>true</c> if invert; otherwise, <c>false</c>.</value>
-        /// <userdoc>Inverts the glossiness value (eg a value of 1.0 produces zero glossiness instead of maximum). This effectively turns the glossiness attribute into a roughness attribute found in other game engines.
+        /// <userdoc>Inverts the glossiness value (eg a value of 1.0 produces zero glossiness instead of maximum). This effectively turns the glossiness attribute into a roughness attribute.
         /// </userdoc>
         [DataMember(160)]
         [Display("Invert glossiness", "Metal flakes")]
@@ -128,7 +128,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// </summary>
         /// <value>The normal map.</value>
         /// <userdoc>
-        /// The normal map used by the metal flakes layer. This shapes the flake geometry. If the texture has a high UV scale, enable Use random texture coordinates below to reduce tiling effects.
+        /// The normal map used by the metal flakes layer. This shapes the flake geometry. If the texture has a high UV scale, enable "Use random texture coordinates" below to reduce tiling effects.
         /// </userdoc>
         [DataMember(180)]
         [Display("Metal flake normal map", "Metal flakes")]
@@ -178,7 +178,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets a value indicating whether the <see cref="ClearCoatGlossinessMap"/> is invert.
         /// </summary>
         /// <value><c>true</c> if invert; otherwise, <c>false</c>.</value>
-        /// <userdoc>Inverts the glossiness value (eg a value of 1.0 produces zero glossiness instead of maximum). This effectively turns the glossiness attribute into a roughness attribute found in other game engines.
+        /// <userdoc>Inverts the glossiness value (eg a value of 1.0 produces zero glossiness instead of maximum). This effectively turns the glossiness attribute into a roughness attribute.
         /// </userdoc>
         [DataMember(220)]
         [Display("Invert glossiness", "Clear coat")]

@@ -42,8 +42,7 @@ namespace SiliconStudio.Xenko.Rendering.RenderTextures
         /// Gets or sets the value indicating whether the output texture is encoded into the standard RGB color space.
         /// </summary>
         /// <userdoc>
-        /// If checked, the input image is considered as an sRGB image. This should be default for colored texture
-        /// with a HDR/gamma correct rendering.
+        /// Consider the texture an sRGB image. This should be the default for color textures with HDR/gamma-correct rendering.
         /// </userdoc>
         [DefaultValue(ColorSpace.Linear)]
         [Display("ColorSpace", "Format")]
