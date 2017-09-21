@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// </summary>
         /// <value><c>true</c> if this instance is xy normal; otherwise, <c>false</c>.</value>
         /// <userdoc>
-        /// The Z component of the normal vector will be calculated from X and Y assuming Z = sqrt(1 - x*x - y*y).
+        /// If there's no Z component in the texture, reconstruct it from the X and Y components. This assumes that Z = sqrt(1 - x*x - y*y) and that Z is always positive, so no normal vector can point to the back side of the surface. We recommend you enable this option, as Xenko might remove the Z component when you compress normal maps.
         /// </userdoc>
         [DataMember(30)]
         [DefaultValue(false)]

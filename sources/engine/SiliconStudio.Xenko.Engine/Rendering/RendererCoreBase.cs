@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// Gets or sets a value indicating whether this <see cref="EntityComponentRendererBase"/> is enabled.
         /// </summary>
         /// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
-        /// <userdoc>Enabled if checked, disable otherwise</userdoc>
+        /// <userdoc>Enabled if checked, disabled otherwise</userdoc>
         [DataMember(-20)]
         [DefaultValue(true)]
         public virtual bool Enabled { get; set; }

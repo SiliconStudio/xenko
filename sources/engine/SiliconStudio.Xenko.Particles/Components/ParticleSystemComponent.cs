@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Particles.Components
         /// Color shade (RGBA) will be multiplied to all particles' color in this particle system
         /// </userdoc>
         [DataMember(4)]
-        [Display("Color Shade")]
+        [Display("Color shade")]
         public Color4 Color = Color4.White;
 
         /// <summary>
@@ -68,13 +68,14 @@ namespace SiliconStudio.Xenko.Particles.Components
         /// </userdoc>
         [DataMember(5)]
         [DataMemberRange(0, 10, 0.01, 1, 3)]
-        [Display("Speed Scale")]
+        [Display("Speed scale")]
         public float Speed { get; set; } = 1f;
 
         /// <summary>
         /// The render group for this component.
         /// </summary>
         [DataMember(50)]
+        [Display("Render group")]
         [DefaultValue(RenderGroup.Group0)]
         public RenderGroup RenderGroup { get; set; }
 

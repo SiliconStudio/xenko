@@ -555,7 +555,7 @@ namespace SiliconStudio.TextureConverter
         {
             if (image.Format.IsCompressed())
             {
-                Log.Warning("You can't generate mipmaps for a compressed texture. It will be decompressed first..");
+                Log.Warning("You can't generate mipmaps for a compressed texture. It will be decompressed first.");
                 Decompress(image, image.Format.IsSRgb());
             }
 

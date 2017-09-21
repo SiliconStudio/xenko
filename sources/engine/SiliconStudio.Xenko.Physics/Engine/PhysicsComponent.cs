@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Engine
         internal BulletSharp.CollisionObject NativeCollisionObject;
 
         /// <userdoc>
-        /// The reference to the collider Shape of this element.
+        /// The reference to the collider shape of this element.
         /// </userdoc>
         [DataMember(200)]
         [Category]
@@ -62,12 +62,13 @@ namespace SiliconStudio.Xenko.Engine
         /// The collision group.
         /// </value>
         /// <userdoc>
-        /// The collision group of this element, default is DefaultFilter. Cannot change during run-time.
+        /// Which collision group the component belongs to. This can't be changed at runtime. The default is DefaultFilter. 
         /// </userdoc>
         /// <remarks>
         /// The collider will still produce events, to allow non trigger rigidbodies or static colliders to act as a trigger if required for certain filtering groups.
         /// </remarks>
         [DataMember(30)]
+        [Display("Collision group")]
         [DefaultValue(CollisionFilterGroups.DefaultFilter)]
         public CollisionFilterGroups CollisionGroup { get; set; } = CollisionFilterGroups.DefaultFilter;
 
@@ -78,12 +79,13 @@ namespace SiliconStudio.Xenko.Engine
         /// The can collide with.
         /// </value>
         /// <userdoc>
-        /// Which collider groups this element can collide with, when nothing is selected it will collide with all groups. Cannot change during run-time.
+        /// Which collider groups this component collides with. With nothing selected, it collides with all groups. This can't be changed at runtime.
         /// </userdoc>
         /// /// <remarks>
         /// The collider will still produce events, to allow non trigger rigidbodies or static colliders to act as a trigger if required for certain filtering groups.
         /// </remarks>
         [DataMember(40)]
+        [Display("Collides with...")]
         [DefaultValue(CollisionFilterGroupFlags.AllFilter)]
         public CollisionFilterGroupFlags CanCollideWith { get; set; } = CollisionFilterGroupFlags.AllFilter;
 
@@ -94,9 +96,9 @@ namespace SiliconStudio.Xenko.Engine
         /// true, false
         /// </value>
         /// <userdoc>
-        /// Unchecking this will help with performance, ideally if this entity has no need to access collisions information should be set to false
+        /// You can use collision events in scripts. If you have no scripts using collision events for this component, disable this option to save CPU. It has no effect on physics.
         /// </userdoc>
-        [Display("Collision events")]
+        [Display("Record collision events")]
         [DataMemberIgnore]
         public bool ProcessCollisions { get; set; } = false;
 
@@ -156,9 +158,10 @@ namespace SiliconStudio.Xenko.Engine
         /// true, false
         /// </value>
         /// <userdoc>
-        /// If this element can enter sleep state and skip physics simulation while sleeping
+        /// Don't process this physics component when it's not moving. This saves CPU.
         /// </userdoc>
         [DataMember(55)]
+        [Display("Can sleep")]
         public bool CanSleep
         {
             get
@@ -204,7 +207,7 @@ namespace SiliconStudio.Xenko.Engine
         /// true, false
         /// </value>
         /// <userdoc>
-        /// This element restitution (can create bounce effects)
+        /// The amount of kinetic energy lost or gained after a collision. If the restitution of colliding entities is 0, the entities lose all energy and stop moving immediately on impact. If the restitution is 1, they lose no energy and rebound with the same velocity they collided at. Use this to change the component "bounciness". A typical value is between 0 and 1.
         /// </userdoc>
         [DataMember(60)]
         public float Restitution
@@ -233,7 +236,7 @@ namespace SiliconStudio.Xenko.Engine
         /// true, false
         /// </value>
         /// <userdoc>
-        /// The friction of this element
+        /// The friction
         /// </userdoc>
         /// <remarks>
         /// It's importantant to realise that friction and restitution are not values of any particular surface, but rather a value of the interaction of two surfaces. 
@@ -266,7 +269,7 @@ namespace SiliconStudio.Xenko.Engine
         /// true, false
         /// </value>
         /// <userdoc>
-        /// The rolling friction of this element
+        /// The rolling friction
         /// </userdoc>
         [DataMember(66)]
         public float RollingFriction

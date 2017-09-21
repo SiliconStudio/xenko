@@ -52,10 +52,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets a value indicating whether this instance is energy conservative.
         /// </summary>
         /// <value><c>true</c> if this instance is energy conservative; otherwise, <c>false</c>.</value>
-        /// <value>If checked, the material ensure the energy conservation between the diffuse and specular colors.</value>
+        /// <value>Conserve energy between the diffuse and specular colors</value>
         [DataMember(30)]
         [DefaultValue(true)]
-        [Display("Is Energy Conservative?")]
+        [Display("Energy conservative")]
         public bool IsEnergyConservative { get; set; }
 
         public override void GenerateShader(MaterialGeneratorContext context)

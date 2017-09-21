@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         /// TODO: allow permutation for a specific mesh
         /// <userdoc>
-        /// If checked, the mesh parameters will be used to generate effects.
+        /// Use the mesh parameters to generate effects
         /// </userdoc>
         public static readonly ValueParameterKey<bool> UseParameters = ParameterKeys.NewValue<bool>();
     }

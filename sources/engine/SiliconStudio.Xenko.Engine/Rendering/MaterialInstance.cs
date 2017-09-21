@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// Gets or sets if this instance is casting shadows.
         /// </summary>
         /// <value>A boolean indicating whether this instance is casting shadows. Default is <c>true</c>.</value>
-        /// <userdoc>If checked, the model generates a shadow when enabling shadow maps.</userdoc>
+        /// <userdoc>Generate a shadow (when shadow maps are enabled)</userdoc>
         [DataMember(20)]
         [Display("Cast Shadows?")]
         [DefaultValue(true)]

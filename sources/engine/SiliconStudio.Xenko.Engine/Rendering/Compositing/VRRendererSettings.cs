@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         /// <summary>
         /// Specifies if VR rendering should be copied to the current render target.
         /// </summary>
-        /// <userdoc>If checked, VR rendering will be copied to the current render target. Can be unchecked to have different rendering on desktop than VR headset.</userdoc>
+        /// <userdoc>Copy VR rendering to the current render target. Leave disabled to have different rendering on desktop than VR headset.</userdoc>
         [DataMember(25)]
         [DefaultValue(true)]
         public bool CopyMirror { get; set; } = true;

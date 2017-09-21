@@ -25,10 +25,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
         /// </summary>
         /// <value><c>true</c> to convert the texture in pre-multiplied alpha.; otherwise, <c>false</c>.</value>
         /// <userdoc>
-        /// If checked, The color values will be pre-multiplied by the alpha value.
+        /// Pre-multiply the color values by the alpha value
         /// </userdoc>
         [DataMember(10)]
         [DefaultValue(true)]
+        [Display("Premultiply alpha")]
         public bool PremultiplyAlpha {
             get { return premultiplyAlpha; }
             set

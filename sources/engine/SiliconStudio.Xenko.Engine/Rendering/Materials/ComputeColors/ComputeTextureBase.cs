@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
         /// <summary>
         /// Gets or sets the enable state of the texture.
         /// </summary>
-        /// <userdoc>If unchecked, the texture value is ignored and the fallback value is used instead.</userdoc>
+        /// <userdoc>If unchecked, ignore the texture value and use the fallback value instead</userdoc>
         [DefaultValue(true)]
         public bool Enabled { get; set; }
 
@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
         /// The texture Reference.
         /// </summary>
         /// <userdoc>
-        /// The reference to the texture asset to use.
+        /// The reference to the texture asset
         /// </userdoc>
         [DataMember(10)] 
         [DefaultValue(null)]
@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
         /// The texture coordinate used to sample the texture.
         /// </summary>
         /// <userdoc>
-        /// The set of uv used to sample the texture.
+        /// The coordinates used to sample the texture
         /// </userdoc>
         [DataMember(30)]
         [DefaultValue(TextureCoordinate.Texcoord0)]
@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
         /// The sampler of the texture.
         /// </summary>
         /// <userdoc>
-        /// The sampler of the texture.
+        /// The texture sampler
         /// </userdoc>
         [DataMemberIgnore]
         private ComputeColorParameterSampler Sampler { get; set; }
@@ -78,7 +78,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
         /// The texture filtering mode.
         /// </summary>
         /// <userdoc>
-        /// The filtering method to use.
+        /// The texture filtering method
         /// </userdoc>
         [DataMember(41)]
         [DefaultValue(TextureFilter.Linear)]
@@ -98,10 +98,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
         /// The texture address mode.
         /// </summary>
         /// <userdoc>
-        /// Specify how to wrap the texture along the U axis (horizontal axis).
+        /// How to wrap the texture along the U (horizontal) axis
         /// </userdoc>
         [DataMember(42)]
         [DefaultValue(TextureAddressMode.Wrap)]
+        [Display("Address mode U")]
         public TextureAddressMode AddressModeU
         {
             get
@@ -118,10 +119,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
         /// The texture address mode.
         /// </summary>
         /// <userdoc>
-        /// Specify how to wrap the texture along the V axis (vertical axis).
+        /// How to wrap the texture along the V (vertical) axis
         /// </userdoc>
         [DataMember(43)]
         [DefaultValue(TextureAddressMode.Wrap)]
+        [Display("Address mode V")]
         public TextureAddressMode AddressModeV
         {
             get
@@ -138,7 +140,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
         /// The scale of the texture coordinates.
         /// </summary>
         /// <userdoc>
-        /// The scale to apply onto the texture coordinates. This can be used to zoom into texture or tile it (lower than 1 -> zooming, greater than 1 -> tiling).
+        /// The scale to apply to the texture coordinates. Values lower than 1 zoom the texture in; values greater than 1 tile it.
         /// </userdoc>
         [DataMember(50)]
         public Vector2 Scale { get; set; }
@@ -147,7 +149,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
         /// The offset in the texture coordinates.
         /// </summary>
         /// <userdoc>
-        /// The offsets to apply onto the model's texture coordinates.
+        /// The offset to apply to the model's texture coordinates
         /// </userdoc>
         [DataMember(60)]
         public Vector2 Offset { get; set; }
@@ -156,11 +158,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
         /// Uses random texture coordinates.
         /// </summary>
         /// <userdoc>
-        /// Specify if the input texture should be sampled with random texture coordinates.
+        /// Sample the input texture with random texture coordinates. This reduces tiling effects produced by high UV scales, but is costly.
         /// </userdoc>
         [DataMember(70)]
         [DefaultValue(false)]
-        [Display("Use Random Texture Coordinates")]
+        [Display("Use random texture coordinates")]
         public bool UseRandomTextureCoordinates { get; set; }
 
         /// <inheritdoc/>

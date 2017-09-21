@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         /// Gets or sets the value indicating position provided to <see cref="Center"/> is from the middle of the sprite region or from the left/top corner.
         /// </summary>
         /// <userdoc>
-        /// If checked, the value in 'Center' represents the offset of the sprite center from the middle of the image.
+        /// If enabled, the value in Center represents the offset of the sprite center from the middle of the image
         /// </userdoc>
         [DataMember(15)]
         [DefaultValue(true)]
@@ -129,7 +129,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         /// Gets or sets the transparency value of the sprite.
         /// </summary>
         /// <userdoc>
-        /// If checked, the sprite is considered as having transparent colors.
+        /// Enable transparency in the sprite
         /// </userdoc>
         [DataMember(20)]
         [DefaultValue(true)]

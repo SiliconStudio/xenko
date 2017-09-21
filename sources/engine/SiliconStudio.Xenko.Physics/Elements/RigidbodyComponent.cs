@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Physics
         /// </summary>
         /// <value>true, false</value>
         /// <userdoc>
-        /// Kinematic if checked. Dynamic if unchecked.
+        /// Move the rigidbody only by the transform property, not other forces
         /// </userdoc>
         [DataMember(75)]
         public bool IsKinematic
@@ -81,7 +81,7 @@ namespace SiliconStudio.Xenko.Physics
         /// true, false
         /// </value>
         /// <userdoc>
-        /// The mass of this Rigidbody
+        /// Objects with higher mass push objects with lower mass more when they collide. For large differences, use point values; for example, write 0.1 or 10, not 1 or 100000.
         /// </userdoc>
         [DataMember(80)]
         [DataMemberRange(0, 6)]
@@ -100,7 +100,7 @@ namespace SiliconStudio.Xenko.Physics
 
                 mass = value;
 
-                if(InternalRigidBody == null) return;
+                if (InternalRigidBody == null) return;
 
                 var inertia = ColliderShape.InternalShape.CalculateLocalInertia(value);
                 InternalRigidBody.SetMassProps(value, inertia);
@@ -112,7 +112,7 @@ namespace SiliconStudio.Xenko.Physics
         /// Gets the collider shape.
         /// </summary>
         /// <value>
-        /// The collider shape.
+        /// The collider shape
         /// </value>
         [DataMemberIgnore]
         public override ColliderShape ColliderShape
@@ -147,7 +147,7 @@ namespace SiliconStudio.Xenko.Physics
         /// true, false
         /// </value>
         /// <userdoc>
-        /// The linear damping of this Rigidbody
+        /// The amount of damping for directional forces
         /// </userdoc>
         [DataMember(85)]
         public float LinearDamping
@@ -171,7 +171,7 @@ namespace SiliconStudio.Xenko.Physics
         /// true, false
         /// </value>
         /// <userdoc>
-        /// The angular damping of this Rigidbody
+        /// The amount of damping for rotational forces
         /// </userdoc>
         [DataMember(90)]
         public float AngularDamping
@@ -195,7 +195,7 @@ namespace SiliconStudio.Xenko.Physics
         /// true, false
         /// </value>
         /// <userdoc>
-        /// If this Rigidbody overrides world gravity
+        /// Override gravity with the vector specified in Gravity
         /// </userdoc>
         [DataMember(95)]
         public bool OverrideGravity
@@ -232,7 +232,7 @@ namespace SiliconStudio.Xenko.Physics
         /// A vector representing moment and direction
         /// </value>
         /// <userdoc>
-        /// The gravity acceleration applied to this RigidBody
+        /// The gravity acceleration applied to this rigidbody
         /// </userdoc>
         [DataMember(100)]
         public Vector3 Gravity
@@ -372,7 +372,7 @@ namespace SiliconStudio.Xenko.Physics
             var toremove = new FastList<Constraint>();
             foreach (var c in LinkedConstraints)
             {
-                toremove.Add(c);                
+                toremove.Add(c);
             }
 
             foreach (var disposable in toremove)
@@ -399,10 +399,10 @@ namespace SiliconStudio.Xenko.Physics
                 //write to ModelViewHierarchy
                 var model = Data.ModelComponent;
                 model.Skeleton.NodeTransformations[BoneIndex].Flags = !IsKinematic ? ModelNodeFlags.EnableRender | ModelNodeFlags.OverrideWorldMatrix : ModelNodeFlags.Default;
-                if(!IsKinematic) model.Skeleton.NodeTransformations[BoneIndex].WorldMatrix = BoneWorldMatrixOut;
+                if (!IsKinematic) model.Skeleton.NodeTransformations[BoneIndex].WorldMatrix = BoneWorldMatrixOut;
             }
         }
-    
+
         //This is called by the physics engine to update the transformation of Dynamic rigidbodies.
         private void RigidBodySetWorldTransform(ref Matrix physicsTransform)
         {
@@ -539,7 +539,7 @@ namespace SiliconStudio.Xenko.Physics
             {
                 throw new InvalidOperationException("Attempted to call a Physics function that is avaliable only when the Entity has been already added to the Scene.");
             }
-            
+
             InternalRigidBody?.ClearForces();
             InternalRigidBody.InterpolationAngularVelocity = Vector3.Zero;
             InternalRigidBody.LinearVelocity = Vector3.Zero;

@@ -133,10 +133,10 @@ namespace SiliconStudio.Xenko.Engine
         /// Gets or sets a boolean indicating if this model component is casting shadows.
         /// </summary>
         /// <value>A boolean indicating if this model component is casting shadows.</value>
-        /// <userdoc>If checked, the model generates a shadow when enabling shadow maps.</userdoc>
+        /// <userdoc>Generate a shadow (when shadow maps are enabled)</userdoc>
         [DataMember(30)]
         [DefaultValue(true)]
-        [Display("Cast Shadows?")]
+        [Display("Cast shadows")]
         public bool IsShadowCaster { get; set; }
 
         /// <summary>
@@ -144,6 +144,7 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         [DataMember(20)]
         [DefaultValue(RenderGroup.Group0)]
+        [Display("Render group")]
         public RenderGroup RenderGroup { get; set; }
 
         /// <summary>
