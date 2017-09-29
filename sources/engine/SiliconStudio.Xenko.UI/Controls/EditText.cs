@@ -863,6 +863,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         {
             base.OnTouchDown(args);
 
+            IsSelectionActive = !IsReadOnly;
             IsTouchedDown = true;
 
             OnTouchDownImpl(args);
@@ -872,7 +873,10 @@ namespace SiliconStudio.Xenko.UI.Controls
         {
             base.OnTouchUp(args);
 
-            IsSelectionActive = !IsReadOnly;
+            if (IsTouchedDown)
+            {
+                OnTouchUpImpl(args);
+            }
             IsTouchedDown = false;
         }
 
