@@ -2,7 +2,9 @@
 // See LICENSE.md for full license information.
 #if SILICONSTUDIO_PLATFORM_UWP
 using System;
-using System.Diagnostics;
+using Windows.UI;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Media;
 using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.UI.Controls
@@ -63,13 +65,10 @@ namespace SiliconStudio.Xenko.UI.Controls
             // Make sure it doesn't have a parent (another text box being edited)
             editText = gameContext.EditTextBox;
             editText.Text = text;
-            swapChainPanel.Children.Add(new Windows.UI.Xaml.Controls.StackPanel { Children = { editText } });
+            swapChainPanel.Children.Add(new Windows.UI.Xaml.Controls.Grid { Children = { editText }, Opacity = 0.7f, Background = new SolidColorBrush(Colors.Black)});
 
             editText.TextChanged += EditText_TextChanged;
             editText.KeyDown += EditText_KeyDown;
-
-            // Focus
-            editText.Focus(Windows.UI.Xaml.FocusState.Programmatic);
         }
 
         private void EditText_KeyDown(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
@@ -120,7 +119,6 @@ namespace SiliconStudio.Xenko.UI.Controls
                 editText = null;
                 activeEditText = null;
             }
-
             FocusedElement = null;
         }
 
@@ -162,6 +160,12 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         private void OnTouchMoveImpl(TouchEventArgs args)
         {
+        }
+
+        private void OnTouchUpImpl(TouchEventArgs args)
+        {
+            if(editText.FocusState == FocusState.Unfocused)
+                editText.Focus(FocusState.Programmatic);
         }
 
         internal GameBase GetGame()

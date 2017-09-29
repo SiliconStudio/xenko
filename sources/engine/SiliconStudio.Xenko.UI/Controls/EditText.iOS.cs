@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 #if SILICONSTUDIO_PLATFORM_IOS
 
@@ -213,6 +213,10 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         private void OnTouchDownImpl(TouchEventArgs args)
+        {
+        }
+
+        private void OnTouchUpImpl(TouchEventArgs args)
         {
         }
 

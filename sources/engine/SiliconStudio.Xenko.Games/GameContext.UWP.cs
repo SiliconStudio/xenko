@@ -23,6 +23,7 @@
 #if SILICONSTUDIO_PLATFORM_UWP
 using System;
 using Windows.UI.Core;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace SiliconStudio.Xenko.Games
@@ -30,7 +31,7 @@ namespace SiliconStudio.Xenko.Games
     public class GameContextUWPXaml : GameContextWindows<SwapChainPanel>
     {
         // Used internally by systems such as UI to capture input in a TextBox
-        internal TextBox EditTextBox = new TextBox();
+        internal TextBox EditTextBox = new TextBox { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(10, 0, 10, 0)};
 
         /// <inheritDoc/>
         public GameContextUWPXaml(SwapChainPanel control, int requestedWidth = 0, int requestedHeight = 0)
