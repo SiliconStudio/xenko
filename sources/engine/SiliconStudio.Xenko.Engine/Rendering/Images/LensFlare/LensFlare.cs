@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -75,6 +75,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Amount of light streak (intensity).
         /// </summary>
         /// <userdoc>The strength of the effect</userdoc>
+        [Display("Color abberation")]
         [DataMember(10)]
         [DefaultValue(1f)]
         public float Amount { get; set; }
@@ -82,7 +83,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// Strength of the color aberration.
         /// </summary>
-        /// <userdoc>The strength of the color aberrations happening along the streaks and the halo.</userdoc>
+        /// <userdoc>The strength of the color aberrations along the streaks and halo</userdoc>
+        [Display ("Color abberation")]
         [DataMember(20)]
         [DefaultValue(0.2f)]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
@@ -106,6 +108,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Halo factor when the camera is pointing exactly at a light source.
         /// </summary>
         /// <userdoc>Specifies the intensity of halo effect.</userdoc>
+        [Display("Halo")]
         [DataMember(20)]
         [DefaultValue(1f)]
         public float HaloFactor { get; set; }
