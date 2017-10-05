@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System.ComponentModel;
@@ -41,51 +41,80 @@ namespace SiliconStudio.Xenko.Rendering.Images
             TempSize = TemporaryBufferSize.SizeFull;
         }
 
+        /// <userdoc>
+        /// The number of pixels sampled to determine how occluded a point is. Higher values reduce noise, but affect performance. 
+        /// Use with "Blur count to find a balance between results and performance.
+        /// </userdoc>
         [DataMember(10)]
         [DefaultValue(13)]
         [DataMemberRange(1, 50, 1, 5, 0)]
-        [Display("Number of samples")]
+        [Display("Samples")]
         public int NumberOfSamples { get; set; } = 13;
 
+        /// <userdoc>
+        /// Scales the sample radius. In most cases, 1 (no scaling) produces the most accurate result.
+        /// </userdoc>
         [DataMember(20)]
         [DefaultValue(0.5f)]
-        [Display("Projection Scale")]
+        [Display("Projection scale")]
         public float ParamProjScale { get; set; } = 0.5f;
 
+        /// <userdoc>
+        /// The strength of the darkening effect in occluded areas
+        /// </userdoc>
         [DataMember(30)]
         [DefaultValue(0.2f)]
-        [Display("Occlusion Intensity")]
+        [Display("Intensity")]
         public float ParamIntensity { get; set; } = 0.2f;
 
+        /// <userdoc>
+        /// The angle at which Xenko considers an area of geometry an occluder. At high values, only narrow joins and crevices are considered occluders.
+        /// </userdoc>
         [DataMember(40)]
         [DefaultValue(0.01f)]
-        [Display("Sample Bias")]
+        [Display("Sample bias")]
         public float ParamBias { get; set; } = 0.01f;
 
+        /// <userdoc>
+        /// Use with "projection scale" to control the radius of the occlusion effect
+        /// </userdoc>
         [DataMember(50)]
         [DefaultValue(1f)]
-        [Display("Sample Radius")]
+        [Display("Sample radius")]
         public float ParamRadius { get; set; } = 1f;
 
+        /// <userdoc>
+        /// The number of times the ambient occlusion image is blurred. Higher numbers reduce noise, but can produce artifacts.
+        /// </userdoc>
         [DataMember(70)]
         [DefaultValue(2)]
         [DataMemberRange(0, 3, 1, 1, 0)]
-        [Display("Blur Count")]
+        [Display("Blur count")]
         public int NumberOfBounces { get; set; } = 2;
 
+        /// <userdoc>
+        /// The blur radius in pixels
+        /// </userdoc>
         [DataMember(74)]
         [DefaultValue(1.85f)]
-        [Display("Blur Scale")]
+        [Display("Blur radius")]
         public float BlurScale { get; set; } = 1.85f;
 
+        /// <userdoc>
+        /// How much the blur respects the depth differences of occluded areas. Lower numbers create more blur, but might blur unwanted areas (ie beyond occluded areas).
+        /// </userdoc>
         [DataMember(78)]
         [DefaultValue(3f)]
-        [Display("Edge Sharpness")]
+        [Display("Edge sharpness")]
         public float EdgeSharpness { get; set; } = 3f;
 
+        /// <userdoc>
+        /// The resolution the ambient occlusion is calculated at. The result is upscaled to the game resolution. 
+        /// Larger sizes produce better results but use more memory and affect performance.
+        /// </userdoc>
         [DataMember(100)]
         [DefaultValue(TemporaryBufferSize.SizeFull)]
-        [Display("Buffer Size")]
+        [Display("Buffer size")]
         public TemporaryBufferSize TempSize { get; set; } = TemporaryBufferSize.SizeFull;
 
         protected override void InitializeCore()

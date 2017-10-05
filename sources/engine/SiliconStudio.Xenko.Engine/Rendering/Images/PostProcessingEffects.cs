@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2011-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 using System;
 using System.ComponentModel;
@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Gets the ambient occlusion effect.
         /// </summary>
         /// <userdoc>
-        /// The ambient occlusion post-effect allows you to simulate occlusion for opaque objects which are close to or occluded by other opaque objects.
+        /// Darkens areas where light is occluded by opaque objects, such as corners and crevices
         /// </userdoc>
         [DataMember(8)]
         [Category]
@@ -81,7 +81,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Gets the local reflections effect.
         /// </summary>
         /// <value>The local reflection technique.</value>
-        /// <userdoc>Enable local reflections (glossy materials reflect the scene)</userdoc>
+        /// <userdoc>Reflects the scene in glossy materials</userdoc>
         [DataMember(9)]
         [Category]
         public LocalReflections LocalReflections { get; private set; }
@@ -90,7 +90,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Gets the depth of field effect.
         /// </summary>
         /// <value>The depth of field.</value>
-        /// <userdoc>The depth of field post-effect allows you to accentuate some regions of your image by blurring object in foreground or background.</userdoc>
+        /// <userdoc>Accentuates regions of the image by blurring objects in the foreground or background</userdoc>
         [DataMember(10)]
         [Category]
         public DepthOfField DepthOfField { get; private set; }
@@ -99,8 +99,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Gets the bright pass-filter.
         /// </summary>
         /// <value>The bright filter.</value>
-        /// <userdoc>The parameters for the bright filter. The bright filter is not an effect by itself. 
-        /// It just extracts the brightest areas of the image and gives it to other effect that need it (eg. bloom, light streaks, lens-flares).</userdoc>
+        /// <userdoc>The bright filter isn't an effect by itself; 
+        /// it extracts the brightest areas of the image and gives it to effects that use it (eg bloom, light streaks, lens flares).</userdoc>
         [DataMember(20)]
         [Category]
         public BrightFilter BrightFilter { get; private set; }
@@ -109,7 +109,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Gets the bloom effect.
         /// </summary>
         /// <value>The bloom.</value>
-        /// <userdoc>Produces a bleeding effect of bright areas onto their surrounding.</userdoc>
+        /// <userdoc>Produces a bleeding effect of bright areas onto their surrounding</userdoc>
         [DataMember(30)]
         [Category]
         public Bloom Bloom { get; private set; }
@@ -118,7 +118,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Gets the light streak effect.
         /// </summary>
         /// <value>The light streak.</value>
-        /// <userdoc>Produces a bleeding effect of the brightest points of the image along streaks.</userdoc>
+        /// <userdoc>Produces a bleeding effect of the brightest points of the image along streaks</userdoc>
         [DataMember(40)]
         [Category]
         public LightStreak LightStreak { get; private set; }
@@ -127,7 +127,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Gets the lens flare effect.
         /// </summary>
         /// <value>The lens flare.</value>
-        /// <userdoc>Simulates the artifacts produced by the internal reflection or scattering of the light within camera lens.</userdoc>
+        /// <userdoc>Simulates the artifacts produced by the internal reflection or scattering of the light within camera lens</userdoc>
         [DataMember(50)]
         [Category]
         public LensFlare LensFlare { get; private set; }
@@ -136,7 +136,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Gets the final color transforms.
         /// </summary>
         /// <value>The color transforms.</value>
-        /// <userdoc>Performs a transformation onto the image colors.</userdoc>
+        /// <userdoc>Performs a transformation onto the image colors</userdoc>
         [DataMember(70)]
         [Category]
         public ColorTransformGroup ColorTransforms => colorTransformsGroup;
