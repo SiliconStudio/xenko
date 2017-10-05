@@ -1,4 +1,4 @@
-// Copyright (c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2017 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 #if DEBUG
@@ -79,7 +79,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// Gets or sets the input depth resolution mode.
         /// </summary>
-        /// <userdoc>Downscales the depth buffer to optimize raycast performance. Full gives better quality, but half improves performance. The default value is half.</userdoc>
+        /// <userdoc>Downscale the depth buffer to optimize raycast performance. Full gives better quality, but half improves performance. The default value is half.</userdoc>
         [Display("Depth resolution", "Raycast")]
         [DefaultValue(ResolutionMode.Full)]
         public ResolutionMode DepthResolution { get; set; } = ResolutionMode.Half;
@@ -194,7 +194,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <value>
         ///   <c>true</c> if use color buffer mips; otherwise, <c>false</c>.
         /// </value>
-        /// <userdoc>Downscales the input color buffer and uses blurred mipmaps when resolving the reflection color. Produces more realistic results by blurring distant parts of reflections in rough (low-gloss) materials. It also improves performance on most platforms but uses more memory.</userdoc>
+        /// <userdoc>Downscale the input color buffer and uses blurred mipmaps when resolving the reflection color. Produces more realistic results by blurring distant parts of reflections in rough (low-gloss) materials. It also improves performance on most platforms but uses more memory.</userdoc>
         [Display("Use color buffer mips", "Resolve")]
         [DataMember(40)]
         [DefaultValue(true)]

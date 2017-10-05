@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// Radius of the bloom.
         /// </summary>
-        /// <userdoc>The range of the bloom effect around bright regions. Note that high values can import performances</userdoc>
+        /// <userdoc>The range of the bloom effect around bright regions. Note that high values can affect performance</userdoc>
         [DataMember(10)]
         [DefaultValue(10)]
         [DataMemberRange(1.0, 100.0, 1.0, 10.0, 1)]
@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Gets or sets the amount.
         /// </summary>
         /// <value>The amount.</value>
-        /// <userdoc>The strength of the bloom effect.</userdoc>
+        /// <userdoc>The strength of the bloom effect</userdoc>
         [DataMember(20)]
         [DefaultValue(0.3f)]
         public float Amount { get; set; }
@@ -60,6 +60,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         /// <value>The ratio</value>
         /// <userdoc>The standard deviation used for the blur of the effect. This impact the fall-off of the bloom.</userdoc>
+        [Display ("Sigma ratio")]
         [DataMember(30)]
         [DefaultValue(3.5f)]
         public float SigmaRatio { get; set; }
@@ -84,14 +85,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// Gets the afterimage effect/>
         /// </summary>
-        /// <userdoc>When enabled, it simulates some persistence effects of the light points (trails) on the next frames. </userdoc>
+        /// <userdoc>Simulate persistence effects of the light points (trails) on the next frames</userdoc>
         [DataMember(50)]
         public Afterimage Afterimage { get; private set; }
 
         /// <summary>
         /// Use the "stable bloom" rendering path.
         /// </summary>
-        /// <userdoc>It reverses FXAA and bloom, as well as uses a richer convolution kernel during blurring. It helps reduce temporal shimmering.</userdoc>
+        /// <userdoc>Reverse FXAA and bloom and use a richer convolution kernel during blurring, reducing temporal shimmering</userdoc>
         [DataMember(60)]
         [DefaultValue(true)]
         [Display("Expanded filtering")]

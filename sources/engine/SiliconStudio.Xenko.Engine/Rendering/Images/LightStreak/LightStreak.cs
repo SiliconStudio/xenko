@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -75,7 +75,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// Amount of light streak (intensity).
         /// </summary>
-        /// <userdoc>The strength of the bleeding.</userdoc>
+        /// <userdoc>The strength of the bleeding</userdoc>
         [DataMember(10)]
         [DefaultValue(0.25f)]
         public float Amount { get; set; }
@@ -83,7 +83,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// Number of light streaks.
         /// </summary>
-        /// <userdoc>The number of beams emitted by each bright points</userdoc>
+        /// <userdoc>The number of streaks emitted by each bright point</userdoc>
+        [Display("Streaks")]
         [DataMember(20)]
         [DefaultValue(4)]
         [DataMemberRange(1, STREAK_MAX_COUNT, 1, 1, 0)]
@@ -153,7 +154,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// Phase angle for the streaks, in degrees.
         /// </summary>
-        /// <userdoc>Specifies the angle (rotation) of the star-like pattern.</userdoc>
+        /// <userdoc>The angle (rotation) of the star pattern</userdoc>
         [DataMember(40)]
         [DefaultValue(30f)]
         [DataMemberRange(0.0, 180.0, 1.0, 10.0, 1)]
@@ -168,7 +169,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// Strength of the color aberration.
         /// </summary>
-        /// <userdoc>The strength of the color aberrations visible along the streak.</userdoc>
+        /// <userdoc>The strength of the color aberrations visible along the streak</userdoc>
+        [Display("Color abberation")]
         [DataMember(50)]
         [DefaultValue(0.2f)]
         [DataMemberRange(0.0, 1.0, 0.01, 0.1, 2)]
@@ -177,7 +179,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// Applies an anamorphic effect to the streak.
         /// </summary>
-        /// <userdoc>When enabled, it simulates the behavior of anamorphic camera lenses</userdoc>
+        /// <userdoc>Simulate the behavior of anamorphic camera lenses</userdoc>
+        [Display("Anamorphic")]
         [DataMember(60)]
         [DefaultValue(false)]
         public bool IsAnamorphic

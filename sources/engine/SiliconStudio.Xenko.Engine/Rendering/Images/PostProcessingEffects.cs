@@ -81,7 +81,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Gets the local reflections effect.
         /// </summary>
         /// <value>The local reflection technique.</value>
-        /// <userdoc>Reflects the scene in glossy materials</userdoc>
+        /// <userdoc>Reflect the scene in glossy materials</userdoc>
         [DataMember(9)]
         [Category]
         public LocalReflections LocalReflections { get; private set; }
@@ -90,7 +90,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Gets the depth of field effect.
         /// </summary>
         /// <value>The depth of field.</value>
-        /// <userdoc>Accentuates regions of the image by blurring objects in the foreground or background</userdoc>
+        /// <userdoc>Accentuate regions of the image by blurring objects in the foreground or background</userdoc>
         [DataMember(10)]
         [Category]
         public DepthOfField DepthOfField { get; private set; }
@@ -109,7 +109,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Gets the bloom effect.
         /// </summary>
         /// <value>The bloom.</value>
-        /// <userdoc>Produces a bleeding effect of bright areas onto their surrounding</userdoc>
+        /// <userdoc>Bleed bright areas into surrounding areas</userdoc>
         [DataMember(30)]
         [Category]
         public Bloom Bloom { get; private set; }
@@ -118,7 +118,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Gets the light streak effect.
         /// </summary>
         /// <value>The light streak.</value>
-        /// <userdoc>Produces a bleeding effect of the brightest points of the image along streaks</userdoc>
+        /// <userdoc>Bleed bright points along streaks</userdoc>
         [DataMember(40)]
         [Category]
         public LightStreak LightStreak { get; private set; }
@@ -127,7 +127,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Gets the lens flare effect.
         /// </summary>
         /// <value>The lens flare.</value>
-        /// <userdoc>Simulates the artifacts produced by the internal reflection or scattering of the light within camera lens</userdoc>
+        /// <userdoc>Simulate artifacts produced by the internal reflection or scattering of light within camera lenses</userdoc>
         [DataMember(50)]
         [Category]
         public LensFlare LensFlare { get; private set; }
@@ -136,7 +136,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Gets the final color transforms.
         /// </summary>
         /// <value>The color transforms.</value>
-        /// <userdoc>Performs a transformation onto the image colors</userdoc>
+        /// <userdoc>Perform a transformation onto the image colors</userdoc>
         [DataMember(70)]
         [Category]
         public ColorTransformGroup ColorTransforms => colorTransformsGroup;
@@ -145,7 +145,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Gets the antialiasing effect.
         /// </summary>
         /// <value>The antialiasing.</value>
-        /// <userdoc>Performs anti-aliasing filtering on the image. This smoothes the jagged edges of models.</userdoc>
+        /// <userdoc>Perform anti-aliasing filtering, smoothing the jagged edges of models</userdoc>
         [DataMember(80)]
         [Display("Type", "Antialiasing")]
         public IScreenSpaceAntiAliasingEffect Antialiasing { get; set; } // TODO: Unload previous anti aliasing

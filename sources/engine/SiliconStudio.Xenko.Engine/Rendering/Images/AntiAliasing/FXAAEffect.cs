@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2017 Silicon Studio Corp. All rights reserved. (https://www.siliconstudio.co.jp)
 // See LICENSE.md for full license information.
 
 using System;
@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <summary>
         /// The dithering type used (directly related to rendering style).
         /// </summary>
-        /// <userdoc>The dithering type used (directly related to rendering style).</userdoc>
+        /// <userdoc>The dithering type used (directly related to rendering style)</userdoc>
         [DataMember(10)]
         [DefaultValue(DitherType.Low)]
         public DitherType Dither { get; set; } = DitherType.Low;
@@ -47,10 +47,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Gets or sets a value indicating whether the luminance will be retrieved from the alpha channel of the input color. Otherwise, the green component of the input color is used as a luminance.
         /// </summary>
         /// <value><c>true</c> the luminance will be retrieved from the alpha channel of the input color. Otherwise, the green component of the input color is used as a luminance.</value>
-        /// <userdoc>The luminance will be retrieved from the alpha channel of the input color. Otherwise, the green component of the input color is used as an approximation to the luminance.</userdoc>
+        /// <userdoc>Retrieve the luminance from the alpha channel of the input color. Otherwise, use the green component of the input color as an approximation of the luminance.</userdoc>
         [DataMember(30)]
         [DefaultValue(true)]
-        [Display("Input luminance from alpha?")]
+        [Display("Input luminance from alpha")]
         public bool InputLuminanceInAlpha { get; set; }
 
         /// <summary>
