@@ -26,6 +26,7 @@ namespace SiliconStudio.Xenko.Engine
         /// The model which contains the hierarchy to use.
         /// </value>
         /// <userdoc>The name of the model to attach this entity to. If null, the entity attaches to its parent entity.</userdoc>
+        [DataMember(10)]
         [Display("Model (parent if not set)")]
         public ModelComponent Target
         {
@@ -47,6 +48,7 @@ namespace SiliconStudio.Xenko.Engine
         /// The name of the node.
         /// </value>
         /// <userdoc>The name of node to attach this entity to.</userdoc>
+        [DataMember(20)]
         [Display("Node")]
         public string NodeName { get; set; }
 
