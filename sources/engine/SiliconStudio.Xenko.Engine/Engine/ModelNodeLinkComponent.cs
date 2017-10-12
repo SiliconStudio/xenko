@@ -9,7 +9,7 @@ using SiliconStudio.Xenko.Engine.Processors;
 namespace SiliconStudio.Xenko.Engine
 {
     [DataContract("ModelNodeLinkComponent")]
-    [Display("Model node link", Expand = ExpandRule.Once)]
+    [Display("Bone link", Expand = ExpandRule.Once)]
     [DefaultEntityComponentProcessor(typeof(ModelNodeLinkProcessor))]
     [ComponentOrder(1500)]
     public sealed class ModelNodeLinkComponent : EntityComponent
@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <value>
         /// The model which contains the hierarchy to use.
         /// </value>
-        /// <userdoc>The name of the model to attach this entity to. If null, the entity attaches to its parent entity.</userdoc>
+        /// <userdoc>The model that contains the skeleton to attach this entity to. If null, the entity attaches to the parent.</userdoc>
         [DataMember(10)]
         [Display("Model (parent if not set)")]
         public ModelComponent Target
@@ -47,9 +47,9 @@ namespace SiliconStudio.Xenko.Engine
         /// <value>
         /// The name of the node.
         /// </value>
-        /// <userdoc>The name of node to attach this entity to.</userdoc>
+        /// <userdoc>The bone/joint to attach this entity to.</userdoc>
         [DataMember(20)]
-        [Display("Node")]
+        [Display("Bone")]
         public string NodeName { get; set; }
 
         public void ValidityCheck()
