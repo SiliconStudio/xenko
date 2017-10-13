@@ -118,6 +118,7 @@
     <Compile Include="Compiler\ICompilationContext.cs" />
     <Compile Include="Diagnostics\AssetSerializableLogMessage.cs" />
     <Compile Include="DynamicYaml\DynamicYamlExtensions.cs" />
+    <Compile Include="PackageSessionPublicHelper.cs" />
     <Compile Include="RawAssetImporterBase.cs" />
     <Compile Include="Reflection\AbstractObjectInstantiator.cs" />
     <Compile Include="SolutionPlatformTemplate.cs" />

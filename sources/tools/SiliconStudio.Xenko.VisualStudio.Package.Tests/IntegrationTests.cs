@@ -132,6 +132,8 @@ namespace SiliconStudio.Xenko.VisualStudio.Package.Tests
         [Test]
         public void TestXkslGeneration()
         {
+            PackageSessionPublicHelper.FindAndSetMSBuildVersion();
+
             // Create temporary folder
             string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Directory.CreateDirectory(tempDirectory);

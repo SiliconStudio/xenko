@@ -17,6 +17,8 @@ namespace SiliconStudio.Assets.Tests
         [Test]
         public void TestBasicPackageCreateSaveLoad()
         {
+            PackageSessionPublicHelper.FindAndSetMSBuildVersion();
+
             var dirPath = DirectoryTestBase + @"TestBasicPackageCreateSaveLoad";
 
             string testGenerated1 = Path.Combine(dirPath, "TestPackage_TestBasicPackageCreateSaveLoad_Generated1.xkpkg");
