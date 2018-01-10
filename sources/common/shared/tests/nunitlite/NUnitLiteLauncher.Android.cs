@@ -71,18 +71,18 @@ namespace NUnitLite.Tests
                     continue;
                 try
                 {
-                    Logger.Debug(@"Trying to connect to the server " + possibleIpAddress + @":" + serverPort + @".");
+                    Logger.Debug($@"Trying to connect to the server {possibleIpAddress}:{serverPort}.");
                     client.Connect(possibleIpAddress, serverPort);
 
-                    Logger.Debug(@"Client connected with ip " + possibleIpAddress + @"... sending data");
+                    Logger.Debug($@"Client connected with ip {possibleIpAddress}... sending data");
                     return client;
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error("Error when trying to connect to the server IP {0}.\n{1}", possibleIpAddress, ex);
+                    Logger.Error($@"Error when trying to connect to the server IP {possibleIpAddress}.\n{ex}");
                 }
 
-                Logger.Debug(@"Client connected with ip " + possibleIpAddress + @"... sending data");
+                Logger.Debug($@"Client connected with ip {possibleIpAddress}... sending data");
 
                 return client;
             }
