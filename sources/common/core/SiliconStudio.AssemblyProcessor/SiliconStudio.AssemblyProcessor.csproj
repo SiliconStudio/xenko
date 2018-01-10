@@ -216,6 +216,7 @@
     <Compile Include="DispatcherProcessor.cs" />
     <Compile Include="FixupValueTypeVisitor.cs" />
     <Compile Include="GenerateUserDocumentationProcessor.cs" />
+    <Compile Include="MonoFixedProcessor.cs" />
     <Compile Include="InitLocalsProcessor.cs" />
     <Compile Include="OpenSourceSignProcessor.cs" />
     <Compile Include="PclFixupTypeVisitor.cs" />

@@ -205,6 +205,7 @@ namespace SiliconStudio.AssemblyProcessor
 
                 // Always applies the interop processor
                 processors.Add(new InteropProcessor());
+                processors.Add(new MonoFixedProcessor());
 
                 processors.Add(new AssemblyVersionProcessor());
 
